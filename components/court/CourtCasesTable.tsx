@@ -160,11 +160,11 @@ const CaseActions = ({
       <Link href={`/court/${caseId}`}>
         <button
           className={`
-          center gap-3 border-gray-300 hover:border-gray-400 text-xs border-2 rounded-full px-5 py-1.5 line-clamp-1 disabled:opacity-50 self-end md:min-w-[220px]
-            ${canVote && "bg-ztg-blue text-white border-ztg-blue animate-pulse"}
+          center line-clamp-1 gap-3 self-end rounded-full border-2 border-gray-300 px-5 py-1.5 text-xs hover:border-gray-400 disabled:opacity-50 md:min-w-[220px]
+            ${canVote && "animate-pulse border-ztg-blue bg-ztg-blue text-white"}
             ${
               canReveal &&
-              "bg-purple-500 text-white border-purple-500 animate-pulse"
+              "animate-pulse border-purple-500 bg-purple-500 text-white"
             }
           `}
         >

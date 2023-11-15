@@ -63,7 +63,7 @@ const RangeInput = React.forwardRef(
           >
             {value} {valueSuffix}
           </div>
-          <div className="flex w-full justify-between mt-[8px]">
+          <div className="mt-[8px] flex w-full justify-between">
             <div className="text-ztg-14-150 text-black">
               {minVisible ? minLabel : ""}
             </div>

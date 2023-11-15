@@ -58,12 +58,12 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
     <>
       {isFirefox ? (
         <div
-          className={`flex center rounded-full overflow-hidden bg-gray-100 transition-all ${
+          className={`center flex overflow-hidden rounded-full bg-gray-100 transition-all ${
             isValid && "!bg-nyanza-base"
           } ${className}`}
         >
           <Input
-            className="py-3 px-8 rounded-full bg-transparent"
+            className="rounded-full bg-transparent px-8 py-3"
             ref={inputRef}
             name={name}
             type="datetime-local"
@@ -79,7 +79,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       ) : (
         <button
           type="button"
-          className={`flex center rounded-full  bg-gray-100 transition-all active:scale-95  ${
+          className={`center flex rounded-full  bg-gray-100 transition-all active:scale-95  ${
             isValid && "!bg-nyanza-base"
           } ${className}`}
           onClick={() => {
@@ -87,14 +87,14 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
             inputRef.current?.showPicker();
           }}
         >
-          <div className="relative py-3 px-8">
+          <div className="relative px-8 py-3">
             <div>
               {!value
                 ? placeholder ?? "Set Date"
                 : momentFn(value).format("MMM D, YYYY, h:mm:ss A")}
             </div>
             <Input
-              className="opacity-0 h-0 w-0 absolute -bottom-2 left-0"
+              className="absolute -bottom-2 left-0 h-0 w-0 opacity-0"
               ref={inputRef}
               name={name}
               type="datetime-local"

@@ -87,7 +87,7 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
             {draw.vote.isDelegated && (
               <InfoPopover position="top">
                 <div>
-                  <div className="flex mb-2">
+                  <div className="mb-2 flex">
                     <div className="flex-1 font-semibold">Delegated</div>
                     <div className="flex-1 font-semibold">Stake</div>
                   </div>
@@ -96,9 +96,9 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
                     .map(([account, stake]) => (
                       <div
                         key={account.toString()}
-                        className="flex items-center gap-1 mb-1"
+                        className="mb-1 flex items-center gap-1"
                       >
-                        <div className="flex-1 flex items-center gap-1">
+                        <div className="flex flex-1 items-center gap-1">
                           <Avatar address={account.toString()} size={18} />
                           {shortenAddress(account.toString())}
                         </div>

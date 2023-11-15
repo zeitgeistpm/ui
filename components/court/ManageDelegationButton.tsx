@@ -31,7 +31,7 @@ const ManageDelegationButton = ({ className }: { className?: string }) => {
     <>
       <div className="relative">
         <button
-          className={`bg-[#670031] rounded-md text-white py-2 px-4 transition-all  ${
+          className={`rounded-md bg-[#670031] px-4 py-2 text-white transition-all  ${
             connectedParticipant?.type === "Juror" && "ring-2 ring-orange-500"
           } ${className}`}
           onClick={() => setIsOpen(true)}
@@ -41,7 +41,7 @@ const ManageDelegationButton = ({ className }: { className?: string }) => {
             : "Become a Delegator"}
         </button>
         {connectedParticipant?.type === "Juror" && (
-          <div className="absolute top-0 right-0 p-[0.5] rounded-full bg-orange-500 translate-x-[50%] translate-y-[-50%]">
+          <div className="absolute right-0 top-0 translate-x-[50%] translate-y-[-50%] rounded-full bg-orange-500 p-[0.5]">
             <InfoPopover
               overlay={false}
               className="text-white"
@@ -61,7 +61,7 @@ const ManageDelegationButton = ({ className }: { className?: string }) => {
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
           <h3 className="mb-8">Delegate</h3>
 
-          <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
+          <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
             <ManageDelegationsForm
               onSuccessfulSubmit={() => setIsOpen(false)}
             />

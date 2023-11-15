@@ -93,7 +93,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
       <div className="relative">
         <button
           disabled={isLoading}
-          className={`bg-[#670031] rounded-md text-white py-2 px-4 transition-all  ${
+          className={`rounded-md bg-[#670031] px-4 py-2 text-white transition-all  ${
             connectedParticipant?.type === "Delegator" &&
             "ring-2 ring-orange-500"
           } ${className}`}
@@ -104,7 +104,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
             : "Become a Juror"}
         </button>
         {connectedParticipant?.type === "Delegator" && (
-          <div className="absolute top-0 right-0 p-[0.5] rounded-full bg-orange-500 translate-x-[50%] translate-y-[-50%]">
+          <div className="absolute right-0 top-0 translate-x-[50%] translate-y-[-50%] rounded-full bg-orange-500 p-[0.5]">
             <InfoPopover
               overlay={false}
               className="text-white"
@@ -126,15 +126,15 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
               ? "Increase Personal Stake"
               : "Become a Juror"}
           </h3>
-          <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
+          <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="w-full flex flex-col items-center"
+              className="flex w-full flex-col items-center"
             >
-              <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal w-full">
+              <div className="center relative h-[56px] w-full bg-anti-flash-white text-ztg-18-150 font-normal">
                 <Input
                   type="number"
-                  className="w-full bg-transparent outline-none !text-center"
+                  className="w-full bg-transparent !text-center outline-none"
                   step="any"
                   {...register("amount", {
                     value: 0,
@@ -167,31 +167,31 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
                   })}
                 />
 
-                <div className="mr-[10px] absolute right-0">
+                <div className="absolute right-0 mr-[10px]">
                   {constants?.tokenSymbol}
                 </div>
               </div>
 
               <input
-                className="mt-[30px] mb-[10px] w-full"
+                className="mb-[10px] mt-[30px] w-full"
                 type="range"
                 disabled={!balance || balance.lessThanOrEqualTo(0)}
                 {...register("percentage", { value: "0" })}
               />
 
-              <div className="text-vermilion text-center mb-5 text-ztg-12-120 my-[4px] h-[16px]">
+              <div className="my-[4px] mb-5 h-[16px] text-center text-ztg-12-120 text-vermilion">
                 <>{formState.errors["amount"]?.message}</>
               </div>
 
-              <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
-                <span className="text-black ml-1">
+              <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
+                <span className="ml-1 text-black">
                   Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0}{" "}
                   {fee?.symbol}
                 </span>
               </div>
 
               {connectedParticipant?.type === "Delegator" && (
-                <div className="rounded-lg p-5 mb-5 bg-provincial-pink text-sm w-full font-normal">
+                <div className="mb-5 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
                   You are currently delegating to other jurors. If you join the
                   court as a juror, your delegations will be removed and stake
                   will be moved to your personal stake.

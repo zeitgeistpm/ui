@@ -108,11 +108,11 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
     secretVote?.commitment.toHex() === u8aToHex(commitmentHash);
 
   return (
-    <div className="rounded-xl overflow-hidden shadow-lg">
-      <div className="flex center bg-fog-of-war py-3">
+    <div className="overflow-hidden rounded-xl shadow-lg">
+      <div className="center flex bg-fog-of-war py-3">
         <h3 className="text-gray-300 text-opacity-50">Reveal Vote</h3>
       </div>
-      <div className="py-6 px-2 text-center">
+      <div className="px-2 py-6 text-center">
         <div className="mb-8 mt-6">
           <MarketContextActionOutcomeSelector
             market={market}
@@ -126,7 +126,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
 
         {!committed && (
           <>
-            <div className="rounded-lg p-5 mb-6 bg-provincial-pink text-sm w-full font-normal">
+            <div className="mb-6 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
               <div className="text-sm text-gray-700">
                 No local data regarding your vote was found, you have to provide
                 the same answer when revealing as when you voted.
@@ -137,12 +137,12 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
 
         {commitmentHashMatches ? (
           <div
-            className="relative w-full bg-transparent text-center font-semibold rounded-md border-black border-opacity-30 resize-none mb-6"
+            className="relative mb-6 w-full resize-none rounded-md border-black border-opacity-30 bg-transparent text-center font-semibold"
             onDragOver={onCourtSaltBackupDragOver}
             onDrop={onCourtSaltBackupDrop}
           >
-            <div className="text-sm gap-3 text-gray-600 bg-green-100 py-6 px-6 rounded-md border-dotted border-2">
-              <h3 className="text-sm center gap-2">
+            <div className="gap-3 rounded-md border-2 border-dotted bg-green-100 px-6 py-6 text-sm text-gray-600">
+              <h3 className="center gap-2 text-sm">
                 {hasDroppedFile
                   ? "Commitment Hash Match"
                   : "Using locally saved commitment hash"}{" "}
@@ -155,12 +155,12 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
           </div>
         ) : (
           <div
-            className="relative w-full bg-transparent text-center font-semibold rounded-md  resize-none mb-6"
+            className="relative mb-6 w-full resize-none rounded-md bg-transparent  text-center font-semibold"
             onDragOver={onCourtSaltBackupDragOver}
             onDrop={onCourtSaltBackupDrop}
           >
             <div
-              className={`text-sm italic  text-gray-500 bg-slate-100 py-12 px-6 rounded-md border-dotted border-2 ${
+              className={`rounded-md border-2  border-dotted bg-slate-100 px-6 py-12 text-sm italic text-gray-500 ${
                 hasDroppedFile && "border-red-500"
               }`}
             >
@@ -174,7 +174,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
                 <BsFillFileEarmarkDiffFill size={24} />
               </div>
               {hasDroppedFile && (
-                <div className="mt-4 text-red-400 text-xxs">
+                <div className="mt-4 text-xxs text-red-400">
                   Invalid Backup. Hash mismatch.
                 </div>
               )}
@@ -192,7 +192,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
           onClick={() => send()}
         >
           <div>
-            <div className="center font-normal h-[20px]">Reveal Vote</div>
+            <div className="center h-[20px] font-normal">Reveal Vote</div>
           </div>
         </TransactionButton>
       </div>

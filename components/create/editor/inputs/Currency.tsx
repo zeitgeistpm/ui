@@ -26,7 +26,7 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
   };
 
   return (
-    <div className="md:flex md:justify-center md:gap-6 mb-6">
+    <div className="mb-6 md:flex md:justify-center md:gap-6">
       {supportedCurrencies
         .filter((currency) => options?.includes(currency.name) ?? true)
         .map((currency) => (
@@ -34,15 +34,15 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
             key={currency.name}
             type="button"
             className={`
-              flex flex-col justify-center flex-1 w-full md:max-w-xs rounded-md p-6 md:min-h-[300px] min-h-[150px] 
-              cursor-pointer transition-all mb-4 active:scale-95
+              mb-4 flex min-h-[150px] w-full flex-1 cursor-pointer flex-col justify-center rounded-md p-6 
+              transition-all active:scale-95 md:min-h-[300px] md:max-w-xs
               ${currency.name === value ? "bg-nyanza-base" : "bg-gray-100"}
             `}
             onClick={handleSelect(currency.name)}
           >
-            <div className="flex md:block items-center gap-6">
-              <div className="flex w-20 md:justify-center md:items-center md:mb-6 md:w-auto">
-                <div className="relative w-20 h-20 rounded-full overflow-hidden">
+            <div className="flex items-center gap-6 md:block">
+              <div className="flex w-20 md:mb-6 md:w-auto md:items-center md:justify-center">
+                <div className="relative h-20 w-20 overflow-hidden rounded-full">
                   <Image
                     alt={`Currency token logo for ${currency.name}`}
                     fill
@@ -52,7 +52,7 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
                 </div>
               </div>
               <div className="text-left md:text-center">
-                <h3 className="text-2xl mb-2 md:mb-4">{currency.name}</h3>
+                <h3 className="mb-2 text-2xl md:mb-4">{currency.name}</h3>
                 <p className="text-sm md:text-base">{currency.description}</p>
               </div>
             </div>

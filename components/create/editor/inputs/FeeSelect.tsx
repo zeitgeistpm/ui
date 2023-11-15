@@ -51,7 +51,7 @@ const FeeSelect = ({
           key={index}
           type="button"
           onClick={handleFeePresetChange(preset)}
-          className={`flex center rounded-full bg-gray-100 py-3 px-6 transition-all active:scale-9 ${
+          className={`center active:scale-9 flex rounded-full bg-gray-100 px-6 py-3 transition-all ${
             value?.type === "preset" &&
             value?.value === preset.value &&
             "bg-nyanza-base"
@@ -64,13 +64,13 @@ const FeeSelect = ({
         <Input
           type="number"
           min={0}
-          className={`rounded-md bg-gray-100 py-3 pl-4 text-right w-32 outline-none ${
+          className={`w-32 rounded-md bg-gray-100 py-3 pl-4 text-right outline-none ${
             value?.type === "custom" && isValid && "bg-nyanza-base"
           }`}
           value={Number(value?.value).toString()}
           onChange={handleFeeCustomChange}
         />
-        <div className="h-full center text-gray-600 right-0 rounded-r-md border-2 border-gray-100 border-l-0 px-4 bg-white pointer-events-none">
+        <div className="center pointer-events-none right-0 h-full rounded-r-md border-2 border-l-0 border-gray-100 bg-white px-4 text-gray-600">
           {label}
         </div>
       </div>

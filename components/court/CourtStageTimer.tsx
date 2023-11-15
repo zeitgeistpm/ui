@@ -26,26 +26,26 @@ export const CourtStageTimer = ({ stage }: { stage?: CourtStage }) => {
   return (
     <>
       <div className="inline-block w-full">
-        <div className="flex mb-1 items-center">
-          <div className="font-semibold mr-4 text-black">
+        <div className="mb-1 flex items-center">
+          <div className="mr-4 font-semibold text-black">
             {copy[stage.type].title}
           </div>
-          <div className="text-sky-600 text-sm">
+          <div className="text-sm text-sky-600">
             {copy[stage.type].description}
           </div>
           {stage.type !== "closed" && stage.type !== "reassigned" && (
-            <div className="ml-auto text-black text-right">
+            <div className="ml-auto text-right text-black">
               {timeLeft?.humanize()} left
             </div>
           )}
         </div>
         <div className="w-full">
-          <div className="text-xs text-sky-600 text-right">
+          <div className="text-right text-xs text-sky-600">
             {percentage.toFixed(0)}%
           </div>
-          <div className="w-full rounded-lg h-1.5 bg-gray-100">
+          <div className="h-1.5 w-full rounded-lg bg-gray-100">
             <div
-              className={`rounded-lg h-full transition-all ${
+              className={`h-full rounded-lg transition-all ${
                 copy[stage.type].color
               }`}
               style={{ width: `${percentage}%` }}

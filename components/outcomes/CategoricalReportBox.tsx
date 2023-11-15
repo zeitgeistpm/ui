@@ -86,7 +86,7 @@ const CategoricalReportBox = ({
       </div>
 
       <TransactionButton
-        className="my-ztg-10 shadow-ztg-2 center"
+        className="center my-ztg-10 shadow-ztg-2"
         onClick={handleSignTransaction}
         disabled={reportDisabled}
         loading={isBroadcasting}

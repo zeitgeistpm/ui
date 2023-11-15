@@ -50,9 +50,9 @@ const CourtPage: NextPage = () => {
   );
 
   return (
-    <div className="flex flex-col mt-4 gap-y-4">
-      <div className="relative rounded-lg overflow-hidden p-6 mb-4">
-        <div className="w-full h-full z-10 absolute top-0 left-0">
+    <div className="mt-4 flex flex-col gap-y-4">
+      <div className="relative mb-4 overflow-hidden rounded-lg p-6">
+        <div className="absolute left-0 top-0 z-10 h-full w-full">
           <Image
             title="Wizard draped in purple robes holding a flaming crypto key."
             alt="Wizard draped in purple robes holding a flaming crypto key."
@@ -65,10 +65,10 @@ const CourtPage: NextPage = () => {
           />
         </div>
         <div className="relative z-20">
-          <div className="font-bold text-3xl mb-2 text-white drop-shadow-lg">
+          <div className="mb-2 text-3xl font-bold text-white drop-shadow-lg">
             Court
           </div>
-          <p className="font-light mb-4 text-white drop-shadow-lg md:max-w-[940px]">
+          <p className="mb-4 font-light text-white drop-shadow-lg md:max-w-[940px]">
             Anyone can participate by joining the court system as a juror or
             delegator. As a juror, you are responsible for supplying the
             truthful outcome of a prediction market by voting and revealing the
@@ -77,13 +77,13 @@ const CourtPage: NextPage = () => {
           </p>
 
           <div className="">
-            <div className="bg-slate-200 bg-opacity-60 w-full md:w-auto rounded-md py-5 px-6 inline-block mb-4 min-w-[260px]">
+            <div className="mb-4 inline-block w-full min-w-[260px] rounded-md bg-slate-200 bg-opacity-60 px-6 py-5 md:w-auto">
               <div className="flex">
-                <h3 className="mb-2 text-lg flex-1 text-gray-800">My Stake</h3>
+                <h3 className="mb-2 flex-1 text-lg text-gray-800">My Stake</h3>
                 {connectedParticipant && (
                   <div>
                     <div
-                      className={`text-sm px-2 py-1 rounded-md text-gray-600 center gap-1`}
+                      className={`center gap-1 rounded-md px-2 py-1 text-sm text-gray-600`}
                     >
                       {connectedParticipant?.type}
                       <InfoPopover overlay={false} position="top">
@@ -96,9 +96,9 @@ const CourtPage: NextPage = () => {
                 )}
               </div>
 
-              <div className="flex  mb-4">
+              <div className="mb-4  flex">
                 <div className="flex-1">
-                  <div className="font-medium text-lg mb-[0.5]">
+                  <div className="mb-[0.5] text-lg font-medium">
                     {formatNumberLocalized(
                       connectedParticipant?.stake.div(ZTG).toNumber() ?? 0,
                     )}{" "}
@@ -120,7 +120,7 @@ const CourtPage: NextPage = () => {
               </div>
 
               <div>
-                <div className="flex flex-col md:flex-row gap-4 mb-3">
+                <div className="mb-3 flex flex-col gap-4 md:flex-row">
                   <JoinCourtAsJurorButton className="w-full md:w-auto" />
                   <ManageDelegationButton className="w-full md:w-auto" />
 

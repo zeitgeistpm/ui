@@ -39,11 +39,11 @@ const CopyIcon: FC<CopyIconProps> = ({
   }, [recentlyCopied]);
 
   return (
-    <div className={"relative w-ztg-20 flex items-center " + className}>
+    <div className={"relative flex w-ztg-20 items-center " + className}>
       <Copy
         size={size}
         role="button"
-        className="cursor-pointer ml-auto"
+        className="ml-auto cursor-pointer"
         onClick={handleCopy}
       />
       <Transition
@@ -56,8 +56,8 @@ const CopyIcon: FC<CopyIconProps> = ({
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 :scale-95"
       >
-        <div className="absolute top-[50%] right-0 translate-x-[100%] translate-y-[-50%] pl-2">
-          <div className="bg-black bg-opacity-30 text-sm text-white rounded-md p-1">
+        <div className="absolute right-0 top-[50%] translate-x-[100%] translate-y-[-50%] pl-2">
+          <div className="rounded-md bg-black bg-opacity-30 p-1 text-sm text-white">
             Copied!
           </div>
         </div>

@@ -103,15 +103,15 @@ const DelegateButton = ({ address }: { address: string }) => {
             <Avatar address={address} />
             <span>{address}</span>
           </div>
-          <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
+          <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="w-full flex flex-col items-center"
+              className="flex w-full flex-col items-center"
             >
-              <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal w-full">
+              <div className="center relative h-[56px] w-full bg-anti-flash-white text-ztg-18-150 font-normal">
                 <Input
                   type="number"
-                  className="w-full bg-transparent outline-none !text-center"
+                  className="w-full bg-transparent !text-center outline-none"
                   step="any"
                   {...register("amount", {
                     value: 0,
@@ -142,21 +142,21 @@ const DelegateButton = ({ address }: { address: string }) => {
                     },
                   })}
                 />
-                <div className="mr-[10px] absolute right-0">
+                <div className="absolute right-0 mr-[10px]">
                   {constants?.tokenSymbol}
                 </div>
               </div>
               <input
-                className="mt-[30px] mb-[10px] w-full"
+                className="mb-[10px] mt-[30px] w-full"
                 type="range"
                 disabled={!balance || balance.lessThanOrEqualTo(0)}
                 {...register("percentage", { value: "0" })}
               />
-              <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
+              <div className="my-[4px] h-[16px] text-ztg-12-120 text-vermilion">
                 <>{formState.errors["amount"]?.message}</>
               </div>
-              <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
-                <span className="text-black ml-1">
+              <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
+                <span className="ml-1 text-black">
                   Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0}{" "}
                   {fee?.symbol}
                 </span>

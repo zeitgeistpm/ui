@@ -53,7 +53,7 @@ export const UserIdentity: FC<
   return (
     <div className={`inline-flex items-center gap-1 ${className}`}>
       <Avatar address={user} copy={false} size={18} />
-      <span className="break-all flex-1">{displayName}</span>
+      <span className="flex-1 break-all">{displayName}</span>
     </div>
   );
 };
@@ -62,7 +62,7 @@ export const HeaderStat: FC<
   PropsWithChildren<{ label: string; border?: boolean }>
 > = ({ label, border = true, children }) => {
   return (
-    <div className={border ? "sm:border-r sm:border-ztg-blue pr-2" : ""}>
+    <div className={border ? "pr-2 sm:border-r sm:border-ztg-blue" : ""}>
       <span>{label}: </span>
       <span className="font-medium">{children}</span>
     </div>
@@ -74,7 +74,7 @@ const Tag: FC<PropsWithChildren<{ className?: string }>> = ({
   children,
 }) => {
   return (
-    <span className={`px-2.5 py-1 rounded bg-gray-300 ${className}`}>
+    <span className={`rounded bg-gray-300 px-2.5 py-1 ${className}`}>
       {children}
     </span>
   );
@@ -91,12 +91,12 @@ const MarketOutcome: FC<
 > = ({ status, outcome, by, setShowMarketHistory, marketHistory }) => {
   return (
     <div
-      className={`w-full flex center items-center gap-4 py-3 rounded-lg ${
+      className={`center flex w-full items-center gap-4 rounded-lg py-3 ${
         status === "Resolved"
           ? "bg-green-light"
           : status === "Reported"
-          ? "bg-powderblue"
-          : "bg-yellow-light"
+            ? "bg-powderblue"
+            : "bg-yellow-light"
       }`}
     >
       <div className="center gap-1">
@@ -131,7 +131,7 @@ const MarketOutcome: FC<
 
       {marketHistory ? (
         <button
-          className="text-ztg-blue font-medium"
+          className="font-medium text-ztg-blue"
           onClick={() => setShowMarketHistory(true)}
         >
           See History
@@ -183,16 +183,16 @@ const MarketHistory: FC<
 
   return (
     <Dialog.Panel>
-      <div className="bg-white p-6 sm:p-10 max-h-[670px] sm:min-w-[540px] sm:max-w-[540px] relative overflow-hidden rounded-xl">
+      <div className="relative max-h-[670px] overflow-hidden rounded-xl bg-white p-6 sm:min-w-[540px] sm:max-w-[540px] sm:p-10">
         <X
-          className="absolute top-5 right-5 cursor-pointer"
+          className="absolute right-5 top-5 cursor-pointer"
           onClick={() => {
             setShowMarketHistory(false);
           }}
         />
-        <h3 className="font-bold mb-10 text-center">Market History</h3>
+        <h3 className="mb-10 text-center font-bold">Market History</h3>
         <div className="sm:overflow-hidden">
-          <ol className="list-decimal pl-8 overflow-y-auto h-[500px]">
+          <ol className="h-[500px] list-decimal overflow-y-auto pl-8">
             <li className="mb-8 list-item">
               <p> Market opened</p>
               <p className="pb-1 text-sm text-gray-500">
@@ -370,16 +370,16 @@ const MarketHeader: FC<{
   const imagePath = IOForeignAssetId.is(assetId)
     ? lookupAssetImagePath(assetId.ForeignAsset)
     : IOBaseAssetId.is(assetId)
-    ? lookupAssetImagePath(assetId.Ztg)
-    : "";
+      ? lookupAssetImagePath(assetId.Ztg)
+      : "";
 
   return (
-    <header className="flex flex-col gap-4 w-full">
+    <header className="flex w-full flex-col gap-4">
       <h1 className="text-[32px] font-extrabold">{question}</h1>
       {rejectReason && rejectReason.length > 0 && (
         <div className="mt-2.5">Market rejected: {rejectReason}</div>
       )}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         <HeaderStat label={hasDatePassed(starts) ? "Started" : "Starts"}>
           {new Intl.DateTimeFormat("default", {
             dateStyle: "medium",
@@ -432,10 +432,10 @@ const MarketHeader: FC<{
           <Skeleton width="150px" height="20px" />
         )}
       </div>
-      <div className="flex relative items-center gap-3 mb-4">
+      <div className="relative mb-4 flex items-center gap-3">
         <AddressDetails title="Creator" address={market.creator} />
 
-        <div className="relative group">
+        <div className="group relative">
           <Image
             width={20}
             height={20}
@@ -443,8 +443,8 @@ const MarketHeader: FC<{
             alt="Currency token logo"
             className="rounded-full"
           />
-          <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 pt-1  whitespace-nowrap">
-            <div className="py-1 px-2 text-sm bg-blue-100 rounded-lg">
+          <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity  group-hover:opacity-100">
+            <div className="rounded-lg bg-blue-100 px-2 py-1 text-sm">
               <span className="text-gray-500">Currency: </span>
               <span className="font-semibold">{token}</span>
             </div>
@@ -452,25 +452,25 @@ const MarketHeader: FC<{
         </div>
 
         {market.disputeMechanism === "Court" && (
-          <div className="relative group">
+          <div className="group relative">
             <Image width={22} height={22} src="/icons/court.svg" alt="court" />
-            <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 pt-1 whitespace-nowrap">
-              <div className="py-1 px-2 text-sm bg-purple-200 rounded-lg">
+            <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="rounded-lg bg-purple-200 px-2 py-1 text-sm">
                 Court Dispute Mechanism Enabled
               </div>
             </div>
           </div>
         )}
 
-        <div className="relative group">
+        <div className="group relative">
           <Image
             width={22}
             height={22}
             src="/icons/verified-icon.svg"
             alt="verified checkmark"
           />
-          <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 pt-1 whitespace-nowrap">
-            <div className="py-1 px-2 text-sm bg-green-lighter rounded-lg">
+          <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="rounded-lg bg-green-lighter px-2 py-1 text-sm">
               Verified Market
             </div>
           </div>

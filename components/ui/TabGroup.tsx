@@ -56,12 +56,12 @@ const TabGroup = <T extends readonly string[]>({
                 (selectedIndex === id
                   ? selectedItemClassName
                   : isDisabled
-                  ? disabledItemClassName
-                  : "cursor-pointer")
+                    ? disabledItemClassName
+                    : "cursor-pointer")
               }
             >
               {Icon && (
-                <div className="relative w-[40px] h-[40px] mr-3">
+                <div className="relative mr-3 h-[40px] w-[40px]">
                   <Icon fill={isDisabled ? "#C3C9CD" : undefined} />
                 </div>
               )}

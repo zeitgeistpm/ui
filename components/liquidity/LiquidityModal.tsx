@@ -130,11 +130,11 @@ const LiquidityModal = ({
     <Modal open={open} onClose={onClose}>
       <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
         <Tab.Group>
-          <Tab.List className="flex h-[71px] text-center font-medium text-ztg-18-150">
-            <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tl-[10px]">
+          <Tab.List className="flex h-[71px] text-center text-ztg-18-150 font-medium">
+            <Tab className="w-1/2 rounded-tl-[10px] bg-anti-flash-white transition-all ui-selected:bg-white ui-selected:font-bold">
               Join
             </Tab>
-            <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tr-[10px]">
+            <Tab className="w-1/2 rounded-tr-[10px] bg-anti-flash-white transition-all ui-selected:bg-white ui-selected:font-bold">
               Exit
             </Tab>
           </Tab.List>

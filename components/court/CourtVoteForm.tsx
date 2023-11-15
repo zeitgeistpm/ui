@@ -73,11 +73,11 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
   };
 
   return (
-    <div className="rounded-xl overflow-hidden shadow-lg">
-      <div className="flex center bg-fog-of-war py-3">
+    <div className="overflow-hidden rounded-xl shadow-lg">
+      <div className="center flex bg-fog-of-war py-3">
         <h3 className="text-gray-300 text-opacity-50">Vote</h3>
       </div>
-      <div className="py-6 px-2 text-center">
+      <div className="px-2 py-6 text-center">
         <div className="mb-8 mt-6">
           <MarketContextActionOutcomeSelector
             market={market}
@@ -90,7 +90,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
           />
         </div>
 
-        <div className="rounded-lg p-5 mb-6 bg-provincial-pink text-sm w-full font-normal">
+        <div className="mb-6 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
           <div className="mb-4">
             <div className="mb-3 text-sm text-gray-700">
               <div className="mb-3">
@@ -108,7 +108,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
 
           <div className="center mb-2">
             <button
-              className="center gap-3 bg-purple-500 text-white py-2 px-4 rounded-md"
+              className="center gap-3 rounded-md bg-purple-500 px-4 py-2 text-white"
               onClick={onClickDownloadSeed}
             >
               Download Salt Seed Backup
@@ -117,28 +117,28 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
           </div>
 
           <div
-            className="center text-gray-500 text-xs gap-2 cursor-pointer"
+            className="center cursor-pointer gap-2 text-xs text-gray-500"
             onClick={() => setShowDetails(true)}
           >
             Show Details <AiOutlineEye size={12} />
           </div>
           <Modal open={showDetails} onClose={() => setShowDetails(false)}>
-            <Dialog.Panel className="relative w-full max-w-[762px] rounded-[10px] overflow-hidden bg-white">
+            <Dialog.Panel className="relative w-full max-w-[762px] overflow-hidden rounded-[10px] bg-white">
               <div className="p-6">
                 <h3 className="mb-2 ">Commitment Hash</h3>
-                <p className="text-sm mb-4">
+                <p className="mb-4 text-sm">
                   The commitment hash is calculated using a combination of your
                   account, the outcome you are voting for and a salt generated
                   from the secret phrase.
                 </p>
-                <p className="text-sm mb-4">
+                <p className="mb-4 text-sm">
                   This is supplied to the chain instead of the direct outcome
                   when voting, so that the voted outcome is not known to other
                   participants. Yet ensures that when its revealed it can be
                   verified that the committed vote and what was revealed was
                   correct.
                 </p>
-                <code className="block mb-4 text-xs">
+                <code className="mb-4 block text-xs">
                   <span>
                     vote_item = VoteItem::Outcome(OutcomeReport::Categorical(
                     {vote.CategoricalOutcome[1]})) {"->"}{" "}
@@ -155,7 +155,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
                   <span className="text-blue-400">BlakeTwo256Hash</span>(juror,
                   vote_item, salt)
                 </code>
-                <div className="mb-4 text-xs flex items-center gap-2 text-blue-400 pl-2">
+                <div className="mb-4 flex items-center gap-2 pl-2 text-xs text-blue-400">
                   <FaArrowRight size={12} />
                   {commitmentHash && u8aToHex(commitmentHash)}
                 </div>
@@ -168,7 +168,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
                   {JSON.stringify(phraseStorage, undefined, 2)}
                 </pre>
               </div>
-              <div className="relative w-full h-64">
+              <div className="relative h-64 w-full">
                 <Image
                   title="Wizard draped in purple robes holding a flaming crypto key."
                   alt="Wizard draped in purple robes holding a flaming crypto key."
@@ -191,7 +191,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
           onClick={() => send()}
         >
           <div>
-            <div className="center font-normal h-[20px]">
+            <div className="center h-[20px] font-normal">
               {!isBackedUp
                 ? "Please backup salt seed to proceed"
                 : "Place A Vote"}

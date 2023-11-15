@@ -81,7 +81,7 @@ const TradeResult = ({
         <TwitterBird />
       </a>
 
-      <button onClick={onContinueClick} className="text-ztg-blue font-bold">
+      <button onClick={onContinueClick} className="font-bold text-ztg-blue">
         Continue Trading
       </button>
     </div>

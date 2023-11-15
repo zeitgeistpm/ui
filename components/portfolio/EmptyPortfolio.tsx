@@ -13,14 +13,14 @@ const EmptyPortfolio = ({
   buttonLink?: string;
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center gap-y-[30px] mb-[200px]">
+    <div className="mb-[200px] flex flex-col items-center justify-center gap-y-[30px]">
       <Frown className="text-pastel-blue" size={80} />
-      <div className="font-semibold text-[24px]">{headerText}</div>
+      <div className="text-[24px] font-semibold">{headerText}</div>
       <div>{bodyText}</div>
       {buttonText && buttonLink && (
         <Link
           href={buttonLink}
-          className="text-[14px] bg-mystic rounded-ztg-100 py-[8px] px-[20px]"
+          className="rounded-ztg-100 bg-mystic px-[20px] py-[8px] text-[14px]"
         >
           {buttonText}
         </Link>

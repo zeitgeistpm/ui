@@ -136,12 +136,12 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-full flex flex-col items-center"
+      className="flex w-full flex-col items-center"
     >
-      <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal w-full">
+      <div className="center relative h-[56px] w-full bg-anti-flash-white text-ztg-18-150 font-normal">
         <Input
           type="number"
-          className="w-full bg-transparent outline-none !text-center"
+          className="w-full bg-transparent !text-center outline-none"
           step="any"
           {...register("amount", {
             value: 0,
@@ -177,13 +177,13 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
           })}
         />
 
-        <div className="mr-[10px] absolute right-0">
+        <div className="absolute right-0 mr-[10px]">
           {constants?.tokenSymbol}
         </div>
       </div>
 
       <input
-        className="mt-[30px] mb-10 w-full"
+        className="mb-10 mt-[30px] w-full"
         type="range"
         disabled={
           !availableDelegationBalance ||
@@ -192,15 +192,15 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
         {...register("percentage", { value: "0" })}
       />
 
-      <div className="w-full max-h-[400px] overflow-y-scroll subtle-scroll-bar">
-        <div className="flex mb-2 text-sm items-center">
+      <div className="subtle-scroll-bar max-h-[400px] w-full overflow-y-scroll">
+        <div className="mb-2 flex items-center text-sm">
           <h3 className="flex-1 text-base">Juror</h3>
           <h3 className="text-xs">Delegated</h3>
         </div>
         {jurors &&
           jurors.map((juror) => (
-            <div key={juror.address} className="text-left mb-2 flex">
-              <div className="flex items-center gap-3 flex-1">
+            <div key={juror.address} className="mb-2 flex text-left">
+              <div className="flex flex-1 items-center gap-3">
                 <Avatar address={juror.address} size={18} />
                 <div className="text-sm font-medium">
                   {shortenAddress(juror.address)}
@@ -224,21 +224,21 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
           ))}
       </div>
 
-      <div className="text-vermilion text-center mb-5 text-ztg-12-120 my-[4px] h-[16px]">
+      <div className="my-[4px] mb-5 h-[16px] text-center text-ztg-12-120 text-vermilion">
         <>
           {formState.errors["amount"]?.message ||
             formState.errors["delegates"]?.message}
         </>
       </div>
 
-      <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
-        <span className="text-black ml-1">
+      <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
+        <span className="ml-1 text-black">
           Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0} {fee?.symbol}
         </span>
       </div>
 
       {connectedParticipant?.type === "Juror" && (
-        <div className="rounded-lg p-5 mb-5 bg-provincial-pink text-sm w-full font-normal">
+        <div className="mb-5 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
           You are currently a juror. If you delegate to other jurors your stake
           will be removed from your personal stake and delegated evenly across
           your selected jurors. You will not be a juror after this action.

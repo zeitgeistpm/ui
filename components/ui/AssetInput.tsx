@@ -22,7 +22,7 @@ const AssetInput: React.FC<AssetInputProps> = ({
   return (
     <div
       className={
-        "mb-5 h-14 w-full bg-anti-flash-white rounded-md relative border-1 border-transparent " +
+        "relative mb-5 h-14 w-full rounded-md border-1 border-transparent bg-anti-flash-white " +
         (error ? "border-vermilion" : "")
       }
     >
@@ -40,11 +40,11 @@ const AssetInput: React.FC<AssetInputProps> = ({
         onChange={(e) => {
           onAmountChange?.(e.target.value);
         }}
-        className="absolute right-4 top-[50%] translate-y-[-50%] text-right text-lg bg-transparent !px-0"
+        className="absolute right-4 top-[50%] translate-y-[-50%] bg-transparent !px-0 text-right text-lg"
         style={{ width: "calc(100% - 155px)" }}
       />
       {error && (
-        <div className="text-vermilion text-sm text-right">{error}</div>
+        <div className="text-right text-sm text-vermilion">{error}</div>
       )}
     </div>
   );
