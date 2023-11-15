@@ -59,9 +59,10 @@ import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaChevronUp } from "react-icons/fa";
 import { ScoringRule } from "@zeitgeistpm/indexer";
 import { TradeTabType } from "components/trade-form/TradeTab";
+import ReferendumSummary from "components/ui/ReferendumSummary";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -271,7 +272,6 @@ const Market: NextPage<MarketPageProps> = ({
             promotionData={promotionData}
             rejectReason={market?.rejectReason ?? undefined}
           />
-
           {market?.rejectReason && market.rejectReason.length > 0 && (
             <div className="mt-[10px] text-ztg-14-150">
               Market rejected: {market.rejectReason}
@@ -410,7 +410,7 @@ const Market: NextPage<MarketPageProps> = ({
                 <></>
               )}
             </div>
-
+            <ReferendumSummary />
             <SimilarMarketsSection market={market ?? undefined} />
           </div>
         </div>
