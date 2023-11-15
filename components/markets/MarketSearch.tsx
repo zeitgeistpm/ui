@@ -25,11 +25,11 @@ const MarketSearch = () => {
   }, [wrapperRef]);
 
   return (
-    <div className="w-full mx-3 md:mx-7" ref={wrapperRef}>
+    <div className="mx-3 w-full md:mx-7" ref={wrapperRef}>
       <Link href={"/search"} className="w-2 lg:hidden">
-        <Search className="text-ztg-blue mr-4" />
+        <Search className="mr-4 text-ztg-blue" />
       </Link>
-      <div className="hidden lg:flex items-center">
+      <div className="hidden items-center lg:flex">
         <button
           onClick={() => {
             setShowSearch(true);
@@ -38,13 +38,13 @@ const MarketSearch = () => {
             });
           }}
         >
-          <Search className="text-ztg-blue mr-4" />
+          <Search className="mr-4 text-ztg-blue" />
         </button>
         {showSearch && (
           <>
             <input
               ref={inputRef}
-              className="rounded-sm bg-sky-900 text-white h-8 px-2 w-full focus:outline-none max-w-[500px] "
+              className="h-8 w-full max-w-[500px] rounded-sm bg-sky-900 px-2 text-white focus:outline-none "
               value={searchTerm}
               placeholder="Search markets"
               onChange={(event) => {
@@ -68,23 +68,23 @@ const MarketSearch = () => {
         )}
       </div>
       {showResults && markets && (
-        <div className="hidden lg:flex flex-col absolute bg-white py-2  rounded-md top-[45px] translate-x-[40px] max-h-[300px] overflow-scroll w-[500px] shadow-2xl">
-          <div className="text-sky-600 mx-4">Results</div>
+        <div className="absolute top-[45px] hidden max-h-[300px] w-[500px] translate-x-[40px]  flex-col overflow-scroll rounded-md bg-white py-2 shadow-2xl lg:flex">
+          <div className="mx-4 text-sky-600">Results</div>
 
           {markets.length > 0 ? (
             markets?.map((market) => (
               <Link
                 href={`/markets/${market.marketId}`}
-                className="px-4 py-2 flex justify-between overflow-ellipsis hover:bg-sky-100"
+                className="flex justify-between overflow-ellipsis px-4 py-2 hover:bg-sky-100"
                 onClick={() => {
                   setShowResults(false);
                 }}
               >
-                <div className="overflow-ellipsis line-clamp-1 w-85%">
+                <div className="line-clamp-1 w-85% overflow-ellipsis">
                   {market.question}
                 </div>
                 <div
-                  className={`text-xs rounded-md px-2 py-1 w-16 text-center text-white ${
+                  className={`w-16 rounded-md px-2 py-1 text-center text-xs text-white ${
                     market.status === MarketStatus.Active
                       ? "bg-sheen-green"
                       : "bg-vermilion"
@@ -97,7 +97,7 @@ const MarketSearch = () => {
               </Link>
             ))
           ) : (
-            <div className="text-center w-full pt-6 pb-4">No results</div>
+            <div className="w-full pb-4 pt-6 text-center">No results</div>
           )}
         </div>
       )}
