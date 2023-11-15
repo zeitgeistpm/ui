@@ -91,28 +91,42 @@ export const getBaseAssetPrices = async (): Promise<ForeignAssetPrices> => {
     ...Object.values(FOREIGN_ASSET_METADATA).map((asset) => asset.coinGeckoId),
     zeitgeistCoingeckoId,
   ];
-  const res = await fetch(
+
+  console.log(
     `https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoIds.join(
       "%2C",
     )}&vs_currencies=usd`,
   );
+  // const res = await fetch(
+  //   `https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoIds.join(
+  //     "%2C",
+  //   )}&vs_currencies=usd`,
+  // );
 
-  const json = await res.json();
+  // const json = await res.json();
 
-  const assetPrices = Object.keys(
-    FOREIGN_ASSET_METADATA,
-  ).reduce<ForeignAssetPrices>((prices, assetNumber) => {
-    const assetMetadata = FOREIGN_ASSET_METADATA[Number(assetNumber)];
-    const coinGeckoId = assetMetadata.coinGeckoId;
-    const assetPrice = json[coinGeckoId].usd;
-    prices[assetNumber] = new Decimal(assetPrice);
+  // const assetPrices = Object.keys(
+  //   FOREIGN_ASSET_METADATA,
+  // ).reduce<ForeignAssetPrices>((prices, assetNumber) => {
+  //   const assetMetadata = FOREIGN_ASSET_METADATA[Number(assetNumber)];
+  //   const coinGeckoId = assetMetadata.coinGeckoId;
+  //   const assetPrice = json[coinGeckoId].usd;
+  //   prices[assetNumber] = new Decimal(assetPrice);
 
-    return prices;
-  }, {});
+  //   console.log(prices);
 
-  assetPrices["ztg"] = json[zeitgeistCoingeckoId].usd;
+  //   return prices;
+  // }, {});
 
-  return assetPrices;
+  // assetPrices["ztg"] = json[zeitgeistCoingeckoId].usd;
+  // console.log(assetPrices);
+
+  return {
+    "0": new Decimal(5.39),
+    "1": new Decimal(5.39),
+    "3": new Decimal(5.39),
+    ztg: new Decimal(0.03269525),
+  };
 };
 
 export const getForeignAssetPriceServerSide = async (
@@ -126,7 +140,7 @@ export const getForeignAssetPriceServerSide = async (
   );
 
   const json = await res.json();
-
+  console.log(json);
   return new Decimal(json[coinGeckoId]?.usd ?? 0);
 };
 export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
