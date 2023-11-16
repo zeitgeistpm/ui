@@ -46,14 +46,36 @@ const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
 
-export async function getStaticProps() {
+export async function getStaticProps({
+  params,
+}: {
+  params: { caseid: string };
+}) {
+  const sdk = await create({
+    provider: endpointOptions.map((e) => e.value),
+    indexer: graphQlEndpoint,
+    storage: ZeitgeistIpfs(),
+  });
+
   const [docsArticleImagePlaceholder] = await Promise.all([
     getPlaiceholder(`/court_gnomes.webp`),
   ]);
 
+  const marketId = await sdk.api.query.court.courtIdToMarketId(params.caseid);
+  const markets = marketId.isSome
+    ? await sdk.indexer.markets({
+        where: {
+          marketId_eq: marketId.unwrap().toNumber(),
+        },
+      })
+    : undefined;
+
+  const market = markets?.markets[0];
+
   return {
     props: {
       docsArticleImagePlaceholder,
+      initialMarket: market,
     },
   };
 }
@@ -75,8 +97,10 @@ export async function getStaticPaths() {
 }
 
 const CasePage: NextPage = ({
+  initialMarket,
   docsArticleImagePlaceholder,
 }: {
+  initialMarket: FullMarketFragment;
   docsArticleImagePlaceholder: IGetPlaiceholderReturn;
 }) => {
   if (process.env.NEXT_PUBLIC_SHOW_COURT !== "true") {
@@ -95,9 +119,11 @@ const CasePage: NextPage = ({
   const { data: selectedDraws } = useVotDrawsForCase(caseId);
 
   const { data: marketId } = useCaseMarketId(caseId);
-  const { data: market } = useMarket(
+  let { data: dynamicMarket } = useMarket(
     marketId != null ? { marketId } : undefined,
   );
+
+  const market = dynamicMarket ?? initialMarket;
 
   const baseAsset = parseAssetId(market?.baseAsset).unwrapOr(undefined);
   const { data: metadata } = useAssetMetadata(baseAsset);
@@ -128,10 +154,6 @@ const CasePage: NextPage = ({
       return getCourtStage(time, market, courtCase);
     }
   }, [time, market, courtCase]);
-
-  if (!market) {
-    return <>Loading</>;
-  }
 
   return (
     <div className="relative mt-6 flex flex-auto gap-12">
@@ -349,6 +371,8 @@ const CasePage: NextPage = ({
     </div>
   );
 };
+
+const CaseSkeleton = () => {};
 
 const Votes = ({
   market,
