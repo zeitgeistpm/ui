@@ -25,7 +25,12 @@ import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
-import { ZTG, environment, graphQlEndpoint } from "lib/constants";
+import {
+  ZTG,
+  environment,
+  graphQlEndpoint,
+  marketReferendumMap,
+} from "lib/constants";
 import {
   MarketPageIndexedData,
   getMarket,
@@ -152,6 +157,7 @@ const Market: NextPage<MarketPageProps> = ({
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
+  const referendumIndex = marketReferendumMap?.[marketId];
 
   const tradeItem = useTradeItem();
 
@@ -410,9 +416,11 @@ const Market: NextPage<MarketPageProps> = ({
                 <></>
               )}
             </div>
-            <div className="mb-12 ">
-              <ReferendumSummary referendumIndex={244} />
-            </div>
+            {referendumIndex != null && (
+              <div className="mb-12 ">
+                <ReferendumSummary referendumIndex={244} />
+              </div>
+            )}
             <SimilarMarketsSection market={market ?? undefined} />
           </div>
         </div>
