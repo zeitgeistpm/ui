@@ -57,9 +57,9 @@ const ScalarDisputeBox = ({
   const handleSignTransaction = async () => send();
 
   return (
-    <div className="p-[30px] flex flex-col items-center gap-y-3">
-      <div className="font-bold text-[22px]">Dispute Outcome</div>
-      <div className="text-center mb-[20px]">
+    <div className="flex flex-col items-center gap-y-3 p-[30px]">
+      <div className="text-[22px] font-bold">Dispute Outcome</div>
+      <div className="mb-[20px] text-center">
         Bond cost: {disputeBond} {tokenSymbol}
         <span className="font-bold">
           Bonds will be slashed if the reported outcome is deemed to be
@@ -68,8 +68,8 @@ const ScalarDisputeBox = ({
       </div>
 
       {bondAmount !== disputeBond && bondAmount !== undefined && (
-        <div className="flex flex-col item-center text-center">
-          <span className="text-sky-600 text-[14px]">Previous Bond:</span>
+        <div className="item-center flex flex-col text-center">
+          <span className="text-[14px] text-sky-600">Previous Bond:</span>
           <span className="">{bondAmount}</span>
         </div>
       )}

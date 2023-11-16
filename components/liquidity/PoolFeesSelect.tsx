@@ -21,11 +21,11 @@ const PoolFeeOption = ({
   };
   return (
     <button
-      className={`flex justify-center items-center w-[100px] h-[40px] border-2 bg-sky-200 dark:bg-black rounded-ztg-100
+      className={`flex h-[40px] w-[100px] items-center justify-center rounded-ztg-100 border-2 bg-sky-200 dark:bg-black
           ${
             selected
-              ? "text-black dark:text-white border-black dark:border-white"
-              : "dark:border-black text-sky-600"
+              ? "border-black text-black dark:border-white dark:text-white"
+              : "text-sky-600 dark:border-black"
           }
         `}
       onClick={handleClick}
@@ -99,7 +99,7 @@ const PoolFeesSelect = ({
         />
       ))}
       <div
-        className={`flex justify-center items-center w-[100px] h-[40px] border-2 bg-sky-200 rounded-ztg-100
+        className={`flex h-[40px] w-[100px] items-center justify-center rounded-ztg-100 border-2 bg-sky-200
               ${
                 inputSelected
                   ? "border-black dark:border-white"
@@ -115,7 +115,7 @@ const PoolFeesSelect = ({
           placeholder="3"
           value={inputValue}
           step={0.1}
-          className="bg-sky-200 outline-none text-center font-mono text-ztg-14-150"
+          className="bg-sky-200 text-center font-mono text-ztg-14-150 outline-none"
           onChange={(e) => handleInputFeeChange(e.target.value)}
           onBlur={() => {
             if (inputValue === "" || inputValue == null) {

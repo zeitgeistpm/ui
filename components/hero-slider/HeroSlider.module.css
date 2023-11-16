@@ -4,7 +4,15 @@
 }
 
 @keyframes blurInOut {
-  0% { -webkit-filter: blur(0px); opacity: 0;}
-  50% { -webkit-filter: blur(5px); opacity: 1;}
-  100% { -webkit-filter: blur(0px);}
+  0% {
+    -webkit-filter: blur(0px);
+    opacity: 0;
+  }
+  50% {
+    -webkit-filter: blur(5px);
+    opacity: 1;
+  }
+  100% {
+    -webkit-filter: blur(0px);
+  }
 }

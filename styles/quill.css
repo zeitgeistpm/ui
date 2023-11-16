@@ -8,17 +8,17 @@
 .ql-toolbar.ql-snow {
   @apply !border-gray-300;
   @apply !rounded-t-lg;
-  @apply !flex
+  @apply !flex;
 }
 
 .ql-container.ql-snow {
   @apply !border-none;
-  
+
   @apply !rounded-b-lg;
 }
 
 .ql-editor {
-  @apply font-sans text-base leading-8 !p-0;
+  @apply !p-0 font-sans text-base leading-8;
 }
 
 .ql-editor[contenteditable="true"] {

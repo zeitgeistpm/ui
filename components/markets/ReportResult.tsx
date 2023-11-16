@@ -30,7 +30,7 @@ export const ReportResult = ({
         <AiOutlineFileDone size={64} className="text-ztg-blue" />
       </div>
       <p className="text">Successfully reported!</p>
-      <div className="text-2xl font-semibold mb-4">
+      <div className="mb-4 text-2xl font-semibold">
         {"scalar" in outcome && "Value: "}
         {outcomeName}
       </div>

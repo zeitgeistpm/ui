@@ -165,14 +165,14 @@ const DepositModal = ({
 
   return (
     <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
-      <h3 className="text-center mb-8">Deposit</h3>
-      <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
+      <h3 className="mb-8 text-center">Deposit</h3>
+      <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
         <Transfer sourceChain={sourceChain} destinationChain="Zeitgeist" />
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="w-full flex flex-col items-center"
+          className="flex w-full flex-col items-center"
         >
-          <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal w-full">
+          <div className="center relative h-[56px] w-full bg-anti-flash-white text-ztg-18-150 font-normal">
             <Controller
               render={(val) => {
                 const { field } = val;
@@ -180,7 +180,7 @@ const DepositModal = ({
                   <Input
                     {...field}
                     type="number"
-                    className="w-full bg-transparent outline-none !text-center"
+                    className="w-full bg-transparent !text-center outline-none"
                     step="any"
                     value={
                       countDecimals(field.value ? Number(field.value) : 0) > 3
@@ -208,15 +208,15 @@ const DepositModal = ({
                 },
               }}
             />
-            <div className="mr-[10px] absolute right-0">{tokenSymbol}</div>
+            <div className="absolute right-0 mr-[10px]">{tokenSymbol}</div>
           </div>
           <input
-            className="mt-[30px] mb-[10px] w-full"
+            className="mb-[10px] mt-[30px] w-full"
             type="range"
             disabled={maxTransferAmount.lessThanOrEqualTo(0)}
             {...register("percentage", { value: "0" })}
           />
-          <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
+          <div className="my-[4px] h-[16px] text-ztg-12-120 text-vermilion">
             <>{formState.errors["amount"]?.message}</>
             {!formState.errors["amount"]?.message &&
               remainingSourceBalance.lessThan(sourceExistentialDeposit) &&
@@ -228,9 +228,9 @@ const DepositModal = ({
                 )} ${tokenSymbol} on ${sourceChain} will be lost`}</>
               )}
           </div>
-          <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
+          <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
             {sourceChain} fee:
-            <span className="text-black ml-1">
+            <span className="ml-1 text-black">
               {fee ? fee.div(ZTG).toFixed(3) : 0} {tokenSymbol}
             </span>
           </div>

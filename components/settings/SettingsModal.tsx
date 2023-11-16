@@ -28,15 +28,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Dialog.Panel className="w-full max-w-[462px] bg-white rounded-md p-8">
-        <h3 className="text-2xl text-center mb-5">Settings</h3>
+      <Dialog.Panel className="w-full max-w-[462px] rounded-md bg-white p-8">
+        <h3 className="mb-5 text-center text-2xl">Settings</h3>
         <Tab.Group
           onChange={(index) => setTabSelection(index)}
           defaultIndex={tabSelection}
         >
           <Tab.List as={Fragment}>
-            <div className="flex justify-center mb-5 pb-3 border-b-1 border-b-sky-200 text-sky-600">
-              <div className="flex-grow center">
+            <div className="mb-5 flex justify-center border-b-1 border-b-sky-200 pb-3 text-sky-600">
+              <div className="center flex-grow">
                 <Tab as={Fragment}>
                   {({ selected }) => (
                     <span
@@ -50,7 +50,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                   )}
                 </Tab>
               </div>
-              <div className="flex-grow center">
+              <div className="center flex-grow">
                 <Tab as={Fragment}>
                   {({ selected }) => (
                     <span
@@ -64,7 +64,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                   )}
                 </Tab>
               </div>
-              <div className="flex-grow center">
+              <div className="center flex-grow">
                 <Tab as={Fragment}>
                   {({ selected }) => (
                     <span

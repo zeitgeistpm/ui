@@ -60,8 +60,8 @@ const MarketCardPredictionBar = ({
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
-      <div className={`w-full h-[30px] transition-all bg-gray-200 relative`}>
-        <div className="text-sm flex justify-between items-center absolute w-full h-full px-2.5">
+      <div className={`relative h-[30px] w-full bg-gray-200 transition-all`}>
+        <div className="absolute flex h-full w-full items-center justify-between px-2.5 text-sm">
           <span className="text-blue">{name}</span>
           <span className="text-blue transition-all">{impliedPercentage}%</span>
         </div>
@@ -76,11 +76,11 @@ const MarketCardPredictionBar = ({
   } else {
     return (
       <>
-        <div className="text-sm flex justify-between mb-1">
+        <div className="mb-1 flex justify-between text-sm">
           <span className="text-gray-500">No liquidity in this market</span>
           <span className="text-gray-500">0%</span>
         </div>
-        <div className="w-full rounded-lg h-1.5 bg-gray-100"></div>
+        <div className="h-1.5 w-full rounded-lg bg-gray-100"></div>
       </>
     );
   }
@@ -114,8 +114,8 @@ const MarketCardDetails = ({
   const imagePath = IOForeignAssetId.is(assetId)
     ? lookupAssetImagePath(assetId.ForeignAsset)
     : IOBaseAssetId.is(assetId)
-    ? lookupAssetImagePath(assetId.Ztg)
-    : "";
+      ? lookupAssetImagePath(assetId.Ztg)
+      : "";
 
   return (
     <div className="flex items-center text-xs">
@@ -129,12 +129,12 @@ const MarketCardDetails = ({
               day: "numeric",
             })}`}
         </span>
-        {isEnding() && <span className="text-red ml-1">Ends Soon</span>}
-        <span className="font-semibold border-l-1 border-l-black pl-1 ml-1 ">
+        {isEnding() && <span className="ml-1 text-red">Ends Soon</span>}
+        <span className="ml-1 border-l-1 border-l-black pl-1 font-semibold ">
           {rows.outcomes} outcomes{" "}
         </span>
       </div>
-      <div className="flex gap-1.5 ml-auto items-center justify-center">
+      <div className="ml-auto flex items-center justify-center gap-1.5">
         {rows.numParticipants != undefined && rows.baseAsset ? (
           <div className="flex items-center gap-0.5">
             <Users size={12} />
@@ -224,8 +224,8 @@ export const MarketCard = ({
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col min-w-full md:min-w-[calc(50%-8px)] lg:min-w-[calc(100%/3-9.67px)]  
-        rounded-[10px] p-5 relative bg-white ztg-transition md:hover:scale-[1.035] ${className}`}
+        className={`ztg-transition group relative flex min-w-full flex-col  
+        rounded-[10px] bg-white p-5 md:min-w-[calc(50%-8px)] md:hover:scale-[1.035] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
@@ -235,12 +235,12 @@ export const MarketCard = ({
               return;
             }
           }}
-          className={`flex flex-col flex-1 gap-4 ${
+          className={`flex flex-1 flex-col gap-4 ${
             disableLink && "cursor-default"
           }`}
         >
-          <div className="w-full h-full flex whitespace-normal gap-4">
-            <h5 className="w-full h-fit line-clamp-2 text-base">{question}</h5>
+          <div className="flex h-full w-full gap-4 whitespace-normal">
+            <h5 className="line-clamp-2 h-fit w-full text-base">{question}</h5>
             {/* {disable for now until we can get image from CMS} */}
             {/* <div className="relative min-w-[84px] min-h-[80px] rounded-xl">
               <MarketImage tags={tags} alt={question} className="rounded-lg" />
@@ -270,7 +270,7 @@ export const MarketCard = ({
               />
             ) : (
               <>
-                <div className="text-sm flex justify-between mb-1">
+                <div className="mb-1 flex justify-between text-sm">
                   <span className="text-gray-500">
                     No liquidity in this market
                   </span>
@@ -278,7 +278,7 @@ export const MarketCard = ({
                     {lower} - {upper}
                   </span>
                 </div>
-                <div className="w-full rounded-lg h-1.5 bg-gray-200"></div>
+                <div className="h-1.5 w-full rounded-lg bg-gray-200"></div>
               </>
             )}
           </div>

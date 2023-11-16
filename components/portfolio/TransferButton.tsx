@@ -205,9 +205,9 @@ const TransferModal = ({
 
   return (
     <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
-      <h3 className="text-center mb-5 text-lg font-bold">On-Chain Transfers</h3>
+      <h3 className="mb-5 text-center text-lg font-bold">On-Chain Transfers</h3>
       <form className="flex flex-col" onSubmit={handleSubmit(submit)}>
-        <div className="flex justify-between mb-2 text-sm font-semibold">
+        <div className="mb-2 flex justify-between text-sm font-semibold">
           <div>Select Asset and Amount</div>
           {balance && (
             <div
@@ -292,7 +292,7 @@ const TransferModal = ({
             );
           }}
         />
-        <div className="mb-3 text-sm text-center">
+        <div className="mb-3 text-center text-sm">
           <span className="text-sky-600">
             Transfer Fee:{" "}
             {fee

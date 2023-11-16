@@ -7,10 +7,10 @@ const Pill: FC<PropsWithChildren<{ title: string; value: string }>> = ({
 }) => {
   return (
     <div
-      className="flex w-full justify-center bg-sky-200 dark:bg-border-dark rounded-ztg-100 
-      text-ztg-12-150 py-ztg-5 mr-ztg-15 mb-ztg-10 min-w-[90px] max-w-[170px]"
+      className="mb-ztg-10 mr-ztg-15 flex w-full min-w-[90px] max-w-[170px] 
+      justify-center rounded-ztg-100 bg-sky-200 py-ztg-5 text-ztg-12-150 dark:bg-border-dark"
     >
-      <span className="font-bold mr-ztg-3">{title}: </span>
+      <span className="mr-ztg-3 font-bold">{title}: </span>
       <span className="">{value}</span>
       {children}
     </div>

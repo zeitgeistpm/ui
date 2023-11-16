@@ -77,7 +77,7 @@ const FilterButton = ({
   return (
     <div
       className={
-        "flex items-center h-10 border-b border-gray-200 box-content mb-5 " +
+        "mb-5 box-content flex h-10 items-center border-b border-gray-200 " +
         className
       }
       onClick={onClick}
@@ -96,7 +96,7 @@ export type FiltersListProps = {
 const FiltersList = ({ showMenu, close }: FiltersListProps) => {
   return (
     <>
-      <MarketActiveFilters className="flex flex-row w-full justify-center gap-2 flex-wrap mb-5 " />
+      <MarketActiveFilters className="mb-5 flex w-full flex-row flex-wrap justify-center gap-2 " />
       <FilterButton
         RightIcon={Plus}
         onClick={() => {
@@ -125,7 +125,7 @@ const FiltersList = ({ showMenu, close }: FiltersListProps) => {
         Status
       </FilterButton>
       <FilterButton>
-        <div className="flex items-center flex-grow">
+        <div className="flex flex-grow items-center">
           <div style={{ minWidth: "62px" }}>Sort By:</div>
           <MarketFiltersSort
             className="w-full"
@@ -136,7 +136,7 @@ const FiltersList = ({ showMenu, close }: FiltersListProps) => {
       </FilterButton>
       <MarketFiltersCheckboxes className="mt-4" />
       <button
-        className="rounded-full bg-ztg-blue mt-auto h-14 text-white"
+        className="mt-auto h-14 rounded-full bg-ztg-blue text-white"
         onClick={close}
       >
         Show Markets

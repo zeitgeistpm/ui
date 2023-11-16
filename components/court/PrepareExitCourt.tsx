@@ -46,7 +46,7 @@ const PrepareExitCourtButton = () => {
   return (
     <>
       <button
-        className="bg-[#DC056C] rounded-md text-white py-2 px-4"
+        className="rounded-md bg-[#DC056C] px-4 py-2 text-white"
         onClick={() => setIsOpen(true)}
       >
         Prepare Exit Court
@@ -74,9 +74,9 @@ const PrepareExitCourtButton = () => {
               )}
             </div>
           </div>
-          <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
-            <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
-              <span className="text-black ml-1">
+          <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
+            <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
+              <span className="ml-1 text-black">
                 Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0}{" "}
                 {fee?.symbol}
               </span>

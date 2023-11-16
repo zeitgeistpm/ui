@@ -29,15 +29,15 @@ export const CategorySelect = forwardRef(
     };
 
     return (
-      <div className="flex flex-row flex-wrap mx-auto gap-3 justify-center">
+      <div className="mx-auto flex flex-row flex-wrap justify-center gap-3">
         {defaultTags.map((tag, index) => {
           const isSelected = value?.includes(tag);
           return (
             <div
               key={tag}
               className={`
-                relative flex gap-2 center h-full cursor-pointer rounded-full py-2 px-4 transition-all 
-                ease-in-out active:scale-95 duration-200
+                center relative flex h-full cursor-pointer gap-2 rounded-full px-4 py-2 transition-all 
+                duration-200 ease-in-out active:scale-95
                 ${isSelected ? "bg-fog-of-war text-white" : "bg-gray-100"}
               `}
               onClick={handleSelect(tag)}

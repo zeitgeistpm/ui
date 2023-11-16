@@ -6,10 +6,10 @@ import { DeepReadonly } from "lib/types/deep-readonly";
  * Used in the time period step of the market creation process.
  */
 
-export const gracePeriodOptions =  [
-{ type: "duration", preset: "None", unit: "hours", value: 0 },
-  { type: "custom-date"}
-] as const satisfies DeepReadonly<BlockPeriodPickerOptions>
+export const gracePeriodOptions = [
+  { type: "duration", preset: "None", unit: "hours", value: 0 },
+  { type: "custom-date" },
+] as const satisfies DeepReadonly<BlockPeriodPickerOptions>;
 
 export const reportingPeriodOptions = [
   {
@@ -24,8 +24,8 @@ export const reportingPeriodOptions = [
     unit: "days",
     value: 4,
   },
-  { type: "custom-duration" }
-] as const satisfies DeepReadonly<BlockPeriodPickerOptions>
+  { type: "custom-duration" },
+] as const satisfies DeepReadonly<BlockPeriodPickerOptions>;
 
 export const disputePeriodOptions = [
   {
@@ -40,5 +40,5 @@ export const disputePeriodOptions = [
     unit: "days",
     value: 4,
   },
-  { type: "custom-duration" }
-] as const satisfies DeepReadonly<BlockPeriodPickerOptions>
+  { type: "custom-duration" },
+] as const satisfies DeepReadonly<BlockPeriodPickerOptions>;

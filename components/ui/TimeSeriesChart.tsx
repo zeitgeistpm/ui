@@ -47,7 +47,7 @@ const ChartToolTip = (props) => {
       props.label !== -Infinity &&
       props.label !== Infinity ? (
         <div
-          className="px-ztg-9 py-ztg-12 bg-white dark:bg-black  rounded-ztg-10"
+          className="rounded-ztg-10 bg-white px-ztg-9 py-ztg-12  dark:bg-black"
           style={{ boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)" }}
         >
           <div className="text-ztg-12-150">
@@ -64,13 +64,13 @@ const ChartToolTip = (props) => {
             </span>
             <div className="mt-ztg-13">
               {items?.map((item, index) => (
-                <div key={index} className="flex flex-col mt-1">
+                <div key={index} className="mt-1 flex flex-col">
                   <div className="flex items-center">
                     <div
-                      className="bg-black w-[8px] h-[8px] rounded-full"
+                      className="h-[8px] w-[8px] rounded-full bg-black"
                       style={{ backgroundColor: item.color }}
                     ></div>
-                    <div className="font-semibold capitalize ml-[6px]">
+                    <div className="ml-[6px] font-semibold capitalize">
                       {item.label}
                     </div>
                   </div>

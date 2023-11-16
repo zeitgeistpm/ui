@@ -39,12 +39,12 @@ const AccountModalContent: FC = () => {
         value={value}
         onChange={onAccountChange}
       />
-      <div className="flex items-center justify-between h-ztg-50 mt-ztg-15">
-        <div className="rounded-ztg-10 h-full bg-sky-100 dark:bg-black flex items-center flex-grow">
-          <div className="px-ztg-8 flex items-center">
-            <div className="center rounded-full w-ztg-28 h-ztg-28 bg-white dark:bg-sky-1000">
-              <div className="center rounded-full w-ztg-22 h-ztg-22 bg-sky-100 dark:bg-black">
-                <div className="center rounded-full w-ztg-16 h-ztg-16 bg-border-dark dark:bg-sky-1000">
+      <div className="mt-ztg-15 flex h-ztg-50 items-center justify-between">
+        <div className="flex h-full flex-grow items-center rounded-ztg-10 bg-sky-100 dark:bg-black">
+          <div className="flex items-center px-ztg-8">
+            <div className="center h-ztg-28 w-ztg-28 rounded-full bg-white dark:bg-sky-1000">
+              <div className="center h-ztg-22 w-ztg-22 rounded-full bg-sky-100 dark:bg-black">
+                <div className="center h-ztg-16 w-ztg-16 rounded-full bg-border-dark dark:bg-sky-1000">
                   <img
                     src="/icons/acc-balance.svg"
                     alt="Account balance"
@@ -54,7 +54,7 @@ const AccountModalContent: FC = () => {
               </div>
             </div>
             <div className="ml-ztg-16 flex flex-col">
-              <div className="uppercase text-ztg-10-150 font-bold text-sky-600">
+              <div className="text-ztg-10-150 font-bold uppercase text-sky-600">
                 balance
               </div>
               <div className="font-mono text-ztg-14-120 font-bold text-sheen-green">
@@ -66,13 +66,13 @@ const AccountModalContent: FC = () => {
           </div>
         </div>
         <div
-          className="flex justify-evenly items-center w-ztg-176 bg-border-light dark:bg-sky-700 ml-ztg-16 rounded-ztg-10 h-full text-white cursor-pointer"
+          className="ml-ztg-16 flex h-full w-ztg-176 cursor-pointer items-center justify-evenly rounded-ztg-10 bg-border-light text-white dark:bg-sky-700"
           onClick={() => {
             disconnectWallet();
           }}
         >
           <div className=" text-ztg-16-150 capitalize">disconnect</div>
-          <LogOut size={16} className="text-white -ml-ztg-30" />
+          <LogOut size={16} className="-ml-ztg-30 text-white" />
         </div>
       </div>
     </div>
