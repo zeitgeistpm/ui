@@ -44,7 +44,7 @@ const columns: TableColumn[] = [
     type: "component",
   },
   {
-    header: "Voted Outcome",
+    header: "Vote",
     accessor: "vote",
     type: "component",
   },

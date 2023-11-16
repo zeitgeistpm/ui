@@ -405,7 +405,7 @@ const Votes = ({
 
   return (
     <div
-      className={`grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${
+      className={`grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 ${
         showLeaderIndicator && isRevealed && "[&>*:first-child]:bg-green-200"
       }`}
     >
@@ -416,7 +416,7 @@ const Votes = ({
         return (
           <div
             key={category.ticker}
-            className={`relative min-w-[200px] flex-1 rounded-md border-1 text-xs shadow-sm ${
+            className={`relative flex min-w-[200px] flex-1 flex-col rounded-md border-1 text-xs shadow-sm ${
               showLeaderIndicator &&
               isRevealed &&
               index === 0 &&
@@ -428,19 +428,15 @@ const Votes = ({
                 {isTied ? "Tied" : "Leading"}
               </div>
             )}
-            <div className="rounded-top-md flex flex-1 items-center gap-2 overflow-hidden bg-gray-500 bg-opacity-10">
+            <div className="rounded-top-md flex items-center gap-2 overflow-hidden bg-gray-500 bg-opacity-10">
               <div className="flex-1 p-3 font-semibold">Outcome</div>
               <div className="flex-1 p-3 font-semibold">Votes</div>
             </div>
-            <div className="flex flex-1 cursor-default items-center gap-2 text-sm">
+
+            <div className="flex h-fit flex-1 cursor-default items-center gap-2 text-sm">
               <div className="flex-1 p-3">
-                <div className="group relative">
-                  <span>{category.ticker}</span>
-                  <div className="absolute -left-2 top-0 z-10 translate-y-[-110%] whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
-                    <div className="rounded-lg bg-green-lighter px-3 py-2 text-sm">
-                      <span>{category.name}</span>
-                    </div>
-                  </div>
+                <div className="relative">
+                  <span className="text-xs">{category.name}</span>
                 </div>
               </div>
               <div className="flex-1 p-3">
