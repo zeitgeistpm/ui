@@ -68,7 +68,7 @@ export async function getStaticPaths() {
   const cases = await sdk.api.query.court.courts.keys();
 
   const paths = cases.map((caseId) => ({
-    params: { caseid: caseId.args[0].toNumber() },
+    params: { caseid: caseId.args[0].toString() },
   }));
 
   return { paths, fallback: "blocking" };
