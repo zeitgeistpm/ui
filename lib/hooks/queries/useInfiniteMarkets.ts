@@ -13,6 +13,7 @@ import { MarketOutcomes } from "lib/types/markets";
 import { MarketStatus } from "@zeitgeistpm/indexer";
 import { hiddenMarketIds } from "lib/constants/markets";
 import { marketMetaFilter } from "./constants";
+import { ScoringRule } from "@zeitgeistpm/indexer";
 
 export const rootKey = "markets-filtered";
 
@@ -62,45 +63,62 @@ export const useInfiniteMarkets = (
 
     const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
       where: {
-        ...validMarketWhereInput,
-        status_not_in: [MarketStatus.Destroyed],
-        status_in: statuses.length === 0 ? undefined : statuses,
-        tags_containsAny: tags?.length === 0 ? undefined : tags,
-        pool_isNull: withLiquidityOnly ? false : undefined,
-        baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
-        ...(withLiquidityOnly
-          ? {
-              pool: {
-                account: {
-                  balances_some: {
-                    balance_gt: 0,
-                  },
-                },
+        AND: [
+          {
+            ...validMarketWhereInput,
+            status_not_in: [MarketStatus.Destroyed],
+            status_in: statuses.length === 0 ? undefined : statuses,
+            tags_containsAny: tags?.length === 0 ? undefined : tags,
+            baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
+          },
+          {
+            OR: [
+              {
+                scoringRule_eq: ScoringRule.Cpmm,
+                pool_isNull: withLiquidityOnly ? false : undefined,
+                ...(withLiquidityOnly
+                  ? {
+                      pool: {
+                        account: {
+                          balances_some: {
+                            balance_gt: 0,
+                          },
+                        },
+                      },
+                    }
+                  : {}),
               },
-            }
-          : {}),
+              {
+                scoringRule_eq: ScoringRule.Lmsr,
+                neoPool_isNull: withLiquidityOnly ? false : undefined,
+              },
+            ],
+          },
+        ],
       },
       offset: !pageParam ? 0 : limit * pageParam,
       limit: limit,
       order: orderByMap[orderBy],
     });
 
-    const outcomes = await getOutcomesForMarkets(sdk.indexer.client, markets);
+    const resMarkets: Array<QueryMarketData> = markets.map((market) => {
+      const outcomes: MarketOutcomes = market.assets.map((asset, index) => {
+        return {
+          price: asset.price,
+          name: market.categories?.[index].name ?? "",
+          assetId: asset.assetId,
+          amountInPool: asset.amountInPool,
+        };
+      });
 
-    let resMarkets: Array<QueryMarketData> = [];
+      const prediction = getCurrentPrediction(outcomes, market);
 
-    for (const m of markets) {
-      const marketOutcomes = outcomes[m.marketId];
-      const prediction =
-        m.pool != null
-          ? getCurrentPrediction(marketOutcomes, m as any)
-          : { name: "None", price: 0 };
-
-      resMarkets = [
-        ...resMarkets,
-        { ...m, outcomes: marketOutcomes, prediction },
-      ];
-    }
+      return {
+        ...market,
+        outcomes,
+        prediction,
+      };
+    });
 
     return {
       data: resMarkets,
