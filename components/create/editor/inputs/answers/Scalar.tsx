@@ -87,13 +87,13 @@ export const ScalarAnswersInput = ({
 
   return (
     <div>
-      <div className="flex center mb-6">
-        <div className="mr-3 font-light text-sm">Numbers</div>
+      <div className="center mb-6 flex">
+        <div className="mr-3 text-sm font-light">Numbers</div>
         <Toggle
           checked={value?.numberType === "date"}
           onChange={handleNumberTypeChange}
         />
-        <div className="ml-3 font-light text-sm">Dates</div>
+        <div className="ml-3 text-sm font-light">Dates</div>
       </div>
       <div className="flex justify-center gap-6">
         <div className="">
@@ -109,14 +109,14 @@ export const ScalarAnswersInput = ({
             <Input
               type="number"
               inputMode="numeric"
-              className={`w-full flex-1 bg-gray-100 rounded-md py-3 px-5 outline-none`}
+              className={`w-full flex-1 rounded-md bg-gray-100 px-5 py-3 outline-none`}
               value={value?.answers[0]}
               onChange={handleNumberChange(0, onChange)}
               onBlur={handleNumberChange(0, onBlur)}
             />
           )}
 
-          <h4 className="text-xs text-center mt-2 ml-1">Short</h4>
+          <h4 className="ml-1 mt-2 text-center text-xs">Short</h4>
         </div>
         <div className="">
           {value?.numberType === "date" ? (
@@ -131,13 +131,13 @@ export const ScalarAnswersInput = ({
             <Input
               type="number"
               inputMode="numeric"
-              className={` w-full flex-1 bg-gray-100 rounded-md py-3 px-5 outline-none`}
+              className={` w-full flex-1 rounded-md bg-gray-100 px-5 py-3 outline-none`}
               value={value?.answers[1]}
               onChange={handleNumberChange(1, onChange)}
               onBlur={handleNumberChange(1, onBlur)}
             />
           )}
-          <h4 className="text-xs mt-2 ml-1 text-center">Long</h4>
+          <h4 className="ml-1 mt-2 text-center text-xs">Long</h4>
         </div>
       </div>
     </div>

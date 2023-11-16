@@ -146,36 +146,36 @@ const MarketFilterSelection = ({
         open={mobileDialogOpen}
         setOpen={setMobileDialogOpen}
       ></MobileDialog>
-      <div className="w-full mb-4 flex flex-col justify-center sticky top-topbar-height z-20 [&>*:not(:last-child)]:mb-3 py-2 bg-light-gray">
+      <div className="sticky top-topbar-height z-20 mb-4 flex w-full flex-col justify-center bg-light-gray py-2 [&>*:not(:last-child)]:mb-3">
         {portalRef.current ? (
           <div className="hidden md:flex md:items-center md:gap-2">
             <MarketFiltersDropdowns className="flex items-center gap-2"></MarketFiltersDropdowns>
-            <MarketFiltersCheckboxes className="hidden lg:block mr-[20px] ml-[20px]"></MarketFiltersCheckboxes>
+            <MarketFiltersCheckboxes className="ml-[20px] mr-[20px] hidden lg:block"></MarketFiltersCheckboxes>
             <MarketFiltersSort className="hidden lg:block"></MarketFiltersSort>
           </div>
         ) : (
           <Skeleton width="80%" height="44px" className="mb-[25px]"></Skeleton>
         )}
         <p
-          className="block md:hidden text-ztg-blue cursor-pointer"
+          className="block cursor-pointer text-ztg-blue md:hidden"
           onClick={() => setMobileDialogOpen(true)}
         >
-          Find Your Market <ChevronDown className="inline mb-1" size={20} />
+          Find Your Market <ChevronDown className="mb-1 inline" size={20} />
         </p>
         <div
-          className="hidden md:block !mb-0"
+          className="!mb-0 hidden md:block"
           id="marketsFiltersMenuPortal"
           ref={portalRef}
         ></div>
         {portalRef.current ? (
-          <div className="hidden md:flex items-center gap-6 lg:hidden">
+          <div className="hidden items-center gap-6 md:flex lg:hidden">
             <MarketFiltersCheckboxes />
             <MarketFiltersSort />
           </div>
         ) : (
           <Skeleton width="40%" height="32px" className="mb-[25px]"></Skeleton>
         )}
-        <MarketActiveFilters className="hidden md:flex gap-2" />
+        <MarketActiveFilters className="hidden gap-2 md:flex" />
       </div>
     </MarketFiltersContainer>
   );

@@ -39,16 +39,16 @@ export const MarketAwait: NextPage = () => {
   return (
     <div className="center py-20">
       <div className="center gap-4 md:min-w-[600px]">
-        <div className="relative h-20 w-20 bg-inherit rounded-full bg-white">
+        <div className="relative h-20 w-20 rounded-full bg-inherit bg-white">
           <div
-            className="h-full w-full rounded-full animate-spin z-10"
+            className="z-10 h-full w-full animate-spin rounded-full"
             style={{
               background:
                 "linear-gradient(218deg, rgba(49,196,141,1) 35%, rgba(173,255,0,1) 100%)",
             }}
           ></div>
           <div
-            className="absolute top-0 left-0 h-[90%] w-[90%] bg-inherit rounded-full mt-[5%] ml-[5%] z-20 "
+            className="absolute left-0 top-0 z-20 ml-[5%] mt-[5%] h-[90%] w-[90%] rounded-full bg-inherit "
             style={{
               maskOrigin: "content-box",
             }}
@@ -57,7 +57,7 @@ export const MarketAwait: NextPage = () => {
         <div className="flex-1">
           <div>
             <h2
-              className={`mr-4 transition-all text-black duration-300 ${
+              className={`mr-4 text-black transition-all duration-300 ${
                 state === "success" && "text-green-400"
               }`}
             >
@@ -65,7 +65,7 @@ export const MarketAwait: NextPage = () => {
                 ? "Waiting for market to be indexed.."
                 : "Market has been indexed."}
             </h2>
-            <p className="text-gray-500 text-sm">
+            <p className="text-sm text-gray-500">
               {state === "awaiting"
                 ? "Market has been created on chain and is awaiting indexing by our platform."
                 : "Redirecting you to the market page."}

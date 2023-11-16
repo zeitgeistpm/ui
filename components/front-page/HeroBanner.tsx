@@ -24,35 +24,35 @@ export const HeroBanner = ({
   const prctChange = ((latestPrice - firstPrice) / firstPrice) * 100;
 
   return (
-    <div className="relative main-container mt-12 md:mt-18 mb-20 z-2">
+    <div className="main-container md:mt-18 z-2 relative mb-20 mt-12">
       <div className="relative flex flex-col-reverse md:flex-row md:gap-8">
-        <div className="md:w-[890px] lg:w-[690px] md:pt-8">
-          <h1 className="text-5xl mb-8 leading-tight">
+        <div className="md:w-[890px] md:pt-8 lg:w-[690px]">
+          <h1 className="mb-8 text-5xl leading-tight">
             Welcome to the Future of Betting
           </h1>
-          <h2 className="text-xl mb-8 leading-6">
+          <h2 className="mb-8 text-xl leading-6">
             Zeitgeist is a new innovative platform for predicting future events
           </h2>
-          <div className="flex gap-4 mb-14">
+          <div className="mb-14 flex gap-4">
             <Link
               href="https://zeitgeist.pm/"
               target="_blank"
-              className="rounded-md flex-1 sm:flex-none bg-vermilion border-2 border-vermilion text-white px-6 py-3"
+              className="flex-1 rounded-md border-2 border-vermilion bg-vermilion px-6 py-3 text-white sm:flex-none"
             >
               Learn More
             </Link>
             <Link
               href="/create-account"
-              className="rounded-md flex-1 sm:flex-none bg-transparent border-2 border-black text-black px-6 py-3"
+              className="flex-1 rounded-md border-2 border-black bg-transparent px-6 py-3 text-black sm:flex-none"
             >
               Get Started
             </Link>
           </div>
           <div
-            className="py-3 px-4 w-full rounded-md flex gap-2"
+            className="flex w-full gap-2 rounded-md px-4 py-3"
             style={{ backgroundColor: "rgba(28, 100, 242, 0.2)" }}
           >
-            <div className="flex justify-start items-center gap-3 w-1/3">
+            <div className="flex w-1/3 items-center justify-start gap-3">
               <div>
                 <ZeitgeistIcon variant="blue" height={32} width={32} />
               </div>
@@ -63,7 +63,7 @@ export const HeroBanner = ({
                 </div>
               </div>
             </div>
-            <div className="flex center w-1/3">
+            <div className="center flex w-1/3">
               <ResponsiveContainer width={"100%"} height="65%">
                 <LineChart data={chartData}>
                   <Line
@@ -80,19 +80,19 @@ export const HeroBanner = ({
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <div className="flex justify-end items-center gap-2 flex-1">
+            <div className="flex flex-1 items-center justify-end gap-2">
               <div>
-                <div className="font-semibold text-md text-center">
+                <div className="text-md text-center font-semibold">
                   ${latestPrice.toFixed(3)}
                 </div>
-                <div className="text-sm text-center">
+                <div className="text-center text-sm">
                   {!isNaN(prctChange) ? prctChange.toFixed(1) : 0}%
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="w-full h-64 md:h-auto relative rounded-lg overflow-hidden mb-8 md:mb-0">
+        <div className="relative mb-8 h-64 w-full overflow-hidden rounded-lg md:mb-0 md:h-auto">
           <Image
             alt="Futuristic City Image"
             fill={true}

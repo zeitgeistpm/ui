@@ -38,7 +38,7 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
     <Dialog
       open={open}
       onClose={close}
-      className="fixed top-0 left-0 w-full h-full bg-transparent z-50"
+      className="fixed left-0 top-0 z-50 h-full w-full bg-transparent"
       initialFocus={focusRef}
       ref={focusRef}
       tabIndex={1}
@@ -51,11 +51,11 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
         leave={"transition ease-out " + `duration-${TRANSITION_DURATION}}`}
         leaveFrom="transform translate-y-0"
         leaveTo="transform -translate-y-full"
-        className="absolute w-full h-full top-0 left-0 bg-white"
+        className="absolute left-0 top-0 h-full w-full bg-white"
         appear={true}
       >
-        <Dialog.Panel className="w-full h-full">
-          <div className="py-3.5 px-8 h-[72px] border-b border-gray-200 text-xl flex items-center">
+        <Dialog.Panel className="h-full w-full">
+          <div className="flex h-[72px] items-center border-b border-gray-200 px-8 py-3.5 text-xl">
             <div className="text-xl">Filters</div>
             <div className="ml-auto">
               <X
@@ -67,7 +67,7 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
             </div>
           </div>
           <div
-            className="px-10 flex flex-col h-full py-6"
+            className="flex h-full flex-col px-10 py-6"
             style={{ height: "calc(100vh - 72px)" }}
           >
             {

@@ -28,7 +28,7 @@ const FilterToggle = ({ option }: { option: MarketFilter }) => {
   };
 
   return (
-    <div className="w-1/2 mb-7">
+    <div className="mb-7 w-1/2">
       <a
         className={"cursor-pointer " + (isActive ? "text-ztg-blue" : "")}
         onClick={() => {
@@ -36,7 +36,7 @@ const FilterToggle = ({ option }: { option: MarketFilter }) => {
         }}
       >
         {option.label}{" "}
-        {isActive ? <X className="text-gray-600 inline" size={14} /> : ""}
+        {isActive ? <X className="inline text-gray-600" size={14} /> : ""}
       </a>
     </div>
   );
@@ -46,13 +46,13 @@ const FilterDetails = ({ back, menu }: FilterDetailsProps) => {
   return (
     <>
       <a
-        className="cursor-pointer flex mr-auto text-sky-600 mt-1"
+        className="mr-auto mt-1 flex cursor-pointer text-sky-600"
         onClick={back}
       >
         <ChevronLeft className="w-6" transform="translate(-6, 0)" />{" "}
         <div className="inline-block">Back</div>
       </a>
-      <h3 className="text-2xl my-7">{menu}</h3>
+      <h3 className="my-7 text-2xl">{menu}</h3>
       <div className="flex flex-wrap">
         {
           {
@@ -81,7 +81,7 @@ const FilterDetails = ({ back, menu }: FilterDetailsProps) => {
         }
       </div>
       <button
-        className="rounded-full bg-ztg-blue mt-auto h-14 text-white"
+        className="mt-auto h-14 rounded-full bg-ztg-blue text-white"
         onClick={back}
       >
         Apply

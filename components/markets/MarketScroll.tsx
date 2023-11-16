@@ -80,9 +80,9 @@ const MarketScroll = ({
   return (
     <div
       ref={containerRef}
-      className="grid gap-y-7 sm:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+      className="grid grid-cols-1 gap-y-7 sm:grid-cols-2 sm:gap-7 lg:grid-cols-3"
     >
-      <h2 className="sm:col-span-2 text-center sm:text-start">{title}</h2>
+      <h2 className="text-center sm:col-span-2 sm:text-start">{title}</h2>
       <HorizontalScroll
         classes="order-2 sm:order-none"
         link={link}
@@ -92,7 +92,7 @@ const MarketScroll = ({
         rightDisabled={rightDisabled}
         leftDisabled={leftDisabled}
       />
-      <div className="col-span-3 relative">
+      <div className="relative col-span-3">
         <div
           ref={scrollRef}
           style={{
@@ -103,8 +103,8 @@ const MarketScroll = ({
             }px)`,
           }}
           className={`flex ${
-            !isResizing && "transition-transform ztg-transition"
-          } flex-col gap-4 sm:flex-row no-scroll-bar  whitespace-nowrap scroll-smooth`}
+            !isResizing && "ztg-transition transition-transform"
+          } no-scroll-bar flex-col gap-4 scroll-smooth  whitespace-nowrap sm:flex-row`}
         >
           {markets.map((market, cardIndex) => {
             const stat = marketsStats?.find(

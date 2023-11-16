@@ -12,8 +12,8 @@ export const NewsSection = ({
 }) => {
   return (
     <div className="mb-12">
-      <h2 className="sm:col-span-2 text-center sm:text-start mb-6">News</h2>
-      <div className="flex flex-col md:flex-row gap-8 md:gap-4">
+      <h2 className="mb-6 text-center sm:col-span-2 sm:text-start">News</h2>
+      <div className="flex flex-col gap-8 md:flex-row md:gap-4">
         {news.map((news, index) => {
           const isExternalLink = news.ctaLink
             ? !isCurrentOrigin(news.ctaLink)
@@ -23,10 +23,10 @@ export const NewsSection = ({
             <Link
               href={news.ctaLink!}
               key={index}
-              className="flex-1 ztg-transition md:hover:scale-[1.035]"
+              className="ztg-transition flex-1 md:hover:scale-[1.035]"
               target={isExternalLink ? "_blank" : "_parent"}
             >
-              <div className="relative h-52 mb-3">
+              <div className="relative mb-3 h-52">
                 <Image
                   key={index}
                   priority
@@ -36,7 +36,7 @@ export const NewsSection = ({
                   fill
                   blurDataURL={imagePlaceholders[index]}
                   sizes="100vw"
-                  className="object-cover rounded-lg"
+                  className="rounded-lg object-cover"
                   style={{
                     objectFit: "cover",
                   }}

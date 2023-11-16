@@ -59,7 +59,7 @@ const Avatar = ({
                   sizes="100vw"
                   alt={"Avatar part"}
                   key={`${address}${part.id}`}
-                  className="absolute top-0 left-0 scale-125"
+                  className="absolute left-0 top-0 scale-125"
                   style={{ zIndex: index + 1 }}
                   src={sanitizeIpfsUrl(part.src)}
                 />

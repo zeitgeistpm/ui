@@ -257,7 +257,7 @@ const Market: NextPage<MarketPageProps> = ({
 
   return (
     <div className="mt-6">
-      <div className="flex flex-auto gap-12 relative">
+      <div className="relative flex flex-auto gap-12">
         <div className="flex-1">
           <MarketMeta market={indexedMarket} />
 
@@ -307,7 +307,7 @@ const Market: NextPage<MarketPageProps> = ({
                 <AlertTriangle size={20} />
               </div>
               <div
-                className="text-ztg-12-120 ml-ztg-10 "
+                className="ml-ztg-10 text-ztg-12-120 "
                 data-test="liquidityPoolMessage"
               >
                 This market doesn't have a liquidity pool and therefore cannot
@@ -317,7 +317,7 @@ const Market: NextPage<MarketPageProps> = ({
           )}
           <div className="my-8">
             {indexedMarket?.marketType?.scalar !== null && (
-              <div className="mb-8 max-w-[800px] mx-auto">
+              <div className="mx-auto mb-8 max-w-[800px]">
                 {marketIsLoading ||
                 (!spotPrices?.get(1) && indexedMarket.status !== "Proposed") ||
                 (!spotPrices?.get(0) && indexedMarket.status !== "Proposed") ? (
@@ -348,7 +348,7 @@ const Market: NextPage<MarketPageProps> = ({
           <div className="mb-12 max-w-[90vw]">
             {indexedMarket.description?.length > 0 && (
               <>
-                <h3 className="text-2xl mb-5">About Market</h3>
+                <h3 className="mb-5 text-2xl">About Market</h3>
                 <QuillViewer value={indexedMarket.description} />
               </>
             )}
@@ -365,7 +365,7 @@ const Market: NextPage<MarketPageProps> = ({
           {market && (marketHasPool || poolDeployed) && (
             <div className="my-12">
               <div
-                className="flex items-center mb-8 text-mariner cursor-pointer"
+                className="mb-8 flex cursor-pointer items-center text-mariner"
                 onClick={() => toggleLiquiditySection()}
               >
                 <div>Show Liquidity</div>
@@ -393,9 +393,9 @@ const Market: NextPage<MarketPageProps> = ({
           )}
         </div>
 
-        <div className="hidden md:block md:w-[320px] lg:w-[460px] md:-mr-6 lg:mr-auto">
+        <div className="hidden md:-mr-6 md:block md:w-[320px] lg:mr-auto lg:w-[460px]">
           <div className="sticky top-28">
-            <div className="shadow-lg rounded-lg mb-12 opacity-0 animate-pop-in">
+            <div className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg">
               {market?.status === MarketStatus.Active ? (
                 <>
                   {market?.scoringRule === ScoringRule.Cpmm ? (
@@ -457,16 +457,16 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
         leave="transition-opacity ease-in-out duration-100"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
-        className="fixed top-0 left-0 h-full w-full"
+        className="fixed left-0 top-0 h-full w-full"
       >
         <div
           onClick={() => setOpen(false)}
-          className="fixed md:hidden top-0 left-0 h-full w-full bg-black/20 z-40"
+          className="fixed left-0 top-0 z-40 h-full w-full bg-black/20 md:hidden"
         />
       </Transition>
 
       <div
-        className={`md:hidden fixed bottom-20 pb-12 left-0 z-50 w-full bg-white rounded-t-lg transition-all ease-in-out duration-500 ${
+        className={`fixed bottom-20 left-0 z-50 w-full rounded-t-lg bg-white pb-12 transition-all duration-500 ease-in-out md:hidden ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
@@ -504,15 +504,15 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
       {(market?.status === MarketStatus.Active ||
         market?.status === MarketStatus.Closed ||
         market?.status === MarketStatus.Reported) && (
-        <div className="fixed bottom-0 right-0 left-0 md:hidden z-50">
-          <div className="flex h-20 text-lg font-semibold cursor-pointer">
+        <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+          <div className="flex h-20 cursor-pointer text-lg font-semibold">
             {market?.status === MarketStatus.Active ? (
               <>
                 <div
-                  className={`flex-1 h-full center  ${
+                  className={`center h-full flex-1  ${
                     tradeItem?.action === "buy"
-                      ? "text-gray-200 bg-fog-of-war"
-                      : "text-black bg-white"
+                      ? "bg-fog-of-war text-gray-200"
+                      : "bg-white text-black"
                   } `}
                   onClick={() => {
                     setTradeItem({
@@ -528,16 +528,16 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
                 >
                   Buy{" "}
                   <X
-                    className={`h-full transition-all w-0 center  ${
+                    className={`center h-full w-0 transition-all  ${
                       open && tradeItem?.action === "buy" && "w-6"
                     }`}
                   />
                 </div>
                 <div
-                  className={`flex-1 h-full center ${
+                  className={`center h-full flex-1 ${
                     tradeItem?.action === "sell"
-                      ? "text-gray-200 bg-fog-of-war"
-                      : "text-black bg-white"
+                      ? "bg-fog-of-war text-gray-200"
+                      : "bg-white text-black"
                   }`}
                   onClick={() => {
                     setTradeItem({
@@ -553,7 +553,7 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
                 >
                   Sell
                   <X
-                    className={`h-full transition-all w-0 center  ${
+                    className={`center h-full w-0 transition-all  ${
                       open && tradeItem?.action === "sell" && "w-6"
                     }`}
                   />
@@ -562,8 +562,8 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
             ) : market?.status === MarketStatus.Closed && canReport ? (
               <>
                 <div
-                  className={`flex-1 h-full center transition-all ${
-                    !open ? "text-white bg-ztg-blue" : "bg-slate-200"
+                  className={`center h-full flex-1 transition-all ${
+                    !open ? "bg-ztg-blue text-white" : "bg-slate-200"
                   }`}
                   onClick={() => setOpen(!open)}
                 >
@@ -572,8 +572,8 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
               </>
             ) : market?.status === MarketStatus.Reported ? (
               <div
-                className={`flex-1 h-full center ${
-                  !open ? "text-white bg-ztg-blue" : "bg-slate-200"
+                className={`center h-full flex-1 ${
+                  !open ? "bg-ztg-blue text-white" : "bg-slate-200"
                 }`}
                 onClick={() => setOpen(!open)}
               >
@@ -603,13 +603,13 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
           {({ open }) => (
             <>
               <Disclosure.Button
-                className={`relative flex w-full px-5 py-2 rounded-md items-center z-20 ${
+                className={`relative z-20 flex w-full items-center rounded-md px-5 py-2 ${
                   !open && "bg-orange-400 "
                 }`}
               >
                 <h3
                   className={`flex-1 text-left text-base ${
-                    open ? "opacity-0" : "opacity-100 text-white"
+                    open ? "opacity-0" : "text-white opacity-100"
                   }`}
                 >
                   Market can be disputed
@@ -619,8 +619,8 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
                 ) : (
                   <FaChevronUp
                     size={18}
-                    className={`text-gray-600 justify-end ${
-                      !open && "text-white rotate-180"
+                    className={`justify-end text-gray-600 ${
+                      !open && "rotate-180 text-white"
                     }`}
                   />
                 )}
@@ -632,7 +632,7 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
                 leave="transition duration-75 ease-out"
                 leaveFrom="transform scale-100 opacity-100"
                 leaveTo="transform scale-95 opacity-0"
-                className="relative -mt-[30px] z-10"
+                className="relative z-10 -mt-[30px]"
               >
                 <Disclosure.Panel>
                   {isMarketCategoricalOutcome(reportedOutcome) ? (
@@ -674,7 +674,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
   return !userCanReport ? (
     <></>
   ) : (
-    <div className="py-8 px-5">
+    <div className="px-5 py-8">
       {reportedOutcome ? (
         <ReportResult market={market} outcome={reportedOutcome} />
       ) : (
@@ -717,7 +717,7 @@ const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
   const router = useRouter();
 
   return (
-    <div className="py-8 px-5">
+    <div className="px-5 py-8">
       <h4 className="mb-3 flex items-center gap-2">
         <Image width={22} height={22} src="/icons/court.svg" alt="court" />
         <span>Market Court Case</span>
@@ -731,7 +731,7 @@ const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
         disabled={!isFetched}
         onClick={() => router.push(`/court/${caseId}`)}
         onMouseEnter={() => router.prefetch(`/court/${caseId}`)}
-        className={`ztg-transition text-white focus:outline-none disabled:bg-slate-300 disabled:cursor-default rounded-full w-full h-[56px] bg-purple-400`}
+        className={`ztg-transition h-[56px] w-full rounded-full bg-purple-400 text-white focus:outline-none disabled:cursor-default disabled:bg-slate-300`}
       >
         View Case
       </button>

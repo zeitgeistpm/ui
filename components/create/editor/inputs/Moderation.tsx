@@ -38,21 +38,21 @@ export const ModerationModeSelect: React.FC<ModerationModeSelectProps> = ({
   };
 
   return (
-    <div className="flex flex-col md:flex-row md:justify-center md:gap-6 gap-4">
+    <div className="flex flex-col gap-4 md:flex-row md:justify-center md:gap-6">
       {options.map((option, index) => (
         <button
           key={index}
           type="button"
           className={`
-              flex flex-col flex-1 max-w-sm rounded-md p-6 md:min-h-[230px] cursor-pointer transition-all active:scale-95
+              flex max-w-sm flex-1 cursor-pointer flex-col rounded-md p-6 transition-all active:scale-95 md:min-h-[230px]
               ${value === option.mode ? "bg-nyanza-base" : "bg-gray-100"}
             `}
           onClick={handleSelect(option.mode)}
         >
           <div className="flex flex-1 flex-row pt-2">
-            <div className="flex flex-col flex-1 text-center">
-              <h3 className="text-2xl mb-4">{option.mode}</h3>
-              <p className="flex-1 mx-auto mb-4 text-sm md:text-base">
+            <div className="flex flex-1 flex-col text-center">
+              <h3 className="mb-4 text-2xl">{option.mode}</h3>
+              <p className="mx-auto mb-4 flex-1 text-sm md:text-base">
                 {option.description}
               </p>
               <p className="">

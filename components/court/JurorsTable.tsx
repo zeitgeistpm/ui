@@ -46,8 +46,9 @@ const JurorsTable = () => {
   const tableData: TableData[] | undefined = participants
     ?.filter((p) => p.type === "Juror")
     .map((juror) => {
-      const delegators = participants.filter((participant) =>
-        participant.delegations?.some((d) => d === juror.address),
+      const delegators = participants.filter(
+        (participant) =>
+          participant.delegations?.some((d) => d === juror.address),
       );
 
       const delegatorStake = delegators.reduce<Decimal>(

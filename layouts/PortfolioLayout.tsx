@@ -57,7 +57,7 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center w-full min-h-[50vh]">
+      <div className="flex min-h-[50vh] w-full items-center justify-center">
         <Loader />
       </div>
     );

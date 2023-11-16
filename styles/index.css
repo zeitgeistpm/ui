@@ -22,7 +22,7 @@ input[type="number"] {
 
 /* Write your own custom component styles here */
 .btn-blue {
-  @apply px-4 py-2 font-bold text-white bg-blue-500 rounded;
+  @apply rounded bg-blue-500 px-4 py-2 font-bold text-white;
 }
 
 /* Start purging... */
@@ -211,7 +211,7 @@ h6 {
 @import "./range-component.css";
 
 .container-fluid {
-  @apply px-4 mx-auto max-w-screen-2xl;
+  @apply mx-auto max-w-screen-2xl px-4;
 }
 
 .carousel__slide--visible {
@@ -296,7 +296,6 @@ tr td:first-child {
 .subtle-scroll-bar::-webkit-scrollbar {
   background-color: transparent;
   width: 8px;
-  
 }
 
 /* background of the scrollbar except button or resizer */
@@ -307,22 +306,22 @@ tr td:first-child {
 
 /* scrollbar itself */
 .subtle-scroll-bar::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0, 0.7);
+  background-color: rgba(0, 0, 0, 0.7);
   border-radius: 16px;
   border: 4px solid inherit;
 }
 
 /* set button(top and bottom of the scrollbar) */
 .subtle-scroll-bar::-webkit-scrollbar-button {
-  display:none;
+  display: none;
 }
 
 .subtle-scroll-bar.subtle-scroll-bar-on-hover::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0, 0.001);
+  background-color: rgba(0, 0, 0, 0.001);
 }
 
 .subtle-scroll-bar.subtle-scroll-bar-on-hover:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0, 0.7);
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 /* Skeleton */
