@@ -3,10 +3,11 @@ import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import {
   IOBaseAssetId,
   IOForeignAssetId,
+  ZeitgeistIpfs,
+  create,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import CourtStageTimer from "components/court/CourtStageTimer";
-import { PiBooks } from "react-icons/pi";
 import { CourtVoteForm } from "components/court/CourtVoteForm";
 import { CourtVoteRevealForm } from "components/court/CourtVoteRevealForm";
 import { SelectedDrawsTable } from "components/court/SelectedDrawsTable";
@@ -16,7 +17,6 @@ import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
 import { useVotDrawsForCase } from "lib/hooks/queries/court/useVoteDraws";
-
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
@@ -29,10 +29,18 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 import NotFoundPage from "pages/404";
+import { IGetPlaiceholderReturn, getPlaiceholder } from "plaiceholder";
 import { useMemo } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { LuVote } from "react-icons/lu";
-import { IGetPlaiceholderReturn, getPlaiceholder } from "plaiceholder";
+import { PiBooks } from "react-icons/pi";
+import {
+  DAY_SECONDS,
+  endpointOptions,
+  environment,
+  graphQlEndpoint,
+  ZTG,
+} from "lib/constants";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -48,6 +56,22 @@ export async function getStaticProps() {
       docsArticleImagePlaceholder,
     },
   };
+}
+
+export async function getStaticPaths() {
+  const sdk = await create({
+    provider: endpointOptions.map((e) => e.value),
+    indexer: graphQlEndpoint,
+    storage: ZeitgeistIpfs(),
+  });
+
+  const cases = await sdk.api.query.court.courts.entries();
+
+  const paths = cases.map(([caseId]) => ({
+    params: { caseid: caseId.args[0].toNumber() },
+  }));
+
+  return { paths, fallback: "blocking" };
 }
 
 const CasePage: NextPage = ({
