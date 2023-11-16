@@ -65,9 +65,9 @@ export async function getStaticPaths() {
     storage: ZeitgeistIpfs(),
   });
 
-  const cases = await sdk.api.query.court.courts.entries();
+  const cases = await sdk.api.query.court.courts.keys();
 
-  const paths = cases.map(([caseId]) => ({
+  const paths = cases.map((caseId) => ({
     params: { caseid: caseId.args[0].toNumber() },
   }));
 
