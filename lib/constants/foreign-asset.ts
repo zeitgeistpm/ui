@@ -9,6 +9,7 @@ type ForeignAssetMetadata = {
     withdrawSupported: boolean;
     withdrawDestinationFee?: string;
     tokenSymbol: string;
+    subsquidId?: string;
   };
 };
 
@@ -37,6 +38,7 @@ const BATTERY_STATION_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     withdrawSupported: false,
     coinGeckoId: "polkadot",
     tokenSymbol: "DOT",
+    subsquidId: "DOT",
   },
   1: {
     originChain: "Rococo",
@@ -61,6 +63,7 @@ const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     withdrawSupported: true,
     coinGeckoId: "polkadot",
     tokenSymbol: "DOT",
+    subsquidId: "DOT",
   },
 };
 

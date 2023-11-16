@@ -118,7 +118,7 @@ const getTrendingMarkets = async (
     return pools;
   });
 
-  const basePrices = await getBaseAssetPrices();
+  const basePrices = await getBaseAssetPrices(sdk);
 
   const trendingPoolIds = calcTrendingPools(historicalPools, basePrices, pools);
 
