@@ -410,7 +410,9 @@ const Market: NextPage<MarketPageProps> = ({
                 <></>
               )}
             </div>
-            <ReferendumSummary />
+            <div className="mb-12 ">
+              <ReferendumSummary referendumIndex={244} />
+            </div>
             <SimilarMarketsSection market={market ?? undefined} />
           </div>
         </div>
