@@ -355,7 +355,7 @@ const CasePage: NextPage = ({
               </div>
               <p className="mb-6 drop-shadow-lg">
                 Zeitgeist implements a decentralized court to handle disputes
-                that may arise in the resolution of prediction markets outcomes.
+                that may arise in the resolution of prediction market outcomes.
               </p>
               <div className="flex items-center justify-end">
                 <Link
