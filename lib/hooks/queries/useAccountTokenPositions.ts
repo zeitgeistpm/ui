@@ -24,7 +24,6 @@ export const useAccountTokenPositions = (address?: string) => {
         // });
 
         const accounts = await sdk.api.query.tokens.accounts.entries(address);
-
         const accountBalances = accounts
           .map((account) => {
             const assetId = account[0].args[1];

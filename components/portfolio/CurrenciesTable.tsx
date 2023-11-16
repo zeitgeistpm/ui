@@ -115,8 +115,14 @@ const MoveButton = ({
 };
 
 const CurrenciesTable = ({ address }: { address: string }) => {
-  const { data: balances } = useCurrencyBalances(address);
+  const { data: allBalances } = useCurrencyBalances(address);
   const { data: constants } = useChainConstants();
+
+  //filter balances if client is WSX
+  const balances =
+    process.env.NEXT_PUBLIC_CLIENT === "WSX"
+      ? allBalances
+      : allBalances?.filter((b) => b.symbol !== "WSX");
 
   const tableData: TableData[] | undefined = balances
     ?.sort((a, b) => b.balance.minus(a.balance).toNumber())

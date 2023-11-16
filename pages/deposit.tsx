@@ -86,7 +86,7 @@ const UsdtIcon = (props: SVGProps<SVGSVGElement>) => (
 );
 
 const DepositMethodItems = ["buy", "deposit"] as const;
-type DepositMethod = typeof DepositMethodItems[number];
+type DepositMethod = (typeof DepositMethodItems)[number];
 
 const DepositMethodLabels: Record<DepositMethod, string> = {
   buy: "Buy",
@@ -95,12 +95,15 @@ const DepositMethodLabels: Record<DepositMethod, string> = {
 
 const DepositCurrencyItems = ["ztg", "dot", "usdt"] as const;
 const ss58PrefixLookup = { ztg: 73, dot: 0, usdt: 0 };
-type DepositCurrency = typeof DepositCurrencyItems[number];
+type DepositCurrency = (typeof DepositCurrencyItems)[number];
 
 const DepositCurrencyLabels: Record<DepositCurrency, string> =
-  DepositCurrencyItems.reduce((acc, item) => {
-    return { ...acc, [item]: item.toUpperCase() };
-  }, {} as Record<DepositCurrency, string>);
+  DepositCurrencyItems.reduce(
+    (acc, item) => {
+      return { ...acc, [item]: item.toUpperCase() };
+    },
+    {} as Record<DepositCurrency, string>,
+  );
 
 const DepositCurrencyIcons: Record<DepositCurrency, React.FC> = {
   ztg: ZtgIcon,
@@ -109,7 +112,7 @@ const DepositCurrencyIcons: Record<DepositCurrency, React.FC> = {
 };
 
 const DepositPaymentMethodItems = ["card", "crypto"] as const;
-type DepositPaymentMethod = typeof DepositPaymentMethodItems[number];
+type DepositPaymentMethod = (typeof DepositPaymentMethodItems)[number];
 
 const DepositPaymentMethodLabels: Record<DepositPaymentMethod, string> = {
   card: "Use Credit Card",
@@ -131,7 +134,7 @@ const ResultButtons = ({
             href={item.url}
             target="_blank"
             className={
-              "flex items-center justify-center gap-2 h-16 outline-none center rounded-lg cursor-pointer bg-white"
+              "center flex h-16 cursor-pointer items-center justify-center gap-2 rounded-lg bg-white outline-none"
             }
           >
             <div>{item.label}</div>
@@ -213,7 +216,7 @@ const DotDeposit = ({ address }: { address: string }) => {
 
   return (
     <form onSubmit={handleSubmit(() => transfer())}>
-      <div className="h-10 mx-7 bg-anti-flash-white rounded-lg flex gap-2 items-center mt-9 mb-6">
+      <div className="mx-7 mb-6 mt-9 flex h-10 items-center gap-2 rounded-lg bg-anti-flash-white">
         <div className="h-[35px] w-[35px]">
           <Image
             src="/currencies/dot.png"
@@ -243,7 +246,7 @@ const DotDeposit = ({ address }: { address: string }) => {
               },
             })}
             className={
-              "ml-auto w-[300px] text-right bg-white px-5 rounded-none h-10 " +
+              "ml-auto h-10 w-[300px] rounded-none bg-white px-5 text-right " +
               (errors.amount ? "border-vermilion" : "")
             }
             type="number"
@@ -251,7 +254,7 @@ const DotDeposit = ({ address }: { address: string }) => {
           />
         </div>
       </div>
-      <div className="text-vermilion text-ztg-12-120 h-[16px] text-right">
+      <div className="h-[16px] text-right text-ztg-12-120 text-vermilion">
         <>{errors["amount"]?.message}</>
         {!errors["amount"]?.message &&
           remainingSourceBalance.lessThan(existentialDeposit ?? 0) &&
@@ -264,7 +267,7 @@ const DotDeposit = ({ address }: { address: string }) => {
           )}
       </div>
       <FormTransactionButton
-        className="w-full !bg-white disabled:bg-white rounded-none !text-black disabled:text-white"
+        className="w-full rounded-none !bg-white !text-black disabled:bg-white disabled:text-white"
         disabled={isValid === false || isLoading}
         disableFeeCheck={true}
       >
@@ -304,7 +307,7 @@ const DepositPage: NextPage = () => {
 
   return (
     <>
-      <h2 className="px-2 mb-6">Deposit Tokens</h2>
+      <h2 className="mb-6 px-2">Deposit Tokens</h2>
       <div className="[&>*:not(:last-child)]:mb-8">
         <p className="mt-3 p-2">
           You need some funds to make predictions on our platform. Select from
@@ -345,31 +348,35 @@ const DepositPage: NextPage = () => {
             selectedItemClassName="!bg-ice-hush"
           />
         )}
-        {method === "buy" && currency === "ztg" && paymentMethod === "crypto" && (
-          <ResultButtons
-            items={[
-              {
-                label: "Hydra DX",
-                url: "https://app.hydradx.io/trade?assetIn=5&assetOut=12",
-              },
-              { label: "Gate.io", url: "https://www.gate.io/trade/ZTG_USDT" },
-            ]}
-          />
-        )}
-        {method === "buy" && currency === "dot" && paymentMethod === "crypto" && (
-          <ResultButtons
-            items={[
-              {
-                label: "DEX",
-                url: "https://app.hydradx.io/trade?assetIn=10&assetOut=5",
-              },
-              {
-                label: "CEX",
-                url: "https://www.binance.com/en/trade/DOT_USDT",
-              },
-            ]}
-          />
-        )}
+        {method === "buy" &&
+          currency === "ztg" &&
+          paymentMethod === "crypto" && (
+            <ResultButtons
+              items={[
+                {
+                  label: "Hydra DX",
+                  url: "https://app.hydradx.io/trade?assetIn=5&assetOut=12",
+                },
+                { label: "Gate.io", url: "https://www.gate.io/trade/ZTG_USDT" },
+              ]}
+            />
+          )}
+        {method === "buy" &&
+          currency === "dot" &&
+          paymentMethod === "crypto" && (
+            <ResultButtons
+              items={[
+                {
+                  label: "DEX",
+                  url: "https://app.hydradx.io/trade?assetIn=10&assetOut=5",
+                },
+                {
+                  label: "CEX",
+                  url: "https://www.binance.com/en/trade/DOT_USDT",
+                },
+              ]}
+            />
+          )}
         {method === "buy" &&
           currency === "dot" &&
           paymentMethod === "card" &&
@@ -383,8 +390,8 @@ const DepositPage: NextPage = () => {
                   },
                 ]}
               />
-              <div className="flex flex-col md:flex-row gap-2 mt-7">
-                <div className="flex item-center gap-2">
+              <div className="mt-7 flex flex-col gap-2 md:flex-row">
+                <div className="item-center flex gap-2">
                   <Image
                     src="/currencies/dot.png"
                     width={25}
@@ -420,7 +427,7 @@ const DepositPage: NextPage = () => {
             Fund your {currency.toUpperCase()} Wallet
           </h3>
           <div className="flex flex-row">
-            <div className="w-48 h-48 flex-shrink-0 mr-14">
+            <div className="mr-14 h-48 w-48 flex-shrink-0">
               <QrCode text={encodedAddress} width={192} />
             </div>
             <div className="flex flex-col">
@@ -475,7 +482,7 @@ const DepositPage: NextPage = () => {
         </Link>
       </div> */}
       <h2 className="my-9">Next Steps</h2>
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col gap-4 md:flex-row">
         <StartTradingActionableCard />
       </div>
     </>
