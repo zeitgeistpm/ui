@@ -88,12 +88,12 @@ const LiquidityHeaderButtonItem: FC<PropsWithChildren<{ className?: string }>> =
   };
 
 const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
-  const { pool } = market;
+  const { pool, neoPool } = market;
   const { data: liquidity } = usePoolLiquidity(
     pool?.poolId ? { poolId: pool.poolId } : undefined,
   );
 
-  const swapFee = new Decimal(Number(pool?.swapFee) ?? 0)
+  const swapFee = new Decimal(Number(pool?.swapFee ?? neoPool?.swapFee) ?? 0)
     .div(ZTG)
     .mul(100)
     .toNumber();

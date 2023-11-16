@@ -50,13 +50,11 @@ export interface MarketCardProps extends IndexedMarketCardData {
 
 const MarketCardPredictionBar = ({
   prediction: { name, price },
-  pool,
 }: {
   prediction: { name: string; price: number };
-  pool: {};
 }) => {
   // check if market has liquidity
-  if (Object.keys(pool).length !== 0) {
+  if (price != null) {
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
@@ -257,9 +255,9 @@ export const MarketCard = ({
                     : formatNumberCompact(Number(prediction.name))}
                 </span>
               </span>
-            ) : pool && marketType?.categorical ? (
-              <MarketCardPredictionBar pool={pool} prediction={prediction} />
-            ) : pool && scalarType && Object.keys(pool).length !== 0 ? (
+            ) : liquidity && marketType?.categorical ? (
+              <MarketCardPredictionBar prediction={prediction} />
+            ) : liquidity && scalarType ? (
               <ScalarPriceRange
                 scalarType={scalarType}
                 lowerBound={lower}

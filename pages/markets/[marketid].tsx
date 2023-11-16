@@ -278,13 +278,22 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           )}
 
-          {chartSeries && indexedMarket?.pool?.poolId ? (
+          {chartSeries && (indexedMarket?.pool || indexedMarket.neoPool) ? (
             <div className="mt-4">
               <MarketChart
                 marketId={indexedMarket.marketId}
                 chartSeries={chartSeries}
-                baseAsset={indexedMarket.pool.baseAsset}
-                poolCreationDate={new Date(indexedMarket.pool.createdAt)}
+                baseAsset={
+                  indexedMarket.pool?.baseAsset ??
+                  indexedMarket.neoPool?.collateral
+                }
+                poolCreationDate={
+                  new Date(
+                    indexedMarket.pool?.createdAt ??
+                      indexedMarket.neoPool?.createdAt ??
+                      "",
+                  )
+                }
                 marketStatus={indexedMarket.status}
                 resolutionDate={new Date(resolutionTimestamp)}
               />

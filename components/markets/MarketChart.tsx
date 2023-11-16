@@ -27,7 +27,7 @@ const MarketChart = ({
 }: {
   marketId: number;
   chartSeries: ChartSeries[];
-  baseAsset: string;
+  baseAsset?: string;
   poolCreationDate: Date;
   marketStatus: MarketStatus;
   resolutionDate: Date;
