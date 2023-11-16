@@ -49,6 +49,9 @@ import {
   lookupAssetPrice,
   useAmm2MarketSpotPrices,
 } from "./useAmm2MarketSpotPrices";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { lookupAssetSymbol } from "lib/constants/foreign-asset";
+import { IOBaseAssetId } from "@zeitgeistpm/sdk";
 
 export type UsePortfolioPositions = {
   /**
@@ -200,6 +203,14 @@ export const usePortfolioPositions = (
 
   const pools = usePoolsByIds(filter);
   const markets = useMarketsByIds(filter);
+  // const markets =
+  //   allMarkets?.data?.filter((market) => {
+  //     const baseAsset = parseAssetIdString(market.baseAsset);
+  //     const assetSymbol = IOBaseAssetId.is(baseAsset)
+  //       ? lookupAssetSymbol(baseAsset)
+  //       : "Unknown Asset";
+  //     return assetSymbol !== "WSX";
+  // })
   const amm2MarketIds = markets.data
     ?.filter((market) => market.scoringRule === ScoringRule.Lmsr)
     .map((m) => m.marketId);

@@ -17,6 +17,7 @@ import {
 import Decimal from "decimal.js";
 import { getMarketHeaders, MarketHeader } from "lib/gql/market-header";
 import { useSdkv2 } from "../useSdkv2";
+import { isWSX } from "lib/constants";
 
 export const transactionHistoryKey = "trade-history";
 
@@ -161,7 +162,6 @@ export const useTradeHistory = (address?: string) => {
               swap.assetAmountIn,
               swap.assetAmountOut,
             );
-            console.log(priceInfo.baseAsset);
             const item: TradeHistoryItem = {
               marketId: market?.marketId,
               question: market?.question,
@@ -181,7 +181,12 @@ export const useTradeHistory = (address?: string) => {
             return item;
           })
           .filter((trade): trade is TradeHistoryItem => trade != null)
-          .filter((trade) => trade.baseAssetName !== "WSX");
+          // Filter out WSX trades if we're not on the WSX
+          .filter((trade) =>
+            isWSX
+              ? trade.baseAssetName !== "WSX"
+              : trade.baseAssetName === "WSX",
+          );
 
         return trades;
       }

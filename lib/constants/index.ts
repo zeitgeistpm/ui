@@ -3,6 +3,8 @@ import resolveTailwindConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../../tailwind.config";
 import { EndpointOption, Environment } from "../types";
 
+export const isWSX = process.env.NEXT_PUBLIC_CLIENT === "wsx";
+
 export const ZTG = 10 ** 10;
 
 export const MIN_USD_DISPLAY_AMOUNT = 0.01;
