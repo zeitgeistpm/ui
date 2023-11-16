@@ -93,7 +93,7 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
     pool?.poolId ? { poolId: pool.poolId } : undefined,
   );
 
-  const swapFee = new Decimal(Number(pool?.swapFee ?? neoPool?.swapFee) ?? 0)
+  const swapFee = new Decimal(Number(pool?.swapFee ?? neoPool?.swapFee ?? 0))
     .div(ZTG)
     .mul(100)
     .toNumber();
