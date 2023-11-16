@@ -418,7 +418,7 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
             {referendumIndex != null && (
               <div className="mb-12 ">
-                <ReferendumSummary referendumIndex={244} />
+                <ReferendumSummary referendumIndex={referendumIndex} />
               </div>
             )}
             <SimilarMarketsSection market={market ?? undefined} />
