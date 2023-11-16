@@ -9,12 +9,12 @@ const endpoints = [
   "wss://polkadot-rpc.dwellir.com",
   "wss://polkadot.public.curie.radiumblock.co/ws",
   "wss://1rpc.io/dot",
-  "rpc-polkadot.luckyfriday.io",
+  "wss://rpc-polkadot.luckyfriday.io",
 ];
 
 const polkadotApiAtom = loadable(
   atom(async () => {
-    const wsProvider = new WsProvider("wss://rpc.polkadot.io");
+    const wsProvider = new WsProvider(endpoints);
     const api = await ApiPromise.create({ provider: wsProvider });
 
     return api;
