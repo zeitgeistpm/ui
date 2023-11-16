@@ -41,6 +41,7 @@ import {
   graphQlEndpoint,
   ZTG,
 } from "lib/constants";
+import { CourtAppealForm } from "components/court/CourtAppealForm";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -327,6 +328,8 @@ const CasePage: NextPage = ({
               )}
             </>
           )}
+
+          {stage?.type === "appeal" && <CourtAppealForm caseId={caseId} />}
 
           <div className="group relative mt-4 overflow-hidden rounded-xl px-6 py-6 shadow-lg">
             <div className="absolute left-0 top-0 z-10 h-full w-full transition-all group-hover:blur-[2px]">
