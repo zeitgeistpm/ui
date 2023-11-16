@@ -1,6 +1,5 @@
 import type { ScalarRangeType } from "@zeitgeistpm/sdk";
 import Skeleton from "components/ui/Skeleton";
-import { motion } from "framer-motion";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { MarketOutcomes } from "lib/types/markets";
@@ -18,8 +17,6 @@ import {
 } from "@zeitgeistpm/sdk";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import Image from "next/image";
-import MarketImage from "components/ui/MarketImage";
-import { useHover } from "lib/hooks/events/useHover";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -28,11 +25,11 @@ export interface IndexedMarketCardData {
   creation: string;
   creator: string;
   outcomes: MarketOutcomes;
-  marketType: { categorical?: string; scalar?: string[] };
-  scalarType: ScalarRangeType;
+  marketType: MarketType;
+  scalarType: ScalarRangeType | null;
   prediction: { name: string; price: number };
   volume: number;
-  pool: { poolId?: number; volume: string } | null;
+  pool?: { poolId?: number; volume: string } | null;
   baseAsset: string;
   tags?: string[];
   status: string;
@@ -40,6 +37,12 @@ export interface IndexedMarketCardData {
   liquidity?: string;
   numParticipants?: number;
 }
+
+export interface MarketType {
+  categorical?: string;
+  scalar?: string[];
+}
+
 export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
   disableLink?: boolean;
@@ -256,7 +259,7 @@ export const MarketCard = ({
               </span>
             ) : pool && marketType?.categorical ? (
               <MarketCardPredictionBar pool={pool} prediction={prediction} />
-            ) : pool && Object.keys(pool).length !== 0 ? (
+            ) : pool && scalarType && Object.keys(pool).length !== 0 ? (
               <ScalarPriceRange
                 scalarType={scalarType}
                 lowerBound={lower}
