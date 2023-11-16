@@ -118,10 +118,10 @@ const CurrenciesTable = ({ address }: { address: string }) => {
   const { data: allBalances } = useCurrencyBalances(address);
   const { data: constants } = useChainConstants();
 
-  //filter balances if client is WSX
+  //filter balances depending on client
   const balances =
     process.env.NEXT_PUBLIC_CLIENT === "WSX"
-      ? allBalances
+      ? allBalances?.filter((b) => b.symbol === "WSX")
       : allBalances?.filter((b) => b.symbol !== "WSX");
 
   const tableData: TableData[] | undefined = balances

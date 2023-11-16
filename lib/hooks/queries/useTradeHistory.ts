@@ -41,7 +41,6 @@ const lookupAssetName = (
 
 const lookupMarket = (asset: string, marketsMap: Map<number, MarketHeader>) => {
   const assetId = parseAssetId(asset).unwrap();
-
   if (IOMarketOutcomeAssetId.is(assetId)) {
     const marketId = getMarketIdOf(assetId);
     const market = marketsMap.get(marketId);
@@ -162,7 +161,7 @@ export const useTradeHistory = (address?: string) => {
               swap.assetAmountIn,
               swap.assetAmountOut,
             );
-
+            console.log(priceInfo.baseAsset);
             const item: TradeHistoryItem = {
               marketId: market?.marketId,
               question: market?.question,
@@ -179,10 +178,10 @@ export const useTradeHistory = (address?: string) => {
               time: swap.timestamp,
               extrinsic: swap.extrinsic,
             };
-
             return item;
           })
-          .filter((trade): trade is TradeHistoryItem => trade != null);
+          .filter((trade): trade is TradeHistoryItem => trade != null)
+          .filter((trade) => trade.baseAssetName !== "WSX");
 
         return trades;
       }
