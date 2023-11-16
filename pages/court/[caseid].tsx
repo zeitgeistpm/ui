@@ -32,12 +32,29 @@ import NotFoundPage from "pages/404";
 import { useMemo } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { LuVote } from "react-icons/lu";
+import { IGetPlaiceholderReturn, getPlaiceholder } from "plaiceholder";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
 
-const CasePage: NextPage = () => {
+export async function getStaticProps() {
+  const [docsArticleImagePlaceholder] = await Promise.all([
+    getPlaiceholder(`/court_gnomes.webp`),
+  ]);
+
+  return {
+    props: {
+      docsArticleImagePlaceholder,
+    },
+  };
+}
+
+const CasePage: NextPage = ({
+  docsArticleImagePlaceholder,
+}: {
+  docsArticleImagePlaceholder: IGetPlaiceholderReturn;
+}) => {
   if (process.env.NEXT_PUBLIC_SHOW_COURT !== "true") {
     return <NotFoundPage />;
   }
@@ -268,11 +285,14 @@ const CasePage: NextPage = () => {
           <div className="group relative mt-4 overflow-hidden rounded-xl px-6 py-6 shadow-lg">
             <div className="absolute left-0 top-0 z-10 h-full w-full transition-all group-hover:blur-[2px]">
               <Image
+                priority
                 title="Wizard draped in purple robes holding a flaming crypto key."
                 alt="Wizard draped in purple robes holding a flaming crypto key."
                 src={"/court_gnomes.webp"}
                 layout="fill"
                 objectFit="cover"
+                blurDataURL={docsArticleImagePlaceholder.base64}
+                placeholder="blur"
                 style={{
                   objectPosition: "50% 50%",
                 }}
