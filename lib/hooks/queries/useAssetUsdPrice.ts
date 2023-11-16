@@ -2,13 +2,16 @@ import { useQueries, useQuery, UseQueryResult } from "@tanstack/react-query";
 import {
   AssetId,
   ForeignAssetId,
+  FullContext,
   IOForeignAssetId,
   IOZtgAssetId,
   parseAssetId,
+  Sdk,
 } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { environment } from "lib/constants";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
+import { isPresent } from "lib/types";
 
 export const assetUsdPriceRootKey = "asset-usd-price";
 
@@ -85,34 +88,44 @@ export const useAllForeignAssetUsdPrices = (): {
   };
 };
 
-export const getBaseAssetPrices = async (): Promise<ForeignAssetPrices> => {
-  const zeitgeistCoingeckoId = "zeitgeist";
-  const coinGeckoIds = [
-    ...Object.values(FOREIGN_ASSET_METADATA).map((asset) => asset.coinGeckoId),
-    zeitgeistCoingeckoId,
-  ];
-  const res = await fetch(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoIds.join(
-      "%2C",
-    )}&vs_currencies=usd`,
+export const getBaseAssetPrices = async (
+  sdk: Sdk<FullContext>,
+): Promise<ForeignAssetPrices> => {
+  const assets = [
+    ...Object.values(FOREIGN_ASSET_METADATA).map((asset) => asset.subsquidId),
+    "ZTG",
+  ].filter(isPresent);
+
+  const { assetPrice } = await sdk.indexer.client.request<{
+    assetPrice: { price: number; pair: string }[];
+  }>(`query AllAssetPrices {
+    assetPrice(base: [${assets.join(",")}], target: USD) {
+      price
+      pair
+      timestamp
+    }
+  }`);
+
+  const prices = Object.keys(FOREIGN_ASSET_METADATA).reduce<ForeignAssetPrices>(
+    (prices, assetNumber) => {
+      const assetMetadata = FOREIGN_ASSET_METADATA[Number(assetNumber)];
+      const subsquidId = assetMetadata.subsquidId;
+      const price =
+        (subsquidId &&
+          assetPrice.find((price) => price.pair.includes(subsquidId))?.price) ??
+        0;
+      prices[assetNumber] = new Decimal(price);
+
+      return prices;
+    },
+    {},
   );
 
-  const json = await res.json();
+  prices["ztg"] = new Decimal(
+    assetPrice.find((price) => price.pair.includes("ZTG"))?.price ?? 0,
+  );
 
-  const assetPrices = Object.keys(
-    FOREIGN_ASSET_METADATA,
-  ).reduce<ForeignAssetPrices>((prices, assetNumber) => {
-    const assetMetadata = FOREIGN_ASSET_METADATA[Number(assetNumber)];
-    const coinGeckoId = assetMetadata.coinGeckoId;
-    const assetPrice = json[coinGeckoId].usd;
-    prices[assetNumber] = new Decimal(assetPrice);
-
-    return prices;
-  }, {});
-
-  assetPrices["ztg"] = json[zeitgeistCoingeckoId].usd;
-
-  return assetPrices;
+  return prices;
 };
 
 export const getForeignAssetPriceServerSide = async (
@@ -126,7 +139,7 @@ export const getForeignAssetPriceServerSide = async (
   );
 
   const json = await res.json();
-
+  console.log(json);
   return new Decimal(json[coinGeckoId]?.usd ?? 0);
 };
 export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
