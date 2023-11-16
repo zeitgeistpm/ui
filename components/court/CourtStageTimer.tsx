@@ -28,10 +28,10 @@ export const CourtStageTimer = ({ stage }: { stage?: CourtStage }) => {
       <div className="inline-block w-full">
         <div className="mb-1 flex items-center">
           <div className="mr-4 font-semibold text-black">
-            {copy[stage.type].title}
+            {courtStageCopy[stage.type].title}
           </div>
           <div className="text-sm text-sky-600">
-            {copy[stage.type].description}
+            {courtStageCopy[stage.type].description}
           </div>
           {stage.type !== "closed" && stage.type !== "reassigned" && (
             <div className="ml-auto text-right text-black">
@@ -46,7 +46,7 @@ export const CourtStageTimer = ({ stage }: { stage?: CourtStage }) => {
           <div className="h-1.5 w-full rounded-lg bg-gray-100">
             <div
               className={`h-full rounded-lg transition-all ${
-                copy[stage.type].color
+                courtStageCopy[stage.type].color
               }`}
               style={{ width: `${percentage}%` }}
             />
@@ -57,7 +57,7 @@ export const CourtStageTimer = ({ stage }: { stage?: CourtStage }) => {
   );
 };
 
-const copy: Record<
+export const courtStageCopy: Record<
   CourtStage["type"],
   { title: string; description: string; color: string }
 > = {

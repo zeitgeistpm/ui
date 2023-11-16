@@ -1,4 +1,5 @@
 import { ZrmlCourtCourtInfo } from "@polkadot/types/lookup";
+import { isInfinity } from "@zeitgeistpm/utility/dist/infinity";
 import { blockDate } from "@zeitgeistpm/utility/dist/time";
 import InfoPopover from "components/ui/InfoPopover";
 import Skeleton from "components/ui/Skeleton";
@@ -15,6 +16,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { LuVote } from "react-icons/lu";
+import { courtStageCopy } from "./CourtStageTimer";
 
 const columns: TableColumn[] = [
   {
@@ -102,16 +104,36 @@ const CaseStatus = ({ courtCase }: { courtCase: CourtCaseInfo }) => {
     }
   }, [chainTime, market]);
 
+  const percentage =
+    stage && isInfinity(stage.remainingBlocks)
+      ? 100
+      : stage
+        ? ((stage.totalTime - stage.remainingBlocks) / stage.totalTime) * 100
+        : 0;
+
   return (
-    <div className="flex items-center gap-2">
+    <div className="">
       {stage ? (
         <>
-          <div className={`${caseStatusCopy[stage.type].color}`}>
-            {caseStatusCopy[stage.type].title}
+          <div className="mb-1 flex items-center gap-2">
+            <div className={`${caseStatusCopy[stage.type].color}`}>
+              {caseStatusCopy[stage.type].title}
+            </div>
+            <InfoPopover position="top">
+              {caseStatusCopy[stage.type].description}
+            </InfoPopover>
           </div>
-          <InfoPopover position="top">
-            {caseStatusCopy[stage.type].description}
-          </InfoPopover>
+
+          <div className="w-full">
+            <div className="h-1 w-full rounded-lg bg-gray-100">
+              <div
+                className={`h-full rounded-lg transition-all ${
+                  courtStageCopy[stage.type].color
+                }`}
+                style={{ width: `${percentage}%` }}
+              />
+            </div>
+          </div>
         </>
       ) : (
         <Skeleton />
