@@ -129,7 +129,7 @@ const Cell = ({
   const style = { height: `${rowHeight}px` };
   const skeletonElement = (
     <td
-      className={`font-semibold text-xs ${base}`}
+      className={`text-xs font-semibold ${base}`}
       onClick={onClick}
       style={style}
     >
@@ -158,7 +158,7 @@ const Cell = ({
     case "number":
       return (
         <td
-          className={`font-semibold text-xs ${base}`}
+          className={`text-xs font-semibold ${base}`}
           onClick={onClick}
           style={style}
         >
@@ -183,7 +183,7 @@ const Cell = ({
       if (Array.isArray(value)) {
         return (
           <td className={`${base}`} onClick={onClick} style={style}>
-            <div className="flex-end items-center h-full">
+            <div className="flex-end h-full items-center">
               <TableChart data={value} />
             </div>
           </td>
@@ -192,7 +192,7 @@ const Cell = ({
     case "paragraph":
       return (
         <td
-          className={`font-semibold text-xs text-left ${base}`}
+          className={`text-left text-xs font-semibold ${base}`}
           onClick={onClick}
           style={style}
         >
@@ -207,7 +207,7 @@ const Cell = ({
       ) {
         return (
           <td className={`${base} `} onClick={onClick} style={style}>
-            <div className="text-sm mb-0.5">
+            <div className="mb-0.5 text-sm">
               {formatNumberLocalized(value.value)}
             </div>
             <div className="text-xs font-light text-sky-600">
@@ -226,7 +226,7 @@ const Cell = ({
         <td className={` ${base}`} onClick={onClick} style={style}>
           <div className="flex items-center">
             <Avatar address={typeof value === "string" ? value : ""} />
-            <div className="font-semibold text-xs ml-2.5">
+            <div className="ml-2.5 text-xs font-semibold">
               {typeof value === "string" ? value : ""}
             </div>
           </div>
@@ -250,11 +250,11 @@ const Cell = ({
           <td className={` ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
               <img
-                className="rounded-md w-10 h-10 mr-2.5"
+                className="mr-2.5 h-10 w-10 rounded-md"
                 src={value.url}
                 loading="lazy"
               />
-              <span className="font-semibold text-xxs text-sky-600 uppercase">
+              <span className="text-xxs font-semibold uppercase text-sky-600">
                 {value.label}
               </span>
             </div>
@@ -392,7 +392,7 @@ const Table = ({
         <>
           <div>
             <table
-              className="border-separate w-full rounded-lg shadow-xl shadow-gray-100 "
+              className="w-full border-separate rounded-lg shadow-xl shadow-gray-100 "
               ref={tableRef}
               style={
                 isOverflowing === true
@@ -405,7 +405,7 @@ const Table = ({
               }
             >
               <thead>
-                <tr className="bg-light-gray h-12">
+                <tr className="h-12 bg-light-gray">
                   {renderColumns.map((column, index) => (
                     <th
                       key={index}
@@ -419,8 +419,8 @@ const Table = ({
                           column.onSort
                             ? "flex justify-center"
                             : column.infobox
-                            ? "flex items-center gap-1"
-                            : ""
+                              ? "flex items-center gap-1"
+                              : ""
                         }`}
                       >
                         {column.header}
@@ -440,11 +440,11 @@ const Table = ({
                               index === 0
                                 ? "bottom-end"
                                 : index > renderColumns.length - 3
-                                ? "bottom-start"
-                                : "bottom"
+                                  ? "bottom-start"
+                                  : "bottom"
                             }
                             title={
-                              <h3 className="flex justify-center items-center mb-4 gap-2">
+                              <h3 className="mb-4 flex items-center justify-center gap-2">
                                 <AiOutlineInfoCircle />
                                 {column.header}
                               </h3>
@@ -473,7 +473,7 @@ const Table = ({
                       transition-colors duration-100 ease-in-out
                       ${
                         showHighlight === true
-                          ? " hover:bg-blue-lighter hover:border-blue-300 "
+                          ? " hover:border-blue-300 hover:bg-blue-lighter "
                           : ""
                       }
                     ${rowColorClass}
@@ -512,8 +512,8 @@ const Table = ({
             </div>
 
             {!loadingMore && rows.length === 0 ? (
-              <div className="w-full flex justify-center">
-                <div className="font-bold mt-14">{noDataMessage}</div>
+              <div className="flex w-full justify-center">
+                <div className="mt-14 font-bold">{noDataMessage}</div>
               </div>
             ) : (
               <></>
@@ -523,9 +523,9 @@ const Table = ({
           {onPaginate ? <Paginator onPlusClicked={handlePlusClicked} /> : <></>}
 
           {onLoadMore && !hideLoadMore && (
-            <div className="flex justify-center mt-4 mb-5">
+            <div className="mb-5 mt-4 flex justify-center">
               <div
-                className="uppercase text-sky-600 font-bold text-xs"
+                className="text-xs font-bold uppercase text-sky-600"
                 role="button"
                 onClick={handleLoadMore}
               >

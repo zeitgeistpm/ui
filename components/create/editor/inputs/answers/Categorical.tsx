@@ -123,8 +123,8 @@ export const CategoricalAnswersInput = ({
 
   return (
     <div>
-      <div className="mb-2 md:flex justify-center items-center">
-        <div className="flex-1 md:flex justify-center">
+      <div className="mb-2 items-center justify-center md:flex">
+        <div className="flex-1 justify-center md:flex">
           <DndContext
             sensors={dragSensors}
             collisionDetection={closestCenter}
@@ -158,10 +158,10 @@ export const CategoricalAnswersInput = ({
       </div>
 
       {!disabled && (
-        <div className="flex center mb-4">
+        <div className="center mb-4 flex">
           <button
             type="button"
-            className="border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all active:scale-95"
+            className="rounded-full border-2 border-gray-300 px-8 py-4 text-sm transition-all active:scale-95"
             onClick={handleAddOptionClick}
           >
             Add Option
@@ -208,11 +208,11 @@ const AnswerInput = ({
   return (
     <div
       style={style}
-      className={`relative flex-1 w-full bg-gray-100 rounded-md md:min-w-[520px] md:max-w-[420px] py-3 px-5 mb-3`}
+      className={`relative mb-3 w-full flex-1 rounded-md bg-gray-100 px-5 py-3 md:min-w-[520px] md:max-w-[420px]`}
     >
       <Input
         disabled={disabled}
-        className={`h-full w-full bg-transparent outline-none !p-0 !m-0`}
+        className={`!m-0 h-full w-full bg-transparent !p-0 outline-none`}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onBlur={(event) => onBlur(event.target.value)}
@@ -221,10 +221,10 @@ const AnswerInput = ({
       />
 
       {!disabled && (
-        <div className="absolute flex gap-2 z-10 right-8 top-[50%] translate-y-[-50%]">
+        <div className="absolute right-8 top-[50%] z-10 flex translate-y-[-50%] gap-2">
           <button
             type="button"
-            className=" bg-white rounded-md py-1 px-2"
+            className=" rounded-md bg-white px-2 py-1"
             onClick={onClear}
           >
             remove
@@ -232,8 +232,8 @@ const AnswerInput = ({
         </div>
       )}
       <div
-        className={`absolute flex gap-2 z-10 right-2 top-[50%] translate-y-[-50%] transition-opacity duration-300 ${
-          draggingDisabled && "opacity-25 cursor-not-allowed"
+        className={`absolute right-2 top-[50%] z-10 flex translate-y-[-50%] gap-2 transition-opacity duration-300 ${
+          draggingDisabled && "cursor-not-allowed opacity-25"
         }`}
         ref={setNodeRef}
         {...attributes}

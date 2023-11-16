@@ -24,8 +24,8 @@ export const AnswersInput = ({
       type === "yes/no"
         ? { type: "yes/no", answers: ["Yes", "No"] }
         : type === "categorical"
-        ? { type: "categorical", answers: ["", ""] }
-        : { type: "scalar", numberType: "number", answers: [0, 1] };
+          ? { type: "categorical", answers: ["", ""] }
+          : { type: "scalar", numberType: "number", answers: [0, 1] };
 
     onChange({ target: { name, value: newValue }, type: "change" });
   };
@@ -40,10 +40,10 @@ export const AnswersInput = ({
 
   return (
     <>
-      <div className="flex justify-center items-center mb-8 gap-2">
+      <div className="mb-8 flex items-center justify-center gap-2">
         <button
           type="button"
-          className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8 transition-all active:scale-95  ${
+          className={`rounded-full px-6 py-3 text-sm transition-all active:scale-95 md:px-8 md:py-4  ${
             value?.type === "yes/no" ? "bg-nyanza-base" : "bg-gray-100"
           }`}
           onClick={handleSelectType("yes/no")}
@@ -53,7 +53,7 @@ export const AnswersInput = ({
 
         <button
           type="button"
-          className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8 transition-all active:scale-95 ${
+          className={`rounded-full px-6 py-3 text-sm transition-all active:scale-95 md:px-8 md:py-4 ${
             value?.type === "categorical"
               ? `${
                   fieldState.isTouched && fieldState.isValid
@@ -69,7 +69,7 @@ export const AnswersInput = ({
 
         <button
           type="button"
-          className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8 transition-all active:scale-95 ${
+          className={`rounded-full px-6 py-3 text-sm transition-all active:scale-95 md:px-8 md:py-4 ${
             value?.type === "scalar"
               ? `${
                   fieldState.isTouched && fieldState.isValid

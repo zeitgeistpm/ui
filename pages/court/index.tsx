@@ -43,14 +43,14 @@ const CourtPage: NextPage = () => {
   );
 
   return (
-    <div className="flex flex-col mt-4 gap-y-4">
-      <div className="font-bold text-2xl">Court</div>
+    <div className="mt-4 flex flex-col gap-y-4">
+      <div className="text-2xl font-bold">Court</div>
       <div className="flex gap-4">
         <JoinCourtButton />
         {!participant?.prepareExit && <PrepareExitCourtButton />}
         {participant?.prepareExit && (
           <button
-            className="bg-[#DC056C] rounded-md text-white py-2 px-4"
+            className="rounded-md bg-[#DC056C] px-4 py-2 text-white"
             disabled={isLeaveLoading === true || !participant}
             onClick={() => leaveCourt()}
           >
@@ -66,9 +66,7 @@ const CourtPage: NextPage = () => {
       </div>
       <div className="flex gap-2">
         <span>Delegations:</span>
-        {participant?.delegations?.map((address) => (
-          <span>{address}</span>
-        ))}
+        {participant?.delegations?.map((address) => <span>{address}</span>)}
       </div>
       <JurorsTable />
     </div>

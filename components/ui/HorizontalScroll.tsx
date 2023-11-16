@@ -24,21 +24,21 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
 }) => {
   return (
     <div
-      className={`flex md:ml-auto w-full items-center justify-end ${classes}`}
+      className={`flex w-full items-center justify-end md:ml-auto ${classes}`}
     >
       {link && (
         <Link
           href={link}
-          className="leading-[40px] rounded-ztg-100 text-ztg-14-150 bg-mystic px-[15px] text-center w-full sm:w-fit"
+          className="w-full rounded-ztg-100 bg-mystic px-[15px] text-center text-ztg-14-150 leading-[40px] sm:w-fit"
         >
           {cta}
         </Link>
       )}
       <button
         onClick={handleLeftClick}
-        className={`hidden sm:flex items-center justify-center w-[40px] h-[40px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
+        className={`ztg-transition ml-[12px] mr-[8px] hidden h-[40px] w-[40px] items-center justify-center rounded-full sm:flex ${
           leftDisabled
-            ? "bg-sky-600 opacity-30 text-pastel-blue"
+            ? "bg-sky-600 text-pastel-blue opacity-30"
             : "bg-pastel-blue text-white"
         }`}
         disabled={leftDisabled}
@@ -47,9 +47,9 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
       </button>
       <button
         onClick={handleRightClick}
-        className={`hidden sm:flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition  ${
+        className={`ztg-transition hidden h-[40px] w-[40px] items-center justify-center rounded-full sm:flex  ${
           rightDisabled
-            ? "bg-sky-600 opacity-30 text-pastel-blue"
+            ? "bg-sky-600 text-pastel-blue opacity-30"
             : "bg-pastel-blue text-white"
         }`}
         disabled={rightDisabled}

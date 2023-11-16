@@ -118,7 +118,7 @@ const getTrendingMarkets = async (
     return pools;
   });
 
-  const basePrices = await getBaseAssetPrices();
+  const basePrices = await getBaseAssetPrices(sdk);
 
   const trendingPoolIds = calcTrendingPools(historicalPools, basePrices, pools);
 
@@ -232,9 +232,8 @@ const calcTrendingPools = (
   });
 
   for (let poolId in poolVolumes) {
-    const base = pools.find(
-      (pool) => pool.poolId === Number(poolId),
-    )?.baseAsset;
+    const base = pools.find((pool) => pool.poolId === Number(poolId))
+      ?.baseAsset;
 
     const value = lookupPrice(
       basePrices,

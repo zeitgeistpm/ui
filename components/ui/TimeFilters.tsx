@@ -45,16 +45,16 @@ const TimeFilters = ({
   onClick: (filter: TimeFilter) => void;
 }) => {
   return (
-    <div className="flex items-center gap-x-2 mb-1 bg-sky-100 h-[35px] py-[8px] px-[12px] rounded-ztg-10 w-fit">
+    <div className="mb-1 flex h-[35px] w-fit items-center gap-x-2 rounded-ztg-10 bg-sky-100 px-[12px] py-[8px]">
       {filters.map((filter, index) => (
         <span
           key={index}
-          className={`text-ztg-12-150 rounded-ztg-5 w-[47px] flex justify-center ${
+          className={`flex w-[47px] justify-center rounded-ztg-5 text-ztg-12-150 ${
             filter.label === value.label ? "bg-white shadow-sm" : ""
           }`}
         >
           <button
-            className="focus:outline-none py-ztg-2 px-ztg-4 "
+            className="px-ztg-4 py-ztg-2 focus:outline-none "
             onClick={() => onClick(filter)}
           >
             {filter.label}

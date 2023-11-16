@@ -28,8 +28,8 @@ export const calcPrices = (prices: PriceLock[]): PriceLock[] => {
         price.locked === true
           ? price.price
           : distributedPrice.greaterThan(0)
-          ? distributedPrice
-          : new Decimal(0),
+            ? distributedPrice
+            : new Decimal(0),
     };
   });
 
