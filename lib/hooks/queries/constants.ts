@@ -6,5 +6,6 @@ export const marketMetaFilter: MarketWhereInput = {
   question_not_eq: "",
   categories_isNull: false,
   hasValidMetaCategories_eq: true,
-  baseAsset_not_eq: isWSX ? '{"foreignAsset":3}' : "",
+  baseAsset_eq: isWSX ? '{"foreignAsset":3}' : undefined,
+  baseAsset_not_eq: !isWSX ? '{"foreignAsset":3}' : undefined,
 };
