@@ -96,58 +96,55 @@ const CourtPage: NextPage = ({
             rights to active jurors.
           </p>
 
-          <div className="">
-            <div className="mb-4 inline-block w-full min-w-[260px] rounded-md bg-slate-200 bg-opacity-60 px-6 py-5 md:w-auto">
-              <div className="flex">
-                <h3 className="mb-2 flex-1 text-lg text-gray-800">My Stake</h3>
-                {connectedParticipant && (
-                  <div>
-                    <div
-                      className={`center gap-1 rounded-md px-2 py-1 text-sm text-gray-600`}
-                    >
-                      {connectedParticipant?.type}
-                      <InfoPopover overlay={false} position="top">
-                        {connectedParticipant?.type === "Juror"
-                          ? "You are participating as a juror. All stake is delegated to your personal juror stake."
-                          : "You are participating as a delegator. The probability of one delegator being selected is equally distributed among all delegations."}
-                      </InfoPopover>
-                    </div>
+          <div className="mb-4 inline-block w-full min-w-[260px] rounded-md bg-slate-200 bg-opacity-50 px-6 py-5 backdrop-blur-[2px] md:w-auto">
+            <div className="flex">
+              <h3 className="mb-2 flex-1 text-lg text-gray-800">My Stake</h3>
+              {connectedParticipant && (
+                <div>
+                  <div
+                    className={`center gap-1 rounded-md px-2 py-1 text-sm text-gray-600`}
+                  >
+                    {connectedParticipant?.type}
+                    <InfoPopover overlay={false} position="top">
+                      {connectedParticipant?.type === "Juror"
+                        ? "You are participating as a juror. All stake is delegated to your personal juror stake."
+                        : "You are participating as a delegator. The probability of one delegator being selected is equally distributed among all delegations."}
+                    </InfoPopover>
                   </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mb-4  flex">
+              <div className="flex-1">
+                <div className="mb-[0.5] text-lg font-medium">
+                  {formatNumberLocalized(
+                    connectedParticipant?.stake.div(ZTG).toNumber() ?? 0,
+                  )}{" "}
+                  {constants?.tokenSymbol}
+                </div>
+                <div className="font-light text-gray-600">
+                  $
+                  {ztgPrice &&
+                    formatNumberLocalized(
+                      ztgPrice
+                        .mul(
+                          connectedParticipant?.stake.div(ZTG).toNumber() ?? 0,
+                        )
+                        .toNumber(),
+                    )}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-3 flex flex-col gap-4 md:flex-row">
+                <JoinCourtAsJurorButton className="w-full md:w-auto" />
+                <ManageDelegationButton className="w-full md:w-auto" />
+
+                {!connectedParticipant?.prepareExit && (
+                  <PrepareExitCourtButton className="w-full md:w-auto" />
                 )}
-              </div>
-
-              <div className="mb-4  flex">
-                <div className="flex-1">
-                  <div className="mb-[0.5] text-lg font-medium">
-                    {formatNumberLocalized(
-                      connectedParticipant?.stake.div(ZTG).toNumber() ?? 0,
-                    )}{" "}
-                    {constants?.tokenSymbol}
-                  </div>
-                  <div className="font-light text-gray-600">
-                    $
-                    {ztgPrice &&
-                      formatNumberLocalized(
-                        ztgPrice
-                          .mul(
-                            connectedParticipant?.stake.div(ZTG).toNumber() ??
-                              0,
-                          )
-                          .toNumber(),
-                      )}
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <div className="mb-3 flex flex-col gap-4 md:flex-row">
-                  <JoinCourtAsJurorButton className="w-full md:w-auto" />
-                  <ManageDelegationButton className="w-full md:w-auto" />
-
-                  {!connectedParticipant?.prepareExit && (
-                    <PrepareExitCourtButton className="w-full md:w-auto" />
-                  )}
-                </div>
               </div>
             </div>
           </div>
