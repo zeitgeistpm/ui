@@ -19,8 +19,25 @@ import { NextPage } from "next";
 import NotFoundPage from "pages/404";
 import { CourtCasesTable } from "components/court/CourtCasesTable";
 import Image from "next/image";
+import { IGetPlaiceholderReturn, getPlaiceholder } from "plaiceholder";
 
-const CourtPage: NextPage = () => {
+export async function getStaticProps() {
+  const [bannerPlaiceholder] = await Promise.all([
+    getPlaiceholder(`/court_banner.webp`),
+  ]);
+
+  return {
+    props: {
+      bannerPlaiceholder,
+    },
+  };
+}
+
+const CourtPage: NextPage = ({
+  bannerPlaiceholder,
+}: {
+  bannerPlaiceholder: IGetPlaiceholderReturn;
+}) => {
   if (process.env.NEXT_PUBLIC_SHOW_COURT !== "true") {
     return <NotFoundPage />;
   }
@@ -57,8 +74,11 @@ const CourtPage: NextPage = () => {
             title="Wizard draped in purple robes holding a flaming crypto key."
             alt="Wizard draped in purple robes holding a flaming crypto key."
             src={"/court_banner.webp"}
+            priority
             layout="fill"
             objectFit="cover"
+            blurDataURL={bannerPlaiceholder.base64}
+            placeholder="blur"
             style={{
               objectPosition: "20% 30%",
             }}
