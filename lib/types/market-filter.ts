@@ -14,11 +14,11 @@ export type MarketOrderByOption = {
   value: MarketsOrderBy;
 };
 
-export type MarketFilterTagLabel = typeof CATEGORIES[number]["name"] | string;
+export type MarketFilterTagLabel = (typeof CATEGORIES)[number]["name"] | string;
 
 export type MarketFilterStatusLabel = MarketStatus;
 
-export type MarketFilterType = typeof filterTypes[number];
+export type MarketFilterType = (typeof filterTypes)[number];
 
 export type MarketFilter = {
   type: MarketFilterType;

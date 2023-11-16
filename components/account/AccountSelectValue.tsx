@@ -10,20 +10,20 @@ export interface AccountSelectValueProps {
 
 const AccountSelectValue: FC<AccountSelectValueProps> = ({ name, address }) => {
   return (
-    <div className="flex items-center  h-full w-full px-ztg-8 bg-sky-100 dark:bg-black rounded-ztg-10">
-      <div className="center rounded-full w-ztg-28 h-ztg-28 bg-white dark:bg-sky-1000">
-        <div className="rounded-full w-ztg-22 h-ztg-22 bg-sky-100 dark:bg-black">
+    <div className="flex h-full  w-full items-center rounded-ztg-10 bg-sky-100 px-ztg-8 dark:bg-black">
+      <div className="center h-ztg-28 w-ztg-28 rounded-full bg-white dark:bg-sky-1000">
+        <div className="h-ztg-22 w-ztg-22 rounded-full bg-sky-100 dark:bg-black">
           <Avatar zoomed address={address} />
         </div>
       </div>
-      <div className="flex flex-col ml-ztg-16">
-        <div className="font-bold text-sky-600 text-ztg-10-150 uppercase">
+      <div className="ml-ztg-16 flex flex-col">
+        <div className="text-ztg-10-150 font-bold uppercase text-sky-600">
           {name}
         </div>
         <div className="font-mono text-ztg-12-120 font-semibold md:hidden">
           {shortenAddress(address, 8, 12)}
         </div>
-        <div className="font-mono text-ztg-12-120 font-semibold hidden md:block">
+        <div className="hidden font-mono text-ztg-12-120 font-semibold md:block">
           {address}
         </div>
       </div>

@@ -36,23 +36,23 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
 
   return (
     <>
-      <div className="flex flex-col justify-center w-full gap-y-2 sm:gap-y-5 mb-5">
-        <div className="flex gap-5 flex-col sm:flex-row">
+      <div className="mb-5 flex w-full flex-col justify-center gap-y-2 sm:gap-y-5">
+        <div className="flex flex-col gap-5 sm:flex-row">
           <div>{address && <Avatar address={address} size={100} />}</div>
           <div className="flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="mb-2 flex items-center gap-2">
               <div>
                 {isOwned && !hasIdentity && (
-                  <div className="font-extrabold text-xs text-gray-500">
+                  <div className="text-xs font-extrabold text-gray-500">
                     wallet name
                   </div>
                 )}
                 {isOwned && hasIdentity && (
-                  <div className="font-extrabold text-xs text-gray-500">
+                  <div className="text-xs font-extrabold text-gray-500">
                     on chain name
                   </div>
                 )}
-                <div className="font-extrabold text-xl sm:text-4xl">
+                <div className="text-xl font-extrabold sm:text-4xl">
                   {name}{" "}
                 </div>
               </div>
@@ -60,7 +60,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
               {isOwned && !hasIdentity && (
                 <div className="flex flex-1 items-center justify-end">
                   <button
-                    className="py-2 px-3 bg-ztg-blue text-white rounded-lg text-sm center gap-2"
+                    className="center gap-2 rounded-lg bg-ztg-blue px-3 py-2 text-sm text-white"
                     onClick={() => setShowSettingsModal(true)}
                   >
                     Set On-Chain Identity <FaUserCheck />
@@ -68,10 +68,10 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
                 </div>
               )}
             </div>
-            <div className="hidden sm:block text-sm md:text-base">
+            <div className="hidden text-sm sm:block md:text-base">
               {address}
             </div>
-            <div className="sm:hidden text-sm">
+            <div className="text-sm sm:hidden">
               {shortenAddress(address, 12, 26)}
             </div>
           </div>
@@ -79,7 +79,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
         <div className="flex flex-wrap gap-3 text-sm text-white">
           {identity?.twitter && (
             <a
-              className="flex items-center bg-twitter p-2 rounded-md"
+              className="flex items-center rounded-md bg-twitter p-2"
               href={`https://twitter.com/${identity.twitter}`}
               target="_blank"
               rel="noreferrer"
@@ -89,7 +89,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
             </a>
           )}
           {identity?.discord && (
-            <div className="flex items-center bg-discord p-2 rounded-md">
+            <div className="flex items-center rounded-md bg-discord p-2">
               <DiscordIcon fill="white" />
               <span className="ml-2.5">{identity.discord}</span>
             </div>
@@ -103,7 +103,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
             leaveTo="opacity-0"
             show={isProxying}
           >
-            <div className="flex items-center gap-2 p-2 rounded-md bg-purple-600 text-white">
+            <div className="flex items-center gap-2 rounded-md bg-purple-600 p-2 text-white">
               <FaNetworkWired size={16} />
               Your are acting proxy for this account.
             </div>

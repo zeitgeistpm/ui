@@ -28,7 +28,7 @@ const WalletSelect = () => {
   }, [wasConnected, connected, accounts, errors]);
   return (
     <div className="flex flex-col">
-      <div className="font-bold text-ztg-16-150 text-black mb-3">
+      <div className="mb-3 text-ztg-16-150 font-bold text-black">
         Connect Wallet
       </div>
       {supportedWallets.map((wallet, idx) => {
@@ -40,7 +40,7 @@ const WalletSelect = () => {
           <div key={wallet.extensionName}>
             <div
               className={
-                "flex flex-row h-ztg-64 items-center rounded-ztg-12 bg-sky-100 dark:bg-sky-700 px-ztg-12 cursor-pointer " +
+                "flex h-ztg-64 cursor-pointer flex-row items-center rounded-ztg-12 bg-sky-100 px-ztg-12 dark:bg-sky-700 " +
                 (idx < 3 ? "mb-ztg-12 " : "")
               }
               onClick={() => {
@@ -48,7 +48,7 @@ const WalletSelect = () => {
               }}
             >
               <img
-                className="w-ztg-32 h-ztg-32 text-ztg-12-120 center mr-ztg-10"
+                className="center mr-ztg-10 h-ztg-32 w-ztg-32 text-ztg-12-120"
                 alt={wallet.logo?.alt}
                 src={wallet.logo?.src}
               />
@@ -61,7 +61,7 @@ const WalletSelect = () => {
                 </div>
               )}
               {hasError && (
-                <div className="text-vermilion ml-auto  text-ztg-12-120 w-ztg-275">
+                <div className="ml-auto w-ztg-275  text-ztg-12-120 text-vermilion">
                   {error.type === "NoAccounts" &&
                     "No accounts on this wallet. Please add account in wallet extension."}
                   {error.type === "InteractionDenied" &&

@@ -12,7 +12,7 @@ export type MarketFiltersDropdownsProps = {
 
 const Divider = () => {
   return (
-    <div className="hidden lg:block w-[1px] h-[10px] bg-pastel-blue"></div>
+    <div className="hidden h-[10px] w-[1px] bg-pastel-blue lg:block"></div>
   );
 };
 

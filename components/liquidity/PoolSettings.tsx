@@ -91,7 +91,7 @@ const PriceSetter = ({
   return (
     <div className="flex items-center">
       <Input
-        className={`h-ztg-40 w-[100px] rounded-ztg-5 bg-gray-100 text-right p-ztg-8 focus:outline-none ${
+        className={`h-ztg-40 w-[100px] rounded-ztg-5 bg-gray-100 p-ztg-8 text-right focus:outline-none ${
           disabled && "!bg-transparent"
         }`}
         value={price}
@@ -100,7 +100,7 @@ const PriceSetter = ({
         onChange={handlePriceChange}
       />
       <button
-        className="flex items-center justify-center w-[30px] h-[30px] bg-gray-100 rounded-full ml-[20px] flex-grow-0"
+        className="ml-[20px] flex h-[30px] w-[30px] flex-grow-0 items-center justify-center rounded-full bg-gray-100"
         onClick={handleLockClick}
         disabled={disabled}
       >
@@ -233,17 +233,17 @@ const PoolSettings: FC<{
     <div className="md:min-w-[720px]">
       <div className="mb-8 flex justify-center">
         <div className=" gap-2">
-          <h2 className="flex text-base justify-center items-center gap-2 mb-3">
+          <h2 className="mb-3 flex items-center justify-center gap-2 text-base">
             Base Liquidity
             <InfoPopover
               title={
-                <h3 className="flex justify-center items-center mb-4 gap-2">
+                <h3 className="mb-4 flex items-center justify-center gap-2">
                   <AiOutlineInfoCircle />
                   Market Base Liquidity
                 </h3>
               }
             >
-              <p className="font-light mb-4">
+              <p className="mb-4 font-light">
                 This is the amount of liquidity that will be provided to the
                 market. Half of this amount will be provided to the base asset
                 token and the other half spread across the outcome tokens
@@ -264,7 +264,7 @@ const PoolSettings: FC<{
           <div className="relative inline-block">
             <Input
               type="number"
-              className="rounded-md bg-gray-100 py-4 pl-5 pr-28 text-right text-base font-base w-64 outline-none"
+              className="font-base w-64 rounded-md bg-gray-100 py-4 pl-5 pr-28 text-right text-base outline-none"
               value={`${parseFloat(baseAssetRow.amount) * 2}`}
               onChange={(event) => {
                 const value = parseFloat(event.target.value) / 2;
@@ -275,7 +275,7 @@ const PoolSettings: FC<{
                 }
               }}
             />
-            <div className="absolute bottom-[50%] center gap-2 text-gray-600 right-0 rounded-r-md border-2 border-gray-100 border-l-0 px-5 bg-white h-full translate-y-[50%] translate-x-[0%] pointer-events-none">
+            <div className="center pointer-events-none absolute bottom-[50%] right-0 h-full translate-x-[0%] translate-y-[50%] gap-2 rounded-r-md border-2 border-l-0 border-gray-100 bg-white px-5 text-gray-600">
               {baseAssetRow.asset}
               <div className="relative h-4 w-4">
                 {currencyImage && (
@@ -301,9 +301,9 @@ const PoolSettings: FC<{
       </div>
 
       {onFeeChange && (
-        <div className="mt-[20px] mb-[40px]">
+        <div className="mb-[40px] mt-[20px]">
           <div className="text-ztg-16-150 font-bold ">Pool Fees*</div>
-          <p className="text-ztg-14-150 mb-[30px] mt-[10px] text-sky-600 ">
+          <p className="mb-[30px] mt-[10px] text-ztg-14-150 text-sky-600 ">
             High fees will allow liquidity providers to collect more value from
             a given trade. However, high fees may also reduce market
             participants.

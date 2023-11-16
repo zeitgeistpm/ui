@@ -232,9 +232,8 @@ const calcTrendingPools = (
   });
 
   for (let poolId in poolVolumes) {
-    const base = pools.find(
-      (pool) => pool.poolId === Number(poolId),
-    )?.baseAsset;
+    const base = pools.find((pool) => pool.poolId === Number(poolId))
+      ?.baseAsset;
 
     const value = lookupPrice(
       basePrices,

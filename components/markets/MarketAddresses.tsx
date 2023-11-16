@@ -28,27 +28,27 @@ const AddressInspectContent = ({
 
   return (
     <div>
-      <div className="flex w-full border-sky-600 border-t-1 border-b-1 py-ztg-15">
-        <div className="flex items-center text-white pr-ztg-10 mr-auto w-[90%]">
-          <div className="w-ztg-30 h-ztg-30 rounded-full bg-white mr-ztg-10">
+      <div className="flex w-full border-b-1 border-t-1 border-sky-600 py-ztg-15">
+        <div className="mr-auto flex w-[90%] items-center pr-ztg-10 text-white">
+          <div className="mr-ztg-10 h-ztg-30 w-ztg-30 rounded-full bg-white">
             <Avatar address={address} />
           </div>
           <div
-            className="text-black dark:text-white font-mono text-ztg-12-150 ml-ztg-10 overflow-hidden"
+            className="ml-ztg-10 overflow-hidden font-mono text-ztg-12-150 text-black dark:text-white"
             data-test="addressDetails"
           >
             {address}
           </div>
         </div>
-        <div className="w-ztg-40 flex items-center">
+        <div className="flex w-ztg-40 items-center">
           <CopyIcon copyText={address} className="flex-grow" />
         </div>
       </div>
       {showSocialMediaRow ? (
-        <div className="flex flex-row  border-sky-600 border-b-1 py-ztg-15">
+        <div className="flex flex-row  border-b-1 border-sky-600 py-ztg-15">
           {identity?.twitter && identity.twitter.length > 0 ? (
             <a
-              className="flex items-center mr-ztg-40"
+              className="mr-ztg-40 flex items-center"
               href={`https://twitter.com/${identity.twitter}`}
               target="_blank"
               rel="noreferrer"
@@ -72,7 +72,7 @@ const AddressInspectContent = ({
         <></>
       )}
 
-      <div className="flex flex-col items-center sm:flex-row mb-ztg-5 mt-ztg-20 gap-7">
+      <div className="mb-ztg-5 mt-ztg-20 flex flex-col items-center gap-7 sm:flex-row">
         <a
           className="flex"
           href={`https://sub.id/#/${address}`}
@@ -123,15 +123,15 @@ export const AddressDetails = ({
   return (
     <>
       <div
-        className="flex flex-col sm:flex-row items-start sm:items-center cursor-pointer hover:bg-sky-100 ztg-transition rounded-lg w-fit"
+        className="ztg-transition flex w-fit cursor-pointer flex-col items-start rounded-lg hover:bg-sky-100 sm:flex-row sm:items-center"
         onClick={() => setInspected(true)}
         data-test="inspectButton"
       >
         <div className="flex items-center">
-          <div className="flex justify-center items-center pr-ztg-10 gap-2">
+          <div className="flex items-center justify-center gap-2 pr-ztg-10">
             <Avatar address={address} size={30} />
             <div className="flex flex-col font-medium">
-              <div className="text-sky-600 text-[10px]">{title}</div>
+              <div className="text-[10px] text-sky-600">{title}</div>
               {isLoading ? (
                 <Skeleton width={130} height={16} />
               ) : (
@@ -143,7 +143,7 @@ export const AddressDetails = ({
       </div>
 
       <Modal open={inspected} onClose={() => setInspected(false)}>
-        <Dialog.Panel className="bg-white rounded-ztg-10 p-[15px] max-w-[95%]">
+        <Dialog.Panel className="max-w-[95%] rounded-ztg-10 bg-white p-[15px]">
           <div>
             Address Details
             {identity?.judgement && (
@@ -181,10 +181,10 @@ const AddressModalHeader = ({
   judgement: Judgement;
 }) => {
   return (
-    <span className="w-full mx-ztg-10">
-      <span className="text-sunglow-2 font-medium ml-ztg-30">{name}</span>
+    <span className="mx-ztg-10 w-full">
+      <span className="ml-ztg-30 font-medium text-sunglow-2">{name}</span>
       <span
-        className={`text-ztg-10-150 mx-ztg-30 ${getJudgementColorClass(
+        className={`mx-ztg-30 text-ztg-10-150 ${getJudgementColorClass(
           judgement,
         )}`}
       >

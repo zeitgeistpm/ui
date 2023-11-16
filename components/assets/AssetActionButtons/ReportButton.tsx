@@ -91,9 +91,9 @@ const ReportButton = ({
         open={scalarReportBoxOpen}
         onClose={() => setScalarReportBoxOpen(false)}
       >
-        <Dialog.Panel className="bg-white rounded-ztg-10 p-[15px]">
+        <Dialog.Panel className="rounded-ztg-10 bg-white p-[15px]">
           <div className="min-w-[380px]">
-            <div className="font-bold text-base mb-2 text-black">
+            <div className="mb-2 text-base font-bold text-black">
               Report outcome
             </div>
             <ScalarReportBox market={market} />

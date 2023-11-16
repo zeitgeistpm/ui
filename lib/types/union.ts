@@ -16,11 +16,11 @@ export const union = <T>() => ({
         ([T[K]] extends [U[number][K]]
           ? unknown
           : Exclude<Unpacked<T[]>[K], Unpacked<U>[K]> extends
-              | string
-              | number
-              | boolean
-          ? `MissingKey<${Exclude<Unpacked<T[]>[K], Unpacked<U>[K]>}>`
-          : never) &
+                | string
+                | number
+                | boolean
+            ? `MissingKey<${Exclude<Unpacked<T[]>[K], Unpacked<U>[K]>}>`
+            : never) &
         NonEmptyArray<T>,
     ): T[] => array,
   }),
@@ -33,8 +33,8 @@ export const union = <T>() => ({
       ([T] extends [U[number]]
         ? unknown
         : Exclude<Unpacked<T[]>, Unpacked<U>> extends string | number | boolean
-        ? `MissingKey<${Exclude<Unpacked<T[]>, Unpacked<U>>}>`
-        : never) &
+          ? `MissingKey<${Exclude<Unpacked<T[]>, Unpacked<U>>}>`
+          : never) &
       NonEmptyArray<T>,
   ): T[] => array,
 
@@ -45,8 +45,8 @@ export const union = <T>() => ({
     record: [T] extends [keyof R]
       ? R
       : Exclude<T, keyof R> extends string | number | boolean
-      ? `MissingKey<${Exclude<T, keyof R>}>`
-      : never,
+        ? `MissingKey<${Exclude<T, keyof R>}>`
+        : never,
   ) => record,
 
   match: <

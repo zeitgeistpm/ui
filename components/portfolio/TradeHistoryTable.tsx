@@ -48,7 +48,7 @@ const TradeHistoryTable = ({ address }: { address: string }) => {
       question: (
         <Link
           href={`/markets/${trade?.marketId}`}
-          className="text-[14px] line-clamp-1"
+          className="line-clamp-1 text-[14px]"
         >
           {trade?.question}
         </Link>
@@ -59,9 +59,9 @@ const TradeHistoryTable = ({ address }: { address: string }) => {
       sold: `${formatNumberLocalized(
         trade?.assetAmountIn.div(ZTG).toNumber() ?? 0,
       )} ${trade?.assetIn}`,
-      price: `${formatNumberLocalized(trade?.price.toNumber() ?? 0)} ${
-        trade?.baseAssetName
-      }`,
+      price: `${formatNumberLocalized(
+        trade?.price.toNumber() ?? 0,
+      )} ${trade?.baseAssetName}`,
       time: new Intl.DateTimeFormat("default", {
         dateStyle: "medium",
         timeStyle: "medium",

@@ -451,18 +451,18 @@ export const usePortfolioPositions = (
         ? market.categories?.[getIndexOf(assetId)]?.name ??
           JSON.stringify(assetId.CategoricalOutcome)
         : IOScalarAssetId.is(assetId)
-        ? getIndexOf(assetId) == 1
-          ? "Short"
-          : "Long"
-        : "unknown";
+          ? getIndexOf(assetId) == 1
+            ? "Short"
+            : "Long"
+          : "unknown";
 
       let color = IOScalarAssetId.is(assetId)
         ? market.categories?.[getIndexOf(assetId)]?.color ?? "#ffffff"
         : IOScalarAssetId.is(assetId)
-        ? getIndexOf(assetId) == 1
-          ? "rgb(255, 0, 0)"
-          : "rgb(36, 255, 0)"
-        : "unknown";
+          ? getIndexOf(assetId) == 1
+            ? "rgb(255, 0, 0)"
+            : "rgb(36, 255, 0)"
+          : "unknown";
 
       if (IOPoolShareAssetId.is(assetId)) {
         outcome = "Pool Share";

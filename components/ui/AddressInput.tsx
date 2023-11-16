@@ -29,7 +29,7 @@ const Control = ({ children, ...rest }: ControlProps<AddressOption, false>) => {
   return (
     <components.Control
       {...rest}
-      className="flex items-center justify-between h-full pl-4"
+      className="flex h-full items-center justify-between pl-4"
     >
       {children}
     </components.Control>
@@ -66,7 +66,7 @@ const MenuList = (props: MenuListProps<AddressOption, false>) => {
   return (
     <components.MenuList
       {...props}
-      className="!w-full !absolute bg-white mt-1 rounded-md"
+      className="!absolute mt-1 !w-full rounded-md bg-white"
     >
       {props.children}
     </components.MenuList>
@@ -85,7 +85,7 @@ const ValueContainer = (props: ValueContainerProps<AddressOption, false>) => {
   return (
     <components.ValueContainer
       {...omit(props, "children")}
-      className="!flex items-center h-full"
+      className="!flex h-full items-center"
     >
       {props.children}
     </components.ValueContainer>
@@ -110,7 +110,7 @@ const SingleValue = ({
     <components.SingleValue {...rest} className="flex items-center font-medium">
       {isValidAddress && (
         <div
-          className={`w-9 h-9 mr-3 bg-transparent rounded-full center transition-opacity ${
+          className={`center mr-3 h-9 w-9 rounded-full bg-transparent transition-opacity ${
             rest.selectProps.menuIsOpen && "opacity-5"
           }`}
         >
@@ -134,10 +134,10 @@ const Option = ({ children, ...rest }: OptionProps<AddressOption, false>) => {
   return (
     <components.Option
       {...rest}
-      className="!flex items-center w-full h-14 px-4 !cursor-pointer bg-anti-flash-white rounded-md mb-2 last:mb-0"
+      className="mb-2 !flex h-14 w-full !cursor-pointer items-center rounded-md bg-anti-flash-white px-4 last:mb-0"
     >
       {isValidPolkadotAddress(address) && (
-        <div className="w-9 h-9 mr-3 bg-transparent rounded-full center">
+        <div className="center mr-3 h-9 w-9 rounded-full bg-transparent">
           <Avatar address={address} size={36} />
         </div>
       )}
@@ -150,7 +150,7 @@ const Option = ({ children, ...rest }: OptionProps<AddressOption, false>) => {
 };
 
 const Input = (props: InputProps<AddressOption, false>) => {
-  return <components.Input {...props} className="absolute w-full left-0" />;
+  return <components.Input {...props} className="absolute left-0 w-full" />;
 };
 
 export type AddressInputProps = {
@@ -186,7 +186,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
   return (
     <div
       className={
-        "mb-5 h-14 w-full bg-anti-flash-white rounded-md border-1 border-transparent relative " +
+        "relative mb-5 h-14 w-full rounded-md border-1 border-transparent bg-anti-flash-white " +
         (error ? "border-vermilion" : "")
       }
     >
@@ -214,10 +214,10 @@ const AddressInput: React.FC<AddressInputProps> = ({
         onChange={onChange}
       />
       {disabled && (
-        <div className="absolute w-full h-full bg-white opacity-50 top-0" />
+        <div className="absolute top-0 h-full w-full bg-white opacity-50" />
       )}
       {error && (
-        <div className="text-vermilion text-sm text-right">{error}</div>
+        <div className="text-right text-sm text-vermilion">{error}</div>
       )}
     </div>
   );

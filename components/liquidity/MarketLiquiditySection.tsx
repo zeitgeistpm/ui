@@ -37,7 +37,7 @@ export const MarketLiquiditySection = ({
       {poll && !marketHasPool && (
         <>
           <div className="center">
-            <div className="h-12 w-12 center bg-white mr-4">
+            <div className="center mr-4 h-12 w-12 bg-white">
               <Loader variant="Success" loading className="h-12 w-12" />
             </div>
             <h4 className="text-gray-400">Waiting for pool to be indexed</h4>
@@ -64,28 +64,29 @@ const LiquidityHeaderTextItem: FC<
 > = ({ label, children, className = "" }) => {
   return (
     <div className={"w-full border-gray-300 text-xs " + className}>
-      <div className="center py-3 md:justify-start sm:flex-col sm:items-center md:items-start">
-        <div className="center mr-2 text-sky-600 font-semibold md:justify-start">
+      <div className="center py-3 sm:flex-col sm:items-center md:items-start md:justify-start">
+        <div className="center mr-2 font-semibold text-sky-600 md:justify-start">
           {label}
         </div>
-        <div className="font-semibold center sm:text-base">{children}</div>
+        <div className="center font-semibold sm:text-base">{children}</div>
       </div>
     </div>
   );
 };
 
-const LiquidityHeaderButtonItem: FC<PropsWithChildren<{ className?: string }>> =
-  ({ children, className = "" }) => {
-    return (
-      <div
-        className={
-          "center border-pastel-blue w-full px-2 sm:px-8 md:px-0" + className
-        }
-      >
-        {children}
-      </div>
-    );
-  };
+const LiquidityHeaderButtonItem: FC<
+  PropsWithChildren<{ className?: string }>
+> = ({ children, className = "" }) => {
+  return (
+    <div
+      className={
+        "center w-full border-pastel-blue px-2 sm:px-8 md:px-0" + className
+      }
+    >
+      {children}
+    </div>
+  );
+};
 
 const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { pool } = market;
@@ -122,34 +123,34 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
 
   return (
     <div className="md:flex md:justify-between">
-      <div className="flex flex-col mb-8 sm:flex-row md:w-full md:mb-0">
+      <div className="mb-8 flex flex-col sm:flex-row md:mb-0 md:w-full">
         <LiquidityHeaderTextItem
           label="Pool Value"
-          className="border-b-1 sm:border-r-1 sm:border-b-0 md:mr-6"
+          className="border-b-1 sm:border-b-0 sm:border-r-1 md:mr-6"
         >
           {formatNumberLocalized(liquidity?.div(ZTG).abs().toNumber() ?? 0)}{" "}
           {metadata?.symbol}
         </LiquidityHeaderTextItem>
         <LiquidityHeaderTextItem
           label="Fees"
-          className="border-b-1 sm:border-b-0 sm:border-r-1 md:border-r-1 md:mr-6"
+          className="border-b-1 sm:border-b-0 sm:border-r-1 md:mr-6 md:border-r-1"
         >
           {swapFee + creatorFee}%
           <InfoPopover
             className="ml-2"
             title={
-              <h3 className="flex justify-center items-center mb-4 gap-2">
+              <h3 className="mb-4 flex items-center justify-center gap-2">
                 <AiOutlineInfoCircle />
                 Swap fees
               </h3>
             }
           >
-            <div className="flex flex-col gap-2 w-full items-center mt-6">
-              <p className="font-light mb-4 flex gap-2">
+            <div className="mt-6 flex w-full flex-col items-center gap-2">
+              <p className="mb-4 flex gap-2 font-light">
                 <span>Creator fee:</span>
                 <span className="font-bold">{creatorFee}%</span>
               </p>
-              <p className="font-light mb-4 flex gap-2">
+              <p className="mb-4 flex gap-2 font-light">
                 <span>Pool fee:</span>
                 <span className="font-bold">{swapFee}%</span>
               </p>
@@ -164,7 +165,7 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           </LiquidityHeaderButtonItem>
         ) : (
           <>
-            <LiquidityHeaderButtonItem className="border-b-1 sm:border-b-0 sm:border-r-1 md:border-r-1 md:mr-6">
+            <LiquidityHeaderButtonItem className="border-b-1 sm:border-b-0 sm:border-r-1 md:mr-6 md:border-r-1">
               <BuySellFullSetsButton
                 marketId={market.marketId}
                 buttonClassName="h-8 border-gray-300 border-1 rounded-full text-ztg-10-150 px-1 w-full md:w-auto sm:px-6 mx-auto"
