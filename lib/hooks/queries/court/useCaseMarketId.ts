@@ -15,9 +15,6 @@ export const useCaseMarketId = (caseId?: number) => {
     [id, caseMarketIdRootKey, caseId],
     async () => {
       if (!enabled) return;
-      // const res = await sdk.api.query.court.courtIdToMarketId(caseId);
-
-      // return res.unwrapOr(null)?.toNumber();
       return batcher(sdk).fetch(caseId);
     },
     {
