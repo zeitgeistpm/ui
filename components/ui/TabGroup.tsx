@@ -61,7 +61,7 @@ const TabGroup = <T extends readonly string[]>({
               }
             >
               {Icon && (
-                <div className="relative mr-3 h-[40px] w-[40px]">
+                <div className="relative h-[40px] w-[40px]">
                   <Icon fill={isDisabled ? "#C3C9CD" : undefined} />
                 </div>
               )}
