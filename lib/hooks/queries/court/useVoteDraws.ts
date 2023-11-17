@@ -6,7 +6,7 @@ import { Vec, u128, StorageKey } from "@polkadot/types";
 
 export const voteDrawsRootKey = "vote-draws";
 
-export const useVotDrawsForCase = (caseId?: number) => {
+export const useVoteDrawsForCase = (caseId?: number) => {
   const [sdk, id] = useSdkv2();
   const queryClient = useQueryClient();
 

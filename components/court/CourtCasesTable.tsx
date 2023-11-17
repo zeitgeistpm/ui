@@ -7,7 +7,7 @@ import Table, { TableColumn, TableData } from "components/ui/Table";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { CourtCaseInfo } from "lib/hooks/queries/court/useCourtCase";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
-import { useVotDrawsForCase } from "lib/hooks/queries/court/useVoteDraws";
+import { useVoteDrawsForCase } from "lib/hooks/queries/court/useVoteDraws";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
 import { CourtStage, getCourtStage } from "lib/state/court/get-stage";
@@ -161,7 +161,7 @@ const CaseActions = ({
     }
   }, [chainTime, market]);
 
-  const { data: draws } = useVotDrawsForCase(caseId);
+  const { data: draws } = useVoteDrawsForCase(caseId);
 
   const connectedParticipantDraw = draws?.find(
     (draw) => draw.courtParticipant.toString() === wallet.realAddress,

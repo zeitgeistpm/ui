@@ -16,7 +16,7 @@ import { HeaderStat } from "components/markets/MarketHeader";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
-import { useVotDrawsForCase } from "lib/hooks/queries/court/useVoteDraws";
+import { useVoteDrawsForCase } from "lib/hooks/queries/court/useVoteDraws";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
@@ -117,7 +117,7 @@ const CasePage: NextPage = ({
   const caseId = Number(caseid);
 
   const { data: courtCase } = useCourtCase(caseId);
-  const { data: selectedDraws } = useVotDrawsForCase(caseId);
+  const { data: selectedDraws } = useVoteDrawsForCase(caseId);
 
   const { data: marketId } = useCaseMarketId(caseId);
   let { data: dynamicMarket } = useMarket(
