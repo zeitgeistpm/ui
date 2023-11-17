@@ -206,10 +206,10 @@ const BuyForm = ({
     send();
   };
   return (
-    <div className="flex flex-col w-full items-center gap-8 text-ztg-18-150 font-semibold">
+    <div className="flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full flex flex-col items-center gap-y-4"
+        className="flex w-full flex-col items-center gap-y-4"
       >
         <div className="flex w-full items-center justify-center rounded-md p-2">
           <div className="mr-4 font-mono">{amountOut.div(ZTG).toFixed(3)}</div>
@@ -228,10 +228,10 @@ const BuyForm = ({
           </div>
         </div>
         <div className="text-sm">For</div>
-        <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal w-full rounded-md">
+        <div className="center relative h-[56px] w-full rounded-md bg-anti-flash-white text-ztg-18-150 font-normal">
           <Input
             type="number"
-            className="w-full bg-transparent outline-none font-mono"
+            className="w-full bg-transparent font-mono outline-none"
             step="any"
             {...register("amount", {
               value: 0,
@@ -254,18 +254,18 @@ const BuyForm = ({
               },
             })}
           />
-          <div className="mr-[10px] absolute right-0">
+          <div className="absolute right-0 mr-[10px]">
             {constants?.tokenSymbol}
           </div>
         </div>
         <input
-          className="mt-[30px] mb-[10px] w-full"
+          className="mb-[10px] mt-[30px] w-full"
           type="range"
           disabled={!baseAssetBalance || baseAssetBalance.lessThanOrEqualTo(0)}
           {...register("percentage", { value: "0" })}
         />
-        <div className="flex flex-col items-center gap-2 w-full font-normal text-xs mb-[10px] text-sky-600 ">
-          <div className="text-vermilion text-xs h-[16px]">
+        <div className="mb-[10px] flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600 ">
+          <div className="h-[16px] text-xs text-vermilion">
             <>{formState.errors["amount"]?.message}</>
           </div>
           <div className="flex w-full justify-between">
@@ -287,8 +287,8 @@ const BuyForm = ({
           disableFeeCheck={true}
         >
           <div>
-            <div className="center font-normal h-[20px]">Buy</div>
-            <div className="center font-normal text-ztg-12-120 h-[20px]">
+            <div className="center h-[20px] font-normal">Buy</div>
+            <div className="center h-[20px] text-ztg-12-120 font-normal">
               Network fee:{" "}
               {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
               {fee?.symbol}
