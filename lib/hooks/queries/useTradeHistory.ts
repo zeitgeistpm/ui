@@ -180,13 +180,7 @@ export const useTradeHistory = (address?: string) => {
             };
             return item;
           })
-          .filter((trade): trade is TradeHistoryItem => trade != null)
-          // Filter out WSX trades if we're not on the WSX
-          .filter((trade) =>
-            isWSX
-              ? trade.baseAssetName === "WSX"
-              : trade.baseAssetName !== "WSX",
-          );
+          .filter((trade): trade is TradeHistoryItem => trade != null);
 
         return trades;
       }
