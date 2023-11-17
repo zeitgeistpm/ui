@@ -7,6 +7,7 @@ import Fuse from "fuse.js";
 import { calcMarketColors } from "lib/util/color-calc";
 import { omit } from "lodash-es";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import { RiArrowDownSLine } from "react-icons/ri";
 
@@ -14,6 +15,8 @@ export type MarketContextActionOutcomeSelectorProps = {
   market: FullMarketFragment;
   selected: MarketOutcomeAssetId;
   options?: MarketOutcomeAssetId[];
+  disabled?: boolean;
+  hideValue?: boolean;
   onChange: (selected: MarketOutcomeAssetId) => void;
 };
 
@@ -23,6 +26,8 @@ const MarketContextActionOutcomeSelector = ({
   market,
   selected,
   options,
+  disabled,
+  hideValue,
   onChange,
 }: MarketContextActionOutcomeSelectorProps) => {
   const [open, setOpen] = useState(false);
@@ -78,26 +83,55 @@ const MarketContextActionOutcomeSelector = ({
     }
   }, [open, inputRef]);
 
+  const [revealed, setRevealed] = useState(false);
+
   return (
     <>
       <Listbox
         value={selected}
+        disabled={disabled}
         onChange={(value) => {
           onChange(value);
           setOpen(false);
         }}
       >
-        <Listbox.Button onClick={() => setOpen(!open)}>
-          <div className="center gap-2 md:text-lg lg:text-xl text-ztg-blue">
-            <TruncatedText
-              length={24}
-              text={market.categories?.[getIndexOf(selected)].name ?? ""}
-            >
-              {(text) => <>{text}</>}
-            </TruncatedText>
-            <RiArrowDownSLine className="text-black" />
-          </div>
-        </Listbox.Button>
+        <div className="center gap-3">
+          <Listbox.Button onClick={() => setOpen(!open)}>
+            <div className="center gap-2 text-2xl md:text-xl lg:text-2xl">
+              <TruncatedText
+                length={24}
+                text={market.categories?.[getIndexOf(selected)].name ?? ""}
+              >
+                {(text) => (
+                  <>
+                    {hideValue ? (
+                      <div className="center gap-2">
+                        <span>{revealed ? text : "∗∗∗∗∗∗"}</span>
+                      </div>
+                    ) : (
+                      text
+                    )}
+                  </>
+                )}
+              </TruncatedText>
+              {!disabled && <RiArrowDownSLine />}
+            </div>
+          </Listbox.Button>
+
+          {hideValue && (
+            <>
+              {revealed ? (
+                <AiOutlineEye size={16} onClick={() => setRevealed(false)} />
+              ) : (
+                <AiOutlineEyeInvisible
+                  size={16}
+                  onClick={() => setRevealed(true)}
+                />
+              )}
+            </>
+          )}
+        </div>
+
         <Transition
           show={open}
           enter="transition duration-100 ease-out"

@@ -2,6 +2,7 @@ import { encodeAddress } from "@polkadot/util-crypto";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { atom, getDefaultStore, useAtom } from "jotai";
+import { u8aToHex, stringToHex } from "@polkadot/util";
 import { isString } from "lodash-es";
 import { useMemo } from "react";
 import { persistentAtom } from "./util/persistent-atom";
@@ -77,6 +78,8 @@ export type UseWallet = WalletState & {
    * Sets up web3 auth wallet
    */
   loadWeb3AuthWallet: () => void;
+
+  signRaw: (data: string) => Promise<string | undefined>;
 };
 
 export type ProxyConfig = {
@@ -473,6 +476,23 @@ export const useWallet = (): UseWallet => {
 
   const walletId = userConfig.walletId;
 
+  const signRaw = async (data: string) => {
+    if (walletState.wallet instanceof BaseDotsamaWallet) {
+      return walletState.wallet.signer
+        ?.signRaw?.({
+          address: activeAccount?.address,
+          data: stringToHex(data),
+          type: "bytes",
+        })
+        .then((data) => data.signature);
+    }
+
+    if (walletState.wallet && "sign" in walletState.wallet) {
+      const u8 = walletState.wallet.sign(data, {});
+      return u8aToHex(u8);
+    }
+  };
+
   return {
     ...walletState,
     ...userConfig,
@@ -487,5 +507,6 @@ export const useWallet = (): UseWallet => {
     walletId,
     setProxyFor,
     getProxyFor,
+    signRaw,
   };
 };

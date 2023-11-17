@@ -195,12 +195,12 @@ const SellForm = ({
     send();
   };
   return (
-    <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
+    <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full flex flex-col items-center gap-y-4"
+        className="flex w-full flex-col items-center gap-y-4"
       >
-        <div className="flex w-full items-center justify-center rounded-md pr-2 bg-anti-flash-white font-mono">
+        <div className="flex w-full items-center justify-center rounded-md bg-anti-flash-white pr-2 font-mono">
           <Input
             type="number"
             className="w-full bg-transparent outline-none"
@@ -245,15 +245,15 @@ const SellForm = ({
           <div className="mr-[10px]">{constants?.tokenSymbol}</div>
         </div>
         <input
-          className="mt-[30px] mb-[10px] w-full"
+          className="mb-[10px] mt-[30px] w-full"
           type="range"
           disabled={
             !selectedAssetBalance || selectedAssetBalance.lessThanOrEqualTo(0)
           }
           {...register("percentage", { value: "0" })}
         />
-        <div className="flex flex-col items-center gap-2 w-full font-normal text-xs mb-[10px] text-sky-600">
-          <div className="text-vermilion text-xs h-[16px]">
+        <div className="mb-[10px] flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600">
+          <div className="h-[16px] text-xs text-vermilion">
             <>{formState.errors["amount"]?.message}</>
           </div>
           <div className="flex w-full justify-between">
@@ -269,8 +269,8 @@ const SellForm = ({
           disableFeeCheck={true}
         >
           <div>
-            <div className="center font-normal h-[20px]">Sell</div>
-            <div className="center font-normal text-ztg-12-120 h-[20px]">
+            <div className="center h-[20px] font-normal">Sell</div>
+            <div className="center h-[20px] text-ztg-12-120 font-normal">
               Network fee:{" "}
               {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
               {fee?.symbol}

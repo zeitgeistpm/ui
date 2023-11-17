@@ -58,7 +58,7 @@ export const UserIdentity: FC<
   );
 };
 
-const HeaderStat: FC<
+export const HeaderStat: FC<
   PropsWithChildren<{ label: string; border?: boolean }>
 > = ({ label, border = true, children }) => {
   return (
