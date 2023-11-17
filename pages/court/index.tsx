@@ -23,7 +23,7 @@ import { IGetPlaiceholderReturn, getPlaiceholder } from "plaiceholder";
 
 export async function getStaticProps() {
   const [bannerPlaiceholder] = await Promise.all([
-    getPlaiceholder(`/court_banner.webp`),
+    getPlaiceholder(`/court_banner.png`),
   ]);
 
   return {
@@ -73,7 +73,7 @@ const CourtPage: NextPage = ({
           <Image
             title="Wizard draped in purple robes holding a flaming crypto key."
             alt="Wizard draped in purple robes holding a flaming crypto key."
-            src={"/court_banner.webp"}
+            src={"/court_banner.png"}
             priority
             layout="fill"
             objectFit="cover"

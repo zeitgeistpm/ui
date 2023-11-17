@@ -59,7 +59,7 @@ export async function getStaticProps({
   });
 
   const [docsArticleImagePlaceholder] = await Promise.all([
-    getPlaiceholder(`/court_gnomes.webp`),
+    getPlaiceholder(`/court_gnomes.png`),
   ]);
 
   const marketId = await sdk.api.query.court.courtIdToMarketId(params.caseid);
@@ -337,7 +337,7 @@ const CasePage: NextPage = ({
                 priority
                 title="Wizard draped in purple robes holding a flaming crypto key."
                 alt="Wizard draped in purple robes holding a flaming crypto key."
-                src={"/court_gnomes.webp"}
+                src={"/court_gnomes.png"}
                 layout="fill"
                 objectFit="cover"
                 blurDataURL={docsArticleImagePlaceholder.base64}
