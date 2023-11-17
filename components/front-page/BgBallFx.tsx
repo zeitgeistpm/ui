@@ -62,7 +62,7 @@ export const BgBallGfx = () => {
   return (
     <motion.div
       ref={ref}
-      className="hidden absolute md:flex justify-center -left-24 -top-[170px] items-center h-[860px] w-[860px] rounded-full bg-red z-0 rotate-180"
+      className="absolute -left-24 -top-[170px] z-0 hidden h-[860px] w-[860px] rotate-180 items-center justify-center rounded-full bg-red md:flex"
       style={{
         y: oy,
         x: osx,

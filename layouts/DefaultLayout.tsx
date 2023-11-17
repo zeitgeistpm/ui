@@ -56,7 +56,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
         <div ref={contentRef} className={`flex-grow`}>
           <TopBar />
           <main
-            className="mt-16 mb-12 container-fluid"
+            className="container-fluid mb-12 mt-16"
             ref={mainRef}
             style={{ minHeight: "calc(100vh - 300px)" }}
           >
@@ -66,7 +66,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
               }`}
             >
               {process.env.NEXT_PUBLIC_MIGRATION_IN_PROGRESS === "true" ? (
-                <div className="w-full h-[800px] flex flex-col items-center justify-center ">
+                <div className="flex h-[800px] w-full flex-col items-center justify-center ">
                   <div className="text-[24px] font-bold">
                     Migrating to Polkadot
                   </div>

@@ -8,21 +8,21 @@ export const ConfirmationProvider = () => {
     <>
       {Object.entries(confirmations).map(([id, value]) => (
         <Modal key={id} open={value.open} onClose={() => dismiss(id)}>
-          <Dialog.Panel className="bg-white w-full max-w-[526px] p-[30px] rounded-ztg-10">
-            <h2 className="text-base mb-3">{value.title}</h2>
-            <p className="text-sm mb-4">{value.description}</p>
+          <Dialog.Panel className="w-full max-w-[526px] rounded-ztg-10 bg-white p-[30px]">
+            <h2 className="mb-3 text-base">{value.title}</h2>
+            <p className="mb-4 text-sm">{value.description}</p>
             <div className="flex items-center justify-end gap-3">
               <button
-                className="text-gray-400 rounded-md py-2 px-4"
+                className="rounded-md px-4 py-2 text-gray-400"
                 onClick={() => dismiss(id)}
               >
-                Cancel
+                {value.cancelLabel ?? "Cancel"}
               </button>
               <button
-                className="bg-ztg-blue text-white rounded-md py-2 px-4"
+                className="rounded-md bg-ztg-blue px-4 py-2 text-white"
                 onClick={() => confirm(id)}
               >
-                Confirm
+                {value.confirmLabel ?? "Confirm"}
               </button>
             </div>
           </Dialog.Panel>

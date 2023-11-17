@@ -7,6 +7,7 @@ import Fuse from "fuse.js";
 import { calcMarketColors } from "lib/util/color-calc";
 import { omit } from "lodash-es";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import { RiArrowDownSLine } from "react-icons/ri";
 
@@ -14,15 +15,19 @@ export type MarketContextActionOutcomeSelectorProps = {
   market: FullMarketFragment;
   selected: MarketOutcomeAssetId;
   options?: MarketOutcomeAssetId[];
+  disabled?: boolean;
+  hideValue?: boolean;
   onChange: (selected: MarketOutcomeAssetId) => void;
 };
 
 const SEARCH_ITEMS_THRESHOLD = 5;
 
-export const MarketContextActionOutcomeSelector = ({
+const MarketContextActionOutcomeSelector = ({
   market,
   selected,
   options,
+  disabled,
+  hideValue,
   onChange,
 }: MarketContextActionOutcomeSelectorProps) => {
   const [open, setOpen] = useState(false);
@@ -78,26 +83,55 @@ export const MarketContextActionOutcomeSelector = ({
     }
   }, [open, inputRef]);
 
+  const [revealed, setRevealed] = useState(false);
+
   return (
     <>
       <Listbox
         value={selected}
+        disabled={disabled}
         onChange={(value) => {
           onChange(value);
           setOpen(false);
         }}
       >
-        <Listbox.Button onClick={() => setOpen(!open)}>
-          <div className="center gap-2 text-2xl md:text-xl lg:text-2xl">
-            <TruncatedText
-              length={24}
-              text={market.categories?.[getIndexOf(selected)].name ?? ""}
-            >
-              {(text) => <>{text}</>}
-            </TruncatedText>
-            <RiArrowDownSLine />
-          </div>
-        </Listbox.Button>
+        <div className="center gap-3">
+          <Listbox.Button onClick={() => setOpen(!open)}>
+            <div className="center gap-2 text-2xl md:text-xl lg:text-2xl">
+              <TruncatedText
+                length={24}
+                text={market.categories?.[getIndexOf(selected)].name ?? ""}
+              >
+                {(text) => (
+                  <>
+                    {hideValue ? (
+                      <div className="center gap-2">
+                        <span>{revealed ? text : "∗∗∗∗∗∗"}</span>
+                      </div>
+                    ) : (
+                      text
+                    )}
+                  </>
+                )}
+              </TruncatedText>
+              {!disabled && <RiArrowDownSLine />}
+            </div>
+          </Listbox.Button>
+
+          {hideValue && (
+            <>
+              {revealed ? (
+                <AiOutlineEye size={16} onClick={() => setRevealed(false)} />
+              ) : (
+                <AiOutlineEyeInvisible
+                  size={16}
+                  onClick={() => setRevealed(true)}
+                />
+              )}
+            </>
+          )}
+        </div>
+
         <Transition
           show={open}
           enter="transition duration-100 ease-out"
@@ -106,19 +140,19 @@ export const MarketContextActionOutcomeSelector = ({
           leave="transition duration-75 ease-out"
           leaveFrom="transform scale-100 opacity-100"
           leaveTo="transform scale-95 opacity-0"
-          className="absolute right-0 bottom-0 h-full w-full overflow-hidden rounded-xl z-50 bg-white"
+          className="absolute bottom-0 right-0 z-50 h-full w-full overflow-hidden rounded-xl bg-white"
         >
-          <div className="relative flex flex-col h-full">
+          <div className="relative flex h-full flex-col">
             <div className="">
               <div
-                className="py-6 px-5 text-xl flex items-center gap-4 cursor-pointer"
+                className="flex cursor-pointer items-center gap-4 px-5 py-6 text-xl"
                 onClick={() => setOpen(false)}
               >
                 <BsArrowLeft />
                 Select Outcome Asset
               </div>
               {Number(options?.length) > SEARCH_ITEMS_THRESHOLD && (
-                <div className="px-5 mb-3">
+                <div className="mb-3 px-5">
                   <Input
                     type="text"
                     ref={inputRef}
@@ -134,18 +168,18 @@ export const MarketContextActionOutcomeSelector = ({
             </div>
             <Listbox.Options
               static
-              className="overflow-y-scroll no-scroll-bar flex-1 h-fit min-h-0 mb-4"
+              className="no-scroll-bar mb-4 h-fit min-h-0 flex-1 overflow-y-scroll"
             >
               {(searchResults ?? assetOptions)?.map((option, index) => {
                 return (
                   <Listbox.Option
                     key={option.assetIndex}
                     value={option.asset}
-                    className=" text-base cursor-pointer py-1 px-5 hover:bg-opacity-10"
+                    className=" cursor-pointer px-5 py-1 text-base hover:bg-opacity-10"
                   >
-                    <div className="hover:bg-slate-100 flex py-6 md:text-sm lg:text-base px-5 gap-3 rounded-md items-center">
+                    <div className="flex items-center gap-3 rounded-md px-5 py-6 hover:bg-slate-100 md:text-sm lg:text-base">
                       <div
-                        className="w-4 h-4 rounded-full "
+                        className="h-4 w-4 rounded-full "
                         style={{ backgroundColor: option.color }}
                       ></div>
                       {option.category?.name || option.assetIndex}

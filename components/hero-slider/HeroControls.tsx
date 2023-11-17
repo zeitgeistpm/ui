@@ -10,14 +10,14 @@ export interface HeroControlsProps {
 
 export const HeroControls: FC<HeroControlsProps> = ({ slides, slider }) => {
   return (
-    <div className="flex items-center justify-center md:justify-end w-full mx-auto gap-1 pb-16 absolute bottom-0 right-0 px-[inherit]">
+    <div className="absolute bottom-0 right-0 mx-auto flex w-full items-center justify-center gap-1 px-[inherit] pb-16 md:justify-end">
       <button
         onClick={() => {
           slider.prev(true);
         }}
-        className={`bg-black border border-white flex items-center justify-center w-[40px] h-[40px] rounded-full`}
+        className={`flex h-[40px] w-[40px] items-center justify-center rounded-full border border-white bg-black`}
       >
-        <ChevronLeft className="text-white relative right-[1px]" />
+        <ChevronLeft className="relative right-[1px] text-white" />
       </button>
       <div className="text-white">
         {slides.map((slide, index) => (
@@ -25,7 +25,7 @@ export const HeroControls: FC<HeroControlsProps> = ({ slides, slider }) => {
             onClick={() => {
               slider.goto(index, true);
             }}
-            className={`cursor-pointer text-[48px] px-1 ${
+            className={`cursor-pointer px-1 text-[48px] ${
               index === slider.currentSlide ? "text-white" : "opacity-50"
             }`}
             key={index}
@@ -38,9 +38,9 @@ export const HeroControls: FC<HeroControlsProps> = ({ slides, slider }) => {
         onClick={() => {
           slider.next(true);
         }}
-        className={`bg-black border border-white flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition`}
+        className={`ztg-transition flex h-[40px] w-[40px] items-center justify-center rounded-full border border-white bg-black`}
       >
-        <ChevronRight className="text-white relative left-[1px]" />
+        <ChevronRight className="relative left-[1px] text-white" />
       </button>
     </div>
   );

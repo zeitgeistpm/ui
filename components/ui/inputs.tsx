@@ -24,7 +24,7 @@ const inputClasses =
   "bg-gray-100 dark:bg-black text-ztg-14-150 w-full rounded-lg h-ztg-40 p-ztg-8  focus:outline-none dark:border-black text-black dark:text-white";
 const invalidClasses = "!border-vermilion !text-vermilion";
 
-export const Input: FC<InputProps & InputHTMLAttributes<HTMLInputElement>> =
+const Input: FC<InputProps & InputHTMLAttributes<HTMLInputElement>> =
   React.forwardRef<
     HTMLInputElement,
     InputProps & InputHTMLAttributes<HTMLInputElement>
@@ -76,17 +76,17 @@ const rdtpInput = (
   const { className, ...restProps } = props;
   return (
     <div
-      className={"flex border-1 rounded-ztg-5 border-transparent " + className}
+      className={"flex rounded-ztg-5 border-1 border-transparent " + className}
     >
       <Input
         {...restProps}
         type="text"
         onClick={openCalendar}
-        className="mb-0 pl-ztg-23 pr-ztg-8 rounded-r-none cursor-pointer"
+        className="mb-0 cursor-pointer rounded-r-none pl-ztg-23 pr-ztg-8"
         readOnly
       />
       <div
-        className="w-ztg-40 h-ztg-40 border-l-1 bg-gray-100 dark:bg-black flex-shrink-0 rounded-r-ztg-5 center cursor-pointer"
+        className="center h-ztg-40 w-ztg-40 flex-shrink-0 cursor-pointer rounded-r-ztg-5 border-l-1 bg-gray-100 dark:bg-black"
         data-test="calendarIcon"
         onClick={openCalendar}
       >

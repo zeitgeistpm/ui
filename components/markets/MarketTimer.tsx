@@ -19,26 +19,26 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
 
   return (
     <div className="inline-block w-full">
-      <div className="flex mb-1 items-center">
-        <div className="font-semibold mr-4 text-black">
+      <div className="mb-1 flex items-center">
+        <div className="mr-4 font-semibold text-black">
           {copy[stage.type].title}
         </div>
-        <div className="text-sky-600 text-sm">
+        <div className="text-sm text-sky-600">
           {copy[stage.type].description}
         </div>
         {!isInfinite(stage) && (
-          <div className="ml-auto text-black text-right">
+          <div className="ml-auto text-right text-black">
             {timeUntilStageEnds.humanize()} left
           </div>
         )}
       </div>
       <div className="w-full">
-        <div className="text-xs text-sky-600 text-right">
+        <div className="text-right text-xs text-sky-600">
           {percentage.toFixed(0)}%
         </div>
-        <div className="w-full rounded-lg h-1.5 bg-gray-100">
+        <div className="h-1.5 w-full rounded-lg bg-gray-100">
           <div
-            className={`rounded-lg h-full transition-all ${
+            className={`h-full rounded-lg transition-all ${
               copy[stage.type].color
             }`}
             style={{ width: `${percentage}%` }}
@@ -52,7 +52,7 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
 export const MarketTimerSkeleton = () => {
   return (
     <div className="inline-block w-full">
-      <div className="flex mb-1 items-center">
+      <div className="mb-1 flex items-center">
         <div className="mr-4">
           <Skeleton width={150} className="inline-block" />
         </div>
@@ -65,10 +65,10 @@ export const MarketTimerSkeleton = () => {
         </div>
       </div>
       <div className="w-full">
-        <div className="text-gray-500 text-sm text-right flex justify-end h-4"></div>
-        <div className="w-full rounded-lg h-2 bg-gray-100">
+        <div className="flex h-4 justify-end text-right text-sm text-gray-500"></div>
+        <div className="h-2 w-full rounded-lg bg-gray-100">
           <div
-            className={`rounded-lg h-full transition-all bg-gray-400`}
+            className={`h-full rounded-lg bg-gray-400 transition-all`}
             style={{ width: `10%` }}
           />
         </div>

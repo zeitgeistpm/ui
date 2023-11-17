@@ -15,7 +15,7 @@ import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 import * as MarketDraft from "lib/state/market-creation/types/draft";
 import { persistentAtom } from "lib/state/util/persistent-atom";
 import dynamic from "next/dynamic";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
@@ -40,6 +40,9 @@ import FeeSelect from "./inputs/FeeSelect";
 import { useWallet } from "lib/state/wallet";
 import { useAccountModals } from "lib/state/account";
 import { isWSX } from "lib/constants";
+import { marketFormDataToExtrinsicParams } from "lib/state/market-creation/types/form";
+import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
+import { CreateMarketParams, RpcContext } from "@zeitgeistpm/sdk";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -52,6 +55,7 @@ const createMarketStateAtom = persistentAtom<MarketDraft.MarketDraftState>({
 });
 
 export const MarketEditor = () => {
+  const wallet = useWallet();
   const [state, setState] = useAtom(createMarketStateAtom);
   const editor = useMarketDraftEditor({ draft: state, update: setState });
 
@@ -126,8 +130,8 @@ export const MarketEditor = () => {
         style={{ height: "calc(100vh - 100px)" }}
       >
         <button
-          className="border-4 ztg-transition text-black focus:outline-none disabled:bg-slate-300 disabled:cursor-default 
-        rounded-full px-10 h-[56px]"
+          className="ztg-transition h-[56px] rounded-full border-4 px-10 text-black 
+        focus:outline-none disabled:cursor-default disabled:bg-slate-300"
           onClick={() => connect()}
         >
           Connect
@@ -147,6 +151,27 @@ export const MarketEditor = () => {
     );
   }
 
+  const creationParams = useMemo<
+    CreateMarketParams<RpcContext> | undefined
+  >(() => {
+    let signer = wallet.getSigner();
+
+    if (!editor.isValid || !chainTime || !signer) return;
+
+    const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
+
+    if (proxy && proxy.enabled) {
+      return marketFormDataToExtrinsicParams(
+        editor.form,
+        { address: wallet.realAddress } as KeyringPairOrExtSigner,
+        chainTime,
+        signer,
+      );
+    }
+
+    return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
+  }, [editor.form, chainTime, wallet.activeAccount]);
+
   return (
     <>
       <Transition
@@ -159,16 +184,16 @@ export const MarketEditor = () => {
         leaveTo="opacity-0"
       >
         <h2
-          className="relative font-3xl text-center flex justify-center items-center gap-3 mb-6"
+          className="font-3xl relative mb-6 flex items-center justify-center gap-3 text-center"
           ref={headerRef}
         >
-          <div className="relative md:flex justify-center items-center">
+          <div className="relative items-center justify-center md:flex">
             Create Market
             <EditorResetButton editor={editor} />
           </div>
         </h2>
 
-        <div className="flex center mb-8">
+        <div className="center mb-8 flex">
           <div className="mr-3 font-light">One Page</div>
           <Toggle checked={isWizard} onChange={toggleWizard} />
           <div className="ml-3 font-light">Wizard</div>
@@ -191,12 +216,12 @@ export const MarketEditor = () => {
             onClickNext={next}
             nextDisabled={!fieldsState.currency.isValid}
           >
-            <div className="mb-4 md:mb-8 text-center">
-              <h2 className="text-base flex justify-center items-center gap-2">
+            <div className="mb-4 text-center md:mb-8">
+              <h2 className="flex items-center justify-center gap-2 text-base">
                 Market Currency
                 <InfoPopover
                   title={
-                    <h3 className="flex justify-center items-center mb-4 gap-2">
+                    <h3 className="mb-4 flex items-center justify-center gap-2">
                       <AiOutlineInfoCircle />
                       Market Base Asset
                     </h3>
@@ -214,9 +239,9 @@ export const MarketEditor = () => {
               {...input("currency")}
             />
             {showLiquidityWarning && (
-              <div className="center mt-4 mb-8">
-                <div className="w-full md:max-w-lg text-center text-sm text-gray-400">
-                  <LuFileWarning size={22} className="inline mr-2" />
+              <div className="center mb-8 mt-4">
+                <div className="w-full text-center text-sm text-gray-400 md:max-w-lg">
+                  <LuFileWarning size={22} className="mr-2 inline" />
                   You have already added liquidity to this market. If you change
                   the base currency liquidity settings will be reset to
                   defaults.
@@ -234,27 +259,27 @@ export const MarketEditor = () => {
               !fieldsState.question.isValid || !fieldsState.tags.isValid
             }
           >
-            <div className="mb-4 md:mb-8 text-center">
-              <h2 className="mb-4 md:mb-8 text-base">What is your question?</h2>
+            <div className="mb-4 text-center md:mb-8">
+              <h2 className="mb-4 text-base md:mb-8">What is your question?</h2>
               <div>
                 <Input
                   autoComplete="off"
-                  className={`h-12 w-full md:w-2/3 text-center rounded-md mb-4 px-4 py-7
+                  className={`mb-4 h-12 w-full rounded-md px-4 py-7 text-center md:w-2/3
                   ${
                     !fieldsState.question.isValid
-                      ? "bg-gray-100 border-vermilion"
+                      ? "border-vermilion bg-gray-100"
                       : "bg-nyanza-base "
                   }
                 `}
                   placeholder="Ask a question that is specific and has a timeframe."
                   {...input("question", { type: "text" })}
                 />
-                <div className="flex center h-5 text-xs text-red-400">
+                <div className="center flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.question} />
                 </div>
               </div>
             </div>
-            <h2 className="flex justify-center mb-4 md:mb-8 text-base text-center">
+            <h2 className="mb-4 flex justify-center text-center text-base md:mb-8">
               <span className="hidden md:block">
                 Which categories does the market relate to?
               </span>
@@ -265,7 +290,7 @@ export const MarketEditor = () => {
                 <CategorySelect {...input("tags")} />
               </div>
             </div>
-            <div className="flex center h-5 text-xs text-red-400">
+            <div className="center flex h-5 text-xs text-red-400">
               <ErrorMessage field={fieldsState.tags} />
             </div>
           </MarketFormSection>
@@ -277,17 +302,17 @@ export const MarketEditor = () => {
             onClickBack={back}
             nextDisabled={!fieldsState.answers.isValid}
           >
-            <div className="relative mb-4 md:mb-8 text-center">
-              <h2 className="text-base center gap-2">
+            <div className="relative mb-4 text-center md:mb-8">
+              <h2 className="center gap-2 text-base">
                 Answers
                 <InfoPopover
                   title={<h4 className="answer-types mb-4">Answer Types</h4>}
                   className="!text-left"
                 >
-                  <h4 className="text-base text-left mb-1">
+                  <h4 className="mb-1 text-left text-base">
                     Outcomes (Categorical)
                   </h4>
-                  <p className="font-light text-left mb-4">
+                  <p className="mb-4 text-left font-light">
                     Outcomes will create a categorical market from the options
                     you specify.{" "}
                     <a
@@ -298,8 +323,8 @@ export const MarketEditor = () => {
                       Learn more.
                     </a>
                   </p>
-                  <h4 className="text-base text-left mb-1">Scalar</h4>
-                  <p className="text-left mb-4">
+                  <h4 className="mb-1 text-left text-base">Scalar</h4>
+                  <p className="mb-4 text-left">
                     A scalar market is a market where the outcome is a number or
                     date in a the range specified by the lower(<b>short</b>) and
                     upper(
@@ -312,7 +337,7 @@ export const MarketEditor = () => {
                       Learn more.
                     </a>
                   </p>
-                  <h4 className="text-base text-left mb-1">Yes/No</h4>
+                  <h4 className="mb-1 text-left text-base">Yes/No</h4>
                   <p className="text-left">
                     Choosing yes/no will create a categorical market with two
                     preset outcomes, yes and no.
@@ -325,10 +350,10 @@ export const MarketEditor = () => {
               fieldState={fieldsState.answers}
             />
             {showLiquidityWarning && (
-              <div className="mt-8 mb-4">
+              <div className="mb-4 mt-8">
                 <div className="center">
-                  <div className="w-full md:max-w-xl text-center text-sm text-gray-400">
-                    <LuFileWarning size={22} className="inline mr-2" />
+                  <div className="w-full text-center text-sm text-gray-400 md:max-w-xl">
+                    <LuFileWarning size={22} className="mr-2 inline" />
                     You have already added liquidity to this market. If you
                     change the number of answers the liquidity settings will be
                     reset to defaults.
@@ -336,7 +361,7 @@ export const MarketEditor = () => {
                 </div>
               </div>
             )}
-            <div className="flex center h-5 text-xs text-red-400">
+            <div className="center flex h-5 text-xs text-red-400">
               <ErrorMessage field={fieldsState.answers} />
             </div>
           </MarketFormSection>
@@ -353,11 +378,11 @@ export const MarketEditor = () => {
               !fieldsState.disputePeriod.isValid
             }
           >
-            <div className="mb-4 md:mb-8 text-center">
+            <div className="mb-4 text-center md:mb-8">
               <h2 className="text-base">When does the market end?</h2>
             </div>
             <div className="mb-4">
-              <div className="flex center mb-3">
+              <div className="center mb-3 flex">
                 <DateTimePicker
                   timezone={timezone}
                   placeholder="Set End Date"
@@ -366,7 +391,7 @@ export const MarketEditor = () => {
                 />
                 <TimezoneSelect {...input("timeZone")} />
               </div>
-              <div className="flex center h-5  text-xs text-red-400">
+              <div className="center flex h-5  text-xs text-red-400">
                 <ErrorMessage field={fieldsState.endDate} />
               </div>
             </div>
@@ -374,11 +399,11 @@ export const MarketEditor = () => {
             <div>
               <div className="mb-6">
                 <div className="mb-4 text-center">
-                  <h2 className="flex text-base justify-center items-center gap-2">
+                  <h2 className="flex items-center justify-center gap-2 text-base">
                     Set Grace Period
                     <InfoPopover
                       title={
-                        <h3 className="flex justify-center items-center mb-4 gap-2">
+                        <h3 className="mb-4 flex items-center justify-center gap-2">
                           <AiOutlineInfoCircle />
                           Grace Period
                         </h3>
@@ -401,18 +426,18 @@ export const MarketEditor = () => {
                     {...input("gracePeriod", { mode: "all" })}
                   />
                 </div>
-                <div className="flex center h-5 mt-4 text-xs text-red-400">
+                <div className="center mt-4 flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.gracePeriod} />
                 </div>
               </div>
 
               <div className="mb-6 ">
                 <div className="mb-4 text-center">
-                  <h2 className="flex text-base justify-center items-center gap-2">
+                  <h2 className="flex items-center justify-center gap-2 text-base">
                     Set Report Period
                     <InfoPopover
                       title={
-                        <h3 className="flex justify-center items-center mb-4 gap-2">
+                        <h3 className="mb-4 flex items-center justify-center gap-2">
                           <AiOutlineInfoCircle />
                           Report Period
                         </h3>
@@ -437,18 +462,18 @@ export const MarketEditor = () => {
                     {...input("reportingPeriod", { mode: "all" })}
                   />
                 </div>
-                <div className="flex center h-5 mt-4 text-xs text-red-400">
+                <div className="center mt-4 flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.reportingPeriod} />
                 </div>
               </div>
 
               <div className="mb-0">
                 <div className="mb-4 text-center">
-                  <h2 className="flex text-base justify-center items-center gap-2">
+                  <h2 className="flex items-center justify-center gap-2 text-base">
                     Set Dispute Period
                     <InfoPopover
                       title={
-                        <h3 className="flex justify-center items-center mb-4 gap-2">
+                        <h3 className="mb-4 flex items-center justify-center gap-2">
                           <AiOutlineInfoCircle />
                           Dispute Period
                         </h3>
@@ -471,7 +496,7 @@ export const MarketEditor = () => {
                     {...input("disputePeriod", { mode: "all" })}
                   />
                 </div>
-                <div className="flex center h-5 mt-4 text-xs text-red-400">
+                <div className="center mt-4 flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.disputePeriod} />
                 </div>
               </div>
@@ -485,10 +510,10 @@ export const MarketEditor = () => {
             onClickBack={back}
             nextDisabled={!fieldsState.oracle.isValid}
           >
-            <div className="mb-4 md:mb-8 text-center">
-              <h2 className="mb-4 md:mb-8 text-base">Set Up Oracle</h2>
+            <div className="mb-4 text-center md:mb-8">
+              <h2 className="mb-4 text-base md:mb-8">Set Up Oracle</h2>
               <div className="center">
-                <p className="mb-6 md:mb-12 text-sm text-gray-500 font-light md:max-w-2xl">
+                <p className="mb-6 text-sm font-light text-gray-500 md:mb-12 md:max-w-2xl">
                   This is the account that will be{" "}
                   <b className="font-semibold text-gray-600">
                     responsible for submitting the outcome
@@ -511,7 +536,7 @@ export const MarketEditor = () => {
                     {...input("oracle", { mode: "all" })}
                   />
                 </div>
-                <div className="flex center h-5 text-xs text-red-400">
+                <div className="center flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.oracle} />
                 </div>
               </div>
@@ -525,19 +550,19 @@ export const MarketEditor = () => {
             onClickBack={back}
             nextDisabled={!fieldsState.description.isValid}
           >
-            <div className="mb-4 md:mb-8 text-center">
-              <h2 className="mb-4 md:mb-8 text-base">Market Description</h2>
+            <div className="mb-4 text-center md:mb-8">
+              <h2 className="mb-4 text-base md:mb-8">Market Description</h2>
               <div>
-                <div className="flex center min-w-full">
+                <div className="center flex min-w-full">
                   <QuillEditor
-                    className="max-w-full w-full md:w-2/3 h-full mb-6 md:mb-0"
+                    className="mb-6 h-full w-full max-w-full md:mb-0 md:w-2/3"
                     placeHolder={
                       "Additional information you want to provide about the market, such as resolution source, special cases, or other details."
                     }
                     {...input("description", { mode: "all" })}
                   />
                 </div>
-                <div className="flex center h-5 text-xs text-red-400">
+                <div className="center flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.description} />
                 </div>
               </div>
@@ -551,13 +576,13 @@ export const MarketEditor = () => {
             onClickBack={back}
             nextDisabled={!fieldsState.moderation.isValid}
           >
-            <div className="mb-4 md:mb-8 text-center">
-              <h2 className="mb-4 md:mb-8 text-base">Market Moderation</h2>
+            <div className="mb-4 text-center md:mb-8">
+              <h2 className="mb-4 text-base md:mb-8">Market Moderation</h2>
               <div>
-                <div className="flex center min-w-full">
+                <div className="center flex min-w-full">
                   <ModerationModeSelect {...input("moderation")} />
                 </div>
-                <div className="flex center h-5 text-xs text-red-400">
+                <div className="center flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.moderation} />
                 </div>
               </div>
@@ -575,8 +600,8 @@ export const MarketEditor = () => {
           >
             {form.currency && (
               <div className="flex flex-col items-center">
-                <div className="mb-2 md:mb-4 text-center flex items-center gap-2">
-                  <h2 className="text-base mb-0">Creator Fee</h2>
+                <div className="mb-2 flex items-center gap-2 text-center md:mb-4">
+                  <h2 className="mb-0 text-base">Creator Fee</h2>
                   <InfoPopover>
                     <p>
                       Creators will be paid a fee based on trading volume.
@@ -594,20 +619,20 @@ export const MarketEditor = () => {
                   ]}
                   isValid={fieldsState.creatorFee?.isValid}
                 />
-                <div className="flex center h-5 text-xs mt-6 text-red-400">
+                <div className="center mt-6 flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.creatorFee} />
                 </div>
               </div>
             )}
             {form.moderation === "Permissionless" && form.currency ? (
               <>
-                <div className="mb-2 md:mb-4 text-center">
-                  <h2 className="text-base mb-0">Market Liquidity</h2>
+                <div className="mb-2 text-center md:mb-4">
+                  <h2 className="mb-0 text-base">Market Liquidity</h2>
                 </div>
 
                 <div className="mb-10 flex justify-center">
-                  <div className="flex flex-col justify-center items-center">
-                    <div className="font-light text-sm mb-2">Deploy Pool?</div>
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="mb-2 text-sm font-light">Deploy Pool?</div>
                     <Toggle
                       checked={form?.liquidity?.deploy ?? false}
                       activeClassName={`bg-${currencyMetadata?.twColor}`}
@@ -619,11 +644,11 @@ export const MarketEditor = () => {
                 <div className="mb-6">
                   {!form?.liquidity?.deploy ? (
                     <div>
-                      <div className="mb-4 center text-gray-500">
+                      <div className="center mb-4 text-gray-500">
                         <LuFileWarning size={32} />
                       </div>
                       <div className="center">
-                        <p className="text-center md:max-w-lg text-gray-400">
+                        <p className="text-center text-gray-400 md:max-w-lg">
                           No liquidity pool will be deployed for the market.
                           <b className="inline">
                             You can deploy a pool after you create the market
@@ -633,7 +658,7 @@ export const MarketEditor = () => {
                       </div>
                     </div>
                   ) : !fieldsState.answers.isValid ? (
-                    <div className="text-red-500 text-center">
+                    <div className="text-center text-red-500">
                       Answers must be filled out correctly before adding
                       liquidity.
                     </div>
@@ -659,7 +684,7 @@ export const MarketEditor = () => {
                     />
                   )}
 
-                  <div className="flex center h-5 text-xs mt-6 text-red-400">
+                  <div className="center mt-6 flex h-5 text-xs text-red-400">
                     <ErrorMessage field={fieldsState.liquidity} />
                   </div>
                 </div>
@@ -667,11 +692,11 @@ export const MarketEditor = () => {
             ) : (
               <>
                 <div className="mt-4">
-                  <div className="mb-2 center text-gray-500">
+                  <div className="center mb-2 text-gray-500">
                     <LuFileWarning size={22} />
                   </div>
                   <div className="center mb-12">
-                    <div className="text-center text-lg md:max-w-xl text-gray-500">
+                    <div className="text-center text-lg text-gray-500 md:max-w-xl">
                       You have selected <b>advised</b> moderation. This means
                       that the market could be rejected by the moderators.
                       <br />
@@ -700,13 +725,13 @@ export const MarketEditor = () => {
             isCurrent={currentStep.label == "Summary"}
             disabled={!isWizard}
           >
-            <div className="flex center">
-              <MarketSummary editor={editor} />
+            <div className="center flex">
+              <MarketSummary creationParams={creationParams} editor={editor} />
             </div>
           </MarketFormSection>
 
           {(!editor.isWizard || currentStep.label == "Summary") && (
-            <Publishing editor={editor} />
+            <Publishing creationParams={creationParams} editor={editor} />
           )}
         </form>
       </Transition>

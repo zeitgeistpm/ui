@@ -26,7 +26,7 @@ const Control = ({ children, ...rest }: ControlProps<AssetOption, false>) => {
   return (
     <components.Control
       {...rest}
-      className="flex items-center justify-between !cursor-pointer h-full pl-4"
+      className="flex h-full !cursor-pointer items-center justify-between pl-4"
     >
       {children}
     </components.Control>
@@ -63,7 +63,7 @@ const SingleValue = (props: SingleValueProps<AssetOption, false>) => {
           quality={100}
         />
       ) : (
-        <div className="w-[36px] h-[36px] rounded-full bg-ztg-blue mr-3"></div>
+        <div className="mr-3 h-[36px] w-[36px] rounded-full bg-ztg-blue"></div>
       )}
       <span>{label}</span>
     </div>
@@ -80,7 +80,7 @@ const Option = (props: OptionProps<AssetOption, false>) => {
   return (
     <components.Option
       {...props}
-      className="!flex items-center w-full bg-anti-flash-white rounded-md h-14 mb-2 last:mb-0 font-semibold px-4 !cursor-pointer"
+      className="mb-2 !flex h-14 w-full !cursor-pointer items-center rounded-md bg-anti-flash-white px-4 font-semibold last:mb-0"
     >
       {image ? (
         <Image
@@ -92,7 +92,7 @@ const Option = (props: OptionProps<AssetOption, false>) => {
           quality={100}
         />
       ) : (
-        <div className="w-[36px] h-[36px] rounded-full bg-ztg-blue mr-3"></div>
+        <div className="mr-3 h-[36px] w-[36px] rounded-full bg-ztg-blue"></div>
       )}
       <span>{label}</span>
       {balance && (
@@ -111,7 +111,7 @@ const MenuList = (props: MenuListProps<AssetOption, false>) => {
   return (
     <components.MenuList
       {...props}
-      className="!w-full bg-white mt-1 pt-1 rounded-md"
+      className="mt-1 !w-full rounded-md bg-white pt-1"
     >
       {props.children}
     </components.MenuList>
@@ -133,7 +133,7 @@ const AssetSelect: React.FC<AssetSelectProps> = ({
 }) => {
   return (
     <Select
-      className={`h-full !static  ${showArrowRight ? "pr-4" : "w-34"}`}
+      className={`!static h-full  ${showArrowRight ? "pr-4" : "w-34"}`}
       isSearchable={false}
       options={options}
       unstyled={true}

@@ -29,9 +29,9 @@ export const TwitterBird = () => {
 
 interface TradeResultProps {
   type: "buy" | "sell";
-  amount: Decimal;
+  amount?: Decimal;
   tokenName?: string;
-  baseTokenAmount: Decimal;
+  baseTokenAmount?: Decimal;
   baseToken?: string;
   marketId: number;
   marketQuestion?: string;
@@ -49,12 +49,12 @@ const TradeResult = ({
   onContinueClick,
 }: TradeResultProps) => {
   const marketUrl = `https://app.zeitgeist.pm/markets/${marketId}`;
-  const potentialGain = amount.div(baseTokenAmount);
+  const potentialGain = amount?.div(baseTokenAmount ?? 0);
   const twitterBaseUrl = "https://twitter.com/intent/tweet?text=";
   const tweetUrl =
     type === "buy"
       ? `${twitterBaseUrl}I'm using %40ZeitgeistPM to bet on "${marketQuestion}" %0A%0AIf I'm right, I'll gain ${potentialGain
-          .minus(1)
+          ?.minus(1)
           .times(100)
           .toFixed(
             0,
@@ -64,12 +64,12 @@ const TradeResult = ({
   return (
     <div className="flex flex-col items-center gap-y-[10px] rounded-ztg-10 bg-white p-[30px] text-ztg-18-150">
       <div>You've just {type === "buy" ? "bought" : "sold"}</div>
-      <div className="text-[58px]">{amount.toFixed(2)}</div>
+      <div className="text-[58px]">{amount?.toFixed(2)}</div>
       <div className="text-center">
         <span className="font-bold capitalize">{tokenName}</span> Predictions
         For
         <div className="font-bold">
-          {baseTokenAmount.toFixed(2)} {baseToken}
+          {baseTokenAmount?.toFixed(2)} {baseToken}
         </div>
       </div>
       <a
@@ -81,7 +81,7 @@ const TradeResult = ({
         <TwitterBird />
       </a>
 
-      <button onClick={onContinueClick} className="text-ztg-blue font-bold">
+      <button onClick={onContinueClick} className="font-bold text-ztg-blue">
         Continue Trading
       </button>
     </div>

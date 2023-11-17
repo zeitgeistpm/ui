@@ -119,8 +119,10 @@ const PoolDeployer = ({
   const poolCost = isAmm2
     ? liquidity?.amount
     : liquidity?.rows
-    ? calculatePoolCost(liquidity?.rows.map((row) => Number(row.amount)) ?? [])
-    : "";
+      ? calculatePoolCost(
+          liquidity?.rows.map((row) => Number(row.amount)) ?? [],
+        )
+      : "";
 
   const baseAssetId = useMemo(
     () =>
@@ -200,14 +202,19 @@ const PoolDeployer = ({
       .refine((liquidity) => {
         return new Decimal(liquidity.rows?.[0]?.amount || 0).greaterThan(0);
       }, "Liquidity amount must be a positive number.")
-      .refine((liquidity) => {
-        return (
-          currencyMetadata &&
-          new Decimal(liquidity.rows?.[0]?.amount || 0)
-            .mul(2)
-            .greaterThanOrEqualTo(minBaseLiquidity[currencyMetadata.name])
-        );
-      }, `Value has to exceed minimum liquidity of ${minBaseLiquidity[currencyMetadata?.name ?? "ZTG"]} ${currencyMetadata?.name ?? "ZTG"}.`);
+      .refine(
+        (liquidity) => {
+          return (
+            currencyMetadata &&
+            new Decimal(liquidity.rows?.[0]?.amount || 0)
+              .mul(2)
+              .greaterThanOrEqualTo(minBaseLiquidity[currencyMetadata.name])
+          );
+        },
+        `Value has to exceed minimum liquidity of ${
+          minBaseLiquidity[currencyMetadata?.name ?? "ZTG"]
+        } ${currencyMetadata?.name ?? "ZTG"}.`,
+      );
   }, [activeBalance, poolCost]);
 
   const fieldState: FieldState = useMemo(() => {
@@ -237,8 +244,8 @@ const PoolDeployer = ({
         <></>
       ) : liquidity && isBroadcasting ? (
         <div className="center">
-          <div className="p-6 bg-slate-50 rounded-md center gap-4">
-            <div className="h-12 w-12 center bg-inherit">
+          <div className="center gap-4 rounded-md bg-slate-50 p-6">
+            <div className="center h-12 w-12 bg-inherit">
               <Loader variant="Info" loading className="h-12 w-12" />
             </div>
             <h4 className="text-gray-400">Deploying pool..</h4>
@@ -248,7 +255,7 @@ const PoolDeployer = ({
         liquidity ? (
           <div className="my-ztg-20">
             <div>
-              <h4 className="mt-10 mb-4 center">Deploy Pool</h4>
+              <h4 className="center mb-4 mt-10">Deploy Pool</h4>
             </div>
             <div className="mb-12">
               {market?.scoringRule === "Lmsr" ? (
@@ -268,14 +275,14 @@ const PoolDeployer = ({
                   fieldState={fieldState}
                 />
               )}
-              <div className="center text-vermilion h-6 mt-4">
+              <div className="center mt-4 h-6 text-vermilion">
                 <ErrorMessage field={fieldState} />
               </div>
             </div>
             <div className="text-center">
               {market?.scoringRule === "Lmsr" ? (
                 <TransactionButton
-                  className="w-ztg-266 ml-ztg-8 mb-4"
+                  className="mb-4 ml-ztg-8 w-ztg-266"
                   onClick={() => deployAmm2Pool()}
                   disabled={!fieldState.isValid || amm2IsLoading}
                 >
@@ -283,14 +290,14 @@ const PoolDeployer = ({
                 </TransactionButton>
               ) : (
                 <TransactionButton
-                  className="w-ztg-266 ml-ztg-8 mb-4"
+                  className="mb-4 ml-ztg-8 w-ztg-266"
                   onClick={() => deployPool()}
                   disabled={!fieldState.isValid || isLoading || isBroadcasting}
                 >
                   Deploy Pool
                 </TransactionButton>
               )}
-              <div className="text-ztg-12-150 text-sky-600 font-bold ml-[27px]">
+              <div className="ml-[27px] text-ztg-12-150 font-bold text-sky-600">
                 Total Cost:
                 <span className="font-mono">
                   {" "}
@@ -304,7 +311,7 @@ const PoolDeployer = ({
             {market?.status === "Active" && (
               <div className="center">
                 <button
-                  className="my-ztg-20 font-bold text-ztg-16-150 text-sky-600 border-1 px-ztg-20 py-ztg-10 rounded-ztg-10 border-sky-600"
+                  className="my-ztg-20 rounded-ztg-10 border-1 border-sky-600 px-ztg-20 py-ztg-10 text-ztg-16-150 font-bold text-sky-600"
                   data-test="deployLiquidityButton"
                   onClick={handleDeployClick}
                 >

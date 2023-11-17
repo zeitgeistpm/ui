@@ -10,7 +10,7 @@ const AccountModalHead = () => {
 
   return (
     <div className="flex flex-row justify-between">
-      <div className="font-bold text-ztg-16-150 text-black">Account</div>
+      <div className="text-ztg-16-150 font-bold text-black">Account</div>
       {!isWSX && (
         <div
           className="mr-ztg-7 cursor-pointer underline"

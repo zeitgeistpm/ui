@@ -142,8 +142,8 @@ export const useTradeMaxAssetAmount = (item: TradeItem): Decimal => {
     traderBaseBalance == null
       ? new Decimal(0)
       : maxAmountAsset.gt(tradeablePoolAssetBalance)
-      ? tradeablePoolAssetBalance
-      : maxAmountAsset;
+        ? tradeablePoolAssetBalance
+        : maxAmountAsset;
 
   return maxAmountAsset;
 };

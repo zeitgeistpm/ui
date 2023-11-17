@@ -16,8 +16,8 @@ const MenuLogo: FC<{}> = () => {
     <div className="flex items-center gap-4">
       <Logo variant={"light"} />
       <>
-        <div className="hidden md:flex flex-col">
-          <h1 className={`font-kanit text-white text-xl `}>Zeitgeist</h1>
+        <div className="hidden flex-col md:flex">
+          <h1 className={`font-kanit text-xl text-white `}>Zeitgeist</h1>
         </div>
       </>
     </div>
