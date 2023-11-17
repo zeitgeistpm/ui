@@ -203,7 +203,6 @@ export const usePortfolioPositions = (
 
   const pools = usePoolsByIds(filter);
   const markets = useMarketsByIds(filter);
-
   const amm2MarketIds = markets.data
     ?.filter((market) => market.scoringRule === ScoringRule.Lmsr)
     .map((m) => m.marketId);

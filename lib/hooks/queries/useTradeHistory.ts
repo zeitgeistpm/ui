@@ -17,7 +17,6 @@ import {
 import Decimal from "decimal.js";
 import { getMarketHeaders, MarketHeader } from "lib/gql/market-header";
 import { useSdkv2 } from "../useSdkv2";
-import { isWSX } from "lib/constants";
 
 export const transactionHistoryKey = "trade-history";
 
@@ -180,6 +179,7 @@ export const useTradeHistory = (address?: string) => {
               time: swap.timestamp,
               extrinsic: swap.extrinsic,
             };
+
             return item;
           })
           .filter((trade): trade is TradeHistoryItem => trade != null);
