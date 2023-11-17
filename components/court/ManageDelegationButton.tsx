@@ -38,7 +38,9 @@ const ManageDelegationButton = ({ className }: { className?: string }) => {
         >
           {connectedParticipant?.type === "Delegator"
             ? "Manage Delegated Stake"
-            : "Become a Delegator"}
+            : connectedParticipant?.type === "Juror"
+              ? "Switch to Delegating"
+              : "Become a Delegator"}
         </button>
         {connectedParticipant?.type === "Juror" && (
           <div className="absolute right-0 top-0 translate-x-[50%] translate-y-[-50%] rounded-full bg-orange-500 p-[0.5]">

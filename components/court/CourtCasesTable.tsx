@@ -35,7 +35,7 @@ const columns: TableColumn[] = [
     type: "component",
   },
   {
-    header: "Voting Ends",
+    header: "Aggregation Ends",
     accessor: "ends",
     type: "text",
   },
@@ -67,7 +67,9 @@ export const CourtCasesTable = () => {
         new Intl.DateTimeFormat("default", {
           dateStyle: "medium",
           timeStyle: "short",
-        }).format(blockDate(time, courtCase.case.roundEnds.vote.toNumber())),
+        }).format(
+          blockDate(time, courtCase.case.roundEnds.aggregation.toNumber()),
+        ),
       actions: <CaseActions caseId={courtCase.id} courtCase={courtCase.case} />,
     };
   });
@@ -237,7 +239,8 @@ const caseStatusCopy: Record<
   },
   reassigned: {
     title: "Reassigned",
-    description: "Case has been reassigned and winners paid out.",
+    description:
+      "All juror and delegator stakes were reassigned, by losers paying the winners.",
     color: "text-gray-400",
   },
   closed: {

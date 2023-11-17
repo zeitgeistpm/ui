@@ -84,7 +84,13 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
           >
             <span className="">
               {draw.vote.isDrawn ? (
-                <span className="text-blue-400">Waiting for vote</span>
+                stage?.type === "pre-vote" ? (
+                  <span className="text-yellow-400">
+                    Waiting for voting to start
+                  </span>
+                ) : (
+                  <span className="text-blue-400">Waiting for vote</span>
+                )
               ) : draw.vote.isSecret ? (
                 <span>
                   <span>[</span>
