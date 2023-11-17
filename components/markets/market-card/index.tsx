@@ -17,6 +17,7 @@ import {
 } from "@zeitgeistpm/sdk";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import Image from "next/image";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -30,6 +31,7 @@ export interface IndexedMarketCardData {
   prediction: { name: string; price: number };
   volume: number;
   pool?: { poolId?: number; volume: string } | null;
+  neoPool?: FullMarketFragment["neoPool"] | null;
   baseAsset: string;
   tags?: string[];
   status: string;
@@ -50,13 +52,11 @@ export interface MarketCardProps extends IndexedMarketCardData {
 
 const MarketCardPredictionBar = ({
   prediction: { name, price },
-  pool,
 }: {
   prediction: { name: string; price: number };
-  pool: {};
 }) => {
   // check if market has liquidity
-  if (Object.keys(pool).length !== 0) {
+  if (price != null) {
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
@@ -180,6 +180,7 @@ export const MarketCard = ({
   marketType,
   prediction,
   pool,
+  neoPool,
   scalarType,
   volume,
   baseAsset,
@@ -257,9 +258,9 @@ export const MarketCard = ({
                     : formatNumberCompact(Number(prediction.name))}
                 </span>
               </span>
-            ) : pool && marketType?.categorical ? (
-              <MarketCardPredictionBar pool={pool} prediction={prediction} />
-            ) : pool && scalarType && Object.keys(pool).length !== 0 ? (
+            ) : (pool || neoPool) && marketType?.categorical ? (
+              <MarketCardPredictionBar prediction={prediction} />
+            ) : (pool || neoPool) && scalarType ? (
               <ScalarPriceRange
                 scalarType={scalarType}
                 lowerBound={lower}

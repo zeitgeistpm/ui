@@ -278,13 +278,22 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           )}
 
-          {chartSeries && indexedMarket?.pool?.poolId ? (
+          {chartSeries && (indexedMarket?.pool || indexedMarket.neoPool) ? (
             <div className="mt-4">
               <MarketChart
                 marketId={indexedMarket.marketId}
                 chartSeries={chartSeries}
-                baseAsset={indexedMarket.pool.baseAsset}
-                poolCreationDate={new Date(indexedMarket.pool.createdAt)}
+                baseAsset={
+                  indexedMarket.pool?.baseAsset ??
+                  indexedMarket.neoPool?.collateral
+                }
+                poolCreationDate={
+                  new Date(
+                    indexedMarket.pool?.createdAt ??
+                      indexedMarket.neoPool?.createdAt ??
+                      "",
+                  )
+                }
                 marketStatus={indexedMarket.status}
                 resolutionDate={new Date(resolutionTimestamp)}
               />
@@ -292,9 +301,9 @@ const Market: NextPage<MarketPageProps> = ({
           ) : (
             <></>
           )}
-          {marketHasPool && market.neoPool == null && (
-            <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
-              <div className="h-ztg-20 w-ztg-20">
+          {marketHasPool === false && (
+            <div className="flex h-ztg-22 items-center bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
+              <div className="w-ztg-20 h-ztg-20">
                 <AlertTriangle size={20} />
               </div>
               <div
