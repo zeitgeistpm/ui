@@ -184,8 +184,8 @@ export const useTradeHistory = (address?: string) => {
           // Filter out WSX trades if we're not on the WSX
           .filter((trade) =>
             isWSX
-              ? trade.baseAssetName !== "WSX"
-              : trade.baseAssetName === "WSX",
+              ? trade.baseAssetName === "WSX"
+              : trade.baseAssetName !== "WSX",
           );
 
         return trades;
