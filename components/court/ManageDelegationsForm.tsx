@@ -24,9 +24,6 @@ export type ManageDelegationsFormProps = {
   onSuccessfulSubmit?: () => void;
 };
 
-//TODO: can restake same amount.
-//TODO: max 5 delegations
-
 const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
   const { data: constants } = useChainConstants();
 
@@ -213,7 +210,9 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
                     if (delegates?.length === 0) {
                       return "At least one juror must be selected for delegation.";
                     }
-                    if (delegates?.length > 5) {
+                    if (
+                      delegates?.length > (constants?.court.maxDelegations ?? 5)
+                    ) {
                       return "Maximum of 5 jurors can be selected for delegation.";
                     }
                   },
