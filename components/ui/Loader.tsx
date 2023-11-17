@@ -18,9 +18,9 @@ export const Loader = ({
   const gradient = isString(variant) ? getGradient(variant) : variant;
 
   return (
-    <div className={`relative bg-inherit rounded-full ${className}`}>
+    <div className={`relative rounded-full bg-inherit ${className}`}>
       <div
-        className={`h-full w-full rounded-full z-10 ${
+        className={`z-10 h-full w-full rounded-full ${
           loading && "animate-spin"
         }`}
         style={{
@@ -29,10 +29,10 @@ export const Loader = ({
           } 35%, ${gradient?.[1] ?? "rgba(0,0,0,0.1)"} 100%)`,
         }}
       ></div>
-      <div className="absolute center top-0 left-0 h-full w-full bg-inherit rounded-full z-20 scale-[0.84]">
+      <div className="center absolute left-0 top-0 z-20 h-full w-full scale-[0.84] rounded-full bg-inherit">
         {lineThrough && (
           <div
-            className="absolute, top-0 left-0 w-[6%] h-[102%] rotate-45 bg-red"
+            className="absolute, left-0 top-0 h-[102%] w-[6%] rotate-45 bg-red"
             style={{
               background: `linear-gradient(218deg, ${
                 gradient?.[0] ?? "rgba(0,0,0,0.2)"

@@ -49,7 +49,7 @@ import { useMemo } from "react";
 // "Out events": swaps, sell full set, redeem
 
 const TimePeriodItems = ["month", "year", "all"] as const;
-type TimePeriod = typeof TimePeriodItems[number];
+type TimePeriod = (typeof TimePeriodItems)[number];
 
 const durationLookup: { [key in TimePeriod]: number } = {
   // week: DAY_SECONDS * 1000 * 7,
@@ -526,10 +526,10 @@ const UserCell = ({ address, name }: { address: string; name?: string }) => {
         href={`/portfolio/${address}`}
       >
         <span className="hidden lg:inline">{name ?? address}</span>
-        <span className="lg:hidden md:inline hidden">
+        <span className="hidden md:inline lg:hidden">
           {name ?? shortenAddress(address, 12, 12)}
         </span>
-        <span className="block w-[100px] md:hidden truncate shrink">
+        <span className="block w-[100px] shrink truncate md:hidden">
           {name ?? shortenAddress(address, 3, 3)}
         </span>
       </Link>
@@ -562,7 +562,7 @@ const Leaderboard: NextPage<{
 
   return (
     <div id="leaderboard" className="pt-4">
-      <div className="w-full h-[137px] sm:h-[244px] relative overflow-hidden rounded-md">
+      <div className="relative h-[137px] w-full overflow-hidden rounded-md sm:h-[244px]">
         <Image
           src="/Leaderboard-banner.png"
           alt="Leaderboard-banner"
@@ -573,16 +573,16 @@ const Leaderboard: NextPage<{
           placeholder="blur"
         />
       </div>
-      <h2 className="font-bold my-8 w-full text-[24px]">
+      <h2 className="my-8 w-full text-[24px] font-bold">
         Leaderboard (Top 20)
       </h2>
-      <div className="border-b-1 border-misty-harbor mb-8 flex gap-7 text-sky-600 text-[18px]">
+      <div className="mb-8 flex gap-7 border-b-1 border-misty-harbor text-[18px] text-sky-600">
         {TimePeriodItems.map((period) => (
           <Link
             scroll={false}
             key={period}
             href={`/leaderboard/${period}`}
-            className={`capitalize pb-4 ${
+            className={`pb-4 capitalize ${
               period === timePeriod ? "font-semibold text-black" : ""
             }`}
           >

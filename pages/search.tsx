@@ -13,7 +13,7 @@ const SearchPage: NextPage = () => {
     <div className="mt-4">
       <div className="flex items-center px-2">
         <input
-          className="rounded-md h-8 px-2 w-full focus:outline-none max-w-[500px] border border-sky-200"
+          className="h-8 w-full max-w-[500px] rounded-md border border-sky-200 px-2 focus:outline-none"
           value={searchTerm}
           placeholder="Search markets"
           onChange={(event) => {
@@ -31,19 +31,19 @@ const SearchPage: NextPage = () => {
       </div>
       {markets && (
         <div className="flex flex-col py-4">
-          <div className="text-sky-600 px-2">Results</div>
+          <div className="px-2 text-sky-600">Results</div>
 
           {markets.length > 0 ? (
             markets?.map((market) => (
               <Link
                 href={`/markets/${market.marketId}`}
-                className="py-2 flex overflow-ellipsis hover:bg-sky-100 px-2 rounded-md"
+                className="flex overflow-ellipsis rounded-md px-2 py-2 hover:bg-sky-100"
               >
-                <div className="overflow-ellipsis line-clamp-1 mr-4">
+                <div className="mr-4 line-clamp-1 overflow-ellipsis">
                   {market.question}
                 </div>
                 <div
-                  className={`ml-auto text-xs rounded-md px-2 py-1 w-16 text-center text-white ${
+                  className={`ml-auto w-16 rounded-md px-2 py-1 text-center text-xs text-white ${
                     market.status === MarketStatus.Active
                       ? "bg-sheen-green"
                       : "bg-vermilion"
@@ -56,7 +56,7 @@ const SearchPage: NextPage = () => {
               </Link>
             ))
           ) : (
-            <div className="w-full pt-6 pb-4">No results</div>
+            <div className="w-full pb-4 pt-6">No results</div>
           )}
           {}
         </div>

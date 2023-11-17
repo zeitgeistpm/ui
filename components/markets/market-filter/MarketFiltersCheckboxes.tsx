@@ -11,7 +11,7 @@ const MarketFiltersCheckboxes: React.FC<MarketFiltersCheckboxesProps> = ({
 }) => {
   const { withLiquidityOnly, setWithLiquidityOnly } = useMarketFiltersContext();
   return withLiquidityOnly != null ? (
-    <label className={"text-black font-medium " + className}>
+    <label className={"font-medium text-black " + className}>
       <Input
         className="mr-[10px]"
         type="checkbox"

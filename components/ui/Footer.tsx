@@ -31,19 +31,19 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
   };
 
   return (
-    <form className="flex flex-col w-full" onSubmit={handleSubmit(subscribe)}>
-      <h6 className="font-semibold text-white mb-[26px]">{title}</h6>
-      <div className="flex gap-3 items-center h-10 mb-auto w-full">
+    <form className="flex w-full flex-col" onSubmit={handleSubmit(subscribe)}>
+      <h6 className="mb-[26px] font-semibold text-white">{title}</h6>
+      <div className="mb-auto flex h-10 w-full items-center gap-3">
         <Input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-          className={`h-full grow rounded-md text-sky-600 p-2 text-ztg-12-120 bg-anti-flash-white border-[1px] focus:outline-none ${
+          className={`h-full grow rounded-md border-[1px] bg-anti-flash-white p-2 text-ztg-12-120 text-sky-600 focus:outline-none ${
             invalid ? "border-vermilion" : "border-none"
           }`}
           type="email"
         />
         <button
           type="submit"
-          className={`h-full flex-shrink text-ztg-16-150 rounded-full center bg-ztg-blue text-white px-5 ${
+          className={`center h-full flex-shrink rounded-full bg-ztg-blue px-5 text-ztg-16-150 text-white ${
             invalid ? "cursor-default" : "cursor-pointer"
           } disabled:opacity-60`}
           disabled={invalid}
@@ -64,8 +64,8 @@ interface FooterMenuProps {
 const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
   return (
     <div className={`${className}`}>
-      <h6 className="font-semibold mb-1 text-white">{title}</h6>
-      <div className="text-ztg-14-150 flex flex-col text-sky-600">
+      <h6 className="mb-1 font-semibold text-white">{title}</h6>
+      <div className="flex flex-col text-ztg-14-150 text-sky-600">
         {links.map(({ text, href }, idx) => {
           return (
             <Link
@@ -85,10 +85,10 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
 
 const Footer = () => {
   return (
-    <div className="w-full mt-auto flex flex-col pb-24 pt-12 bg-[#1C1C1C]">
+    <div className="mt-auto flex w-full flex-col bg-[#1C1C1C] pb-24 pt-12">
       <div className="container-fluid">
-        <div className="flex justify-between gap-12 lg:gap-36 mb-8 md:mb-16 flex-wrap md:flex-nowrap">
-          <div className="flex justify-between gap-7 w-full">
+        <div className="mb-8 flex flex-wrap justify-between gap-12 md:mb-16 md:flex-nowrap lg:gap-36">
+          <div className="flex w-full justify-between gap-7">
             <FooterMenu
               title="General"
               links={[
@@ -117,11 +117,11 @@ const Footer = () => {
           </div>
           <FooterNewsletterSub title="Subscribe to Newsletter" />
         </div>
-        <div className="flex flex-col md:flex-row gap-5">
-          <span className="text-center md:text-start whitespace-nowrap text-ztg-12-150 text-white">
+        <div className="flex flex-col gap-5 md:flex-row">
+          <span className="whitespace-nowrap text-center text-ztg-12-150 text-white md:text-start">
             © 2022 Equipoise Corp.
           </span>
-          <span className="text-sky-600 text-[11px] leading-relaxed">
+          <span className="text-[11px] leading-relaxed text-sky-600">
             Please be advised that Equipoise Corp. d/b/a Zeitgeist is registered
             under the laws of Panama, and Zeitgeist has not sought licensing
             with any other regulatory authority of any country or jurisdiction,

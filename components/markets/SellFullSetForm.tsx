@@ -103,29 +103,29 @@ const SellFullSetForm = ({
   return (
     <div className="w-full">
       <div>
-        <div className="flex justify-center items-center mb-7">
+        <div className="mb-7 flex items-center justify-center">
           <span>Your Balance: &nbsp;</span>
           <span className="font-medium">
             {maxTokenSet.div(ZTG).toFixed(2)} Full Sets
           </span>
         </div>
-        <div className="h-[56px] bg-anti-flash-white center mb-7 w-full">
+        <div className="center mb-7 h-[56px] w-full bg-anti-flash-white">
           <input
             type="number"
             min="0"
             value={amount}
             step="0.1"
             onChange={(e) => handleAmountChange(e.target.value)}
-            className="w-full bg-transparent outline-none text-center text-lg"
+            className="w-full bg-transparent text-center text-lg outline-none"
           />
         </div>
       </div>
       <div>
         <div className="text-center">
-          <p className="text-lg font-medium mb-7">
+          <p className="mb-7 text-lg font-medium">
             You'll Get {amount ? amount : 0} {metadata?.symbol}
           </p>
-          <p className="text-sm text-center mb-7">
+          <p className="mb-7 text-center text-sm">
             <span className="text-sky-600">Price Per Set: </span>1{" "}
             {metadata?.symbol}
           </p>

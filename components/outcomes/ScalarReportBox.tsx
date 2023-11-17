@@ -109,14 +109,14 @@ const ScalarReportBox = ({
           />
         </div>
       ) : (
-        <div className="bg-gray-50 overflow-hidden sm:flex md:block lg:flex rounded-md">
+        <div className="overflow-hidden rounded-md bg-gray-50 sm:flex md:block lg:flex">
           <Input
             type="number"
             value={scalarReportValue}
             onChange={(e) => handleNumberChange(e.target.value)}
             min={bounds[0].toString()}
             max={bounds[1].toString()}
-            className="text-ztg-14-150 p-2 w-full outline-none text-right font-mono !rounded-none "
+            className="w-full !rounded-none p-2 text-right font-mono text-ztg-14-150 outline-none "
             onBlur={() => {
               if (
                 scalarReportValue === "" ||
@@ -143,12 +143,12 @@ const ScalarReportBox = ({
             }
           >
             <div
-              className={`flex justify-end sm:justify-center md:justify-end lg:justify-center items-center px-3 text-sm transition-all ease-[cubic-bezier(0.95,0.05,0.795,0.035)] flex-1 h-full py-1 bg-scalar-bar text-scalar-text`}
+              className={`flex h-full flex-1 items-center justify-end bg-scalar-bar px-3 py-1 text-sm text-scalar-text transition-all ease-[cubic-bezier(0.95,0.05,0.795,0.035)] sm:justify-center md:justify-end lg:justify-center`}
               style={{
                 minWidth: expandedInfoToggled ? digits * 18 : digits * 12,
               }}
             >
-              <div className="self-start flex sm:hidden md:flex flex-1 lg:hidden">
+              <div className="flex flex-1 self-start sm:hidden md:flex lg:hidden">
                 Scalar range:
               </div>
               <div className="whitespace-nowrap">

@@ -15,7 +15,7 @@ const Skeleton: React.FC<SkeletonProps> = ({
   height = typeof height === "number" ? `${height}px` : height;
   return (
     <div
-      className={"animate-pulse bg-gray-300 rounded w-full h-4 " + className}
+      className={"h-4 w-full animate-pulse rounded bg-gray-300 " + className}
       style={{ width, height }}
     ></div>
   );

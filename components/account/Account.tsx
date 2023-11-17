@@ -16,7 +16,7 @@ export const Account = () => {
   return (
     <>
       <Modal open={accountSelectModalOpen} onClose={closeAccountSelect}>
-        <Dialog.Panel className="bg-white rounded-ztg-10 p-[15px]">
+        <Dialog.Panel className="rounded-ztg-10 bg-white p-[15px]">
           <div className="mb-3">
             <AccountModalHead />
           </div>
