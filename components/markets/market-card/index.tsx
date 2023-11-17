@@ -17,6 +17,7 @@ import {
 } from "@zeitgeistpm/sdk";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import Image from "next/image";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -30,6 +31,7 @@ export interface IndexedMarketCardData {
   prediction: { name: string; price: number };
   volume: number;
   pool?: { poolId?: number; volume: string } | null;
+  neoPool?: FullMarketFragment["neoPool"] | null;
   baseAsset: string;
   tags?: string[];
   status: string;
@@ -178,6 +180,7 @@ export const MarketCard = ({
   marketType,
   prediction,
   pool,
+  neoPool,
   scalarType,
   volume,
   baseAsset,
@@ -255,9 +258,9 @@ export const MarketCard = ({
                     : formatNumberCompact(Number(prediction.name))}
                 </span>
               </span>
-            ) : liquidity && marketType?.categorical ? (
+            ) : (pool || neoPool) && marketType?.categorical ? (
               <MarketCardPredictionBar prediction={prediction} />
-            ) : liquidity && scalarType ? (
+            ) : (pool || neoPool) && scalarType ? (
               <ScalarPriceRange
                 scalarType={scalarType}
                 lowerBound={lower}

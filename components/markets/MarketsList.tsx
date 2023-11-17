@@ -133,6 +133,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
               marketType={marketType}
               scalarType={scalarType}
               pool={pool}
+              neoPool={market.neoPool}
               status={market.status}
               baseAsset={market.baseAsset}
               volume={new Decimal(volume).div(ZTG).toNumber()}

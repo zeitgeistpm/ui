@@ -49,6 +49,7 @@ const getFeaturedMarkets = async (
       baseAsset: market.baseAsset,
       outcomes: marketCategories,
       pool: market.pool,
+      neoPool: market.neoPool,
       marketType: market.marketType as MarketType,
       scalarType: (market.scalarType ?? null) as ScalarRangeType,
       tags: market.tags?.filter(isPresent) ?? [],
