@@ -54,7 +54,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
 
   const { send, isReady, isLoading, isBroadcasting } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk) && commitmentHash) {
+      if (isRpcSdk(sdk) && salt) {
         return sdk.api.tx.court.revealVote(
           caseId,
           {
