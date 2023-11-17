@@ -42,6 +42,7 @@ const lookupAssetName = (
 
 const lookupMarket = (asset: string, marketsMap: Map<number, MarketHeader>) => {
   const assetId = parseAssetId(asset).unwrap();
+
   if (IOMarketOutcomeAssetId.is(assetId)) {
     const marketId = getMarketIdOf(assetId);
     const market = marketsMap.get(marketId);
@@ -162,6 +163,7 @@ export const useTradeHistory = (address?: string) => {
               swap.assetAmountIn,
               swap.assetAmountOut,
             );
+
             const item: TradeHistoryItem = {
               marketId: market?.marketId,
               question: market?.question,

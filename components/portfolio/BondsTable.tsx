@@ -5,7 +5,6 @@ import { useAccountBonds } from "lib/hooks/queries/useAccountBonds";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import EmptyPortfolio from "./EmptyPortfolio";
 import MarketPositionHeader from "./MarketPositionHeader";
-import { Cookie } from "next/font/google";
 
 const columns: TableColumn[] = [
   {
@@ -33,7 +32,6 @@ const columns: TableColumn[] = [
 const BondsTable = ({ address }: { address: string }) => {
   const { data: marketBonds, isLoading } = useAccountBonds(address);
   const { data: ztgPrice } = useZtgPrice();
-  console.log(marketBonds);
   return (
     <div>
       {isLoading === false &&
