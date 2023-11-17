@@ -21,8 +21,8 @@ export const getMarketsStats = async (
   ids: number[],
 ): Promise<MarketStats[]> => {
   if (ids.length === 0) return [];
-  const response = await client.request<{
+  const { marketStats } = await client.request<{
     marketStats: MarketStats[];
   }>(query, { ids });
-  return response.marketStats;
+  return marketStats;
 };

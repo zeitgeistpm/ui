@@ -71,6 +71,7 @@ export const SimilarMarketsSection = ({
                   marketType={marketType}
                   scalarType={scalarType}
                   pool={market.pool ?? null}
+                  neoPool={market?.neoPool}
                   status={market.status}
                   baseAsset={market.baseAsset}
                   volume={new Decimal(market.pool?.volume ?? 0)

@@ -19,6 +19,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { useMemo } from "react";
 import { LuFileWarning } from "react-icons/lu";
+import { CreateMarketParams, RpcContext } from "@zeitgeistpm/sdk";
 
 const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
   ssr: false,
@@ -26,9 +27,13 @@ const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
 
 export type MarketSummaryProps = {
   editor: MarketDraftEditor;
+  creationParams?: CreateMarketParams<RpcContext>;
 };
 
-export const MarketSummary = ({ editor }: MarketSummaryProps) => {
+export const MarketSummary = ({
+  editor,
+  creationParams,
+}: MarketSummaryProps) => {
   const chainTime = useChainTime();
   const { form } = editor;
 
@@ -185,6 +190,12 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
         <div className="flex items-center justify-center gap-2">
           <Label>Moderation</Label> <div>{form.moderation}</div>
         </div>
+        {creationParams?.disputeMechanism && (
+          <div className="mt-2 inline-block items-center justify-center gap-2 rounded-md bg-purple-400 p-2 text-white">
+            <Label className="text-white">Dispute Mechanism</Label>{" "}
+            <div>{creationParams.disputeMechanism.toString()}</div>
+          </div>
+        )}
       </div>
 
       <div className="mb-10">

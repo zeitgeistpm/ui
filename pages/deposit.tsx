@@ -134,7 +134,7 @@ const ResultButtons = ({
             href={item.url}
             target="_blank"
             className={
-              "center flex h-16 cursor-pointer items-center justify-center gap-2 rounded-lg bg-white outline-none"
+              "center flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-white p-3 leading-10 outline-none"
             }
           >
             <div>{item.label}</div>
@@ -307,7 +307,7 @@ const DepositPage: NextPage = () => {
 
   return (
     <>
-      <h2 className="mb-6 px-2">Deposit Tokens</h2>
+      <h2 className="mb-6 mt-8 px-2">Deposit Tokens</h2>
       <div className="[&>*:not(:last-child)]:mb-8">
         <p className="mt-3 p-2">
           You need some funds to make predictions on our platform. Select from
@@ -319,8 +319,8 @@ const DepositPage: NextPage = () => {
           labels={DepositMethodLabels}
           selected={method}
           onChange={setMethod}
-          className="h-16"
-          itemClassName="center outline-none rounded-lg bg-white"
+          className=""
+          itemClassName="text-center center outline-none rounded-lg bg-white p-3 sm:leading-10"
           selectedItemClassName="!bg-ice-hush"
         />
         <TabGroup
@@ -331,7 +331,7 @@ const DepositPage: NextPage = () => {
           onChange={setCurrency}
           disabled={["usdt"]}
           className="h-36"
-          itemClassName="center outline-none rounded-lg bg-white"
+          itemClassName="flex flex-col sm:flex-row gap-3 items-center center outline-none rounded-lg bg-white"
           disabledItemClassName="!bg-misty-harbor text-sky-600"
           selectedItemClassName="!bg-ice-hush"
         />
@@ -343,8 +343,8 @@ const DepositPage: NextPage = () => {
             onChange={setPaymentMethod}
             disabled={disabledPaymentMethods}
             disabledItemClassName="!bg-misty-harbor text-sky-600"
-            className="h-16"
-            itemClassName="center outline-none rounded-lg bg-white"
+            className=""
+            itemClassName="text-center center outline-none rounded-lg bg-white p-3 leading-10"
             selectedItemClassName="!bg-ice-hush"
           />
         )}

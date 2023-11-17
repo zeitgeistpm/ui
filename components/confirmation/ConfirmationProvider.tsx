@@ -16,13 +16,13 @@ export const ConfirmationProvider = () => {
                 className="rounded-md px-4 py-2 text-gray-400"
                 onClick={() => dismiss(id)}
               >
-                Cancel
+                {value.cancelLabel ?? "Cancel"}
               </button>
               <button
                 className="rounded-md bg-ztg-blue px-4 py-2 text-white"
                 onClick={() => confirm(id)}
               >
-                Confirm
+                {value.confirmLabel ?? "Confirm"}
               </button>
             </div>
           </Dialog.Panel>

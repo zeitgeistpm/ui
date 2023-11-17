@@ -58,7 +58,7 @@ export const UserIdentity: FC<
   );
 };
 
-const HeaderStat: FC<
+export const HeaderStat: FC<
   PropsWithChildren<{ label: string; border?: boolean }>
 > = ({ label, border = true, children }) => {
   return (
@@ -323,14 +323,22 @@ const MarketHeader: FC<{
   rejectReason,
   promotionData,
 }) => {
-  const { categories, status, question, period, marketType, pool, scalarType } =
-    market;
+  const {
+    categories,
+    status,
+    question,
+    period,
+    marketType,
+    pool,
+    scalarType,
+    neoPool,
+  } = market;
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const starts = Number(period.start);
   const ends = Number(period.end);
-  const volume = pool?.volume
-    ? new Decimal(pool?.volume).div(ZTG).toNumber()
-    : 0;
+  const volume = new Decimal(pool?.volume ?? neoPool?.volume ?? 0)
+    .div(ZTG)
+    .toNumber();
 
   const { outcome, by } = getMarketStatusDetails(
     marketType,
