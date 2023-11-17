@@ -49,9 +49,6 @@ import {
   lookupAssetPrice,
   useAmm2MarketSpotPrices,
 } from "./useAmm2MarketSpotPrices";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { lookupAssetSymbol } from "lib/constants/foreign-asset";
-import { IOBaseAssetId } from "@zeitgeistpm/sdk";
 
 export type UsePortfolioPositions = {
   /**
