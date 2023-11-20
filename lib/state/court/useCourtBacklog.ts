@@ -79,7 +79,6 @@ export const useCourtBacklog = (account?: string): CourtBacklogItem[] => {
       drawReadyToReveal.forEach((_) => {
         backlog.push({
           type: "court-case-ready-for-reveal",
-
           caseId,
         });
       });

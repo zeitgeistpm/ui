@@ -55,20 +55,37 @@ export const CourtCasesTable = () => {
 
   const courtBacklog = useCourtBacklog(wallet.realAddress);
 
-  cases?.sort((a, b) => {
-    if (b.case.status.type === "Reassigned") return -1;
+  const sortedCase = useMemo(() => {
+    return cases?.sort((a, b) => {
+      if (
+        b.case.status.type === "Closed" &&
+        a.case.status.type === "Reassigned"
+      )
+        return 1;
 
-    const aBacklogItem = courtBacklog.findIndex((item) => item.caseId === a.id);
-    const bBacklogItem = courtBacklog.findIndex((item) => item.caseId === b.id);
+      if (b.case.status.type === "Closed") return -1;
+      if (b.case.status.type === "Reassigned") return -1;
 
-    if (aBacklogItem !== -1 && bBacklogItem === -1) return -1;
+      const aBacklogItem = courtBacklog.findIndex(
+        (item) => item.caseId === a.id,
+      );
+      const bBacklogItem = courtBacklog.findIndex(
+        (item) => item.caseId === b.id,
+      );
 
-    return a.case.roundEnds.vote.toNumber() > b.case.roundEnds.vote.toNumber()
-      ? 1
-      : 0;
-  });
+      if (aBacklogItem !== -1 && bBacklogItem !== -1) {
+        return aBacklogItem > bBacklogItem ? -1 : 1;
+      }
 
-  const tableData: TableData[] | undefined = cases?.map((courtCase) => {
+      if (aBacklogItem !== -1 && bBacklogItem === -1) return -1;
+
+      return a.case.roundEnds.vote.toNumber() > b.case.roundEnds.vote.toNumber()
+        ? 1
+        : 0;
+    });
+  }, [cases, courtBacklog]);
+
+  const tableData: TableData[] | undefined = sortedCase?.map((courtCase) => {
     return {
       id: `${courtCase.id}`,
       case: <CaseNameForCaseId id={courtCase.id} />,
