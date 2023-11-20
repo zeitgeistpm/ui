@@ -17,7 +17,7 @@ const ReferendumSummary = ({
             <div className="text-lg">Referendum</div>
             <a
               href={`https://polkadot.polkassembly.io/referenda/${referendumIndex}`}
-              className="ml-auto text-sm flex gap-2 items-center justify-center text-black rounded-md px-2 shadow-xl py-2 "
+              className="ml-auto text-sm flex gap-2 items-center justify-center text-black rounded-md px-2 py-2 "
               target="_blank"
               rel="noreferrer"
             >
