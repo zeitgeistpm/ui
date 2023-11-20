@@ -3,6 +3,7 @@ import { isIndexedSdk } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { calculateSpotPrice } from "lib/util/amm2";
 import { useSdkv2 } from "../useSdkv2";
+import { getMarketHeaders } from "lib/gql/market-header";
 
 export const accountAmm2PoolsKey = "account-amm2-pools";
 
@@ -22,6 +23,8 @@ export const useAccountAmm2Pool = (address?: string) => {
           },
         },
       });
+
+      const markets = await getMarketHeaders(sdk, neoPools.map(pool=>pool.marketId));
 
       const valuations = neoPools.map((pool) => {
         const values = pool.account.balances.map((balance) => {
@@ -46,10 +49,12 @@ export const useAccountAmm2Pool = (address?: string) => {
         })),
       );
 
-      return neoPools.map((pool, index) => ({
-        ...pool,
+      return neoPools.map((pool, index) => {
+        const market = markets.find(m=>m.marketId === pool.marketId)
+       return { ...pool,
         value: valuations[index],
-      }));
+      question: market?.question}
+      });
     },
     {
       keepPreviousData: true,
