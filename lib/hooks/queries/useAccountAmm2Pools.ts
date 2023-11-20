@@ -42,13 +42,6 @@ export const useAccountAmm2Pool = (address?: string) => {
         );
       });
 
-      console.log(
-        neoPools.map((pool, index) => ({
-          ...pool,
-          value: valuations[index],
-        })),
-      );
-
       return neoPools.map((pool, index) => {
         const market = markets.find(m=>m.marketId === pool.marketId)
        return { ...pool,

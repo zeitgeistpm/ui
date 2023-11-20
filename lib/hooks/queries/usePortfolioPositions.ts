@@ -765,7 +765,7 @@ export const totalPositionsValue = <
     }
     if (!position[key]) return acc;
 
-    const value = position.userBalance.mul(position[key]).mul(priceMultiplier);
+    const value = position.userBalance.mul(position[key]).mul(priceMultiplier??0);
 
     return !value.isNaN() ? acc.plus(value) : acc;
   }, new Decimal(0));

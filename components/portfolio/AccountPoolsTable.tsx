@@ -66,8 +66,6 @@ const CollectFeesButton = ({marketId}: {marketId:number}) => {
 
 const AccountPoolsTable = ({ address }: { address: string }) => {
   const { data: pools, isLoading } = useAccountAmm2Pool(address);
-  const { data: usdPrices } = useAllForeignAssetUsdPrices();
-  const { data: ztgPrice } = useZtgPrice();
 
   const tableData:TableData[] = pools?.map(pool => {
     return {

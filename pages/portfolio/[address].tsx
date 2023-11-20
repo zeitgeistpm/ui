@@ -205,9 +205,9 @@ const Portfolio: NextPageWithLayout = () => {
                     {address && <BondsTable address={address} />}
                   </Tab.Panel>
                   <Tab.Panel>
-                    <div>AMM2 Pools</div>
+                    <div className="font-bold mb-4">AMM2 Pools</div>
                     <AccountPoolsTable address={address} />
-                    <div>Legacy Pools</div>
+                    <div className="font-bold mb-4 mt-8">Legacy Pools</div>
                     {!subsidyPositionsByMarket || !ztgPrice ? (
                       range(0, 8).map((i) => (
                         <MarketPositionsSkeleton className="mb-14" key={i} />
