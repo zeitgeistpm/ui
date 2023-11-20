@@ -19,6 +19,7 @@ import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { IoIosWarning } from "react-icons/io";
 
 export type ManageDelegationsFormProps = {
   onSuccessfulSubmit?: () => void;
@@ -230,19 +231,23 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
         </>
       </div>
 
+      {connectedParticipant?.type === "Juror" && (
+        <div className="relative mb-5 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
+          You are currently a juror. If you delegate to other jurors your stake
+          will be removed from your personal stake and delegated evenly across
+          your selected jurors. You will not be a juror after this action.
+          <IoIosWarning
+            size={24}
+            className="absolute left-[50%] top-0 translate-x-[-50%] translate-y-[-50%] text-orange-700"
+          />
+        </div>
+      )}
+
       <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
         <span className="ml-1 text-black">
           Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0} {fee?.symbol}
         </span>
       </div>
-
-      {connectedParticipant?.type === "Juror" && (
-        <div className="mb-5 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
-          You are currently a juror. If you delegate to other jurors your stake
-          will be removed from your personal stake and delegated evenly across
-          your selected jurors. You will not be a juror after this action.
-        </div>
-      )}
 
       <FormTransactionButton
         className="w-full max-w-[250px]"

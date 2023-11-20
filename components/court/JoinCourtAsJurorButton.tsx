@@ -16,6 +16,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { IoIosWarning } from "react-icons/io";
 
 const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -182,20 +183,24 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
                 <>{formState.errors["amount"]?.message}</>
               </div>
 
+              {connectedParticipant?.type === "Delegator" && (
+                <div className="relative mb-5 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
+                  You are currently delegating to other jurors. If you join the
+                  court as a juror, your delegations will be removed and stake
+                  will be moved to your personal stake.
+                  <IoIosWarning
+                    size={24}
+                    className="absolute left-[50%] top-0 translate-x-[-50%] translate-y-[-50%] text-orange-700"
+                  />
+                </div>
+              )}
+
               <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
                 <span className="ml-1 text-black">
                   Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0}{" "}
                   {fee?.symbol}
                 </span>
               </div>
-
-              {connectedParticipant?.type === "Delegator" && (
-                <div className="mb-5 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
-                  You are currently delegating to other jurors. If you join the
-                  court as a juror, your delegations will be removed and stake
-                  will be moved to your personal stake.
-                </div>
-              )}
 
               <FormTransactionButton
                 className="w-full max-w-[250px]"
