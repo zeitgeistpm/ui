@@ -16,7 +16,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { IoIosWarning } from "react-icons/io";
+import { IoIosInformation, IoIosWarning } from "react-icons/io";
 
 const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -111,6 +111,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
               className="text-white"
               position="top-end"
               popoverCss="-ml-12"
+              icon={<IoIosInformation />}
             >
               You are currently delegating to other jurors. If you join the
               court as a juror, your delegations will be removed and delegated
