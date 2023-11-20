@@ -11,16 +11,19 @@ export type CourtBacklogItem =
 export type CourtCaseReadyToVoteBacklogItem = {
   type: "court-case-ready-for-vote";
   caseId: number;
+  actionable: true;
 };
 
 export type CourtCaseReadyToRevealBacklogItem = {
   type: "court-case-ready-for-reveal";
   caseId: number;
+  actionable: true;
 };
 
 export type CourtCaseAwaitingVotePeriodBacklogItem = {
   type: "court-case-awaiting-vote-period";
   caseId: number;
+  actionable: false;
 };
 
 export const useCourtBacklog = (account?: string): CourtBacklogItem[] => {
@@ -59,6 +62,7 @@ export const useCourtBacklog = (account?: string): CourtBacklogItem[] => {
         backlog.push({
           type: "court-case-awaiting-vote-period",
           caseId,
+          actionable: false,
         });
       });
     }
@@ -68,6 +72,7 @@ export const useCourtBacklog = (account?: string): CourtBacklogItem[] => {
         backlog.push({
           type: "court-case-ready-for-vote",
           caseId,
+          actionable: true,
         });
       });
     }
@@ -80,6 +85,7 @@ export const useCourtBacklog = (account?: string): CourtBacklogItem[] => {
         backlog.push({
           type: "court-case-ready-for-reveal",
           caseId,
+          actionable: true,
         });
       });
     }

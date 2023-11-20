@@ -13,40 +13,17 @@ import { useChainTime } from "lib/state/chaintime";
 import { CourtStage, getCourtStage } from "lib/state/court/get-stage";
 import { useWallet } from "lib/state/wallet";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { LuVote } from "react-icons/lu";
 import { courtStageCopy } from "./CourtStageTimer";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { useCourtBacklog } from "lib/state/court/useCourtBacklog";
-
-const columns: TableColumn[] = [
-  {
-    header: "#",
-    accessor: "id",
-    type: "text",
-  },
-  {
-    header: "Case",
-    accessor: "case",
-    type: "component",
-  },
-  {
-    header: "Status",
-    accessor: "status",
-    type: "component",
-  },
-  {
-    header: "Aggregation Ends",
-    accessor: "ends",
-    type: "text",
-  },
-  {
-    header: "",
-    accessor: "actions",
-    type: "component",
-  },
-];
+import { MdOutlinePendingActions } from "react-icons/md";
+import { FaLongArrowAltDown } from "react-icons/fa";
+import { BsFillTriangleFill } from "react-icons/bs";
+import { motion } from "framer-motion";
+import { TAILWIND } from "lib/constants";
 
 export const CourtCasesTable = () => {
   const { data: cases } = useCourtCases();
@@ -84,6 +61,98 @@ export const CourtCasesTable = () => {
         : 0;
     });
   }, [cases, courtBacklog]);
+
+  const actionableCount = courtBacklog.filter((item) => item.actionable).length;
+
+  const columns: TableColumn[] = [
+    {
+      header: "#",
+      accessor: "id",
+      type: "text",
+    },
+    {
+      header: "Case",
+      accessor: "case",
+      type: "component",
+    },
+    {
+      header: "Status",
+      accessor: "status",
+      type: "component",
+    },
+    {
+      header: "Aggregation Ends",
+      accessor: "ends",
+      type: "text",
+    },
+    {
+      header: (
+        <div className="center relative flex-1">
+          {actionableCount > 0 ? (
+            <div className="center absolute -top-6 translate-y-[-50%]">
+              <motion.div
+                animate={{
+                  translateY: ["0%", "-20%", "0%"],
+                  backgroundColor: [
+                    TAILWIND.theme.colors["slate"][200],
+                    TAILWIND.theme.colors["orange"][400],
+                    TAILWIND.theme.colors["slate"][200],
+                  ],
+                  color: [
+                    TAILWIND.theme.colors["gray"][500],
+                    TAILWIND.theme.colors["orange"][800],
+                    TAILWIND.theme.colors["gray"][500],
+                  ],
+                }}
+                transition={{
+                  duration: 1,
+                  ease: "easeInOut",
+                  times: [0, 0.2, 0.5, 0.8, 1],
+                  repeat: 5,
+                }}
+                className={`relative z-20 flex gap-2 rounded-lg px-3 py-3 text-gray-500`}
+              >
+                <div className="relative z-20">
+                  You are required to take action
+                </div>
+                <MdOutlinePendingActions size={16} />
+              </motion.div>
+              <div className="center absolute inset-0 bottom-0 left-0 z-10 w-full translate-y-[20%] text-orange-400">
+                <motion.div
+                  animate={{
+                    translateY: ["30%", "-20%", "30%"],
+                    color: [
+                      TAILWIND.theme.colors["slate"][200],
+                      TAILWIND.theme.colors["orange"][400],
+                      TAILWIND.theme.colors["slate"][200],
+                    ],
+                  }}
+                  transition={{
+                    duration: 1,
+                    ease: "easeInOut",
+                    times: [0, 0.2, 0.5, 0.8, 1],
+                    repeat: 5,
+                  }}
+                >
+                  <BsFillTriangleFill
+                    className="rotate-180"
+                    size={24}
+                    style={{
+                      transform: "scale(1.5, 1) rotate(180deg)",
+                    }}
+                  />
+                </motion.div>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+      ),
+      accessor: "actions",
+      type: "component",
+    },
+  ];
 
   const tableData: TableData[] | undefined = sortedCase?.map((courtCase) => {
     return {
@@ -213,11 +282,8 @@ const CaseActions = ({
         <button
           className={`
           center line-clamp-1 gap-3 self-end rounded-full border-2 border-gray-300 px-5 py-1.5 text-xs hover:border-gray-400 disabled:opacity-50 md:min-w-[220px]
-            ${canVote && "animate-pulse border-ztg-blue bg-ztg-blue text-white"}
-            ${
-              canReveal &&
-              "animate-pulse border-purple-500 bg-purple-500 text-white"
-            }
+            ${canVote && "border-ztg-blue bg-ztg-blue text-white"}
+            ${canReveal && "border-purple-500 bg-purple-500 text-white"}
           `}
         >
           {canVote ? (

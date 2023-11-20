@@ -32,7 +32,7 @@ interface TableProps {
 }
 
 export interface TableColumn {
-  header: string;
+  header: string | ReactNode;
   type: ColumnType;
   accessor: string;
   width?: string;
