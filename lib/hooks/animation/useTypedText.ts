@@ -11,13 +11,16 @@ export const useTypedText = (fullText: string) => {
 
   useEffect(() => {
     if (animationState === "playing") {
-      setTimeout(() => {
-        if (chars.current.length > 0) {
-          setStext(text + chars.current.shift());
-        } else {
-          setAnimationState("finished");
-        }
-      }, random(15, 55));
+      setTimeout(
+        () => {
+          if (chars.current.length > 0) {
+            setStext(text + chars.current.shift());
+          } else {
+            setAnimationState("finished");
+          }
+        },
+        random(15, 55),
+      );
     }
   }, [animationState, text]);
 

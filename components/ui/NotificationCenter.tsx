@@ -35,19 +35,19 @@ const NotificationCard: FC<{
 
   return (
     <div
-      className={`flex relative gap-4 rounded-md px-5  flex-1 ${getBgColor(
+      className={`relative flex flex-1 gap-4 rounded-md  px-5 ${getBgColor(
         type,
       )}`}
     >
       <div
-        className={`absolute top-0 left-0  h-1 w-full rounded-t-md overflow-hidden z-20 ${getBgColor(
+        className={`absolute left-0 top-0  z-20 h-1 w-full overflow-hidden rounded-t-md ${getBgColor(
           type,
         )}`}
       >
         <div
           className={`${getTopBarColor(
             type,
-          )} h-full absolute z-40 top-0 left-0 transition-all duration-500 ease-linear`}
+          )} absolute left-0 top-0 z-40 h-full transition-all duration-500 ease-linear`}
           style={{
             width: `${((100 * timer) / lifetime).toFixed(2)}%`,
           }}
@@ -55,10 +55,10 @@ const NotificationCard: FC<{
         <div
           className={`${getTopBarColor(
             type,
-          )} h-full absolute z-40 top-0 left-0  w-full opacity-10`}
+          )} absolute left-0 top-0 z-40 h-full  w-full opacity-10`}
         />
       </div>
-      <div className="text-white flex justify-center py-6">
+      <div className="flex justify-center py-6 text-white">
         <div className={`center ${getBgColor(type)}`}>
           <Loader
             loading={Boolean(lifetime)}
@@ -69,7 +69,7 @@ const NotificationCard: FC<{
         </div>
       </div>
       <div className="center flex-1 py-6">
-        <div className="text-base font-normal text-left w-full">{content}</div>
+        <div className="w-full text-left text-base font-normal">{content}</div>
       </div>
       <div className="py-4">
         <X
@@ -109,9 +109,9 @@ const NotificationCenter = () => {
   const { notifications, removeNotification } = useNotifications();
 
   return (
-    <div className="fixed h-full w-full top-0 pointer-events-none z-50">
+    <div className="pointer-events-none fixed top-0 z-50 h-full w-full">
       <div className="flex flex-row justify-end pt-20">
-        <div className="flex relative flex-col items-end flex-1 px-4">
+        <div className="relative flex flex-1 flex-col items-end px-4">
           <AnimatePresence mode="sync" presenceAffectsLayout>
             {notifications.map((notification, index) => (
               <motion.div
@@ -120,7 +120,7 @@ const NotificationCenter = () => {
                 exit={{ x: 300, maxHeight: 0, opacity: 0 }}
                 animate={{ x: 0, maxHeight: 900, opacity: 1 }}
                 transition={{ type: "spring", duration: 0.7 }}
-                className="pointer-events-auto w-full md:max-w-screen-sm md:w-[420px] overflow-hidden box-border"
+                className="pointer-events-auto box-border w-full overflow-hidden md:w-[420px] md:max-w-screen-sm"
               >
                 <div className="mb-4 flex-1">
                   <NotificationCard

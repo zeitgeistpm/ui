@@ -88,7 +88,7 @@ const Amm2TradeForm = ({
           selectedIndex={tabType}
         >
           <Tab.List
-            className={`h-[71px] text-center font-medium text-ztg-18-150 ${
+            className={`h-[71px] text-center text-ztg-18-150 font-medium ${
               showTabs ? "flex" : "hidden"
             }`}
           >

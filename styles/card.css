@@ -1,5 +1,5 @@
 div[class^="card-exp-col"] {
-  @apply flex-shrink-0 mr-ztg-16;
+  @apply mr-ztg-16 flex-shrink-0;
 }
 div[class^="card-exp-col"]:last-child {
   @apply mr-ztg-0;

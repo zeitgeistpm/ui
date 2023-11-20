@@ -27,7 +27,7 @@ const MarketChart = ({
 }: {
   marketId: number;
   chartSeries: ChartSeries[];
-  baseAsset: string;
+  baseAsset?: string;
   poolCreationDate: Date;
   marketStatus: MarketStatus;
   resolutionDate: Date;
@@ -78,7 +78,7 @@ const MarketChart = ({
   const colors = calcMarketColors(marketId, chartSeries.length);
 
   return (
-    <div className="flex flex-col -ml-ztg-25">
+    <div className="-ml-ztg-25 flex flex-col">
       <div className="ml-auto">
         <TimeFilters onClick={handleFilterChange} value={chartFilter} />
       </div>

@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { calculateFreeBalance } from "./calc-free-balance";
 
 describe("calculateFreeBalance", () => {

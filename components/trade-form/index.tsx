@@ -500,7 +500,7 @@ const Inner = ({
         />
       ) : (
         <form
-          className="relative bg-white rounded-[10px]"
+          className="relative rounded-[10px] bg-white"
           onSubmit={(e) => {
             e.preventDefault();
             swapTx();
@@ -528,7 +528,7 @@ const Inner = ({
               }}
               selectedIndex={tabIndex}
             >
-              <Tab.List className="flex justify-between h-[60px] sm:h-[71px] text-center rounded-xl">
+              <Tab.List className="flex h-[60px] justify-between rounded-xl text-center sm:h-[71px]">
                 <Tab
                   as={TradeTab}
                   selected={type === "buy"}
@@ -566,7 +566,7 @@ const Inner = ({
                 autoFocus
               />
             </div>
-            <div className="center font-semibold mb-4">
+            <div className="center mb-4 font-semibold">
               {market && tradeItemState?.assetId && (
                 <MarketContextActionOutcomeSelector
                   market={market}
@@ -582,7 +582,7 @@ const Inner = ({
                 />
               )}
             </div>
-            <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative rounded-lg">
+            <div className="center relative mb-[20px] h-[56px] rounded-lg bg-anti-flash-white text-ztg-18-150">
               <Input
                 type="number"
                 {...register("baseAmount", {
@@ -599,7 +599,7 @@ const Inner = ({
                 step="any"
                 className="w-full bg-transparent text-center"
               />
-              <div className="mr-[10px] absolute right-2">{baseSymbol}</div>
+              <div className="absolute right-2 mr-[10px]">{baseSymbol}</div>
             </div>
             <RangeInput
               min="0"
@@ -619,7 +619,7 @@ const Inner = ({
               disabled={isLoading === true || signer == null}
               {...register("percentage")}
             />
-            <div className="text-center mb-4">
+            <div className="mb-4 text-center">
               <div className="text-ztg-12-150 sm:text-ztg-14-150">
                 <div className="mb-[10px]">
                   <span className="text-sky-600">Average Price: </span>
@@ -646,10 +646,10 @@ const Inner = ({
                 loading={isBroadcasting}
               >
                 <div>
-                  <div className="center font-normal h-[20px]">
+                  <div className="center h-[20px] font-normal">
                     Confirm {`${capitalize(tradeItem?.action)}`}
                   </div>
-                  <div className="center font-normal text-ztg-12-120 h-[20px]">
+                  <div className="center h-[20px] text-ztg-12-120 font-normal">
                     Transaction fee:{" "}
                     {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
                     {fee?.symbol}

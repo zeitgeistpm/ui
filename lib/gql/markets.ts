@@ -30,6 +30,11 @@ const marketQuery = gql`
         volume
         baseAsset
       }
+      neoPool {
+        createdAt
+        collateral
+        volume
+      }
       question
       slug
       status
@@ -97,11 +102,16 @@ export interface MarketPageIndexedData {
   categories: { name: string; color: string }[];
   outcomeAssets: string[];
   resolvedOutcome: string;
-  pool: {
+  pool?: {
     poolId: number;
     volume: string;
     createdAt: string;
     baseAsset: string;
+  };
+  neoPool?: {
+    collateral: string;
+    createdAt: string;
+    volume: string;
   };
   scalarType: ScalarRangeType;
   marketType: {

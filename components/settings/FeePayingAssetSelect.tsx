@@ -59,7 +59,7 @@ const FeePayingAssetSelect = () => {
 
   return (
     <div className="flex flex-col gap-y-3">
-      <div className="flex item-center">
+      <div className="item-center flex">
         <label className="font-bold">Select asset to pay network fees</label>
         <Transition
           as={Fragment}
@@ -71,7 +71,7 @@ const FeePayingAssetSelect = () => {
           leaveFrom="transform scale-100 opacity-100"
           leaveTo="transform scale-95 opacity-0"
         >
-          <div className="flex gap-2 items-center ml-auto">
+          <div className="ml-auto flex items-center gap-2">
             <Check size={16} className="text-green-500" />
             <div className="text-sm">Saved</div>
           </div>
@@ -79,7 +79,7 @@ const FeePayingAssetSelect = () => {
       </div>
       <div
         className={
-          "h-14 w-full bg-anti-flash-white rounded-md relative border-1 border-transparent "
+          "relative h-14 w-full rounded-md border-1 border-transparent bg-anti-flash-white "
         }
       >
         <AssetSelect

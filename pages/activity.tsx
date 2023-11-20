@@ -76,7 +76,7 @@ const ActivityFeed: NextPage = () => {
 
   return (
     <div>
-      <h2 className="text-ztg-18-150 font-medium mb-ztg-23">Activity Feed</h2>
+      <h2 className="mb-ztg-23 text-ztg-18-150 font-medium">Activity Feed</h2>
       <Table data={tableData} columns={columns} />
     </div>
   );

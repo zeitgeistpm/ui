@@ -18,7 +18,7 @@ const otherTags = process.env.NEXT_PUBLIC_OTHER_TAGS
 
 export const defaultTags = [...prodTags, ...otherTags] as const;
 
-export type SupportedTag = typeof defaultTags[number];
+export type SupportedTag = (typeof defaultTags)[number];
 
 export const marketStatuses = Object.keys(EMarketStatus) as MarketStatus[];
 

@@ -152,7 +152,7 @@ const RedeemButtonByValue = ({
   return (
     <>
       {isSuccess ? (
-        <span className="text-green-500 font-bold">Redeemed Tokens!</span>
+        <span className="font-bold text-green-500">Redeemed Tokens!</span>
       ) : (
         <SecondaryButton
           onClick={handleClick}

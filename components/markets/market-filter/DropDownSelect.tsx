@@ -27,13 +27,13 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
     <components.Control {...props}>
       <div
         className={
-          "flex justify-center items-center font-medium text-ztg-16-150 h-8 " +
+          "flex h-8 items-center justify-center text-ztg-16-150 font-medium " +
           (menuIsOpen ? "text-black" : "text-sky-600")
         }
         onClick={onClick}
       >
         <span className="cursor-pointer">{selectProps.placeholder}</span>
-        <Chevron size={18} className="ml-ztg-8 font-bold cursor-pointer" />
+        <Chevron size={18} className="ml-ztg-8 cursor-pointer font-bold" />
         {children}
       </div>
     </components.Control>
@@ -56,7 +56,7 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
         }
       >
         {data.imageUrl && (
-          <div className="h-[47px] w-[47px] rounded-full mr-[6px] overflow-hidden center bg-white p-1">
+          <div className="center mr-[6px] h-[47px] w-[47px] overflow-hidden rounded-full bg-white p-1">
             <Image
               className="rounded-full"
               src={data.imageUrl}
@@ -69,7 +69,7 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
         )}
         <div
           className={
-            "pr-[10px] pl-[10px] " + (isActive ? "text-white" : "text-black")
+            "pl-[10px] pr-[10px] " + (isActive ? "text-white" : "text-black")
           }
         >
           {children}
@@ -82,7 +82,7 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
 const MenuList = ({ children, ...props }: MenuListProps) => {
   return (
     <components.MenuList {...props}>
-      <div className="flex flex-row flex-wrap mx-auto gap-[12px] mb-2">
+      <div className="mx-auto mb-2 flex flex-row flex-wrap gap-[12px]">
         {children}
       </div>
     </components.MenuList>

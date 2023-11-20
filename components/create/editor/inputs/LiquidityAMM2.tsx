@@ -62,7 +62,7 @@ export const LiquidityInputAmm2 = ({
 
   return (
     <div className="center">
-      <div className="md:max-w-4xl w-full flex flex-col items-center">
+      <div className="flex w-full flex-col items-center md:max-w-4xl">
         <>
           <div className="mb-4 ">
             <PoolSettingsAmm2

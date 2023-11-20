@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "./math";
 
 describe("math", () => {

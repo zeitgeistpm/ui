@@ -101,7 +101,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
         onOrderingChange={setOrderBy}
         onWithLiquidityOnlyChange={setWithLiquidityOnly}
       />
-      <div className="grid gap-7 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
         {markets?.map((market) => {
           const volume = market.pool?.volume ?? 0;
           const scalarType = market.scalarType as ScalarRangeType;
@@ -133,6 +133,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
               marketType={marketType}
               scalarType={scalarType}
               pool={pool}
+              neoPool={market.neoPool}
               status={market.status}
               baseAsset={market.baseAsset}
               volume={new Decimal(volume).div(ZTG).toNumber()}
@@ -144,14 +145,14 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
           );
         })}
       </div>
-      <div className="flex justify-center w-full mt-[78px] h-[20px]">
+      <div className="mt-[78px] flex h-[20px] w-full justify-center">
         {(isFetchingMarkets || isLoading) && <Loader />}
       </div>
       {!(isFetchingMarkets || isLoading) && count === 0 && (
         <div className="text-center">No results!</div>
       )}
       <div
-        className="w-full h-0"
+        className="h-0 w-full"
         style={
           isFetchingMarkets || !hasNextPage
             ? { position: "absolute", left: "-10000px" }
@@ -167,11 +168,11 @@ const MarketsSearchInfo = ({ searchText }: { searchText: string }) => {
   const router = useRouter();
 
   return (
-    <div className="flex my-ztg-30 h-ztg-34">
+    <div className="my-ztg-30 flex h-ztg-34">
       <h6 className="text-ztg-[24px]" id="marketsHead">
         {`Search results for: "${searchText}"`}
       </h6>
-      <div className="w-ztg-24 h-ztg-24 rounded-full bg-sky-400 dark:bg-black center ml-ztg-15">
+      <div className="center ml-ztg-15 h-ztg-24 w-ztg-24 rounded-full bg-sky-400 dark:bg-black">
         <X
           size={24}
           className="cursor-pointer text-sky-600"

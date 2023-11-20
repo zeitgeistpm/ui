@@ -104,7 +104,7 @@ const Portfolio: NextPageWithLayout = () => {
           onChange={(index) => setMainTabSelection(mainTabItems[index])}
         >
           <div className="overflow-auto border-b border-sky-200">
-            <Tab.List className="flex mb-4">
+            <Tab.List className="mb-4 flex">
               {[
                 "Predictions",
                 ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true"

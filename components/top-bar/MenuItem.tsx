@@ -34,13 +34,13 @@ export const MenuItem: FC<PropsWithChildren<MenuItemProps>> = ({
   return (
     <WrapComponent href={href}>
       <button
-        className={`group flex rounded-full p-5 w-[68px] bg-black border-2 border-black text-white hover:border-sunglow-2 hover:text-sunglow-2 hover:bg-black transition-all duration-300 focus:bg-ztg-blue focus:text-white focus:border-ztg-blue ${
-          active && "bg-ztg-blue border-ztg-blue"
+        className={`group flex w-[68px] rounded-full border-2 border-black bg-black p-5 text-white transition-all duration-300 hover:border-sunglow-2 hover:bg-black hover:text-sunglow-2 focus:border-ztg-blue focus:bg-ztg-blue focus:text-white ${
+          active && "border-ztg-blue bg-ztg-blue"
         }`}
       >
-        <div className="relative center">
+        <div className="center relative">
           <IconComponent size={24} />
-          <div className="invisible opacity-0 absolute left-14 whitespace-nowrap px-2.5 py-1 rounded bg-sunglow-2 text-black text-lg group-hover:visible group-hover:opacity-100 group-focus:bg-ztg-blue group-focus:text-white transition-all duration-300">
+          <div className="invisible absolute left-14 whitespace-nowrap rounded bg-sunglow-2 px-2.5 py-1 text-lg text-black opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100 group-focus:bg-ztg-blue group-focus:text-white">
             {textLabel}
           </div>
         </div>
@@ -57,10 +57,10 @@ export const MenuItemMobile: FC<MenuItemMobileProps> = ({
   return (
     <WrapComponent href={href}>
       <button
-        className="flex flex-col center"
+        className="center flex flex-col"
         onClick={() => setMenuOpen && setMenuOpen(false)}
       >
-        <div className="whitespace-nowrap text-black text-lg">{textLabel}</div>
+        <div className="whitespace-nowrap text-lg text-black">{textLabel}</div>
       </button>
     </WrapComponent>
   );

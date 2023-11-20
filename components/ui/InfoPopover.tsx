@@ -7,6 +7,8 @@ export type InfoPopoverProps = React.PropsWithChildren<{
   title?: ReactNode;
   icon?: ReactNode;
   className?: string;
+  overlay?: boolean;
+  popoverCss?: string;
   position?:
     | "top"
     | "bottom"
@@ -21,20 +23,22 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
   icon,
   children,
   className,
+  overlay = true,
   position = "bottom",
+  popoverCss,
 }) => {
   let [isOpen, setIsOpen] = useState(false);
 
   const positionCss = useMemo(() => {
     switch (position) {
       case "top":
-        return "top-0 translate-y-[-100%] left-1/2 transform translate-x-[-50%]";
+        return "-top-1 translate-y-[-100%] left-1/2 transform translate-x-[-50%]";
       case "bottom":
         return "top-[100%] left-1/2 transform translate-x-[-50%]";
       case "top-start":
         return "top-0 translate-y-[-100%] translate-x-[-100%] left-0";
       case "top-end":
-        return "top-0 translate-y-[-100%]  left-0";
+        return "-top-1 translate-y-[-100%] left-0";
       case "bottom-start":
         return "top-[100%] right-0";
       case "bottom-end":
@@ -47,7 +51,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="relative justify-center items-center flex lg:hidden"
+        className="relative flex items-center justify-center lg:hidden"
       >
         {icon ?? <AiOutlineInfoCircle />}
       </button>
@@ -55,13 +59,13 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
       <Popover className="relative">
         {({ open }) => (
           <>
-            <Popover.Button className="relative justify-center items-center hidden lg:flex">
+            <Popover.Button className="relative hidden items-center justify-center lg:flex">
               {icon ?? <AiOutlineInfoCircle />}
             </Popover.Button>
 
             <Transition
               as={Fragment}
-              show={open}
+              show={open && overlay}
               enter="ease-out duration-200"
               enterFrom="opacity-0"
               enterTo="opacity-30"
@@ -69,7 +73,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
               leaveFrom="opacity-30"
               leaveTo="opacity-0"
             >
-              <Popover.Overlay className="fixed z-50 inset-0 bg-black " />
+              <Popover.Overlay className="fixed inset-0 z-50 bg-black " />
             </Transition>
 
             <Transition
@@ -82,9 +86,9 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
               leaveTo="opacity-0 scale-1"
             >
               <Popover.Panel
-                className={`absolute z-[100] bg-tooltip-bg ${positionCss} w-screen lg:w-[500px] rounded-md`}
+                className={`absolute z-[100] bg-tooltip-bg ${positionCss} w-screen rounded-md lg:w-[500px] ${popoverCss}`}
               >
-                <div className="overflow-hidden p-5 rounded-md shadow-xs ring-2 text-black ring-orange-400 ring-opacity-20 text-left font-light text-base">
+                <div className="shadow-xs overflow-hidden rounded-md p-5 text-left text-base font-light text-black ring-2 ring-orange-400 ring-opacity-20">
                   {children}
                 </div>
               </Popover.Panel>
@@ -96,7 +100,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel
           onClick={() => setIsOpen(false)}
-          className={`w-full max-w-[462px] rounded-[10px] bg-tooltip-bg p-6 cursor-pointer ${className} font-light text-base`}
+          className={`w-full max-w-[462px] cursor-pointer rounded-[10px] bg-tooltip-bg p-6 ${className} text-base font-light`}
         >
           {title}
           <div className="text-center">{children}</div>

@@ -14,7 +14,7 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
     <>
       <Transition
         show={Boolean(editor.isTouched)}
-        className={`flex center text-sm text-gray-400 font-medium `}
+        className={`center flex text-sm font-medium text-gray-400 `}
         enter="transition-opacity duration-100"
         enterFrom="opacity-0"
         enterTo="opacity-100"
@@ -24,7 +24,7 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
       >
         <button
           type="button"
-          className="text-xs center gap-1 rounded-md border-1 py-1 px-2 md:absolute md:right-0 md:translate-x-[125%] md:translate-y-[-50%] md:top-[50%]"
+          className="center gap-1 rounded-md border-1 px-2 py-1 text-xs md:absolute md:right-0 md:top-[50%] md:translate-x-[125%] md:translate-y-[-50%]"
           onClick={() => setShowResetConfirmation(true)}
         >
           Clear form
@@ -36,14 +36,14 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
         open={showResetConfirmation}
         onClose={() => setShowResetConfirmation(false)}
       >
-        <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-8 cursor-pointer">
-          <div className="text-center mb-6">
+        <Dialog.Panel className="w-full max-w-[462px] cursor-pointer rounded-[10px] bg-white p-8">
+          <div className="mb-6 text-center">
             Are you sure you want to clear the form?
           </div>
           <div className="flex justify-center gap-4">
             <button
               type="button"
-              className="border-gray-300 text-sm  rounded-full py-3 px-6 transition-all ease-in-out duration-200 active:scale-95"
+              className="rounded-full border-gray-300  px-6 py-3 text-sm transition-all duration-200 ease-in-out active:scale-95"
               onClick={() => {
                 setShowResetConfirmation(false);
               }}
@@ -52,7 +52,7 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
             </button>
             <button
               type="button"
-              className="border-gray-300 text-sm border-2 rounded-full py-3 px-6 transition-all ease-in-out duration-200 active:scale-95"
+              className="rounded-full border-2 border-gray-300 px-6 py-3 text-sm transition-all duration-200 ease-in-out active:scale-95"
               onClick={() => {
                 editor.reset();
                 setShowResetConfirmation(false);

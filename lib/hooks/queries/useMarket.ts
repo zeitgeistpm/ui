@@ -16,7 +16,7 @@ export const useMarket = (
 ) => {
   const [sdk, id] = useSdkv2();
 
-  const query = useQuery(
+  return useQuery(
     [id, marketsRootQuery, filter],
     async () => {
       if (
@@ -40,14 +40,12 @@ export const useMarket = (
       ),
     },
   );
-
-  return query;
 };
 
 const batcher = memoize((sdk: Sdk<IndexerContext>) => {
-  return batshit.create<FullMarketFragment | undefined, UseMarketFilter>({
+  return batshit.create({
     name: marketsRootQuery,
-    fetcher: async (ids) => {
+    fetcher: async (ids: UseMarketFilter[]) => {
       const { markets } = await sdk.indexer.markets({
         where: {
           AND: [
