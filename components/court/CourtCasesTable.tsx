@@ -17,6 +17,8 @@ import { useMemo } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { LuVote } from "react-icons/lu";
 import { courtStageCopy } from "./CourtStageTimer";
+import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
+import { useCourtBacklog } from "lib/state/court/useCourtBacklog";
 
 const columns: TableColumn[] = [
   {
@@ -49,9 +51,18 @@ const columns: TableColumn[] = [
 export const CourtCasesTable = () => {
   const { data: cases } = useCourtCases();
   const time = useChainTime();
+  const wallet = useWallet();
+
+  const courtBacklog = useCourtBacklog(wallet.realAddress);
 
   cases?.sort((a, b) => {
     if (b.case.status.type === "Reassigned") return -1;
+
+    const aBacklogItem = courtBacklog.findIndex((item) => item.caseId === a.id);
+    const bBacklogItem = courtBacklog.findIndex((item) => item.caseId === b.id);
+
+    if (aBacklogItem !== -1 && bBacklogItem === -1) return -1;
+
     return a.case.roundEnds.vote.toNumber() > b.case.roundEnds.vote.toNumber()
       ? 1
       : 0;
