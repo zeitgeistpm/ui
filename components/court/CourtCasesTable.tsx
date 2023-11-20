@@ -64,6 +64,13 @@ export const CourtCasesTable = () => {
 
   const actionableCount = courtBacklog.filter((item) => item.actionable).length;
 
+  const backlogNotificationTransition = {
+    duration: 1,
+    ease: "easeInOut",
+    times: [0, 0.2, 0.5, 0.8, 1],
+    repeat: 5,
+  };
+
   const columns: TableColumn[] = [
     {
       header: "#",
@@ -104,35 +111,43 @@ export const CourtCasesTable = () => {
                     TAILWIND.theme.colors["gray"][500],
                   ],
                 }}
-                transition={{
-                  duration: 1,
-                  ease: "easeInOut",
-                  times: [0, 0.2, 0.5, 0.8, 1],
-                  repeat: 5,
-                }}
-                className={`relative z-20 flex gap-2 rounded-lg px-3 py-3 text-gray-500`}
+                transition={backlogNotificationTransition}
+                className={`center relative z-20 flex gap-2 rounded-lg px-3 py-3 text-gray-500`}
               >
                 <div className="relative z-20">
                   You are required to take action
                 </div>
-                <MdOutlinePendingActions size={16} />
+                <motion.div
+                  animate={{
+                    backgroundColor: [
+                      TAILWIND.theme.colors["orange"][400],
+                      TAILWIND.theme.colors["orange"][300],
+                      TAILWIND.theme.colors["orange"][400],
+                    ],
+                    color: [
+                      TAILWIND.theme.colors["orange"][800],
+                      TAILWIND.theme.colors["orange"][700],
+                      TAILWIND.theme.colors["orange"][800],
+                    ],
+                  }}
+                  transition={backlogNotificationTransition}
+                  className="center gap-1 rounded-md  p-1 "
+                >
+                  <div>{actionableCount}</div>
+                  <MdOutlinePendingActions size={16} />
+                </motion.div>
               </motion.div>
               <div className="center absolute inset-0 bottom-0 left-0 z-10 w-full translate-y-[20%] text-orange-400">
                 <motion.div
                   animate={{
-                    translateY: ["30%", "-20%", "30%"],
+                    translateY: ["40%", "-15%", "40%"],
                     color: [
                       TAILWIND.theme.colors["slate"][200],
                       TAILWIND.theme.colors["orange"][400],
                       TAILWIND.theme.colors["slate"][200],
                     ],
                   }}
-                  transition={{
-                    duration: 1,
-                    ease: "easeInOut",
-                    times: [0, 0.2, 0.5, 0.8, 1],
-                    repeat: 5,
-                  }}
+                  transition={backlogNotificationTransition}
                 >
                   <BsFillTriangleFill
                     className="rotate-180"

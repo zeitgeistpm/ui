@@ -23,7 +23,7 @@ export type CourtCaseReadyToRevealBacklogItem = {
 export type CourtCaseAwaitingVotePeriodBacklogItem = {
   type: "court-case-awaiting-vote-period";
   caseId: number;
-  actionable: false;
+  actionable: true;
 };
 
 export const useCourtBacklog = (account?: string): CourtBacklogItem[] => {
@@ -62,7 +62,7 @@ export const useCourtBacklog = (account?: string): CourtBacklogItem[] => {
         backlog.push({
           type: "court-case-awaiting-vote-period",
           caseId,
-          actionable: false,
+          actionable: true,
         });
       });
     }
