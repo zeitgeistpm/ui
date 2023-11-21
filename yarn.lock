@@ -4323,6 +4323,7 @@ __metadata:
     prettier-plugin-tailwindcss: ^0.5.7
     pure-react-carousel: ^1.27.8
     react: ^18.2.0
+    react-circular-progressbar: ^2.1.0
     react-color: ^2.19.3
     react-countdown-circle-timer: ^2.5.4
     react-data-table-component: ^6.11.8
@@ -10697,6 +10698,15 @@ __metadata:
   bin:
     rc: ./cli.js
   checksum: 2e26e052f8be2abd64e6d1dabfbd7be03f80ec18ccbc49562d31f617d0015fbdbcf0f9eed30346ea6ab789e0fdfe4337f033f8016efdbee0df5354751842080e
+  languageName: node
+  linkType: hard
+
+"react-circular-progressbar@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "react-circular-progressbar@npm:2.1.0"
+  peerDependencies:
+    react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: dc118010a8f94733daafac586c969f7e889ad0736d96a0fda79406ee62e9410848abfd3dee4887bb0ff46b99e1f8c86ee1afabc88dfbf4dcb95107b22de1d6d7
   languageName: node
   linkType: hard
 
