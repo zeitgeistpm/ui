@@ -12,7 +12,7 @@ export const useCourtStakeSharePercentage = () => {
     if (totalStake && connectedParticipant) {
       return new Decimal(connectedParticipant.stake)
         .div(ZTG)
-        .div(totalStake)
+        .div(totalStake.all)
         .mul(100);
     }
     return new Decimal(0);
