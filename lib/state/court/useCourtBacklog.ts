@@ -1,5 +1,5 @@
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
-import { useAllVoteDraws } from "lib/hooks/queries/court/useVoteDraws";
+import { useCourtAllVoteDraws } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useChainTime } from "../chaintime";
 import { useMemo } from "react";
 
@@ -28,7 +28,7 @@ export type CourtCaseAwaitingVotePeriodBacklogItem = {
 
 export const useCourtBacklog = (account?: string): CourtBacklogItem[] => {
   const { data: cases } = useCourtCases();
-  const { data: courtDraws } = useAllVoteDraws();
+  const { data: courtDraws } = useCourtAllVoteDraws();
   const chainTime = useChainTime();
 
   let backlog: CourtBacklogItem[] = [];

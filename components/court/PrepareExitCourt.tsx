@@ -5,7 +5,7 @@ import Modal from "components/ui/Modal";
 import TransactionButton from "components/ui/TransactionButton";
 import { BLOCK_TIME_SECONDS, DAY_SECONDS } from "lib/constants";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
-import { participantsRootKey } from "lib/hooks/queries/court/useParticipants";
+import { courtParticipantsRootKey } from "lib/hooks/queries/court/useCourtParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -34,7 +34,7 @@ const PrepareExitCourtButton = ({ className }: { className?: string }) => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([id, participantsRootKey]);
+        queryClient.invalidateQueries([id, courtParticipantsRootKey]);
         notificationStore.pushNotification("Successfully began exit process", {
           type: "Success",
         });

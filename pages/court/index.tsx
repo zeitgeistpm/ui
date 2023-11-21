@@ -6,7 +6,10 @@ import ManageDelegationButton from "components/court/ManageDelegationButton";
 import PrepareExitCourtButton from "components/court/PrepareExitCourt";
 import InfoPopover from "components/ui/InfoPopover";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
-import { participantsRootKey } from "lib/hooks/queries/court/useParticipants";
+import { courtParticipantsRootKey } from "lib/hooks/queries/court/useCourtParticipants";
+import { useCourtStakeSharePercentage } from "lib/hooks/queries/court/useCourtStakeSharePercentage";
+import { useCourtTotalStakedAmount } from "lib/hooks/queries/court/useCourtTotalStakedAmount";
+import { useCourtYearlyInflationAmount } from "lib/hooks/queries/court/useCourtYearlyInflationAmount";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -56,7 +59,7 @@ const CourtPage: NextPage = ({
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([id, participantsRootKey]);
+        queryClient.invalidateQueries([id, courtParticipantsRootKey]);
         notificationStore.pushNotification("Successfully exited court", {
           type: "Success",
         });
@@ -151,7 +154,7 @@ const CourtPage: NextPage = ({
           </div>
         </div>
         <div className="hidden min-w-[460px] rounded-lg border-1 p-6 lg:block xl:min-w-[520px]">
-          Global Court Stats Real Estate For Big Screens
+          <Stats />
         </div>
       </div>
 
@@ -161,6 +164,12 @@ const CourtPage: NextPage = ({
       </section>
     </div>
   );
+};
+
+const Stats = () => {
+  const totalStake = useCourtTotalStakedAmount();
+  const { data: yearlyInflationAmount } = useCourtYearlyInflationAmount();
+  return <div></div>;
 };
 
 export default CourtPage;

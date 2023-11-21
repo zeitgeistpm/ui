@@ -7,7 +7,7 @@ import Input from "components/ui/Input";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
-import { participantsRootKey } from "lib/hooks/queries/court/useParticipants";
+import { courtParticipantsRootKey } from "lib/hooks/queries/court/useCourtParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -57,7 +57,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
             type: "Success",
           },
         );
-        queryClient.invalidateQueries([id, participantsRootKey]);
+        queryClient.invalidateQueries([id, courtParticipantsRootKey]);
         setIsOpen(false);
       },
     },

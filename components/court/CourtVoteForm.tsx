@@ -6,7 +6,7 @@ import { CategoricalAssetId, isRpcSdk, parseAssetId } from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import Modal from "components/ui/Modal";
 import TransactionButton from "components/ui/TransactionButton";
-import { voteDrawsRootKey } from "lib/hooks/queries/court/useVoteDraws";
+import { voteDrawsRootKey } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useCourtCommitmentHash } from "lib/state/court/useCourtCommitmentHash";

@@ -16,7 +16,7 @@ import Modal from "components/ui/Modal";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
-import { voteDrawsRootKey } from "lib/hooks/queries/court/useVoteDraws";
+import { voteDrawsRootKey } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";

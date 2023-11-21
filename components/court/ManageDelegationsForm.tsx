@@ -6,10 +6,9 @@ import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import {
-  participantsRootKey,
-  useParticipants,
-} from "lib/hooks/queries/court/useParticipants";
-import { useLockedBalance } from "lib/hooks/queries/useBalance";
+  courtParticipantsRootKey,
+  useCourtParticipants,
+} from "lib/hooks/queries/court/useCourtParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -28,7 +27,7 @@ export type ManageDelegationsFormProps = {
 const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
   const { data: constants } = useChainConstants();
 
-  const { data: participants } = useParticipants();
+  const { data: participants } = useCourtParticipants();
   const connectedParticipant = useConnectedCourtParticipant();
 
   const {
@@ -57,13 +56,10 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
   const notificationStore = useNotifications();
   const wallet = useWallet();
   const { data: freeBalance } = useZtgBalance(wallet.realAddress);
-  const { data: lockedBalance } = useLockedBalance(wallet.realAddress, {
-    Ztg: null,
-  });
 
   const availableDelegationBalance = new Decimal(
     freeBalance?.toString() ?? 0,
-  ).add(lockedBalance ?? 0);
+  ).add(connectedParticipant?.stake ?? 0);
 
   const queryClient = useQueryClient();
 
@@ -87,7 +83,7 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
             type: "Success",
           },
         );
-        queryClient.invalidateQueries([id, participantsRootKey]);
+        queryClient.invalidateQueries([id, courtParticipantsRootKey]);
         props.onSuccessfulSubmit?.();
       },
     },
