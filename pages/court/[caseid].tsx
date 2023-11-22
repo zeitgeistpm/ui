@@ -42,6 +42,7 @@ import {
   ZTG,
 } from "lib/constants";
 import { CourtAppealForm } from "components/court/CourtAppealForm";
+import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -156,6 +157,76 @@ const CasePage: NextPage = ({
     }
   }, [time, market, courtCase]);
 
+  const actionSection = (
+    <>
+      {stage?.type === "vote" && (
+        <>
+          {isDrawnJuror && (
+            <>
+              <CourtVoteForm market={market} caseId={caseId} />
+            </>
+          )}
+
+          {hasSecretVote && (
+            <div className="overflow-hidden rounded-xl px-6 py-6 shadow-lg">
+              <div className="flex flex-col items-center gap-3">
+                <div className="text-blue-500">
+                  <LuVote size={64} />
+                </div>
+                <h3 className="text mb-2 text-blue-500">You have voted</h3>
+                <p className="text-center text-sm text-gray-500">
+                  Your vote is secret during voting, but when court goes into
+                  aggregation you can reveal your vote to the public by coming
+                  back to this page.
+                </p>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {stage?.type === "aggregation" && (
+        <>
+          {hasSecretVote && (
+            <CourtVoteRevealForm
+              market={market}
+              caseId={caseId}
+              secretVote={
+                connectedParticipantDraw?.vote.isSecret
+                  ? connectedParticipantDraw?.vote.asSecret
+                  : undefined
+              }
+            />
+          )}
+
+          {hasRevealedVote && (
+            <div className="overflow-hidden rounded-xl px-6 py-6 shadow-lg">
+              <div className="flex flex-col items-center gap-3">
+                <div>
+                  <AiOutlineEye size={64} />
+                </div>
+                <h3 className="text mb-2">Your vote is revealed</h3>
+                <h3 className="text mb-2 text-base text-purple-500">
+                  {
+                    market?.categories?.[
+                      connectedParticipantDraw?.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber()
+                    ].ticker
+                  }
+                </h3>
+                <p className="text-center text-sm text-gray-500">
+                  Your vote has been revealed to the other jurors and the public
+                  and has been taken into account.
+                </p>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {stage?.type === "appeal" && <CourtAppealForm caseId={caseId} />}
+    </>
+  );
+
   return (
     <div className="relative mt-6 flex flex-auto gap-12">
       <main className="flex-1">
@@ -248,6 +319,8 @@ const CasePage: NextPage = ({
               />
             </div>
           )}
+
+          <div className="mt-4 block md:hidden">{actionSection}</div>
         </section>
 
         {stage?.type !== "reassigned" && (
@@ -265,109 +338,9 @@ const CasePage: NextPage = ({
 
       <div className="hidden md:block md:w-[320px] lg:mr-auto lg:w-[460px]">
         <div className="sticky top-28">
-          {stage?.type === "vote" && (
-            <>
-              {isDrawnJuror && (
-                <>
-                  <CourtVoteForm market={market} caseId={caseId} />
-                </>
-              )}
-
-              {hasSecretVote && (
-                <div className="overflow-hidden rounded-xl px-6 py-6 shadow-lg">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="text-blue-500">
-                      <LuVote size={64} />
-                    </div>
-                    <h3 className="text mb-2 text-blue-500">You have voted</h3>
-                    <p className="text-center text-sm text-gray-500">
-                      Your vote is secret during voting, but when court goes
-                      into aggregation you can reveal your vote to the public by
-                      coming back to this page.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-
-          {stage?.type === "aggregation" && (
-            <>
-              {hasSecretVote && (
-                <CourtVoteRevealForm
-                  market={market}
-                  caseId={caseId}
-                  secretVote={
-                    connectedParticipantDraw?.vote.isSecret
-                      ? connectedParticipantDraw?.vote.asSecret
-                      : undefined
-                  }
-                />
-              )}
-
-              {hasRevealedVote && (
-                <div className="overflow-hidden rounded-xl px-6 py-6 shadow-lg">
-                  <div className="flex flex-col items-center gap-3">
-                    <div>
-                      <AiOutlineEye size={64} />
-                    </div>
-                    <h3 className="text mb-2">Your vote is revealed</h3>
-                    <h3 className="text mb-2 text-base text-purple-500">
-                      {
-                        market?.categories?.[
-                          connectedParticipantDraw?.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber()
-                        ].ticker
-                      }
-                    </h3>
-                    <p className="text-center text-sm text-gray-500">
-                      Your vote has been revealed to the other jurors and the
-                      public and has been taken into account.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-
-          {stage?.type === "appeal" && <CourtAppealForm caseId={caseId} />}
-
-          <div className="group relative mt-4 overflow-hidden rounded-xl px-6 py-6 shadow-lg">
-            <div className="absolute left-0 top-0 z-10 h-full w-full transition-all group-hover:blur-[2px]">
-              <Image
-                priority
-                title="Wizard draped in purple robes holding a flaming crypto key."
-                alt="Wizard draped in purple robes holding a flaming crypto key."
-                src={"/court_gnomes.png"}
-                layout="fill"
-                objectFit="cover"
-                blurDataURL={docsArticleImagePlaceholder.base64}
-                placeholder="blur"
-                style={{
-                  objectPosition: "50% 50%",
-                }}
-              />
-            </div>
-            <div className="relative z-20 text-white">
-              <div className="mb-2">
-                <h3 className="text-white drop-shadow-lg">
-                  Decentralized Court
-                </h3>
-              </div>
-              <p className="mb-6 drop-shadow-lg">
-                Zeitgeist implements a decentralized court to handle disputes
-                that may arise in the resolution of prediction market outcomes.
-              </p>
-              <div className="flex items-center justify-end">
-                <Link
-                  href="https://docs.zeitgeist.pm/docs/learn/court"
-                  target="_blank"
-                  className="center relative z-20 cursor-pointer gap-2 rounded-md bg-purple-400 bg-opacity-90 px-6 py-2 text-white"
-                >
-                  <PiBooks />
-                  Learn More
-                </Link>
-              </div>
-            </div>
+          {actionSection}
+          <div className="mt-4">
+            <CourtDocsArticle imagePlaceholder={docsArticleImagePlaceholder} />
           </div>
         </div>
       </div>
@@ -416,7 +389,7 @@ const Votes = ({
         return (
           <div
             key={category.ticker}
-            className={`relative flex min-w-[200px] flex-1 flex-col rounded-md border-1 text-xs shadow-sm ${
+            className={`relative flex flex-1 flex-col rounded-md border-1 text-xs shadow-sm  ${
               showLeaderIndicator &&
               isRevealed &&
               index === 0 &&
