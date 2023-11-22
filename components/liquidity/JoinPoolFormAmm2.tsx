@@ -4,46 +4,46 @@ import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
-import { useMarket } from "lib/hooks/queries/useMarket";
-import { usePool } from "lib/hooks/queries/usePool";
-import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanceForPools";
+import { Amm2Pool, amm2PoolKey } from "lib/hooks/queries/amm2/useAmm2Pool";
+import { useBalances } from "lib/hooks/queries/useBalances";
+import { lookupAssetMetadata, useMarket } from "lib/hooks/queries/useMarket";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
+import { isPresent } from "lib/types";
+import { calculateRestrictivePoolAsset } from "lib/util/calculate-restrictive-pool-asset";
 import { useEffect, useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
 
 const JoinPoolForm = ({
-  poolBalances,
-  poolId,
-  totalPoolShares,
+
+marketId,pool,
   baseAssetTicker,
   onSuccess,
 }: {
-  poolBalances: PoolBalances;
-  poolId: number;
-  totalPoolShares: Decimal;
+  marketId: number;
+  pool: Amm2Pool;
   baseAssetTicker?: string;
   onSuccess?: () => void;
 }) => {
+  const wallet = useWallet();
   const { register, watch, handleSubmit, setValue, getValues, formState } =
     useForm({ reValidateMode: "onChange", mode: "all" });
-
-  const { data: pool } = usePool({ poolId });
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
   const [poolSharesToReceive, setPoolSharesToReceive] = useState<Decimal>();
-  const { data: market } = useMarket({ poolId });
+  const { data: market } = useMarket({ marketId });
+  const userAssetBalances = useBalances(pool.assetIds, wallet.realAddress).map(res=>res.data).filter(isPresent)
+  
   const queryClient = useQueryClient();
 
   const { send: joinPool, isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && pool && poolSharesToReceive) {
         const formValue = getValues();
-        const maxAmountsIn = pool?.weights.map((asset) => {
-          const id = assetObjStringToId(asset.assetId);
-          const assetAmount = formValue[id] ?? 0;
+        const maxAmountsIn = pool?.assetIds.map((assetId,index) => {
+          const assetAmount = formValue[index] ?? 0;
           return assetAmount === ""
             ? "0"
             : new Decimal(assetAmount)
@@ -52,8 +52,8 @@ const JoinPoolForm = ({
                 .toFixed(0);
         });
 
-        return sdk.api.tx.swaps.poolJoin(
-          poolId,
+        return sdk.api.tx.neoSwaps.join(
+          marketId,
           poolSharesToReceive.toFixed(0),
           maxAmountsIn,
         );
@@ -66,8 +66,8 @@ const JoinPoolForm = ({
         });
         queryClient.invalidateQueries([
           id,
-          poolTotalIssuanceRootQueryKey,
-          poolId,
+          amm2PoolKey,
+          marketId,
         ]);
         onSuccess?.();
       },
@@ -80,67 +80,73 @@ const JoinPoolForm = ({
       const changedByUser = type != null;
       const changedAsset = name;
       const userInput = value[changedAsset];
+      const reserves = Array.from(pool.reserves).map(reserve => reserve[1])
+      const restrictiveIndex = calculateRestrictivePoolAsset(reserves,userAssetBalances)
+      
+      const maxInForRestrictiveAsset = userAssetBalances[restrictiveIndex!]
 
-      if (name === "baseAssetPercentage" && changedByUser) {
-        const percentage = Number(value["baseAssetPercentage"]);
-        const baseBalances = poolBalances["base"];
-        const userBaseAssetBalance = baseBalances.user;
+      if (name === "percentage" && changedByUser) {
 
-        const newBaseAssetAmount = userBaseAssetBalance.mul(percentage / 100);
-        const poolToInputRatio = baseBalances.pool.div(newBaseAssetAmount);
-        for (const assetKey in poolBalances) {
+        const percentage = Number(value["percentage"]);
+        const restrictiveAssetAmount = maxInForRestrictiveAsset.mul(percentage/100) //todo: div 100?
+        const restrictiveAssetToPoolRatio = restrictiveAssetAmount.div(reserves[restrictiveIndex!])
+
+        reserves.forEach((reserve,index) => {
           setValue(
-            assetKey,
-            poolBalances[assetKey].pool
-              .div(poolToInputRatio)
+            index.toString(),
+            reserve
+              .mul(restrictiveAssetToPoolRatio)
               .div(ZTG)
               .toFixed(3, Decimal.ROUND_DOWN),
             { shouldValidate: true },
           );
-        }
-        setPoolSharesToReceive(totalPoolShares.div(poolToInputRatio));
+        })
+
+        setPoolSharesToReceive(pool.totalShares.mul(restrictiveAssetToPoolRatio));
       } else if (
         changedAsset != null &&
         userInput != null &&
         userInput !== "" &&
         changedByUser &&
-        poolBalances
+        userAssetBalances
       ) {
-        const changedAssetBalances = poolBalances[changedAsset];
-        const poolToInputRatio = changedAssetBalances.pool
+        console.log(userInput);
+        
+        const reserve = reserves[Number(changedAsset)];
+        const inputToReserveRatio = new Decimal(userInput).div(reserve).mul(ZTG)
+        console.log("ratio", inputToReserveRatio.toString());
+
+let restrictedAssetAmount:Decimal|undefined
+        reserves.forEach((reserve,index) => {
+          const amount = reserve
+          .mul(inputToReserveRatio)
           .div(ZTG)
-          .div(userInput);
-
-        // recalculate asset amounts to keep ratio with user input
-        for (const assetKey in poolBalances) {
-          if (assetKey !== changedAsset) {
+       
+          if (index.toString() !== changedAsset) {
             setValue(
-              assetKey,
-              poolBalances[assetKey].pool
-                .div(poolToInputRatio)
-                .div(ZTG)
-                .toFixed(3),
+              index.toString(),
+              amount
+              .toFixed(3, Decimal.ROUND_DOWN),
               { shouldValidate: true },
-            );
-          }
-        }
+              );
+            }
 
-        setPoolSharesToReceive(totalPoolShares.div(poolToInputRatio));
-
-        const userBaseAssetBalance = poolBalances["base"].user;
-        const baseInputAmount = getValues("base");
+            if(index === restrictiveIndex) {
+              restrictedAssetAmount = amount
+            }
+        })
+        setPoolSharesToReceive(pool.totalShares.mul(inputToReserveRatio));
 
         setValue(
-          "baseAssetPercentage",
-          new Decimal(baseInputAmount)
-            .div(userBaseAssetBalance.div(ZTG))
+          "percentage",
+          restrictedAssetAmount?.div(maxInForRestrictiveAsset.div(ZTG))
             .mul(100)
             .toString(),
         );
       }
     });
     return () => subscription.unsubscribe();
-  }, [watch, poolBalances]);
+  }, [watch, userAssetBalances, pool]);
 
   const onSubmit: SubmitHandler<any> = () => {
     joinPool();
@@ -149,9 +155,9 @@ const JoinPoolForm = ({
   const prctSharesToReceive = useMemo(() => {
     if (!poolSharesToReceive) return new Decimal(0);
     return poolSharesToReceive
-      .div(totalPoolShares.plus(poolSharesToReceive))
+      .div(pool.totalShares.plus(poolSharesToReceive))
       .mul(100);
-  }, [totalPoolShares, poolSharesToReceive]);
+  }, [pool.totalShares, poolSharesToReceive]);
 
   return (
     <form
@@ -159,12 +165,10 @@ const JoinPoolForm = ({
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-auto py-5">
-        {pool?.weights.map((asset, index) => {
-          const id = assetObjStringToId(asset.assetId);
-          const assetName =
-            market?.categories?.[index]?.name ?? baseAssetTicker;
-          const userAssetBalance =
-            poolBalances?.[id]?.user.div(ZTG).toNumber() ?? 0;
+        {market && pool?.assetIds.map((assetId,index ) => {
+
+          const assetName = lookupAssetMetadata(market,assetId)?.name
+          const userBalance = userAssetBalances[index]?.div(ZTG).toNumber()
 
           return (
             <div
@@ -177,7 +181,7 @@ const JoinPoolForm = ({
               <Input
                 className={`bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full outline-none
                             ${
-                              formState.errors[id.toString()]?.message
+                              formState.errors[index.toString()]?.message
                                 ? "border-2 border-vermilion text-vermilion"
                                 : ""
                             }
@@ -185,15 +189,15 @@ const JoinPoolForm = ({
                 key={index}
                 type="number"
                 step="any"
-                {...register(id.toString(), {
+                {...register(index.toString(), {
                   value: 0,
                   required: {
                     value: true,
                     message: "Value is required",
                   },
                   validate: (value) => {
-                    if (value > userAssetBalance) {
-                      return `Insufficient balance. Current balance: ${userAssetBalance.toFixed(
+                    if (value > userBalance) {
+                      return `Insufficient balance. Current balance: ${userBalance.toFixed(
                         3,
                       )}`;
                     } else if (value <= 0) {
@@ -203,7 +207,7 @@ const JoinPoolForm = ({
                 })}
               />
               <div className="text-vermilion text-ztg-12-120 mt-[4px]">
-                <>{formState.errors[id.toString()]?.message}</>
+                <>{formState.errors[index.toString()]?.message}</>
               </div>
             </div>
           );
@@ -212,7 +216,7 @@ const JoinPoolForm = ({
       <input
         className="my-[20px] px-0"
         type="range"
-        {...register("baseAssetPercentage", { min: 0, value: "0" })}
+        {...register("percentage", { min: 0, value: "0" })}
       />
       {market?.status !== "Active" && (
         <div className="bg-provincial-pink p-4 rounded-md text-sm">

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { IndexerContext, isIndexedSdk, Sdk } from "@zeitgeistpm/sdk";
+import { IndexerContext, IOCategoricalAssetId, isIndexedSdk, MarketOutcomeAssetId, Sdk } from "@zeitgeistpm/sdk";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { memoize } from "lodash-es";
 import * as batshit from "@yornaath/batshit";
@@ -85,3 +85,13 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
     },
   });
 });
+
+export const lookupAssetMetadata = (market:FullMarketFragment, assetId: MarketOutcomeAssetId) => {
+  if(IOCategoricalAssetId.is(assetId)) {
+    return market.categories?.[assetId.CategoricalOutcome[1]]
+
+  } else {
+    const scalarIndex = assetId.ScalarOutcome[1] === "Long" ? 0 : 1
+    return market.categories?.[scalarIndex]
+  }
+} 

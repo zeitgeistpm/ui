@@ -17,6 +17,7 @@ import { useWallet } from "lib/state/wallet";
 import { useMemo } from "react";
 import ExitPoolFormAmm2 from "./ExitPoolFormAmm2";
 import JoinPoolFormAmm2 from "./JoinPoolFormAmm2";
+import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 
 export type PoolBalances = {
   [key: string]: {
@@ -33,98 +34,17 @@ export const assetObjStringToId = (assetId: string) => {
 const LiquidityModalAmm2 = ({
   open,
   onClose,
-  poolId,
+  marketId,
 }: {
   open: boolean;
   onClose: () => void;
-  poolId: number;
+  marketId: number;
 }) => {
   const wallet = useWallet();
-  const connectedAddress = wallet.realAddress;
-  const { data: pool } = usePool({ poolId });
-
-  // pool balances
-  const { data: poolAssetBalances } = useAccountPoolAssetBalances(
-    pool?.account.accountId,
-    pool,
-  );
-
-  const { data: poolBaseBalance } = usePoolBaseBalance(poolId);
-
-  const userPoolTokensQuery = useAccountAssetBalances([
-    { account: connectedAddress, assetId: { PoolShare: poolId } },
-  ]);
-
-  const { data: totalPoolIssuance } = useTotalIssuance({ PoolShare: poolId });
-
-  const userPoolTokens =
-    connectedAddress &&
-    userPoolTokensQuery
-      ?.get(connectedAddress, {
-        PoolShare: poolId,
-      })
-      ?.data?.balance?.free.toString();
-
+  const {data:pool} =  useAmm2Pool(marketId)
   const baseAsset = pool && parseAssetId(pool.baseAsset).unrightOr(undefined);
-
   const { data: metadata } = useAssetMetadata(baseAsset);
 
-  //user balances outside of pool
-  const { data: userBaseBalance } = useBalance(connectedAddress, baseAsset);
-  const { data: userAssetBalances } = useAccountPoolAssetBalances(
-    connectedAddress,
-    pool,
-  );
-
-  const allBalances: PoolBalances | undefined = useMemo(() => {
-    if (
-      pool?.weights &&
-      userBaseBalance &&
-      userAssetBalances &&
-      poolAssetBalances &&
-      userAssetBalances?.length !== 0 &&
-      poolAssetBalances?.length !== 0 &&
-      poolBaseBalance
-    ) {
-      const allBalances: PoolBalances = pool.weights.reduce(
-        (balances, weight, index) => {
-          const isBaseAsset = index === pool.weights.length - 1;
-
-          const userBalance = isBaseAsset
-            ? userBaseBalance
-            : new Decimal(
-                userAssetBalances == null
-                  ? 0
-                  : userAssetBalances[index].free.toString(),
-              );
-          const poolBalance = isBaseAsset
-            ? new Decimal(poolBaseBalance.toString())
-            : new Decimal(
-                poolAssetBalances == null
-                  ? 0
-                  : poolAssetBalances[index].free.toString(),
-              );
-
-          const id = assetObjStringToId(weight!.assetId);
-
-          balances[id] = {
-            pool: poolBalance,
-            user: userBalance,
-          };
-          return balances;
-        },
-        {} as PoolBalances,
-      );
-
-      return allBalances;
-    }
-  }, [
-    pool?.weights,
-    userAssetBalances,
-    userBaseBalance,
-    poolAssetBalances,
-    poolBaseBalance,
-  ]);
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -141,20 +61,17 @@ const LiquidityModalAmm2 = ({
 
           <Tab.Panels className="p-[30px]">
             <Tab.Panel>
-              {allBalances && (
+              {pool && (
                 <JoinPoolFormAmm2
-                  poolId={poolId}
-                  poolBalances={allBalances}
-                  totalPoolShares={
-                    new Decimal(totalPoolIssuance?.toString() ?? 0)
-                  }
+                  marketId={marketId}
+                  pool={pool}
                   baseAssetTicker={metadata?.symbol}
                   onSuccess={onClose}
                 />
               )}
             </Tab.Panel>
             <Tab.Panel>
-              {allBalances && (
+              {/* {allBalances && (
                 <ExitPoolFormAmm2
                   poolId={poolId}
                   poolBalances={allBalances}
@@ -165,7 +82,7 @@ const LiquidityModalAmm2 = ({
                   baseAssetTicker={metadata?.symbol}
                   onSuccess={onClose}
                 />
-              )}
+              )} */}
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>

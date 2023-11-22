@@ -20,6 +20,7 @@ import { perbillToNumber } from "lib/util/perbill-to-number";
 import { FC, PropsWithChildren, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { ScoringRule } from "@zeitgeistpm/indexer";
+import LiquidityModalAmm2 from "./LiquidityModalAmm2";
 
 export const MarketLiquiditySection = ({
   market,
@@ -185,6 +186,13 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
       {pool?.poolId && (
         <LiquidityModal
           poolId={pool.poolId}
+          open={manageLiquidityOpen}
+          onClose={() => setManageLiquidityOpen(false)}
+        />
+      )}
+      {neoPool && (
+        <LiquidityModalAmm2
+          marketId={neoPool.marketId}
           open={manageLiquidityOpen}
           onClose={() => setManageLiquidityOpen(false)}
         />
