@@ -54,83 +54,44 @@ const TopBar = () => {
             <MenuLogo />
           </Link>
         </div>
-        <div className="flex items-center gap-7 border-x-0 border-ztg-blue py-2 md:border-x-1 md:px-7">
-          <Menu as="div" className="relative inline-block text-left">
-            {({ open, close }) => {
-              return (
-                <>
-                  <div className="flex gap-2">
-                    <Menu.Button className="center relative flex gap-2 font-light text-white">
-                      <div className="relative hidden h-6 w-6 md:block">
-                        <FiGrid size={"100%"} />
-                      </div>
-                      <div className="hidden md:block">Markets</div>
-                      <div className="block md:hidden">
-                        <MenuIcon />
-                      </div>
-                    </Menu.Button>
-                    <Link href="/" className="pl-2 md:hidden">
-                      <MenuLogo />
-                    </Link>
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
-                    enterTo="transform opacity-100 translate-y-0 md:scale-100"
-                    leave="transition ease-in translate-y-2 md:translate-y-0 duration-75"
-                    leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
-                    leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
-                  >
-                    <Menu.Items className="fixed left-0 mt-4 h-full w-full origin-top-right bg-white px-5 py-3 ring-1 ring-gray-200 focus:outline-none md:absolute md:mt-8 md:h-auto md:w-64 md:rounded-md">
-                      <Menu.Item>
-                        {({ active, close }) => (
-                          <Link
-                            href="/markets?status=Active&ordering=Newest&liquidityOnly=true"
-                            onClick={close}
-                          >
-                            <button
-                              className={`group mb-4 flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
-                            >
-                              <div className="relative h-6 w-6">
-                                <FiGrid size={"100%"} />
-                              </div>
-
-                              <h3 className="text-sm font-semibold">
-                                All Markets
-                              </h3>
-                            </button>
-                          </Link>
-                        )}
-                      </Menu.Item>
-
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            href="/markets?status=Active&ordering=Most%20Volume&liquidityOnly=true"
-                            onClick={close}
-                          >
-                            <button
-                              className={`group mb-4 flex w-full  items-center gap-3 border-b-1 border-gray-300 px-2 py-2 pb-5 text-sm`}
-                            >
-                              <div className="relative h-6 w-6">
-                                <FiStar size={"100%"} />
-                              </div>
-
-                              <h3 className="text-sm font-semibold">
-                                Popular Markets
-                              </h3>
-                            </button>
-                          </Link>
-                        )}
-                      </Menu.Item>
-
-                      <div className="block md:hidden">
+        {!isWSX && (
+          <div className="flex items-center gap-7 border-x-0 border-ztg-blue py-2 md:border-x-1 md:px-7">
+            <Menu as="div" className="relative inline-block text-left">
+              {({ open, close }) => {
+                return (
+                  <>
+                    <div className="flex gap-2">
+                      <Menu.Button className="center relative flex gap-2 font-light text-white">
+                        <div className="relative hidden h-6 w-6 md:block">
+                          <FiGrid size={"100%"} />
+                        </div>
+                        <div className="hidden md:block">Markets</div>
+                        <div className="block md:hidden">
+                          <MenuIcon />
+                        </div>
+                      </Menu.Button>
+                      <Link href="/" className="pl-2 md:hidden">
+                        <MenuLogo />
+                      </Link>
+                    </div>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
+                      enterTo="transform opacity-100 translate-y-0 md:scale-100"
+                      leave="transition ease-in translate-y-2 md:translate-y-0 duration-75"
+                      leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
+                      leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
+                    >
+                      <Menu.Items className="fixed left-0 mt-4 h-full w-full origin-top-right bg-white px-5 py-3 ring-1 ring-gray-200 focus:outline-none md:absolute md:mt-8 md:h-auto md:w-64 md:rounded-md">
                         <Menu.Item>
-                          {({ active }) => (
-                            <Link href="/leaderboard/all" onClick={close}>
+                          {({ active, close }) => (
+                            <Link
+                              href="/markets?status=Active&ordering=Newest&liquidityOnly=true"
+                              onClick={close}
+                            >
                               <button
-                                className={`group mb-4 flex w-full  items-center gap-3 px-2 py-2 text-sm`}
+                                className={`group mb-4 flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
                               >
                                 <div className="relative h-6 w-6">
                                   <FiGrid size={"100%"} />
@@ -143,58 +104,101 @@ const TopBar = () => {
                             </Link>
                           )}
                         </Menu.Item>
-                      </div>
 
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link href="/create" onClick={close}>
-                            <button
-                              className={`group flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
-                            >
-                              <div className="relative z-10 h-6 w-6">
-                                <FiPlusSquare size={"100%"} />
-                              </div>
-                              <h3 className="text-sm font-semibold">
-                                Create Market
-                              </h3>
-                            </button>
-                          </Link>
-                        )}
-                      </Menu.Item>
-
-                      {process.env.NEXT_PUBLIC_SHOW_COURT === "true" && (
                         <Menu.Item>
                           {({ active }) => (
-                            <Link href="/court" onClick={close}>
+                            <Link
+                              href="/markets?status=Active&ordering=Most%20Volume&liquidityOnly=true"
+                              onClick={close}
+                            >
                               <button
-                                className={`group mt-4 flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
+                                className={`group mb-4 flex w-full  items-center gap-3 border-b-1 border-gray-300 px-2 py-2 pb-5 text-sm`}
                               >
-                                <div className="relative z-10 h-6 w-6">
-                                  <Users size={"100%"} />
+                                <div className="relative h-6 w-6">
+                                  <FiStar size={"100%"} />
                                 </div>
-                                <h3 className="text-sm font-semibold">Court</h3>
+
+                                <h3 className="text-sm font-semibold">
+                                  Popular Markets
+                                </h3>
                               </button>
                             </Link>
                           )}
                         </Menu.Item>
-                      )}
-                    </Menu.Items>
-                  </Transition>
-                </>
-              );
-            }}
-          </Menu>
 
-          <Link
-            className="md:center relative hidden gap-2 font-light text-white md:flex"
-            href="/leaderboard/all"
-          >
-            <div className="relative h-6 w-6">
-              <FiAward size={"100%"} />
-            </div>
-            <div>Leaderboard</div>
-          </Link>
-        </div>
+                        <div className="block md:hidden">
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link href="/leaderboard/all" onClick={close}>
+                                <button
+                                  className={`group mb-4 flex w-full  items-center gap-3 px-2 py-2 text-sm`}
+                                >
+                                  <div className="relative h-6 w-6">
+                                    <FiGrid size={"100%"} />
+                                  </div>
+
+                                  <h3 className="text-sm font-semibold">
+                                    All Markets
+                                  </h3>
+                                </button>
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        </div>
+
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link href="/create" onClick={close}>
+                              <button
+                                className={`group flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
+                              >
+                                <div className="relative z-10 h-6 w-6">
+                                  <FiPlusSquare size={"100%"} />
+                                </div>
+                                <h3 className="text-sm font-semibold">
+                                  Create Market
+                                </h3>
+                              </button>
+                            </Link>
+                          )}
+                        </Menu.Item>
+
+                        {process.env.NEXT_PUBLIC_SHOW_COURT === "true" && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link href="/court" onClick={close}>
+                                <button
+                                  className={`group mt-4 flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
+                                >
+                                  <div className="relative z-10 h-6 w-6">
+                                    <Users size={"100%"} />
+                                  </div>
+                                  <h3 className="text-sm font-semibold">
+                                    Court
+                                  </h3>
+                                </button>
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        )}
+                      </Menu.Items>
+                    </Transition>
+                  </>
+                );
+              }}
+            </Menu>
+
+            <Link
+              className="md:center relative hidden gap-2 font-light text-white md:flex"
+              href="/leaderboard/all"
+            >
+              <div className="relative h-6 w-6">
+                <FiAward size={"100%"} />
+              </div>
+              <div>Leaderboard</div>
+            </Link>
+          </div>
+        )}
         <MarketSearch />
         <div className="center relative ml-auto gap-3">
           <GetTokensButton />

@@ -64,12 +64,8 @@ import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
-<<<<<<< HEAD
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { isWSX } from "lib/constants";
-=======
 import { FaChevronUp } from "react-icons/fa";
->>>>>>> staging
 import { ScoringRule } from "@zeitgeistpm/indexer";
 import { TradeTabType } from "components/trade-form/TradeTab";
 import ReferendumSummary from "components/ui/ReferendumSummary";
