@@ -92,6 +92,10 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
                   <span className="text-yellow-400">
                     Waiting for voting to start
                   </span>
+                ) : stage?.type === "closed" ||
+                  stage?.type === "appeal" ||
+                  stage?.type === "reassigned" ? (
+                  <span className="text-orange-500">Failed to vote</span>
                 ) : (
                   <span className="text-blue-400">Waiting for vote</span>
                 )
