@@ -211,7 +211,9 @@ const CourtPage: NextPage = ({
 
       <section>
         <h3 className="mb-3 ml-2 text-base">Court Cases</h3>
-        <CourtCasesTable />
+        <div className="!break-words text-sm md:text-base">
+          <CourtCasesTable />
+        </div>
       </section>
     </div>
   );

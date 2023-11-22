@@ -76,6 +76,7 @@ export const CourtCasesTable = () => {
       header: "#",
       accessor: "id",
       type: "text",
+      hideMobile: true,
     },
     {
       header: "Case",
@@ -91,6 +92,7 @@ export const CourtCasesTable = () => {
       header: "Aggregation Ends",
       accessor: "ends",
       type: "text",
+      hideMobile: true,
     },
     {
       header: (
@@ -199,7 +201,7 @@ const CaseNameForCaseId = (props: { id: number }) => {
   return (
     <>
       {market ? (
-        <div className="text-sm">{market?.question}</div>
+        <div className="break-words text-sm">{market?.question}</div>
       ) : (
         <Skeleton />
       )}
