@@ -369,7 +369,8 @@ const Stats = () => {
             <InfoPopover
               className="text-slate-500"
               overlay={false}
-              position="top"
+              position="top-start"
+              popoverCss="ml-12"
             >
               The yearly amount of {constants?.tokenSymbol} that will be minted
               to jurors and delegators as a result of inflation.

@@ -36,7 +36,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
       case "bottom":
         return "top-[100%] left-1/2 transform translate-x-[-50%]";
       case "top-start":
-        return "top-0 translate-y-[-100%] translate-x-[-100%] left-0";
+        return "-top-1 translate-y-[-100%] translate-x-[-100%] left-0";
       case "top-end":
         return "-top-1 translate-y-[-100%] left-0";
       case "bottom-start":
