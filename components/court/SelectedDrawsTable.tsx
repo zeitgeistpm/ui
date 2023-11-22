@@ -42,6 +42,7 @@ const columns: TableColumn[] = [
     header: "Status",
     accessor: "status",
     type: "component",
+    hideMobile: true,
   },
   {
     header: "Vote",
@@ -70,8 +71,11 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
         juror: (
           <div className="flex items-center gap-3">
             <Avatar address={draw.courtParticipant.toString()} size={18} />
-            <div className="text-sm">
+            <div className="hidden text-sm md:block">
               {shortenAddress(draw.courtParticipant.toString())}
+            </div>
+            <div className="block text-sm md:hidden">
+              {shortenAddress(draw.courtParticipant.toString(), 2, 2)}
             </div>
           </div>
         ),
@@ -94,7 +98,8 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
               ) : draw.vote.isSecret ? (
                 <span>
                   <span>[</span>
-                  <span className="text-gray-300">∗∗∗∗∗∗</span>
+                  <span className="hidden text-gray-300 md:inline">∗∗∗∗∗∗</span>
+                  <span className="inline text-gray-300 md:hidden">*</span>
                   <span>]</span>
                 </span>
               ) : draw.vote.isDelegated ? (
@@ -187,7 +192,7 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
   }, [selectedDraws]);
 
   return (
-    <div>
+    <div className="!break-words text-sm md:text-base">
       <Table columns={columns} data={data} />
     </div>
   );
@@ -250,7 +255,7 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
         onClick={() => setOpen(true)}
       >
         <BsShieldFillExclamation size={12} />
-        denounce
+        <span className="hidden md:block">denounce</span>
       </button>
       <Modal open={open} onClose={onClose}>
         <Dialog.Panel className="relative max-w-[640px] rounded-ztg-10 bg-white p-[15px]">

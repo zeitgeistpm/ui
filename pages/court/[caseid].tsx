@@ -304,7 +304,7 @@ const CasePage: NextPage = ({
           )}
 
           {stage?.type !== "reassigned" && (
-            <div>
+            <>
               <h3 className="mb-3">Votes</h3>
               <Votes
                 market={market}
@@ -317,7 +317,7 @@ const CasePage: NextPage = ({
                     : false
                 }
               />
-            </div>
+            </>
           )}
 
           <div className="mt-4 block md:hidden">{actionSection}</div>
@@ -389,7 +389,7 @@ const Votes = ({
         return (
           <div
             key={category.ticker}
-            className={`relative flex flex-1 flex-col rounded-md border-1 text-xs shadow-sm  ${
+            className={`relative flex flex-1 flex-col rounded-md border-1 text-xs shadow-sm md:min-w-[200px] ${
               showLeaderIndicator &&
               isRevealed &&
               index === 0 &&
