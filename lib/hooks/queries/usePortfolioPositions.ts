@@ -49,6 +49,7 @@ import {
   lookupAssetPrice,
   useAmm2MarketSpotPrices,
 } from "./useAmm2MarketSpotPrices";
+import { formatNumberLocalized } from "lib/util";
 
 export type UsePortfolioPositions = {
   /**
@@ -699,6 +700,11 @@ export const usePortfolioPositions = (
       .plus(subsidyPositionsTotal24HoursAgo)
       .plus(bondsTotal);
 
+    console.log(
+      formatNumberLocalized(ztgPrice?.mul(positionsTotal.div(ZTG)).toNumber()),
+      formatNumberLocalized(positionsTotal.div(ZTG).toNumber()),
+    );
+
     const totalChange = diffChange(positionsTotal, positionsTotal24HoursAgo);
 
     return {
@@ -755,7 +761,7 @@ export const totalPositionsValue = <
 ): Decimal => {
   return positions.reduce((acc, position) => {
     const assetId = parseAssetId(position.market.baseAsset).unwrap();
-
+    console.log(IOForeignAssetId.is(assetId), assetId);
     const priceMultiplier = IOForeignAssetId.is(assetId)
       ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)
       : 1;

@@ -70,6 +70,7 @@
     "plaiceholder": "^2.5.0",
     "pure-react-carousel": "^1.27.8",
     "react": "^18.2.0",
+    "react-circular-progressbar": "^2.1.0",
     "react-color": "^2.19.3",
     "react-countdown-circle-timer": "^2.5.4",
     "react-data-table-component": "^6.11.8",
