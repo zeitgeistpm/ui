@@ -67,7 +67,7 @@ const TradeResult = ({
       <div className="text-[58px]">{amount?.toFixed(2)}</div>
       <div className="text-center">
         <span className="font-bold capitalize">{tokenName}</span> Predictions
-        For
+        for
         <div className="font-bold">
           {baseTokenAmount?.toFixed(2)} {baseToken}
         </div>
