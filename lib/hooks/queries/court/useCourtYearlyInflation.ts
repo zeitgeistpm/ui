@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { perbillToNumber, perbillToPrct } from "lib/util/perbill-to-number";
 
 export const yearlyInflationRootKey = "court/yearlyInflation";
 
@@ -15,7 +16,7 @@ export const useCourtYearlyInflation = () => {
     async () => {
       if (enabled) {
         const yearlyInflation = await sdk.api.query.court.yearlyInflation();
-        return new Decimal(yearlyInflation.toString()).div(10000000);
+        return perbillToPrct(new Decimal(yearlyInflation.toString()));
       }
     },
     {
@@ -41,8 +42,9 @@ export const useCourtYearlyInflationAmount = () => {
           sdk.api.query.balances.totalIssuance(),
         ]);
 
-        const yearlyInflationAmount = new Decimal(yearlyInflation.toString())
-          .div(10 ** 9)
+        const yearlyInflationAmount = perbillToNumber(
+          new Decimal(yearlyInflation.toString()),
+        )
           .mul(totalZtgIssuance.toString())
           .div(ZTG);
 
