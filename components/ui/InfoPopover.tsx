@@ -36,7 +36,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
       case "bottom":
         return "top-[100%] left-1/2 transform translate-x-[-50%]";
       case "top-start":
-        return "top-0 translate-y-[-100%] translate-x-[-100%] left-0";
+        return "-top-1 translate-y-[-100%] translate-x-[-100%] left-0";
       case "top-end":
         return "-top-1 translate-y-[-100%] left-0";
       case "bottom-start":
@@ -51,7 +51,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="relative flex items-center justify-center lg:hidden"
+        className="relative flex items-center justify-center outline-none lg:hidden"
       >
         {icon ?? <AiOutlineInfoCircle />}
       </button>
@@ -59,7 +59,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
       <Popover className="relative">
         {({ open }) => (
           <>
-            <Popover.Button className="relative hidden items-center justify-center lg:flex">
+            <Popover.Button className="relative hidden items-center justify-center focus-visible:outline-none lg:flex">
               {icon ?? <AiOutlineInfoCircle />}
             </Popover.Button>
 
