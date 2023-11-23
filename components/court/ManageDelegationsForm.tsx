@@ -6,10 +6,9 @@ import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import {
-  participantsRootKey,
-  useParticipants,
-} from "lib/hooks/queries/court/useParticipants";
-import { useLockedBalance } from "lib/hooks/queries/useBalance";
+  courtParticipantsRootKey,
+  useCourtParticipants,
+} from "lib/hooks/queries/court/useCourtParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -19,6 +18,7 @@ import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { IoIosWarning } from "react-icons/io";
 
 export type ManageDelegationsFormProps = {
   onSuccessfulSubmit?: () => void;
@@ -27,7 +27,7 @@ export type ManageDelegationsFormProps = {
 const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
   const { data: constants } = useChainConstants();
 
-  const { data: participants } = useParticipants();
+  const { data: participants } = useCourtParticipants();
   const connectedParticipant = useConnectedCourtParticipant();
 
   const {
@@ -56,13 +56,10 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
   const notificationStore = useNotifications();
   const wallet = useWallet();
   const { data: freeBalance } = useZtgBalance(wallet.realAddress);
-  const { data: lockedBalance } = useLockedBalance(wallet.realAddress, {
-    Ztg: null,
-  });
 
   const availableDelegationBalance = new Decimal(
     freeBalance?.toString() ?? 0,
-  ).add(lockedBalance ?? 0);
+  ).add(connectedParticipant?.stake ?? 0);
 
   const queryClient = useQueryClient();
 
@@ -86,7 +83,7 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
             type: "Success",
           },
         );
-        queryClient.invalidateQueries([id, participantsRootKey]);
+        queryClient.invalidateQueries([id, courtParticipantsRootKey]);
         props.onSuccessfulSubmit?.();
       },
     },
@@ -230,19 +227,23 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
         </>
       </div>
 
+      {connectedParticipant?.type === "Juror" && (
+        <div className="relative mb-5 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
+          You are currently a juror. If you delegate to other jurors your stake
+          will be removed from your personal stake and delegated evenly across
+          your selected jurors. You will not be a juror after this action.
+          <IoIosWarning
+            size={24}
+            className="absolute left-[50%] top-0 translate-x-[-50%] translate-y-[-50%] text-orange-700"
+          />
+        </div>
+      )}
+
       <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
         <span className="ml-1 text-black">
           Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0} {fee?.symbol}
         </span>
       </div>
-
-      {connectedParticipant?.type === "Juror" && (
-        <div className="mb-5 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
-          You are currently a juror. If you delegate to other jurors your stake
-          will be removed from your personal stake and delegated evenly across
-          your selected jurors. You will not be a juror after this action.
-        </div>
-      )}
 
       <FormTransactionButton
         className="w-full max-w-[250px]"

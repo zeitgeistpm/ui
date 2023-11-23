@@ -5,7 +5,7 @@ import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { CategoricalAssetId, isRpcSdk, parseAssetId } from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TransactionButton from "components/ui/TransactionButton";
-import { voteDrawsRootKey } from "lib/hooks/queries/court/useVoteDraws";
+import { voteDrawsRootKey } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { IOCourtSaltPhraseStorage } from "lib/state/court/CourtSaltPhraseStorage";
@@ -70,6 +70,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
     {
       onSuccess: () => {
         queryClient.invalidateQueries([id, voteDrawsRootKey, caseId]);
+        queryClient.invalidateQueries([id, voteDrawsRootKey, "all"]);
       },
     },
   );

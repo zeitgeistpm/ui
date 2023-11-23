@@ -5,7 +5,7 @@ import FormTransactionButton from "components/ui/FormTransactionButton";
 import { identityRootKey } from "lib/hooks/queries/useIdentity";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { queryClient } from "lib/query-client";
+import { appQueryClient } from "lib/query-client";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { UserIdentity } from "lib/types/user-identity";
@@ -69,7 +69,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([id, identityRootKey, address]);
+        appQueryClient.invalidateQueries([id, identityRootKey, address]);
         notificationStore.pushNotification("Successfully set Identity", {
           type: "Success",
         });
@@ -86,7 +86,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([id, identityRootKey, address]);
+        appQueryClient.invalidateQueries([id, identityRootKey, address]);
         notificationStore.pushNotification("Successfully cleared Identity", {
           type: "Success",
         });

@@ -8,7 +8,7 @@ import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
-import { participantsRootKey } from "lib/hooks/queries/court/useParticipants";
+import { courtParticipantsRootKey } from "lib/hooks/queries/court/useCourtParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -53,7 +53,7 @@ const DelegateButton = ({ address }: { address: string }) => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([id, participantsRootKey]);
+        queryClient.invalidateQueries([id, courtParticipantsRootKey]);
 
         notificationStore.pushNotification(
           `Successfully delegated to ${shortenAddress(address, 5, 5)} `,
