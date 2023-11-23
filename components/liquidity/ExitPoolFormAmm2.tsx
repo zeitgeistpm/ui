@@ -21,19 +21,15 @@ import { useNotifications } from "lib/state/notifications";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
+import { Amm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 
 const ExitPoolForm = ({
-  poolBalances,
-  poolId,
-  totalPoolShares,
-  userPoolShares,
+  marketId,pool,
   baseAssetTicker,
   onSuccess,
 }: {
-  poolBalances: PoolBalances;
-  poolId: number;
-  totalPoolShares: Decimal;
-  userPoolShares: Decimal;
+  marketId: number;
+  pool: Amm2Pool;
   baseAssetTicker?: string;
   onSuccess?: () => void;
 }) => {
@@ -50,37 +46,24 @@ const ExitPoolForm = ({
     reValidateMode: "onChange",
     mode: "all",
   });
-  const { data: pool } = usePool({ poolId });
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
-  const userPercentageOwnership = userPoolShares.div(totalPoolShares);
-  const { data: market } = useMarket({ poolId });
+  // const userPercentageOwnership = userPoolShares.div(totalPoolShares);
+  const { data: market } = useMarket({ marketId });
   const queryClient = useQueryClient();
 
-  // filter out non-winning assets as they are deleted on chain
-  const poolWeights =
-    market?.status === "Resolved" && market.marketType.categorical
-      ? pool?.weights.filter((weight) => {
-          const assetId = weight && parseAssetId(weight.assetId).unwrap();
-
-          return (
-            IOBaseAssetId.is(assetId) ||
-            (IOCategoricalAssetId.is(assetId) &&
-              market.resolvedOutcome === getIndexOf(assetId).toString())
-          );
-        })
-      : pool?.weights;
+  const poolAssets =pool?.assetIds;
 
   const { send: exitPool, isLoading } = useExtrinsic(
     () => {
-      if (!constants || !isRpcSdk(sdk) || !pool || !poolWeights) {
+      if (!constants || !isRpcSdk(sdk) || !pool || !poolAssets) {
         return;
       }
       const formValue = getValues();
       const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
       const feeMultiplier = 1 - constants.swaps.exitFee;
 
-      const minAssetsOut = poolWeights.map((asset) => {
+      const minAssetsOut = poolAssets.map((asset,index) => {
         if (!asset) return "0";
         const id = assetObjStringToId(asset.assetId);
 
@@ -104,7 +87,7 @@ const ExitPoolForm = ({
       );
 
       return sdk.api.tx.swaps.poolExit(
-        poolId,
+        marketId,
         poolSharesAmount.toFixed(0),
         minAssetsOut,
       );
@@ -195,7 +178,7 @@ const ExitPoolForm = ({
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-y-6 max-h-[200px] md:max-h-[400px] overflow-y-auto py-5">
-        {poolWeights?.map((asset, index) => {
+        {poolAssets?.map((assetId, index) => {
           if (!asset) return null;
           const id = assetObjStringToId(asset.assetId);
           const assetName =

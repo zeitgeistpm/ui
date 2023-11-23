@@ -71,18 +71,15 @@ const LiquidityModalAmm2 = ({
               )}
             </Tab.Panel>
             <Tab.Panel>
-              {/* {allBalances && (
+              {pool && (
                 <ExitPoolFormAmm2
-                  poolId={poolId}
-                  poolBalances={allBalances}
-                  totalPoolShares={
-                    new Decimal(totalPoolIssuance?.toString() ?? 0)
-                  }
-                  userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
-                  baseAssetTicker={metadata?.symbol}
-                  onSuccess={onClose}
+
+                marketId={marketId}
+                pool={pool}
+                baseAssetTicker={metadata?.symbol}
+                onSuccess={onClose}
                 />
-              )} */}
+              )}
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
