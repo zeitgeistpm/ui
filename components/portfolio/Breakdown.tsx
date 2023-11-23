@@ -4,6 +4,7 @@ import Decimal from "decimal.js";
 import { PorfolioBreakdown } from "lib/hooks/queries/usePortfolioPositions";
 import { formatNumberLocalized } from "lib/util";
 import { useMemo } from "react";
+import { isWSX } from "lib/constants";
 
 export type PortfolioBreakdownProps =
   | {
@@ -116,7 +117,8 @@ export const BreakdownSlot = ({
       <h4 className="mb-1 text-xs font-medium text-sky-600">{title}</h4>
       <div className="mb-1 flex items-center font-mono">
         <div className="font-semibold sm:w-2/3">
-          {formatNumberLocalized(value.div(ZTG).toNumber())} ZTG
+          {formatNumberLocalized(value.div(ZTG).toNumber())}{" "}
+          {isWSX ? "WSX" : "ZTG"}
         </div>
         <div
           className={`hidden w-1/3 flex-1 sm:block ${
