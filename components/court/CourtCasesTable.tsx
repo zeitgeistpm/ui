@@ -314,12 +314,11 @@ const CaseActions = ({
           ) : (
             "View Case"
           )}
-          {canVote ||
-            (canReveal && (
-              <div className="absolute right-1 top-0 h-2 w-2 translate-y-[-50%] ">
-                <div className="h-full w-full animate-pulse-scale rounded-full bg-orange-500" />
-              </div>
-            ))}
+          {(canVote || canReveal) && (
+            <div className="absolute right-1 top-0 h-2 w-2 translate-y-[-50%] ">
+              <div className="h-full w-full animate-pulse-scale rounded-full bg-orange-500" />
+            </div>
+          )}
         </button>
       </Link>
     </div>
