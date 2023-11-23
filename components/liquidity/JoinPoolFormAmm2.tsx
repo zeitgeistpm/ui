@@ -17,8 +17,8 @@ import { useEffect, useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 const JoinPoolForm = ({
-
-marketId,pool,
+  marketId,
+  pool,
   baseAssetTicker,
   onSuccess,
 }: {
@@ -34,15 +34,17 @@ marketId,pool,
   const notificationStore = useNotifications();
   const [poolSharesToReceive, setPoolSharesToReceive] = useState<Decimal>();
   const { data: market } = useMarket({ marketId });
-  const userAssetBalances = useBalances(pool.assetIds, wallet.realAddress).map(res=>res.data).filter(isPresent)
-  
+  const userAssetBalances = useBalances(pool.assetIds, wallet.realAddress)
+    .map((res) => res.data)
+    .filter(isPresent);
+
   const queryClient = useQueryClient();
 
   const { send: joinPool, isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && pool && poolSharesToReceive) {
         const formValue = getValues();
-        const maxAmountsIn = pool?.assetIds.map((assetId,index) => {
+        const maxAmountsIn = pool?.assetIds.map((assetId, index) => {
           const assetAmount = formValue[index] ?? 0;
           return assetAmount === ""
             ? "0"
@@ -64,11 +66,7 @@ marketId,pool,
         notificationStore.pushNotification("Joined pool", {
           type: "Success",
         });
-        queryClient.invalidateQueries([
-          id,
-          amm2PoolKey,
-          marketId,
-        ]);
+        queryClient.invalidateQueries([id, amm2PoolKey, marketId]);
         onSuccess?.();
       },
     },
@@ -80,18 +78,24 @@ marketId,pool,
       const changedByUser = type != null;
       const changedAsset = name;
       const userInput = value[changedAsset];
-      const reserves = Array.from(pool.reserves).map(reserve => reserve[1])
-      const restrictiveIndex = calculateRestrictivePoolAsset(reserves,userAssetBalances)
-      
-      const maxInForRestrictiveAsset = userAssetBalances[restrictiveIndex!]
+      const reserves = Array.from(pool.reserves).map((reserve) => reserve[1]);
+      const restrictiveIndex = calculateRestrictivePoolAsset(
+        reserves,
+        userAssetBalances,
+      );
+
+      const maxInForRestrictiveAsset = userAssetBalances[restrictiveIndex!];
 
       if (name === "percentage" && changedByUser) {
-
         const percentage = Number(value["percentage"]);
-        const restrictiveAssetAmount = maxInForRestrictiveAsset.mul(percentage/100) //todo: div 100?
-        const restrictiveAssetToPoolRatio = restrictiveAssetAmount.div(reserves[restrictiveIndex!])
+        const restrictiveAssetAmount = maxInForRestrictiveAsset.mul(
+          percentage / 100,
+        ); //todo: div 100?
+        const restrictiveAssetToPoolRatio = restrictiveAssetAmount.div(
+          reserves[restrictiveIndex!],
+        );
 
-        reserves.forEach((reserve,index) => {
+        reserves.forEach((reserve, index) => {
           setValue(
             index.toString(),
             reserve
@@ -100,9 +104,11 @@ marketId,pool,
               .toFixed(3, Decimal.ROUND_DOWN),
             { shouldValidate: true },
           );
-        })
+        });
 
-        setPoolSharesToReceive(pool.totalShares.mul(restrictiveAssetToPoolRatio));
+        setPoolSharesToReceive(
+          pool.totalShares.mul(restrictiveAssetToPoolRatio),
+        );
       } else if (
         changedAsset != null &&
         userInput != null &&
@@ -111,35 +117,33 @@ marketId,pool,
         userAssetBalances
       ) {
         console.log(userInput);
-        
+
         const reserve = reserves[Number(changedAsset)];
-        const inputToReserveRatio = new Decimal(userInput).div(reserve).mul(ZTG)
+        const inputToReserveRatio = new Decimal(userInput)
+          .div(reserve)
+          .mul(ZTG);
         console.log("ratio", inputToReserveRatio.toString());
 
-let restrictedAssetAmount:Decimal|undefined
-        reserves.forEach((reserve,index) => {
-          const amount = reserve
-          .mul(inputToReserveRatio)
-          .div(ZTG)
-       
-          if (index.toString() !== changedAsset) {
-            setValue(
-              index.toString(),
-              amount
-              .toFixed(3, Decimal.ROUND_DOWN),
-              { shouldValidate: true },
-              );
-            }
+        let restrictedAssetAmount: Decimal | undefined;
+        reserves.forEach((reserve, index) => {
+          const amount = reserve.mul(inputToReserveRatio).div(ZTG);
 
-            if(index === restrictiveIndex) {
-              restrictedAssetAmount = amount
-            }
-        })
+          if (index.toString() !== changedAsset) {
+            setValue(index.toString(), amount.toFixed(3, Decimal.ROUND_DOWN), {
+              shouldValidate: true,
+            });
+          }
+
+          if (index === restrictiveIndex) {
+            restrictedAssetAmount = amount;
+          }
+        });
         setPoolSharesToReceive(pool.totalShares.mul(inputToReserveRatio));
 
         setValue(
           "percentage",
-          restrictedAssetAmount?.div(maxInForRestrictiveAsset.div(ZTG))
+          restrictedAssetAmount
+            ?.div(maxInForRestrictiveAsset.div(ZTG))
             .mul(100)
             .toString(),
         );
@@ -164,54 +168,54 @@ let restrictedAssetAmount:Decimal|undefined
       className="flex flex-col gap-y-4 md:gap-y-6"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-auto py-5">
-        {market && pool?.assetIds.map((assetId,index ) => {
+      <div className="flex max-h-[250px] flex-col gap-y-6 overflow-y-auto py-5 md:max-h-[400px]">
+        {market &&
+          pool?.assetIds.map((assetId, index) => {
+            const assetName = lookupAssetMetadata(market, assetId)?.name;
+            const userBalance = userAssetBalances[index]?.div(ZTG).toNumber();
 
-          const assetName = lookupAssetMetadata(market,assetId)?.name
-          const userBalance = userAssetBalances[index]?.div(ZTG).toNumber()
-
-          return (
-            <div
-              key={index}
-              className="w-full h-[56px] relative font-medium text-ztg-18-150 "
-            >
-              <div className="absolute h-full left-[15px] top-[14px] truncate w-[40%] capitalize">
-                {assetName}
-              </div>
-              <Input
-                className={`bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full outline-none
+            return (
+              <div
+                key={index}
+                className="relative h-[56px] w-full text-ztg-18-150 font-medium "
+              >
+                <div className="absolute left-[15px] top-[14px] h-full w-[40%] truncate capitalize">
+                  {assetName}
+                </div>
+                <Input
+                  className={`h-[56px] w-full rounded-[5px] bg-anti-flash-white px-[15px] text-right outline-none
                             ${
                               formState.errors[index.toString()]?.message
                                 ? "border-2 border-vermilion text-vermilion"
                                 : ""
                             }
               `}
-                key={index}
-                type="number"
-                step="any"
-                {...register(index.toString(), {
-                  value: 0,
-                  required: {
-                    value: true,
-                    message: "Value is required",
-                  },
-                  validate: (value) => {
-                    if (value > userBalance) {
-                      return `Insufficient balance. Current balance: ${userBalance.toFixed(
-                        3,
-                      )}`;
-                    } else if (value <= 0) {
-                      return "Value cannot be zero or less";
-                    }
-                  },
-                })}
-              />
-              <div className="text-vermilion text-ztg-12-120 mt-[4px]">
-                <>{formState.errors[index.toString()]?.message}</>
+                  key={index}
+                  type="number"
+                  step="any"
+                  {...register(index.toString(), {
+                    value: 0,
+                    required: {
+                      value: true,
+                      message: "Value is required",
+                    },
+                    validate: (value) => {
+                      if (value > userBalance) {
+                        return `Insufficient balance. Current balance: ${userBalance.toFixed(
+                          3,
+                        )}`;
+                      } else if (value <= 0) {
+                        return "Value cannot be zero or less";
+                      }
+                    },
+                  })}
+                />
+                <div className="mt-[4px] text-ztg-12-120 text-vermilion">
+                  <>{formState.errors[index.toString()]?.message}</>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
       <input
         className="my-[20px] px-0"
@@ -219,12 +223,12 @@ let restrictedAssetAmount:Decimal|undefined
         {...register("percentage", { min: 0, value: "0" })}
       />
       {market?.status !== "Active" && (
-        <div className="bg-provincial-pink p-4 rounded-md text-sm">
+        <div className="rounded-md bg-provincial-pink p-4 text-sm">
           Market is closed. Cannot provide liquidity for closed market
         </div>
       )}
-      <div className="flex mb-2 text-sm center gap-2">
-        <label className="block font-bold flex-1">
+      <div className="center mb-2 flex gap-2 text-sm">
+        <label className="block flex-1 font-bold">
           Expected Pool Ownership
         </label>
         {prctSharesToReceive.toFixed(1)} %

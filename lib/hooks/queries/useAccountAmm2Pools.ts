@@ -24,7 +24,10 @@ export const useAccountAmm2Pool = (address?: string) => {
         },
       });
 
-      const markets = await getMarketHeaders(sdk, neoPools.map(pool=>pool.marketId));
+      const markets = await getMarketHeaders(
+        sdk,
+        neoPools.map((pool) => pool.marketId),
+      );
 
       const valuations = neoPools.map((pool) => {
         const values = pool.account.balances.map((balance) => {
@@ -43,10 +46,12 @@ export const useAccountAmm2Pool = (address?: string) => {
       });
 
       return neoPools.map((pool, index) => {
-        const market = markets.find(m=>m.marketId === pool.marketId)
-       return { ...pool,
-        value: valuations[index],
-      question: market?.question}
+        const market = markets.find((m) => m.marketId === pool.marketId);
+        return {
+          ...pool,
+          value: valuations[index],
+          question: market?.question,
+        };
       });
     },
     {

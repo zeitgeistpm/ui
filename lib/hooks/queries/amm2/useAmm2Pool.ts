@@ -58,8 +58,8 @@ export const useAmm2Pool = (marketId?: number) => {
           liquidity: new Decimal(unwrappedRes.liquidityParameter.toString()),
           swapFee: new Decimal(unwrappedRes.swapFee.toString()),
           totalShares: new Decimal(
-        unwrappedRes.liquiditySharesManager.totalShares.toString()
-            ),
+            unwrappedRes.liquiditySharesManager.totalShares.toString(),
+          ),
           reserves,
           assetIds,
         };

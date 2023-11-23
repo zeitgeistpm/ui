@@ -6,41 +6,39 @@ import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
 import { balanceRootKey } from "./useBalance";
 
-
 export const useBalances = (
-    assetIds: AssetId[],
+  assetIds: AssetId[],
   address?: string,
   blockNumber?: number,
 ) => {
   const [sdk, id] = useSdkv2();
 
-const queries = useQueries({
+  const queries = useQueries({
     queries: assetIds.map((assetId) => {
       return {
-        queryKey:     [id, balanceRootKey, "free", address, assetId, blockNumber],
-        queryFn:     async () => {
-            if (address && assetId && isRpcSdk(sdk)) {
-              const api = await getApiAtBlock(sdk.api, blockNumber);
-      
-              if (IOZtgAssetId.is(assetId)) {
-                const { data } = await api.query.system.account(address);
-                return calculateFreeBalance(
-                  data.free.toString(),
-                  data.miscFrozen.toString(),
-                  data.feeFrozen.toString(),
-                );
-              } else {
-                const balance = await api.query.tokens.accounts(address, assetId);
-                return new Decimal(balance.free.toString());
-              }
+        queryKey: [id, balanceRootKey, "free", address, assetId, blockNumber],
+        queryFn: async () => {
+          if (address && assetId && isRpcSdk(sdk)) {
+            const api = await getApiAtBlock(sdk.api, blockNumber);
+
+            if (IOZtgAssetId.is(assetId)) {
+              const { data } = await api.query.system.account(address);
+              return calculateFreeBalance(
+                data.free.toString(),
+                data.miscFrozen.toString(),
+                data.feeFrozen.toString(),
+              );
+            } else {
+              const balance = await api.query.tokens.accounts(address, assetId);
+              return new Decimal(balance.free.toString());
             }
-          },
+          }
+        },
         enabled: Boolean(sdk && address && isRpcSdk(sdk) && assetId),
         keepPreviousData: true,
       };
     }),
   });
-
 
   return queries;
 };

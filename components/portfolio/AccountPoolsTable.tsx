@@ -23,7 +23,6 @@ const columns: TableColumn[] = [
     type: "text",
   },
   {
-
     header: "Fees collected",
     accessor: "fees",
     type: "text",
@@ -33,59 +32,66 @@ const columns: TableColumn[] = [
     accessor: "buttons",
     type: "component",
     width: "150px",
-
   },
 ];
 
-const CollectFeesButton = ({marketId}: {marketId:number}) => {
+const CollectFeesButton = ({ marketId }: { marketId: number }) => {
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
 
-  const { isLoading:isCollectingFees, isSuccess, send } = useExtrinsic(
+  const {
+    isLoading: isCollectingFees,
+    isSuccess,
+    send,
+  } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk)) return;
       return sdk.api.tx.predictionMarkets.redeemShares(marketId);
     },
     {
       onSuccess: () => {
-        notificationStore.pushNotification(
-          `Redeemed Fees`,
-          {
-            type: "Success",
-          },
-        );
+        notificationStore.pushNotification(`Redeemed Fees`, {
+          type: "Success",
+        });
       },
     },
   );
-  return (<SecondaryButton disabled={isCollectingFees||isSuccess} onClick={()=>{
-    console.log("redeen", marketId);
-        send()
-    
-  }}>Collect fees</SecondaryButton>)
-}
+  return (
+    <SecondaryButton
+      disabled={isCollectingFees || isSuccess}
+      onClick={() => {
+        console.log("redeen", marketId);
+        send();
+      }}
+    >
+      Collect fees
+    </SecondaryButton>
+  );
+};
 
 const AccountPoolsTable = ({ address }: { address: string }) => {
   const { data: pools, isLoading } = useAccountAmm2Pool(address);
 
-  const tableData:TableData[] = pools?.map(pool => {
-    return {
-      question: (
-        <Link
-          href={`/markets/${pool.marketId}`}
-          className="line-clamp-1 text-[14px]"
-        >
-          {pool.question}
-        </Link>
-      ),
-      value: pool.value.div(ZTG).toFixed(3) ,
-      fees: new Decimal(pool.liquiditySharesManager.fees).div(ZTG).toFixed(3),
-      buttons: (<CollectFeesButton marketId={pool.marketId}/>)
-    }
-  }) ??[]
+  const tableData: TableData[] =
+    pools?.map((pool) => {
+      return {
+        question: (
+          <Link
+            href={`/markets/${pool.marketId}`}
+            className="line-clamp-1 text-[14px]"
+          >
+            {pool.question}
+          </Link>
+        ),
+        value: pool.value.div(ZTG).toFixed(3),
+        fees: new Decimal(pool.liquiditySharesManager.fees).div(ZTG).toFixed(3),
+        buttons: <CollectFeesButton marketId={pool.marketId} />,
+      };
+    }) ?? [];
 
   return (
     <div>
-        <Table columns={columns} data={tableData} showHighlight={false}/>  
+      <Table columns={columns} data={tableData} showHighlight={false} />
     </div>
   );
 };

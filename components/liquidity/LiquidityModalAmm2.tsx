@@ -41,20 +41,19 @@ const LiquidityModalAmm2 = ({
   marketId: number;
 }) => {
   const wallet = useWallet();
-  const {data:pool} =  useAmm2Pool(marketId)
+  const { data: pool } = useAmm2Pool(marketId);
   const baseAsset = pool && parseAssetId(pool.baseAsset).unrightOr(undefined);
   const { data: metadata } = useAssetMetadata(baseAsset);
-
 
   return (
     <Modal open={open} onClose={onClose}>
       <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
         <Tab.Group>
-          <Tab.List className="flex h-[71px] text-center font-medium text-ztg-18-150">
-            <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tl-[10px]">
+          <Tab.List className="flex h-[71px] text-center text-ztg-18-150 font-medium">
+            <Tab className="w-1/2 rounded-tl-[10px] bg-anti-flash-white transition-all ui-selected:bg-white ui-selected:font-bold">
               Join
             </Tab>
-            <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tr-[10px]">
+            <Tab className="w-1/2 rounded-tr-[10px] bg-anti-flash-white transition-all ui-selected:bg-white ui-selected:font-bold">
               Exit
             </Tab>
           </Tab.List>
@@ -73,11 +72,10 @@ const LiquidityModalAmm2 = ({
             <Tab.Panel>
               {pool && (
                 <ExitPoolFormAmm2
-
-                marketId={marketId}
-                pool={pool}
-                baseAssetTicker={metadata?.symbol}
-                onSuccess={onClose}
+                  marketId={marketId}
+                  pool={pool}
+                  baseAssetTicker={metadata?.symbol}
+                  onSuccess={onClose}
                 />
               )}
             </Tab.Panel>
