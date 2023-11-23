@@ -297,8 +297,8 @@ const CaseActions = ({
     <div className="flex w-full items-center justify-center">
       <Link href={`/court/${caseId}`}>
         <button
-          className={`
-          center line-clamp-1 gap-3 self-end rounded-full border-2 border-gray-300 px-5 py-1.5 text-xs hover:border-gray-400 disabled:opacity-50 md:min-w-[220px]
+          className={` 
+          center relative line-clamp-1 gap-3 self-end overflow-visible rounded-full border-2 border-gray-300 px-5 py-1.5 text-xs hover:border-gray-400 disabled:opacity-50 md:min-w-[220px]
             ${canVote && "border-ztg-blue bg-ztg-blue text-white"}
             ${canReveal && "border-purple-500 bg-purple-500 text-white"}
           `}
@@ -314,6 +314,12 @@ const CaseActions = ({
           ) : (
             "View Case"
           )}
+          {canVote ||
+            (canReveal && (
+              <div className="absolute right-1 top-0 h-2 w-2 translate-y-[-50%] ">
+                <div className="h-full w-full animate-pulse-scale rounded-full bg-orange-500" />
+              </div>
+            ))}
         </button>
       </Link>
     </div>
