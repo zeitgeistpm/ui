@@ -312,7 +312,10 @@ const CaseActions = ({
               <AiOutlineEye size={18} /> <span>Reveal Vote</span>
             </>
           ) : (
-            "View Case"
+            <>
+              <span className="hidden md:inline">View Case</span>
+              <span className="inline md:hidden">View</span>
+            </>
           )}
           {(canVote || canReveal) && (
             <div className="absolute right-1 top-0 h-2 w-2 translate-y-[-50%] ">
