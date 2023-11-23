@@ -226,12 +226,6 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
       setIsTransacting(false);
     }
   };
-  console.log(
-    editor.isValid,
-    isTransacting,
-    editor.isPublished,
-    hasEnoughLiquidty,
-  );
   return (
     <>
       <div className="">

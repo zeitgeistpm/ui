@@ -22,7 +22,6 @@ const FeePayingAssetSelect = () => {
   const { data: assetMetadata, isSuccess } = useAllAssetMetadata();
   const { assetSelection, setAsset } = useFeePayingAssetSelection();
   const [showSaved, setShowSaved] = useState(false);
-
   const options = useMemo<AssetOption[]>(() => {
     if (!isSuccess) {
       return [];

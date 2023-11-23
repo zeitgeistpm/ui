@@ -1,6 +1,7 @@
 import { useAtom } from "jotai";
 import { persistentAtom } from "./util/persistent-atom";
 import { AssetOption } from "components/ui/AssetSelect";
+import { isWSX } from "lib/constants";
 
 type SelectedFeeAsset = AssetOption;
 
@@ -14,7 +15,7 @@ const feePayingAssetStateAtom = persistentAtom<SelectedFeeAsset>({
 
 const useFeePayingAssetSelection = () => {
   const [state, setState] = useAtom(feePayingAssetStateAtom);
-
+  console.log(state);
   const setAsset = (selection: SelectedFeeAsset) => {
     setState(selection);
   };

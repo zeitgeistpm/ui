@@ -134,6 +134,7 @@ export const signAndSend = async (
       });
     }
   };
+
   return new Promise(async (resolve, reject) => {
     try {
       if (isExtSigner(signer)) {

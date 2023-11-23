@@ -36,7 +36,6 @@ export const useExtrinsic = <T>(
     const ext = extrinsicFn();
     return ext;
   }, [extrinsicFn]);
-
   const { data: fee } = useExtrinsicFee(extrinsic);
   const resetState = () => {
     setIsError(false);
@@ -78,7 +77,7 @@ export const useExtrinsic = <T>(
         return;
       }
     }
-
+    console.log(fee);
     signAndSend(
       extrinsic,
       signer,

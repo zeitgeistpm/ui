@@ -8,6 +8,8 @@ import { ChainConstants, useChainConstants } from "./useChainConstants";
 import { CurrencyBalance } from "./useCurrencyBalances";
 import { useForeignAssetBalances } from "./useForeignAssetBalances";
 import { useZtgBalance } from "./useZtgBalance";
+import { isWSX } from "lib/constants";
+import { useEffect } from "react";
 
 type FeeAsset = {
   assetId: AssetId;
@@ -31,7 +33,12 @@ export const useFeePayingAsset = (
   );
   const { data: constants } = useChainConstants();
   const { data: assetMetadata } = useAllAssetMetadata();
-  const { assetSelection } = useFeePayingAssetSelection();
+  const { assetSelection, setAsset } = useFeePayingAssetSelection();
+
+  //force WSX to be available as a fee asset if it's enabled
+  useEffect(() => {
+    isWSX && setAsset({ label: "WSX", value: { ForeignAsset: 3 } });
+  }, [assetSelection]);
 
   const enabled =
     !!nativeBalance &&
@@ -52,7 +59,7 @@ export const useFeePayingAsset = (
     ],
     async () => {
       if (enabled) {
-        if (assetSelection.label === "Default") {
+        if (assetSelection.label === "Default" && !isWSX) {
           // if user has ztg, use that to pay
           if (nativeBalance.greaterThanOrEqualTo(baseFee)) {
             return {

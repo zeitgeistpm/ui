@@ -190,7 +190,6 @@ export const useMarketDraftEditor = ({
     const keys = stepFormKeys[step.label];
     const reached = draft.stepReachState[step.label] || false;
     const isValid = keys.every((key) => fieldsState[key].isValid);
-    console.log(fieldsState);
     const isTouched = keys.some((key) => draft.touchState[key]);
 
     return { ...step, isValid, isTouched, reached };
