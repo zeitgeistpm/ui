@@ -98,9 +98,9 @@ const FooterMenus = () => {
           <FooterMenu
             className="col-span-1"
             title="General"
-            links={[{ text: "Website", href: "https://zeitgeist.pm" }]}
+            links={[{ text: "Website", href: "https://thewsx.com" }]}
           />
-          <FooterMenu
+          {/* <FooterMenu
             className="col-span-1"
             title="Community"
             links={[
@@ -108,7 +108,7 @@ const FooterMenus = () => {
               { text: "Telegram", href: "https://t.me/zeitgeist_official" },
               { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
             ]}
-          />
+          /> */}
         </div>
       ) : (
         <div className="flex w-full justify-between gap-7">

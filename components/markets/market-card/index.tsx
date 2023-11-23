@@ -160,15 +160,13 @@ const MarketCardDetails = ({
         ) : (
           <Skeleton width={30} height={12} />
         )}
-        {!isWSX && (
-          <Image
-            width={12}
-            height={12}
-            src={imagePath}
-            alt="Currency token logo"
-            className="rounded-full"
-          />
-        )}
+        <Image
+          width={12}
+          height={12}
+          src={imagePath}
+          alt="Currency token logo"
+          className="rounded-full"
+        />
       </div>
     </div>
   );
