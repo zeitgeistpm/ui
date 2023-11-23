@@ -303,7 +303,7 @@ const AccountButton: FC<{
                         {isWSX ? (
                           <BalanceRow
                             imgPath="/currencies/wsx-currency.png"
-                            units={constants?.tokenSymbol}
+                            units="WSX"
                             balance={wsxBalance}
                           />
                         ) : (

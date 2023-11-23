@@ -33,12 +33,7 @@ export const useFeePayingAsset = (
   );
   const { data: constants } = useChainConstants();
   const { data: assetMetadata } = useAllAssetMetadata();
-  const { assetSelection, setAsset } = useFeePayingAssetSelection();
-
-  //force WSX to be available as a fee asset if it's enabled
-  useEffect(() => {
-    isWSX && setAsset({ label: "WSX", value: { ForeignAsset: 3 } });
-  }, [assetSelection]);
+  const { assetSelection } = useFeePayingAssetSelection();
 
   const enabled =
     !!nativeBalance &&

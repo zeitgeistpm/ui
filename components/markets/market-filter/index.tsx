@@ -18,6 +18,7 @@ import MarketFiltersContainer, { SelectedMenu } from "./MarketFiltersContainer";
 import MarketFiltersDropdowns from "./MarketFiltersDropdowns";
 import MarketFiltersSort from "./MarketFiltersSort";
 import MobileDialog from "./mobile-dialog";
+import { isWSX } from "lib/constants";
 
 const getFiltersFromQueryState = (
   queryState: MarketsListQuery,

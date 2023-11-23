@@ -5,6 +5,7 @@ import {
 } from "lib/constants/market-filter";
 import DropDownSelect from "./DropDownSelect";
 import { useMarketFiltersContext } from "./MarketFiltersContainer";
+import { isWSX } from "lib/constants";
 
 export type MarketFiltersDropdownsProps = {
   className?: string;
@@ -22,21 +23,25 @@ const MarketFiltersDropdowns = ({
   const { selectedMenu, portal, addActiveFilter } = useMarketFiltersContext();
   return (
     <div className={className}>
-      <DropDownSelect
-        label="Category"
-        options={marketTagFilterOptions}
-        add={addActiveFilter}
-        portal={portal}
-        isOpen={selectedMenu === "Category"}
-      />
-      <Divider />
-      <DropDownSelect
-        label="Currency"
-        options={marketCurrencyFilterOptions}
-        add={addActiveFilter}
-        portal={portal}
-        isOpen={selectedMenu === "Currency"}
-      />
+      {!isWSX && (
+        <>
+          <DropDownSelect
+            label="Category"
+            options={marketTagFilterOptions}
+            add={addActiveFilter}
+            portal={portal}
+            isOpen={selectedMenu === "Category"}
+          />
+          <Divider />
+          <DropDownSelect
+            label="Currency"
+            options={marketCurrencyFilterOptions}
+            add={addActiveFilter}
+            portal={portal}
+            isOpen={selectedMenu === "Currency"}
+          />
+        </>
+      )}
       <Divider />
       <DropDownSelect
         label="Status"
