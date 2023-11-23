@@ -70,6 +70,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
     {
       onSuccess: () => {
         queryClient.invalidateQueries([id, voteDrawsRootKey, caseId]);
+        queryClient.invalidateQueries([id, voteDrawsRootKey, "all"]);
       },
     },
   );
