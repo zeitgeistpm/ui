@@ -25,7 +25,12 @@ import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
-import { ZTG, environment, graphQlEndpoint } from "lib/constants";
+import {
+  ZTG,
+  environment,
+  graphQlEndpoint,
+  marketReferendumMap,
+} from "lib/constants";
 import {
   MarketPageIndexedData,
   getMarket,
@@ -59,9 +64,10 @@ import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaChevronUp } from "react-icons/fa";
 import { ScoringRule } from "@zeitgeistpm/indexer";
 import { TradeTabType } from "components/trade-form/TradeTab";
+import ReferendumSummary from "components/ui/ReferendumSummary";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -151,6 +157,7 @@ const Market: NextPage<MarketPageProps> = ({
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
+  const referendumIndex = marketReferendumMap?.[marketId];
 
   const tradeItem = useTradeItem();
 
@@ -271,7 +278,6 @@ const Market: NextPage<MarketPageProps> = ({
             promotionData={promotionData}
             rejectReason={market?.rejectReason ?? undefined}
           />
-
           {market?.rejectReason && market.rejectReason.length > 0 && (
             <div className="mt-[10px] text-ztg-14-150">
               Market rejected: {market.rejectReason}
@@ -419,7 +425,11 @@ const Market: NextPage<MarketPageProps> = ({
                 <></>
               )}
             </div>
-
+            {referendumIndex != null && (
+              <div className="mb-12 ">
+                <ReferendumSummary referendumIndex={referendumIndex} />
+              </div>
+            )}
             <SimilarMarketsSection market={market ?? undefined} />
           </div>
         </div>

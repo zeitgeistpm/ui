@@ -21,7 +21,7 @@ export type CourtStage =
 
 export const getCourtStage = (
   time: ChainTime,
-  market: FullMarketFragment,
+  market: FullMarketFragment | Pick<FullMarketFragment, "disputes" | "period">,
   courtCase: ZrmlCourtCourtInfo,
 ): CourtStage => {
   const currentBlock = time.block;

@@ -7,7 +7,7 @@ import * as Fathom from "fathom-client";
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
 import Devtools from "components/devtools";
 import DefaultLayout from "layouts/DefaultLayout";
-import { queryClient } from "lib/query-client";
+import { appQueryClient } from "lib/query-client";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
@@ -80,7 +80,7 @@ const MyApp = ({ Component, pageProps }) => {
           }
         `}
       </style>
-      <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={appQueryClient}>
         <Hydrate state={pageProps.dehydratedState}>
           <AvatarContext.Provider
             value={{
