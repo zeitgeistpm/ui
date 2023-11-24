@@ -7,6 +7,7 @@ import type { ApiPromise } from "@polkadot/api";
 
 import { UseNotifications } from "lib/state/notifications";
 import { unsubOrWarns } from "./unsub-or-warns";
+import { isWSX } from "lib/constants";
 
 type GenericCallback = (...args: any[]) => void;
 
@@ -150,12 +151,25 @@ export const signAndSend = async (
             cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
           },
         );
+      } else if (isWSX) {
+        const unsub = await tx.signAndSend(
+          signer,
+          {
+            ...(foreignAssetNumber != null
+              ? { assetId: foreignAssetNumber }
+              : {}),
+          },
+          (result) => {
+            cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
+          },
+        );
       } else {
         const unsub = await tx.signAndSend(signer, (result) => {
           cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
         });
       }
     } catch (error) {
+      console.log(error);
       reject(error);
     }
   });
