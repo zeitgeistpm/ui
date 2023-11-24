@@ -75,6 +75,8 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
     },
   );
 
+  const fileInputRef = React.useRef(null);
+
   const [hasDroppedFile, setHasDroppedFile] = useState(false);
 
   const onChangeSelectedOutcome = (assetId: CategoricalAssetId) => {
@@ -85,6 +87,18 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
     e.preventDefault();
   };
 
+  const processFile = async (file: File | null) => {
+    if (file) {
+      const raw = await file.text();
+      const parsed = IOCourtSaltPhraseStorage.safeParse(JSON.parse(raw));
+  
+      if (parsed.success) {
+        const wasSet = await setPhraseSeed(parsed.data);
+        setHasDroppedFile(wasSet);
+      }
+    }
+  };
+
   const onCourtSaltBackupDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
 
@@ -92,17 +106,13 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
 
     if (item.kind === "file") {
       const file = item.getAsFile();
-
-      if (file) {
-        const raw = await file?.text();
-        const parsed = IOCourtSaltPhraseStorage.safeParse(JSON.parse(raw));
-
-        if (parsed.success) {
-          const wasSet = await setPhraseSeed(parsed.data);
-          setHasDroppedFile(wasSet);
-        }
-      }
+      await processFile(file);
     }
+  };
+
+  const onFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files[0];
+    await processFile(file);
   };
 
   const commitmentHashMatches =
@@ -114,6 +124,12 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
         <h3 className="text-gray-300 text-opacity-50">Reveal Vote</h3>
       </div>
       <div className="px-2 py-6 text-center">
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={onFileInputChange}
+        />
         <div className="mb-8 mt-6">
           <MarketContextActionOutcomeSelector
             market={market}
@@ -141,6 +157,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
             className="relative mb-6 w-full resize-none rounded-md border-black border-opacity-30 bg-transparent text-center font-semibold"
             onDragOver={onCourtSaltBackupDragOver}
             onDrop={onCourtSaltBackupDrop}
+            onClick={() => fileInputRef.current.click()}
           >
             <div className="gap-3 rounded-md border-2 border-dotted bg-green-100 px-6 py-6 text-sm text-gray-600">
               <h3 className="center gap-2 text-sm">
@@ -167,7 +184,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
             >
               <div className="center gap-4">
                 <div className="">
-                  <div>Drop backup of seed file to restore.</div>
+                  <div>Click here or drop backup of seed file to restore.</div>
                   <div className="text-xxs">
                     You saved this to your local machine when voting.
                   </div>
