@@ -90,7 +90,7 @@ const JoinPoolForm = ({
         const percentage = Number(value["percentage"]);
         const restrictiveAssetAmount = maxInForRestrictiveAsset.mul(
           percentage / 100,
-        ); //todo: div 100?
+        );
         const restrictiveAssetToPoolRatio = restrictiveAssetAmount.div(
           reserves[restrictiveIndex!],
         );
@@ -116,13 +116,10 @@ const JoinPoolForm = ({
         changedByUser &&
         userAssetBalances
       ) {
-        console.log(userInput);
-
         const reserve = reserves[Number(changedAsset)];
         const inputToReserveRatio = new Decimal(userInput)
           .div(reserve)
           .mul(ZTG);
-        console.log("ratio", inputToReserveRatio.toString());
 
         let restrictedAssetAmount: Decimal | undefined;
         reserves.forEach((reserve, index) => {
