@@ -338,22 +338,22 @@ const caseStatusCopy: Record<
 > = {
   "pre-vote": {
     title: "Pre-Vote",
-    description: "Waiting for the vote period to start.",
+    description: "The case is waiting for the vote period to start.",
     color: "text-gray-400",
   },
   vote: {
     title: "Vote",
-    description: "Case is now open for voting by jurors.",
+    description: "Jurors must cast their vote by this phase.",
     color: "text-blue-400",
   },
   aggregation: {
     title: "Aggregation",
-    description: "Votes can now be revealed by jurors.",
+    description: "Jurors must reveal their votes by this phase.",
     color: "text-purple-400",
   },
   appeal: {
     title: "Appeal",
-    description: "Jurors can now appeal the voted outcome.",
+    description: "The result of the jurors' vote can be appealed by this phase.",
     color: "text-orange-400",
   },
   reassigned: {
@@ -364,7 +364,7 @@ const caseStatusCopy: Record<
   },
   closed: {
     title: "Closed",
-    description: "Case has been closed. Waiting to be reassigned.",
+    description: "The case has been closed. The juror and delegator stakes can now be reassigned.",
     color: "text-gray-400",
   },
 };

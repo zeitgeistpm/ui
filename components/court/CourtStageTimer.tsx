@@ -63,7 +63,7 @@ export const courtStageCopy: Record<
 > = {
   "pre-vote": {
     title: "Pre Vote",
-    description: "Case is waiting for the vote period to start.",
+    description: "The case is waiting for the vote period to start.",
     color: "bg-yellow-400",
   },
   vote: {
@@ -73,22 +73,22 @@ export const courtStageCopy: Record<
   },
   aggregation: {
     title: "Aggregation",
-    description: "Votes can now be revealed by jurors.",
+    description: "Jurors must reveal their votes by this phase.",
     color: "bg-purple-400",
   },
   appeal: {
     title: "Appeal",
-    description: "Jurors can now appeal the case.",
+    description: "The result of the jurors' vote can be appealed by this phase.",
     color: "bg-orange-400",
   },
   reassigned: {
     title: "Reassigned",
-    description: "The case is now reassigned. Winners paid out.",
+    description: "All juror and delegator stakes were reassigned, by losers paying the winners.",
     color: "bg-gray-400",
   },
   closed: {
     title: "Closed",
-    description: "The case is now closed. Waiting to be reassigned.",
+    description: "The case has been closed. The juror and delegator stakes can now be reassigned.",
     color: "bg-orange-400",
   },
 };
