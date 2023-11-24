@@ -61,7 +61,7 @@ async function fundUser(wallet) {
     const masterAccount = keyring.addFromUri(process.env.NEXT_PUBLIC_SEED);
 
     // const amount = 1_000_000_000_000_0; // 1000 tokens
-    const amount = 1_000_000_000_00; // 10 tokens
+    const amount = 1_000_000_000_000; // 100 tokens
 
     const transfer = api.tx.assetManager.transfer(
       wallet,
