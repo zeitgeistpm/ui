@@ -1,4 +1,5 @@
 import { isRpcSdk } from "@zeitgeistpm/sdk";
+import LiquidityModalAmm2 from "components/liquidity/LiquidityModalAmm2";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
@@ -8,6 +9,8 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import Link from "next/link";
+import { useState } from "react";
+import EmptyPortfolio from "./EmptyPortfolio";
 
 const columns: TableColumn[] = [
   {
@@ -29,18 +32,19 @@ const columns: TableColumn[] = [
     header: "",
     accessor: "buttons",
     type: "component",
-    width: "150px",
+    width: "330px",
   },
 ];
 
-const CollectFeesButton = ({ marketId }: { marketId: number }) => {
+const PoolButtons = ({ marketId }: { marketId: number }) => {
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
+  const [showLiqudityModal, setShowLiqudityModal] = useState(false);
 
   const {
     isLoading: isCollectingFees,
     isSuccess,
-    send,
+    send: withdrawFees,
   } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk)) return;
@@ -55,14 +59,30 @@ const CollectFeesButton = ({ marketId }: { marketId: number }) => {
     },
   );
   return (
-    <SecondaryButton
-      disabled={isCollectingFees || isSuccess}
-      onClick={() => {
-        send();
-      }}
-    >
-      Collect fees
-    </SecondaryButton>
+    <div className="flex justify-end gap-2">
+      <LiquidityModalAmm2
+        marketId={marketId}
+        open={showLiqudityModal}
+        onClose={() => setShowLiqudityModal(false)}
+      />
+      <SecondaryButton
+        className="w-full max-w-[150px]"
+        onClick={() => {
+          setShowLiqudityModal(true);
+        }}
+      >
+        Manage Liquidity
+      </SecondaryButton>
+      <SecondaryButton
+        className="w-full max-w-[150px]"
+        disabled={isCollectingFees || isSuccess}
+        onClick={() => {
+          withdrawFees();
+        }}
+      >
+        Collect fees
+      </SecondaryButton>
+    </div>
   );
 };
 
@@ -82,13 +102,22 @@ const AccountPoolsTable = ({ address }: { address: string }) => {
         ),
         value: pool.value.div(ZTG).toFixed(3),
         fees: new Decimal(pool.liquiditySharesManager.fees).div(ZTG).toFixed(3),
-        buttons: <CollectFeesButton marketId={pool.marketId} />,
+        buttons: <PoolButtons marketId={pool.marketId} />,
       };
     }) ?? [];
 
   return (
     <div>
-      <Table columns={columns} data={tableData} showHighlight={false} />
+      {pools?.length === 0 && isLoading === false ? (
+        <EmptyPortfolio
+          headerText="You don't have any liquidity"
+          bodyText="View liquidity pools to find places to provide liquidity"
+          buttonText="View Pools"
+          buttonLink="/liquidity"
+        />
+      ) : (
+        <Table columns={columns} data={tableData} showHighlight={false} />
+      )}
     </div>
   );
 };
