@@ -136,11 +136,15 @@ export const MarketSummary = ({
 
                 <div>
                   <Label>Total Base Liquidity</Label>{" "}
-                  {new Decimal(baseAssetLiquidityRow?.value).mul(2).toFixed(1)}{" "}
+                  {amm2Liquidity
+                    ? amm2Liquidity
+                    : new Decimal(baseAssetLiquidityRow?.value)
+                        .mul(2)
+                        .toFixed(1)}{" "}
                   {baseAssetLiquidityRow?.asset}{" "}
                   <span className="text-gray-400">≈</span>{" "}
                   {baseAssetPrice
-                    ?.mul(baseAssetLiquidityRow?.value)
+                    ?.mul(Number(amm2Liquidity) ?? baseAssetLiquidityRow?.value)
                     .mul(2)
                     .toFixed(2)}{" "}
                   USD

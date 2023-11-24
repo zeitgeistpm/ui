@@ -15,6 +15,7 @@ import { SupportedCurrencyTag } from "../../../constants/supported-currencies";
 import { minBaseLiquidity } from "../constants/currency";
 import { MarketFormData } from "./form";
 import { timelineAsBlocks } from "./timeline";
+import Decimal from "decimal.js";
 
 export type MarketValidationDependencies = {
   form: Partial<MarketFormData>;
@@ -107,28 +108,18 @@ export const createMarketFormValidator = ({
         form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
       const min = minBaseLiquidity[form.currency];
 
-      if (form.moderation === "Permissionless" && form?.liquidity?.deploy) {
-        if (baseLiquidityRow) {
-          const amount = parseFloat(baseLiquidityRow.amount) * 2;
+      const baseLiqudity = new Decimal(
+        form?.liquidity?.amount ?? baseLiquidityRow?.amount ?? 0,
+      )
+        .mul(2)
+        .toNumber();
 
-          if (!amount || amount < min) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              path: ["liquidity", "base"],
-              message: `Minimum base liquidity is ${min} ${form.currency}`,
-            });
-          }
-        } else {
-          const amount = parseFloat(form.liquidity.amount ?? "0");
-
-          if (!amount || amount < min) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              path: ["liquidity", "base"],
-              message: `Minimum base liquidity is ${min} ${form.currency}`,
-            });
-          }
-        }
+      if (form.liquidity.deploy && (!baseLiqudity || baseLiqudity < min)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["liquidity", "base"],
+          message: `Minimum base liquidity is ${min} ${form.currency}`,
+        });
       }
     })
     .superRefine((form, ctx) => {
@@ -157,16 +148,14 @@ export const useMarketCreationFormValidator = (
   const { data: deadlineConstants } = useMarketDeadlineConstants();
   const chainTime = useChainTime();
 
-  return useMemo(() => {
-    if (!deadlineConstants || !chainTime) {
-      return;
-    }
-    return createMarketFormValidator({
-      form,
-      deadlineConstants,
-      chainTime,
-    });
-  }, [form, deadlineConstants, chainTime]);
+  if (!deadlineConstants || !chainTime) {
+    return;
+  }
+  return createMarketFormValidator({
+    form,
+    deadlineConstants,
+    chainTime,
+  });
 };
 
 /**

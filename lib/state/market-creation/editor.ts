@@ -181,7 +181,7 @@ export const useMarketDraftEditor = ({
     );
 
     return fieldsState;
-  }, [validator]);
+  }, [draft.form, validator]);
 
   const isTouched = Object.values(fieldsState).some((field) => field.isTouched);
   const isValid = Object.values(fieldsState).every((field) => field.isValid);
@@ -315,13 +315,19 @@ export const useMarketDraftEditor = ({
   useEffect(() => {
     if (!draft.form.answers || !draft.form.liquidity) return;
 
+    const isAMM2 = draft.form.answers.answers.length === 2;
+
     const baseAmount = minBaseLiquidity[draft.form.currency!]
       ? `${minBaseLiquidity[draft.form.currency!] / 2}`
       : "100";
 
-    const amm2Liquidity = minBaseLiquidity[draft.form.currency!]
-      ? `${minBaseLiquidity[draft.form.currency!]}`
-      : "100";
+    // const amm2Liquidity = minBaseLiquidity[draft.form.currency!]
+    //   ? `${minBaseLiquidity[draft.form.currency!]}`
+    //   : "100";
+
+    const amm2Liquidity = isAMM2
+      ? minBaseLiquidity[draft.form.currency!]?.toString() ?? "100"
+      : undefined;
 
     const baseWeight = 64;
     const numOutcomes = draft.form.answers.answers.length;
