@@ -100,7 +100,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
           onClick={() => setIsOpen(true)}
         >
           {connectedParticipant?.type === "Juror"
-            ? "Increase Stake"
+            ? "Modify Stake"
             : "Become a Juror"}
         </button>
         {connectedParticipant?.type === "Delegator" && (
@@ -125,7 +125,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
           <h3 className="mb-8">
             {connectedParticipant?.type === "Juror"
-              ? "Increase Stake"
+              ? "Modify Stake"
               : "Become a Juror"}
           </h3>
           <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
@@ -209,7 +209,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
                 disabled={formState.isValid === false || isLoading}
               >
                 {connectedParticipant?.type === "Juror"
-                  ? "Increase Stake"
+                  ? "Modify Stake"
                   : "Join as Juror"}
               </FormTransactionButton>
             </form>

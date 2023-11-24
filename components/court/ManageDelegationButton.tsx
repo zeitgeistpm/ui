@@ -19,7 +19,7 @@ const ManageDelegationButton = ({ className }: { className?: string }) => {
           onClick={() => setIsOpen(true)}
         >
           {connectedParticipant?.type === "Delegator"
-            ? "Manage Delegated Stake"
+            ? "Modify Stake"
             : connectedParticipant?.type === "Juror"
               ? "Switch to Delegating"
               : "Become a Delegator"}
