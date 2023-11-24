@@ -77,7 +77,7 @@ export const MarketSummary = ({
           {form.answers?.answers?.length === 0 ? (
             <div className="italic text-gray-500">No answers supplied</div>
           ) : (
-            <Answers
+            <AnswersDisplay
               answers={form.answers!}
               baseAssetPrice={baseAssetPrice!}
               baseCurrency={form.currency!}
@@ -283,7 +283,7 @@ export const MarketSummary = ({
   );
 };
 
-const Answers = ({
+const AnswersDisplay = ({
   answers,
   liquidity,
   baseCurrency,
