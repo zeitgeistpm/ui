@@ -4,8 +4,6 @@ import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAccountAmm2Pool } from "lib/hooks/queries/useAccountAmm2Pools";
-import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
-import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
@@ -46,7 +44,7 @@ const CollectFeesButton = ({ marketId }: { marketId: number }) => {
   } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk)) return;
-      return sdk.api.tx.predictionMarkets.redeemShares(marketId);
+      return sdk.api.tx.neoSwaps.withdrawFees(marketId);
     },
     {
       onSuccess: () => {
@@ -60,7 +58,6 @@ const CollectFeesButton = ({ marketId }: { marketId: number }) => {
     <SecondaryButton
       disabled={isCollectingFees || isSuccess}
       onClick={() => {
-        console.log("redeen", marketId);
         send();
       }}
     >
