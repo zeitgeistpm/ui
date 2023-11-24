@@ -3,7 +3,7 @@ import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { Web3Auth } from "@web3auth/modal";
 import { atom } from "jotai";
 import { isWSX } from "lib/constants";
-
+console.log(process.env.NODE_ENV);
 export const clientId = isWSX
   ? process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_WSX
   : process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
@@ -49,7 +49,10 @@ export const web3AuthInstance =
     ? new Web3Auth({
         clientId,
         chainConfig,
-        web3AuthNetwork: "cyan",
+        web3AuthNetwork:
+          process.env.NODE_ENV === "development"
+            ? "sapphire_devnet"
+            : "sapphire_mainnet",
         // Settings for whitelabel version of web3auth modal
         // uiConfig: {
         //   loginMethodsOrder: [
