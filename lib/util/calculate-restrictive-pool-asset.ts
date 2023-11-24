@@ -1,4 +1,3 @@
-import { ZTG } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 
 export const calculateRestrictivePoolAsset = (
@@ -14,7 +13,7 @@ export const calculateRestrictivePoolAsset = (
     userBalances.forEach((otherBalance, otherIndex) => {
       if (index !== otherIndex) {
         const balanceNeeded = otherBalance.mul(ratio);
-        if (balanceNeeded.greaterThan(otherBalance)) {
+        if (balanceNeeded.greaterThanOrEqualTo(otherBalance)) {
           isRestrictive = false;
         }
       }

@@ -36,7 +36,7 @@ describe("calculateRestrictivePoolAsset", () => {
       [new Decimal(100), new Decimal(100)],
     );
 
-    expect(index).toEqual(2);
+    expect(index).toEqual(0);
   });
 
   test("should default to index 0 if everything is restrictive because the user balances are larger that the pool balances", () => {
