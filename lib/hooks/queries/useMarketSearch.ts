@@ -36,7 +36,6 @@ export const useMarketSearch = (searchTerm: string) => {
           order: MarketOrderByInput.IdDesc,
           limit: 100,
         });
-        console.log(markets);
         const fuse = new Fuse(markets, {
           includeScore: true,
           threshold: 0.9,

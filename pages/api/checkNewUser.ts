@@ -60,7 +60,8 @@ async function fundUser(wallet) {
     const keyring = new Keyring({ type: "sr25519" });
     const masterAccount = keyring.addFromUri(process.env.NEXT_PUBLIC_SEED);
 
-    const amount = 1_000_000_000_000; // 1 token
+    // const amount = 1_000_000_000_000_0; // 1000 tokens
+    const amount = 1_000_000_000_00; // 10 tokens
 
     const transfer = api.tx.assetManager.transfer(
       wallet,
@@ -72,7 +73,6 @@ async function fundUser(wallet) {
 
     return { success: true, txHash: txHash.toString() };
   } catch (error) {
-    console.error("Error in fundUser:", error);
     return { error: error.toString() };
   } finally {
     provider.disconnect();

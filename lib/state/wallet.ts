@@ -24,6 +24,8 @@ import { IProvider } from "@web3auth/base";
 import { web3authAtom } from "./util/web3auth-config";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
 import { isWSX } from "lib/constants";
+import { checkNewUser } from "./wsx";
+import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -368,6 +370,7 @@ export const useWallet = (): UseWallet => {
   const [userConfig, setUserConfig] = useAtom(userConfigAtom);
   const [walletState, setWalletState] = useAtom(walletAtom);
   const [web3auth] = useAtom(web3authAtom);
+  const confirm = useConfirmation();
 
   const loadWeb3AuthWallet = async () => {
     if (!web3auth) {
@@ -387,8 +390,21 @@ export const useWallet = (): UseWallet => {
         const keyPair = keyring.addFromUri("0x" + privateKey);
         return keyPair;
       };
+
       const keyPair = await getKeypair(web3auth.provider);
-      keyPair && enabledWeb3Wallet(keyPair);
+
+      if (keyPair.address) {
+        const response = await checkNewUser(keyPair.address);
+        enabledWeb3Wallet(keyPair);
+        if (response.success) {
+          await confirm.prompt({
+            title: "Welcome to The Washington Exchange!",
+            description: `In just a few moments (1-2 mins) your account will be funded with 1000 WSX tokens.
+              These tokens can be used to trade on prediction markets on The WSX platform.`,
+          });
+        } else {
+        }
+      }
     }
   };
 

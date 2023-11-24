@@ -69,7 +69,7 @@ export const useExtrinsic = <T>(
       const confirmed = await confirm.prompt({
         title: "Confirm Transaction",
         description:
-          "This will make a onchain transaction. Please confirm that you want to proceed.",
+          "This will make an onchain transaction. Please confirm that you want to proceed.",
       });
 
       if (!confirmed) {
@@ -77,7 +77,7 @@ export const useExtrinsic = <T>(
         return;
       }
     }
-    console.log(fee);
+
     signAndSend(
       extrinsic,
       signer,
