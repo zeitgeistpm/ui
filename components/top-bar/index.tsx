@@ -201,7 +201,7 @@ const TopBar = () => {
         )}
         <MarketSearch />
         <div className="center relative ml-auto gap-3">
-          <GetTokensButton />
+          {!isWSX && <GetTokensButton />}
           <AccountButton />
           <Alerts />
         </div>
