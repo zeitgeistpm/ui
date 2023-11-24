@@ -243,9 +243,8 @@ const CaseStatus = ({ courtCase }: { courtCase: CourtCaseInfo }) => {
           <div className="w-full">
             <div className="h-1 w-full rounded-lg bg-gray-100">
               <div
-                className={`h-full rounded-lg transition-all ${
-                  courtStageCopy[stage.type].color
-                }`}
+                className={`h-full rounded-lg transition-all ${courtStageCopy[stage.type].color
+                  }`}
                 style={{ width: `${percentage}%` }}
               />
             </div>
@@ -359,7 +358,7 @@ const caseStatusCopy: Record<
   reassigned: {
     title: "Reassigned",
     description:
-      "All juror and delegator stakes were reassigned, by losers paying the winners.",
+      "All stakes for jurors and delegators were reassigned, with the losers paying the winners.",
     color: "text-gray-400",
   },
   closed: {

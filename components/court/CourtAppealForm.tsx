@@ -32,16 +32,15 @@ export const CourtAppealForm = ({ caseId }: { caseId: number }) => {
       <div className="px-2 py-6 text-center">
         <div className="mb-4">
           <div className="mb-3 text-sm text-gray-700">
-            If you think the court has made a mistake, you can appeal the
-            decision. This will start a new round of voting.
+            If you think the juror's most recent vote aggregation is unjustified, you can appeal it.
+            This will start a new vote round.
           </div>
         </div>
 
         <TransactionButton
           disabled={!isReady || isLoading || isBroadcasting}
-          className={`relative h-[56px] ${
-            isLoading && "animate-pulse"
-          } !bg-orange-400`}
+          className={`relative h-[56px] ${isLoading && "animate-pulse"
+            } !bg-orange-400`}
           type="submit"
           loading={isLoading || isBroadcasting}
           onClick={() => send()}

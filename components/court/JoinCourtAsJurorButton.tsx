@@ -94,10 +94,9 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
       <div className="relative">
         <button
           disabled={isLoading}
-          className={`rounded-md bg-[#670031] px-4 py-2 text-white transition-all  ${
-            connectedParticipant?.type === "Delegator" &&
+          className={`rounded-md bg-[#670031] px-4 py-2 text-white transition-all  ${connectedParticipant?.type === "Delegator" &&
             "ring-2 ring-orange-500"
-          } ${className}`}
+            } ${className}`}
           onClick={() => setIsOpen(true)}
         >
           {connectedParticipant?.type === "Juror"
@@ -114,8 +113,9 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
               icon={<IoIosInformation />}
             >
               You are currently delegating to other jurors. If you join the
-              court as a juror, your delegations will be removed and delegated
-              to your personal juror stake.
+              court as a juror, your delegations will be removed.
+              Be aware that your juror account is then expected
+              to actively participate in requested court cases at this point.
             </InfoPopover>
           </div>
         )}
@@ -187,8 +187,9 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
               {connectedParticipant?.type === "Delegator" && (
                 <div className="relative mb-5 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
                   You are currently delegating to other jurors. If you join the
-                  court as a juror, your delegations will be removed and stake
-                  will be moved to your personal stake.
+                  court as a juror, your delegations will be removed.
+                  Be aware that your juror account is then expected
+                  to actively participate in requested court cases at this point.
                   <IoIosWarning
                     size={24}
                     className="absolute left-[50%] top-0 translate-x-[-50%] translate-y-[-50%] text-orange-700"

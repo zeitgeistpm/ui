@@ -95,9 +95,10 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
           <div className="mb-4">
             <div className="mb-3 text-sm text-gray-700">
               <div className="mb-3">
-                Your vote is secret and can only be revealed when the vote
-                period ends. For this a secret salt has been generated for you
-                that is needed when revealing the vote.
+                Your vote is secret and can only be revealed after the vote
+                period ends and the aggregation period started.
+                The generated file containing the private salt and further vote information
+                is needed when revealing the vote.
               </div>
               <div>
                 This is stored locally for you in your browser and will be
@@ -130,7 +131,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
                 <p className="mb-4 text-sm">
                   The commitment hash is calculated using a combination of your
                   account, the outcome you are voting for and a salt generated
-                  from the secret phrase.
+                  from the secret words.
                 </p>
                 <p className="mb-4 text-sm">
                   This is supplied to the chain instead of the direct outcome

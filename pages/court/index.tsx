@@ -104,7 +104,7 @@ const CourtPage: NextPage = ({
               Court
             </div>
             <p className="mb-4 font-light text-white drop-shadow-lg md:max-w-[940px]">
-              Anyone can participate by joining the court system as a juror or
+              Any account can participate by joining the court system either as a juror or a
               delegator. As a juror, you are responsible for supplying the
               truthful outcome of a prediction market by voting and revealing
               the raw vote information. As a delegator, you can delegate your
@@ -122,8 +122,8 @@ const CourtPage: NextPage = ({
                       {connectedParticipant?.type}
                       <InfoPopover overlay={false} position="top">
                         {connectedParticipant?.type === "Juror"
-                          ? "You are participating as a juror. All stake is delegated to your personal juror stake."
-                          : "You are participating as a delegator. The probability of one delegator being selected is equally distributed among all delegations."}
+                          ? "You are participating as a juror."
+                          : "You are participating as a delegator. The selection probability is equally distributed across all delegations."}
                       </InfoPopover>
                     </div>
                   </div>

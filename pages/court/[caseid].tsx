@@ -66,10 +66,10 @@ export async function getStaticProps({
   const marketId = await sdk.api.query.court.courtIdToMarketId(params.caseid);
   const markets = marketId.isSome
     ? await sdk.indexer.markets({
-        where: {
-          marketId_eq: marketId.unwrap().toNumber(),
-        },
-      })
+      where: {
+        marketId_eq: marketId.unwrap().toNumber(),
+      },
+    })
     : undefined;
 
   const market = markets?.markets[0];
@@ -133,7 +133,7 @@ const CasePage: NextPage = ({
 
   const reportedOutcome =
     market?.report?.outcome != null &&
-    isMarketCategoricalOutcome(market.report?.outcome)
+      isMarketCategoricalOutcome(market.report?.outcome)
       ? market.report?.outcome.categorical
       : undefined;
 
@@ -175,8 +175,8 @@ const CasePage: NextPage = ({
                 </div>
                 <h3 className="text mb-2 text-blue-500">You have voted</h3>
                 <p className="text-center text-sm text-gray-500">
-                  Your vote is secret during voting, but when court goes into
-                  aggregation you can reveal your vote to the public by coming
+                  The votes are secretly casted during the vote phase, but when court case goes into the
+                  aggregation phase you can reveal your vote to the public after coming
                   back to this page.
                 </p>
               </div>
@@ -214,8 +214,7 @@ const CasePage: NextPage = ({
                   }
                 </h3>
                 <p className="text-center text-sm text-gray-500">
-                  Your vote has been revealed to the other jurors and the public
-                  and has been taken into account.
+                  Your vote has been revealed for this court case.
                 </p>
               </div>
             </div>
@@ -311,8 +310,8 @@ const CasePage: NextPage = ({
                 selectedDraws={selectedDraws}
                 isRevealed={
                   stage?.type === "aggregation" ||
-                  stage?.type === "closed" ||
-                  stage?.type === "appeal"
+                    stage?.type === "closed" ||
+                    stage?.type === "appeal"
                     ? true
                     : false
                 }
@@ -348,7 +347,7 @@ const CasePage: NextPage = ({
   );
 };
 
-const CaseSkeleton = () => {};
+const CaseSkeleton = () => { };
 
 const Votes = ({
   market,
@@ -367,7 +366,7 @@ const Votes = ({
             draw.vote.isRevealed &&
             draw.vote.asRevealed.voteItem.isOutcome &&
             draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber() ===
-              index,
+            index,
         )?.length ?? 0;
 
       return { category, count };
@@ -378,9 +377,8 @@ const Votes = ({
 
   return (
     <div
-      className={`grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 ${
-        showLeaderIndicator && isRevealed && "[&>*:first-child]:bg-green-200"
-      }`}
+      className={`grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 ${showLeaderIndicator && isRevealed && "[&>*:first-child]:bg-green-200"
+        }`}
     >
       {votes?.map(({ category, count }, index) => {
         const leader = votes?.[0];
@@ -389,12 +387,11 @@ const Votes = ({
         return (
           <div
             key={category.ticker}
-            className={`relative flex flex-1 flex-col rounded-md border-1 text-xs shadow-sm md:min-w-[200px] ${
-              showLeaderIndicator &&
+            className={`relative flex flex-1 flex-col rounded-md border-1 text-xs shadow-sm md:min-w-[200px] ${showLeaderIndicator &&
               isRevealed &&
               index === 0 &&
               "border-green-300"
-            }`}
+              }`}
           >
             {showLeaderIndicator && isRevealed && index === 0 && (
               <div className=" absolute right-3 top-0 translate-y-[-50%] rounded-xl bg-green-400 px-2 text-xxs text-white">

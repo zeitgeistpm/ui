@@ -45,9 +45,8 @@ export const CourtStageTimer = ({ stage }: { stage?: CourtStage }) => {
           </div>
           <div className="h-1.5 w-full rounded-lg bg-gray-100">
             <div
-              className={`h-full rounded-lg transition-all ${
-                courtStageCopy[stage.type].color
-              }`}
+              className={`h-full rounded-lg transition-all ${courtStageCopy[stage.type].color
+                }`}
               style={{ width: `${percentage}%` }}
             />
           </div>
@@ -68,7 +67,7 @@ export const courtStageCopy: Record<
   },
   vote: {
     title: "Voting",
-    description: "Voting is open for this case.",
+    description: "Jurors must cast their vote by this phase.",
     color: "bg-blue-400",
   },
   aggregation: {
@@ -83,7 +82,8 @@ export const courtStageCopy: Record<
   },
   reassigned: {
     title: "Reassigned",
-    description: "All juror and delegator stakes were reassigned, by losers paying the winners.",
+    description:
+      "All stakes for jurors and delegators were reassigned, with the losers paying the winners.",
     color: "bg-gray-400",
   },
   closed: {

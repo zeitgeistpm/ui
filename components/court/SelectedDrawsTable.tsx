@@ -90,7 +90,7 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
               {draw.vote.isDrawn ? (
                 stage?.type === "pre-vote" ? (
                   <span className="text-yellow-400">
-                    Waiting for voting to start
+                    Waiting for the vote period to start
                   </span>
                 ) : stage?.type === "closed" ||
                   stage?.type === "appeal" ||
@@ -111,10 +111,10 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
               ) : draw.vote.isRevealed ? (
                 <div className="center gap-1">
                   {draw.vote.asRevealed.voteItem.isOutcome &&
-                  draw.vote.asRevealed.voteItem.asOutcome.isCategorical
+                    draw.vote.asRevealed.voteItem.asOutcome.isCategorical
                     ? market.categories?.[
-                        draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber()
-                      ].ticker
+                      draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber()
+                    ].ticker
                     : "Voted"}
                   <InfoPopover>
                     <div className="mb-2">
@@ -174,7 +174,7 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
               <InfoPopover position="top">
                 <div className="mb-3">
                   Secret vote. Will be revealed by the juror when the court
-                  reaches aggregation phase.
+                  reaches the aggregation phase.
                 </div>
                 <h3 className="mb-1 text-sm">Commitment Hash:</h3>
                 <div className="text-xxs">

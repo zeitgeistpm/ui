@@ -229,9 +229,9 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
 
       {connectedParticipant?.type === "Juror" && (
         <div className="relative mb-5 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
-          You are currently a juror. If you delegate to other jurors your stake
-          will be removed from your personal stake and delegated evenly across
-          your selected jurors. You will not be a juror after this action.
+          You are currently a juror. If you delegate to other jurors,
+          the selection probability is evenly distributed across your chosen jurors.
+          You will not be a juror anymore after this action.
           <IoIosWarning
             size={24}
             className="absolute left-[50%] top-0 translate-x-[-50%] translate-y-[-50%] text-orange-700"
