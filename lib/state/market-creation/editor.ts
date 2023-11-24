@@ -321,10 +321,6 @@ export const useMarketDraftEditor = ({
       ? `${minBaseLiquidity[draft.form.currency!] / 2}`
       : "100";
 
-    // const amm2Liquidity = minBaseLiquidity[draft.form.currency!]
-    //   ? `${minBaseLiquidity[draft.form.currency!]}`
-    //   : "100";
-
     const amm2Liquidity = isAMM2
       ? minBaseLiquidity[draft.form.currency!]?.toString() ?? "100"
       : undefined;
