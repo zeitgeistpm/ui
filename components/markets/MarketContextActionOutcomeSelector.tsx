@@ -157,7 +157,7 @@ const MarketContextActionOutcomeSelector = ({
                     type="text"
                     ref={inputRef}
                     placeholder="Search Assets"
-                    className="w-full text-base"
+                    className="w-full text-sm"
                     value={search ?? ""}
                     onChange={(event) => {
                       setSearch(event.target.value);
