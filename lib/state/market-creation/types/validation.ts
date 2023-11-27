@@ -106,13 +106,12 @@ export const createMarketFormValidator = ({
     .superRefine((form, ctx) => {
       const baseLiquidityRow =
         form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
+
       const min = minBaseLiquidity[form.currency];
 
-      const baseLiqudity = new Decimal(
-        form?.liquidity?.amount ?? baseLiquidityRow?.amount ?? 0,
-      )
-        .mul(2)
-        .toNumber();
+      const baseLiqudity = form?.liquidity?.amount
+        ? Number(form?.liquidity?.amount)
+        : new Decimal(baseLiquidityRow?.amount ?? 0).mul(2).toNumber();
 
       if (form.liquidity.deploy && (!baseLiqudity || baseLiqudity < min)) {
         ctx.addIssue({
