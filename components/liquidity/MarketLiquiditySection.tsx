@@ -176,6 +176,9 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
               <SecondaryButton
                 onClick={() => setManageLiquidityOpen(true)}
                 className="max-w-[160px] md:ml-auto md:mr-0"
+                disabled={
+                  neoPool?.liquiditySharesManager.owner !== wallet.realAddress
+                }
               >
                 Manage Liquidity
               </SecondaryButton>

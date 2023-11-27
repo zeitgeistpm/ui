@@ -6,18 +6,11 @@ import {
 } from "@zeitgeistpm/sdk";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
-import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
-import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
+import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
-import { useBalance } from "lib/hooks/queries/useBalance";
-import { usePool } from "lib/hooks/queries/usePool";
-import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
-import { useTotalIssuance } from "lib/hooks/queries/useTotalIssuance";
 import { useWallet } from "lib/state/wallet";
-import { useMemo } from "react";
 import ExitPoolFormAmm2 from "./ExitPoolFormAmm2";
 import JoinPoolFormAmm2 from "./JoinPoolFormAmm2";
-import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 
 export type PoolBalances = {
   [key: string]: {
