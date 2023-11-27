@@ -72,7 +72,7 @@ const CategoricalReportBox = ({
 
   return (
     <>
-      <div className="mb-4">
+      <div className="mb-6">
         {market && selectedOutcome && (
           <MarketContextActionOutcomeSelector
             market={market}
