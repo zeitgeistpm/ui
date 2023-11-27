@@ -16,6 +16,7 @@ import { minBaseLiquidity } from "../constants/currency";
 import { MarketFormData } from "./form";
 import { timelineAsBlocks } from "./timeline";
 import Decimal from "decimal.js";
+import { isNaN, isNumber } from "lodash-es";
 
 export type MarketValidationDependencies = {
   form: Partial<MarketFormData>;
@@ -109,11 +110,25 @@ export const createMarketFormValidator = ({
 
       const min = minBaseLiquidity[form.currency];
 
-      const baseLiqudity = form?.liquidity?.amount
-        ? Number(form?.liquidity?.amount)
-        : new Decimal(baseLiquidityRow?.amount ?? 0).mul(2).toNumber();
+      let baseLiquidity: number | undefined;
 
-      if (form.liquidity.deploy && (!baseLiqudity || baseLiqudity < min)) {
+      if (form?.liquidity?.amount) {
+        baseLiquidity = Number(form?.liquidity?.amount);
+      } else {
+        const baseLiquidityRow =
+          form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
+        baseLiquidity = Number(baseLiquidityRow?.amount) * 2;
+      }
+
+      if (isNaN(baseLiquidity) || !isNumber(baseLiquidity)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["liquidity", "amount"],
+          message: "Liquidity must be a number",
+        });
+      }
+
+      if (form.liquidity.deploy && (!baseLiquidity || baseLiquidity < min)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["liquidity", "base"],
