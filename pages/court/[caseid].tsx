@@ -83,6 +83,9 @@ export async function getStaticProps({
 }
 
 export async function getStaticPaths() {
+  if (process.env.NEXT_PUBLIC_SHOW_COURT !== "true") {
+    return { paths: [], fallback: "blocking" };
+  }
   const sdk = await create({
     provider: endpointOptions.map((e) => e.value),
     indexer: graphQlEndpoint,

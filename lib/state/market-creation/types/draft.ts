@@ -47,43 +47,42 @@ export type MarketDraftState = {
 /**
  * Create a new empty draft state.
  */
-export const empty = () =>
-  ({
-    isWizard: true,
-    currentStep: {
-      label: "Currency",
-      isValid: false,
-      isTouched: false,
-      reached: true,
+export const empty = (): MarketDraftState => ({
+  isWizard: true,
+  currentStep: {
+    label: "Currency",
+    isValid: false,
+    isTouched: false,
+    reached: true,
+  },
+  form: {
+    currency: "ZTG",
+    answers: {
+      type: "categorical",
+      answers: ["", ""],
     },
-    form: {
-      currency: "ZTG",
-      answers: {
-        type: "categorical",
-        answers: ["", ""],
-      },
-      timeZone: moment.tz.guess(),
-      oracle: "",
-      gracePeriod: gracePeriodOptions[0],
-      reportingPeriod: reportingPeriodOptions[1],
-      disputePeriod: reportingPeriodOptions[1],
-      moderation: "Permissionless",
-      creatorFee: {
+    timeZone: moment.tz.guess(),
+    oracle: "",
+    gracePeriod: gracePeriodOptions[0],
+    reportingPeriod: reportingPeriodOptions[1],
+    disputePeriod: reportingPeriodOptions[1],
+    moderation: "Permissionless",
+    creatorFee: {
+      type: "preset",
+      value: 0,
+    },
+    liquidity: {
+      deploy: true,
+      rows: [],
+      swapFee: {
         type: "preset",
-        value: 0,
-      },
-      liquidity: {
-        deploy: true,
-        rows: [],
-        swapFee: {
-          type: "preset",
-          value: 1,
-        },
+        value: 1,
       },
     },
-    touchState: {},
-    stepReachState: {
-      Currency: true,
-    },
-    isPublished: false,
-  }) satisfies MarketDraftState;
+  },
+  touchState: {},
+  stepReachState: {
+    Currency: true,
+  },
+  isPublished: false,
+});
