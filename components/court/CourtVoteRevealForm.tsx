@@ -13,7 +13,7 @@ import { useCourtCommitmentHash } from "lib/state/court/useCourtCommitmentHash";
 import { useCourtSalt } from "lib/state/court/useCourtSalt";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
 import { shortenAddress } from "lib/util";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BsFillFileEarmarkDiffFill } from "react-icons/bs";
 
@@ -75,6 +75,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
     },
   );
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [hasDroppedFile, setHasDroppedFile] = useState(false);
 
   const onChangeSelectedOutcome = (assetId: CategoricalAssetId) => {
@@ -92,15 +93,25 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
 
     if (item.kind === "file") {
       const file = item.getAsFile();
+      processFile(file);
+    }
+  };
 
-      if (file) {
-        const raw = await file?.text();
-        const parsed = IOCourtSaltPhraseStorage.safeParse(JSON.parse(raw));
+  const onFileInputChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    await processFile(file);
+  };
 
-        if (parsed.success) {
-          const wasSet = await setPhraseSeed(parsed.data);
-          setHasDroppedFile(wasSet);
-        }
+  const processFile = async (file: File | null | undefined) => {
+    if (file) {
+      const raw = await file.text();
+      const parsed = IOCourtSaltPhraseStorage.safeParse(JSON.parse(raw));
+
+      if (parsed.success) {
+        const wasSet = await setPhraseSeed(parsed.data);
+        setHasDroppedFile(wasSet);
       }
     }
   };
@@ -136,6 +147,13 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
           </>
         )}
 
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={onFileInputChange}
+        />
+
         {commitmentHashMatches ? (
           <div
             className="relative mb-6 w-full resize-none rounded-md border-black border-opacity-30 bg-transparent text-center font-semibold"
@@ -156,7 +174,8 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
           </div>
         ) : (
           <div
-            className="relative mb-6 w-full resize-none rounded-md bg-transparent  text-center font-semibold"
+            className="relative mb-6 w-full cursor-pointer resize-none rounded-md bg-transparent  text-center font-semibold"
+            onClick={() => fileInputRef.current?.click()}
             onDragOver={onCourtSaltBackupDragOver}
             onDrop={onCourtSaltBackupDrop}
           >
@@ -167,7 +186,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
             >
               <div className="center gap-4">
                 <div className="">
-                  <div>Drop backup of seed file to restore.</div>
+                  <div>Click or drop backup of seed file to restore.</div>
                   <div className="text-xxs">
                     You saved this to your local machine when voting.
                   </div>

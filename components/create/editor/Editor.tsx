@@ -39,7 +39,10 @@ import { Loader } from "components/ui/Loader";
 import { LiquidityInputAmm2 } from "./inputs/LiquidityAMM2";
 import FeeSelect from "./inputs/FeeSelect";
 import { useWallet } from "lib/state/wallet";
-import { marketFormDataToExtrinsicParams } from "lib/state/market-creation/types/form";
+import {
+  isAMM2Form,
+  marketFormDataToExtrinsicParams,
+} from "lib/state/market-creation/types/form";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import { CreateMarketParams, RpcContext } from "@zeitgeistpm/sdk";
 
@@ -108,7 +111,7 @@ export const MarketEditor = () => {
     fieldsState.liquidity.isTouched && form.liquidity?.deploy && isWizard;
 
   const isLoaded = Boolean(chainTime && isFetched);
-  const isAMM2Market = form.answers && form.answers.answers.length === 2;
+  const isAMM2Market = isAMM2Form(form);
 
   const creationParams = useMemo<
     CreateMarketParams<RpcContext> | undefined
