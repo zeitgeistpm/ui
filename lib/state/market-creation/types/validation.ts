@@ -2,14 +2,13 @@ import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup"
 import { encodeAddress } from "@polkadot/util-crypto";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
-import moment from "moment-timezone";
 import { defaultTags } from "lib/constants/markets";
 import {
   MarketDeadlineConstants,
   useMarketDeadlineConstants,
 } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "lib/state/chaintime";
-import { useMemo } from "react";
+import { isNaN, isNumber } from "lodash-es";
 import * as z from "zod";
 import { SupportedCurrencyTag } from "../../../constants/supported-currencies";
 import { minBaseLiquidity } from "../constants/currency";
@@ -103,32 +102,32 @@ export const createMarketFormValidator = ({
       creatorFee: IOCreatorFee,
     })
     .superRefine((form, ctx) => {
-      const baseLiquidityRow =
-        form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
       const min = minBaseLiquidity[form.currency];
 
-      if (form.moderation === "Permissionless" && form?.liquidity?.deploy) {
-        if (baseLiquidityRow) {
-          const amount = parseFloat(baseLiquidityRow.amount) * 2;
+      let baseLiquidity: number | undefined;
 
-          if (!amount || amount < min) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              path: ["liquidity", "base"],
-              message: `Minimum base liquidity is ${min} ${form.currency}`,
-            });
-          }
-        } else {
-          const amount = parseFloat(form.liquidity.amount ?? "0");
+      if (form?.liquidity?.amount) {
+        baseLiquidity = Number(form?.liquidity?.amount);
+      } else {
+        const baseLiquidityRow =
+          form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
+        baseLiquidity = Number(baseLiquidityRow?.amount) * 2;
+      }
 
-          if (!amount || amount < min) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              path: ["liquidity", "base"],
-              message: `Minimum base liquidity is ${min} ${form.currency}`,
-            });
-          }
-        }
+      if (isNaN(baseLiquidity) || !isNumber(baseLiquidity)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["liquidity", "amount"],
+          message: "Liquidity must be a number",
+        });
+      }
+
+      if (form.liquidity.deploy && (!baseLiquidity || baseLiquidity < min)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["liquidity", "base"],
+          message: `Minimum base liquidity is ${min} ${form.currency}`,
+        });
       }
     })
     .superRefine((form, ctx) => {
@@ -157,16 +156,14 @@ export const useMarketCreationFormValidator = (
   const { data: deadlineConstants } = useMarketDeadlineConstants();
   const chainTime = useChainTime();
 
-  return useMemo(() => {
-    if (!deadlineConstants || !chainTime) {
-      return;
-    }
-    return createMarketFormValidator({
-      form,
-      deadlineConstants,
-      chainTime,
-    });
-  }, [form, deadlineConstants, chainTime]);
+  if (!deadlineConstants || !chainTime) {
+    return;
+  }
+  return createMarketFormValidator({
+    form,
+    deadlineConstants,
+    chainTime,
+  });
 };
 
 /**

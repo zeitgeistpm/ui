@@ -77,7 +77,7 @@ export const MarketSummary = ({
           {form.answers?.answers?.length === 0 ? (
             <div className="italic text-gray-500">No answers supplied</div>
           ) : (
-            <Answers
+            <AnswersDisplay
               answers={form.answers!}
               baseAssetPrice={baseAssetPrice!}
               baseCurrency={form.currency!}
@@ -136,11 +136,15 @@ export const MarketSummary = ({
 
                 <div>
                   <Label>Total Base Liquidity</Label>{" "}
-                  {new Decimal(baseAssetLiquidityRow?.value).mul(2).toFixed(1)}{" "}
+                  {amm2Liquidity
+                    ? amm2Liquidity
+                    : new Decimal(baseAssetLiquidityRow?.value)
+                        .mul(2)
+                        .toFixed(1)}{" "}
                   {baseAssetLiquidityRow?.asset}{" "}
                   <span className="text-gray-400">≈</span>{" "}
                   {baseAssetPrice
-                    ?.mul(baseAssetLiquidityRow?.value)
+                    ?.mul(Number(amm2Liquidity) ?? baseAssetLiquidityRow?.value)
                     .mul(2)
                     .toFixed(2)}{" "}
                   USD
@@ -279,7 +283,7 @@ export const MarketSummary = ({
   );
 };
 
-const Answers = ({
+const AnswersDisplay = ({
   answers,
   liquidity,
   baseCurrency,

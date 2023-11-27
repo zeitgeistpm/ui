@@ -308,7 +308,7 @@ const Market: NextPage<MarketPageProps> = ({
           ) : (
             <></>
           )}
-          {marketHasPool === false && (
+          {marketIsLoading === false && marketHasPool === false && (
             <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
               <div className="h-ztg-20 w-ztg-20">
                 <AlertTriangle size={20} />
