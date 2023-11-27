@@ -10,6 +10,7 @@ import {
   MarketFormData,
   PartialMarketFormData,
   ValidMarketFormData,
+  isAMM2Form,
   marketCreationFormKeys,
 } from "./types/form";
 import {
@@ -315,7 +316,7 @@ export const useMarketDraftEditor = ({
   useEffect(() => {
     if (!draft.form.answers || !draft.form.liquidity) return;
 
-    const isAMM2 = draft.form.answers.answers.length === 2;
+    const isAMM2 = isAMM2Form(draft.form);
 
     const baseAmount = minBaseLiquidity[draft.form.currency!]
       ? `${minBaseLiquidity[draft.form.currency!] / 2}`

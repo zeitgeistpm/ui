@@ -2,21 +2,18 @@ import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup"
 import { encodeAddress } from "@polkadot/util-crypto";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
-import moment from "moment-timezone";
 import { defaultTags } from "lib/constants/markets";
 import {
   MarketDeadlineConstants,
   useMarketDeadlineConstants,
 } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "lib/state/chaintime";
-import { useMemo } from "react";
+import { isNaN, isNumber } from "lodash-es";
 import * as z from "zod";
 import { SupportedCurrencyTag } from "../../../constants/supported-currencies";
 import { minBaseLiquidity } from "../constants/currency";
 import { MarketFormData } from "./form";
 import { timelineAsBlocks } from "./timeline";
-import Decimal from "decimal.js";
-import { isNaN, isNumber } from "lodash-es";
 
 export type MarketValidationDependencies = {
   form: Partial<MarketFormData>;
@@ -105,9 +102,6 @@ export const createMarketFormValidator = ({
       creatorFee: IOCreatorFee,
     })
     .superRefine((form, ctx) => {
-      const baseLiquidityRow =
-        form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
-
       const min = minBaseLiquidity[form.currency];
 
       let baseLiquidity: number | undefined;
