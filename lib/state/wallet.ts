@@ -416,7 +416,7 @@ export const useWallet = (): UseWallet => {
 
     if (walletState.wallet instanceof BaseDotsamaWallet) {
       return {
-        address: activeAccount.address,
+        address: activeAccount?.address,
         signer: walletState.wallet.signer,
       };
     }

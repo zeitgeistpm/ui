@@ -133,7 +133,7 @@ export const marketFormDataToExtrinsicParams = (
   }
 
   const hasPool = form.moderation === "Permissionless" && form.liquidity.deploy;
-  const isAMM2Market = form.answers && form.answers.answers.length === 2;
+  const isAMM2Market = isAMM2Form(form);
 
   let poolParams: WithPool | NoPool;
 
@@ -226,6 +226,10 @@ export const marketFormDataToExtrinsicParams = (
   };
 
   return params;
+};
+
+export const isAMM2Form = (form: Partial<MarketFormData>) => {
+  return form.answers?.answers.length === 2;
 };
 
 export const durationasBlocks = (duration: Partial<PeriodDurationOption>) => {

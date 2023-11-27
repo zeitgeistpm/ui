@@ -87,7 +87,13 @@ export const useAlerts = (account?: string): UseAlerts => {
     });
 
     return alerts;
-  }, [readAlerts, account, marketsReadyToReport, redeemableMarkets]);
+  }, [
+    readAlerts,
+    courtBacklog,
+    account,
+    marketsReadyToReport,
+    redeemableMarkets,
+  ]);
 
   const setAsRead = (alert: Alert & { dismissible: true }) => {
     if (!alert.dismissible)
