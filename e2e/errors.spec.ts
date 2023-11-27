@@ -1,11 +1,14 @@
 import { expect } from "@playwright/test";
 import test from "./lib/test";
+import { isWSX } from "lib/constants";
 
 test.describe("pages open without errors", () => {
-  const testRoutes = [
-    { path: "/", testId: "indexPage" },
-    { path: "/markets", testId: "marketCard" },
-  ];
+  const testRoutes = isWSX
+    ? [{ path: "/markets", testId: "marketCard" }]
+    : [
+        { path: "/", testId: "indexPage" },
+        { path: "/markets", testId: "marketCard" },
+      ];
 
   for (const route of testRoutes) {
     test(`rotue "${route.path}"`, async ({ page, consoleErrors }) => {
