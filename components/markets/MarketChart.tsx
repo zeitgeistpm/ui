@@ -136,14 +136,14 @@ export const ScalarMarketChart = ({
       const time = new Date(price.timestamp).getTime();
       const shortPrice = price.prices[1].price;
       const longPrice = price.prices[0].price;
-      const pos =
+      const prediction =
         (Number(upperBound) - Number(lowerBound)) *
           ((1 - shortPrice + longPrice) / 2) +
         lowerBound;
 
       return {
         t: time,
-        prediction: pos,
+        prediction,
       };
     });
 
