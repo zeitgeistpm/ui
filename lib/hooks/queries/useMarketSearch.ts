@@ -4,6 +4,7 @@ import Fuse from "fuse.js";
 import { useDebounce } from "use-debounce";
 import { useSdkv2 } from "../useSdkv2";
 import { MarketOrderByInput } from "@zeitgeistpm/indexer";
+import { isWSX } from "lib/constants";
 
 export const marketSearchKey = "market-search";
 
@@ -22,7 +23,15 @@ export const useMarketSearch = (searchTerm: string) => {
         const search = buildSearch(debouncedSearchTerm);
         const { markets } = await sdk.indexer.markets({
           where: {
-            OR: search,
+            AND: [
+              {
+                baseAsset_eq: isWSX ? '{"foreignAsset":3}' : undefined,
+                baseAsset_not_eq: !isWSX ? '{"foreignAsset":3}' : undefined,
+              },
+              {
+                OR: search,
+              },
+            ],
           },
           order: MarketOrderByInput.IdDesc,
           limit: 100,
