@@ -14,7 +14,7 @@ export const getCurrentPrediction = (
 ): { name: string; price: number; percentage: number } => {
   const totalPrice = assets.reduce((acc, asset) => acc + asset.price, 0);
 
-  if (market.marketType.categorical) {
+  if (market.marketType?.categorical) {
     let [highestPrice, highestPriceIndex] = [0, 0];
     assets.sort(
       (a, b) =>
@@ -41,7 +41,7 @@ export const getCurrentPrediction = (
     };
   } else {
     const bounds: number[] =
-      market.marketType.scalar?.map((b) => Number(b)) ?? [];
+      market.marketType?.scalar?.map((b) => Number(b)) ?? [];
 
     const range = bounds[1] - bounds[0];
     const longPrice = assets[0].price;
