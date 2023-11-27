@@ -31,6 +31,7 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { ISubmittableResult } from "@polkadot/types/types";
+import { assetsAreEqual } from "lib/util/assets-are-equal";
 
 const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
@@ -159,7 +160,7 @@ const BuyForm = ({
         marketId,
         market?.categories?.length,
         selectedAsset,
-        new Decimal(amount).mul(ZTG).toFixed(0),
+        new Decimal(amount).abs().mul(ZTG).toFixed(0),
         minAmountOut.toFixed(0),
       );
     },
@@ -173,26 +174,37 @@ const BuyForm = ({
     },
   );
 
+  const maxSpendableBalance = assetsAreEqual(baseAsset, fee?.assetId)
+    ? baseAssetBalance?.minus(fee?.amount ?? 0)
+    : baseAssetBalance;
+
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       const changedByUser = type != null;
 
-      if (!changedByUser || !baseAssetBalance || !maxAmountIn) return;
+      if (!changedByUser || !maxSpendableBalance || !maxAmountIn) return;
 
       if (name === "percentage") {
-        const max = baseAssetBalance.greaterThan(maxAmountIn)
+        const max = maxSpendableBalance.greaterThan(maxAmountIn)
           ? maxAmountIn
-          : baseAssetBalance;
+          : maxSpendableBalance;
         setValue(
           "amount",
-          max.mul(value.percentage).div(100).div(ZTG).toNumber(),
+          Number(
+            max
+              .mul(value.percentage)
+              .abs()
+              .div(100)
+              .div(ZTG)
+              .toFixed(3, Decimal.ROUND_DOWN),
+          ),
         );
       } else if (name === "amount" && value.amount !== "") {
         setValue(
           "percentage",
           new Decimal(value.amount)
             .mul(ZTG)
-            .div(baseAssetBalance)
+            .div(maxSpendableBalance)
             .mul(100)
             .toString(),
         );
@@ -200,7 +212,7 @@ const BuyForm = ({
       trigger("amount");
     });
     return () => subscription.unsubscribe();
-  }, [watch, baseAssetBalance, maxAmountIn]);
+  }, [watch, maxSpendableBalance, maxAmountIn]);
 
   const onSubmit = () => {
     send();
@@ -212,7 +224,9 @@ const BuyForm = ({
         className="flex w-full flex-col items-center gap-y-4"
       >
         <div className="flex w-full items-center justify-center rounded-md p-2">
-          <div className="mr-4 font-mono">{amountOut.div(ZTG).toFixed(3)}</div>
+          <div className="mr-4 font-mono">
+            {amountOut.div(ZTG).abs().toFixed(3)}
+          </div>
           <div>
             {market && selectedAsset && (
               <MarketContextActionOutcomeSelector
@@ -240,8 +254,8 @@ const BuyForm = ({
                 message: "Value is required",
               },
               validate: (value) => {
-                if (value > (baseAssetBalance?.div(ZTG).toNumber() ?? 0)) {
-                  return `Insufficient balance. Current balance: ${baseAssetBalance
+                if (value > (maxSpendableBalance?.div(ZTG).toNumber() ?? 0)) {
+                  return `Insufficient balance. Current balance: ${maxSpendableBalance
                     ?.div(ZTG)
                     .toFixed(3)}`;
                 } else if (value <= 0) {
@@ -261,7 +275,9 @@ const BuyForm = ({
         <input
           className="mb-[10px] mt-[30px] w-full"
           type="range"
-          disabled={!baseAssetBalance || baseAssetBalance.lessThanOrEqualTo(0)}
+          disabled={
+            !maxSpendableBalance || maxSpendableBalance.lessThanOrEqualTo(0)
+          }
           {...register("percentage", { value: "0" })}
         />
         <div className="mb-[10px] flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600 ">

@@ -81,9 +81,9 @@ const SellForm = ({
   );
   const formAmount = getValues("amount");
 
-  const amountIn = new Decimal(
-    formAmount && formAmount !== "" ? formAmount : 0,
-  ).mul(ZTG);
+  const amountIn = new Decimal(formAmount && formAmount !== "" ? formAmount : 0)
+    .mul(ZTG)
+    .abs();
   const assetReserve =
     pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
 
@@ -174,7 +174,14 @@ const SellForm = ({
           : selectedAssetBalance;
         setValue(
           "amount",
-          max.mul(value.percentage).div(100).div(ZTG).toNumber(),
+          Number(
+            max
+              .mul(value.percentage)
+              .abs()
+              .div(100)
+              .div(ZTG)
+              .toFixed(3, Decimal.ROUND_DOWN),
+          ),
         );
       } else if (name === "amount" && value.amount !== "") {
         setValue(
@@ -241,7 +248,7 @@ const SellForm = ({
         </div>
         <div className="text-sm">For</div>
         <div className="flex w-full items-center justify-center font-mono">
-          <div className="mr-4">{amountOut.div(ZTG).toFixed(5)}</div>
+          <div className="mr-4">{amountOut.div(ZTG).abs().toFixed(3)}</div>
           <div className="mr-[10px]">{constants?.tokenSymbol}</div>
         </div>
         <input
