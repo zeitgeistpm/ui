@@ -292,7 +292,7 @@ const Market: NextPage<MarketPageProps> = ({
 
           {chartSeries && (indexedMarket?.pool || indexedMarket.neoPool) ? (
             <div className="mt-4">
-              {indexedMarket.marketType.scalar ? (
+              {indexedMarket.scalarType === "number" ? (
                 <ScalarMarketChart
                   marketId={indexedMarket.marketId}
                   poolCreationDate={poolCreationDate}
