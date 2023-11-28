@@ -26,7 +26,7 @@ export type TradeItem = {
   cost: Decimal;
 };
 
-export const useLatestTrades = (limit = 3, marketId?: number) => {
+export const useLatestTrades = (limit?: number, marketId?: number) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(

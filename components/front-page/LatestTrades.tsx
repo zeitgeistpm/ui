@@ -45,7 +45,7 @@ const columns: TableColumn[] = [
 ];
 
 const LatestTrades = ({
-  limit,
+  limit = 3,
   marketId,
 }: {
   limit?: number;
@@ -77,7 +77,12 @@ const LatestTrades = ({
   return (
     <div className="">
       <div className="rounded-xl shadow-lg">
-        <Table columns={columns} data={tableData} noDataMessage="No trades" />
+        <Table
+          columns={columns}
+          data={tableData}
+          noDataMessage="No trades"
+          loadingNumber={limit}
+        />
       </div>
     </div>
   );
