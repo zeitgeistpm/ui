@@ -77,7 +77,7 @@ const LatestTrades = ({
   return (
     <div className="">
       <div className="rounded-xl shadow-lg">
-        <Table columns={columns} data={tableData} />
+        <Table columns={columns} data={tableData} noDataMessage="No trades" />
       </div>
     </div>
   );

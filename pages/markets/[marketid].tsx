@@ -368,10 +368,12 @@ const Market: NextPage<MarketPageProps> = ({
           </div>
 
           <AddressDetails title="Oracle" address={indexedMarket.oracle} />
-          <div className="mt-10">
-            <h2 className="mb-5 text-2xl">Latest Trades</h2>
-            <LatestTrades limit={3} marketId={marketId} />
-          </div>
+          {marketHasPool === true && (
+            <div className="mt-10">
+              <h3 className="mb-5 text-2xl">Latest Trades</h3>
+              <LatestTrades limit={3} marketId={marketId} />
+            </div>
+          )}
 
           {market && (marketHasPool || poolDeployed) && (
             <div className="my-12">
