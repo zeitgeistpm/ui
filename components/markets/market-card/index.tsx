@@ -18,6 +18,7 @@ import {
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import Image from "next/image";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import { useQuery } from "@tanstack/react-query";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -221,6 +222,14 @@ export const MarketCard = ({
     ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
     : 0;
 
+  const { data: cmsMetadata } = useQuery(
+    ["cms", "metadata", marketId],
+    async () => {
+      const res = await fetch(`/api/cms/market-metadata/${marketId}`);
+      return res.json();
+    },
+  );
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
@@ -240,12 +249,23 @@ export const MarketCard = ({
             disableLink && "cursor-default"
           }`}
         >
-          <div className="flex h-full w-full gap-4 whitespace-normal">
+          <div className="flex h-[54px] w-full gap-4 whitespace-normal">
+            {cmsMetadata?.imageUrl && (
+              <div className="relative min-h-[54px] min-w-[54px] rounded-xl">
+                <Image
+                  alt={"Market image"}
+                  src={cmsMetadata.imageUrl}
+                  fill
+                  className="overflow-hidden rounded-lg"
+                  style={{
+                    objectFit: "cover",
+                    objectPosition: "50% 50%",
+                  }}
+                  sizes={"54px"}
+                />
+              </div>
+            )}
             <h5 className="line-clamp-2 h-fit w-full text-base">{question}</h5>
-            {/* {disable for now until we can get image from CMS} */}
-            {/* <div className="relative min-w-[84px] min-h-[80px] rounded-xl">
-              <MarketImage tags={tags} alt={question} className="rounded-lg" />
-            </div> */}
           </div>
 
           <div className="w-full">
