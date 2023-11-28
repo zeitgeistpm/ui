@@ -19,6 +19,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { useMemo } from "react";
 import { LuFileWarning } from "react-icons/lu";
+import { CreateMarketParams, RpcContext } from "@zeitgeistpm/sdk";
 
 const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
   ssr: false,
@@ -26,9 +27,13 @@ const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
 
 export type MarketSummaryProps = {
   editor: MarketDraftEditor;
+  creationParams?: CreateMarketParams<RpcContext>;
 };
 
-export const MarketSummary = ({ editor }: MarketSummaryProps) => {
+export const MarketSummary = ({
+  editor,
+  creationParams,
+}: MarketSummaryProps) => {
   const chainTime = useChainTime();
   const { form } = editor;
 
@@ -46,9 +51,10 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
 
   const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
 
-  const baseAssetLiquidityRow = form?.liquidity?.rows.find(
+  const baseAssetLiquidityRow = form?.liquidity?.rows?.find(
     (row) => row.asset === form.currency,
   );
+  const amm2Liquidity = editor.form?.liquidity?.amount;
 
   return (
     <div className="flex-1 text-center">
@@ -58,7 +64,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
           {form?.question ? (
             form?.question
           ) : (
-            <span className="text-orange-300 font-normal">
+            <span className="font-normal text-orange-300">
               No question given.
             </span>
           )}
@@ -67,11 +73,11 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
 
       <div className="mb-10">
         <Label className="mb-2">Answers</Label>
-        <div className="md:flex md:justify-center gap-4 md:px-0">
+        <div className="gap-4 md:flex md:justify-center md:px-0">
           {form.answers?.answers?.length === 0 ? (
             <div className="italic text-gray-500">No answers supplied</div>
           ) : (
-            <Answers
+            <AnswersDisplay
               answers={form.answers!}
               baseAssetPrice={baseAssetPrice!}
               baseCurrency={form.currency!}
@@ -84,9 +90,9 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
 
       <div className="mb-10">
         <div className="">
-          <div className="flex justify-center gap-2 items-center mb-2">
+          <div className="mb-2 flex items-center justify-center gap-2">
             <Label>Currency</Label>{" "}
-            <div className="flex center gap-1">
+            <div className="center flex gap-1">
               {form.currency ? (
                 <>
                   {form.currency}
@@ -109,16 +115,20 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             form?.liquidity?.deploy &&
             form?.moderation === "Permissionless" ? (
               <>
-                <div className="flex justify-center gap-4 mb-4">
-                  <div className="flex justify-center gap-2 items-center">
+                <div className="mb-4 flex justify-center gap-4">
+                  <div className="flex items-center justify-center gap-2">
                     <Label>Amount</Label>{" "}
-                    <div>{baseAssetLiquidityRow?.amount ?? "--"}</div>
+                    <div>
+                      {amm2Liquidity ?? baseAssetLiquidityRow?.amount ?? "--"}
+                    </div>
                   </div>
-                  <div className="flex justify-center gap-2 items-center">
-                    <Label>Weight</Label>{" "}
-                    <div>{baseAssetLiquidityRow?.weight ?? "--"}</div>
-                  </div>
-                  <div className="flex justify-center gap-2 items-center">
+                  {!amm2Liquidity && (
+                    <div className="flex items-center justify-center gap-2">
+                      <Label>Weight</Label>{" "}
+                      <div>{baseAssetLiquidityRow?.weight ?? "--"}</div>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-center gap-2">
                     <Label>Swap Fee</Label>{" "}
                     {form.liquidity?.swapFee?.value ?? "--"}%
                   </div>
@@ -126,11 +136,15 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
 
                 <div>
                   <Label>Total Base Liquidity</Label>{" "}
-                  {new Decimal(baseAssetLiquidityRow?.value).mul(2).toFixed(1)}{" "}
+                  {amm2Liquidity
+                    ? amm2Liquidity
+                    : new Decimal(baseAssetLiquidityRow?.value)
+                        .mul(2)
+                        .toFixed(1)}{" "}
                   {baseAssetLiquidityRow?.asset}{" "}
                   <span className="text-gray-400">≈</span>{" "}
                   {baseAssetPrice
-                    ?.mul(baseAssetLiquidityRow?.value)
+                    ?.mul(Number(amm2Liquidity) ?? baseAssetLiquidityRow?.value)
                     .mul(2)
                     .toFixed(2)}{" "}
                   USD
@@ -139,11 +153,11 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             ) : !form?.liquidity?.deploy &&
               form?.moderation === "Permissionless" ? (
               <div className="mt-4">
-                <div className="mb-2 center text-gray-500">
+                <div className="center mb-2 text-gray-500">
                   <LuFileWarning size={22} />
                 </div>
                 <div className="center">
-                  <p className="text-center md:max-w-lg text-gray-400 mb-3">
+                  <p className="mb-3 text-center text-gray-400 md:max-w-lg">
                     No liquidity pool will be deployed for the market.
                     <b className="inline">
                       You can deploy a pool after you create the market
@@ -151,12 +165,12 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
                     from the market page.
                   </p>
                 </div>
-                <p className="mb-4 italic text-gray-400 text-xs">
+                <p className="mb-4 text-xs italic text-gray-400">
                   Or you can add it now as part of the market creation process
                 </p>
                 <button
                   type="button"
-                  className={`rounded-md py-1 px-3 transition-all active:scale-95 ${`bg-${currencyMetadata?.twColor}`}  text-white`}
+                  className={`rounded-md px-3 py-1 transition-all active:scale-95 ${`bg-${currencyMetadata?.twColor}`}  text-white`}
                   onClick={() => {
                     editor.mergeFormData({
                       liquidity: {
@@ -177,24 +191,30 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
       </div>
 
       <div className="mb-10">
-        <div className="flex justify-center gap-2 items-center">
+        <div className="flex items-center justify-center gap-2">
           <Label>Moderation</Label> <div>{form.moderation}</div>
         </div>
+        {creationParams?.disputeMechanism && (
+          <div className="mt-2 inline-block items-center justify-center gap-2 rounded-md bg-purple-400 p-2 text-white">
+            <Label className="text-white">Dispute Mechanism</Label>{" "}
+            <div>{creationParams.disputeMechanism.toString()}</div>
+          </div>
+        )}
       </div>
 
       <div className="mb-10">
         <Label className="mb-2">Oracle</Label>
-        <h3 className="text-base font-normal hidden md:block">
+        <h3 className="hidden text-base font-normal md:block">
           {form?.oracle ? form?.oracle : "--"}
         </h3>
-        <h3 className="text-base font-normal block md:hidden">
+        <h3 className="block text-base font-normal md:hidden">
           {form?.oracle ? shortenAddress(form?.oracle, 6, 6) : "--"}
         </h3>
       </div>
 
       <div className="mb-10">
-        <div className="flex justify-center items-center gap-6 mb-4">
-          <div className="gap-2 items-center">
+        <div className="mb-4 flex items-center justify-center gap-6">
+          <div className="items-center gap-2">
             <Label className="mb-2">Ends</Label>
             <div>
               {form.endDate
@@ -205,8 +225,8 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             </div>
           </div>
         </div>
-        <div className="md:flex justify-center items-center gap-6">
-          <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">
+        <div className="items-center justify-center gap-6 md:flex">
+          <div className="mb-2 flex items-center justify-center gap-2 md:mb-0">
             <Label>Grace</Label>{" "}
             <div>
               {form.gracePeriod?.type === "duration"
@@ -220,7 +240,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
                   )} ${form.timeZone ?? ""}`}
             </div>
           </div>
-          <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">
+          <div className="mb-2 flex items-center justify-center gap-2 md:mb-0">
             <Label>Reporting</Label>{" "}
             <div>
               {timeline?.report
@@ -230,7 +250,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
                 : "--"}
             </div>
           </div>
-          <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">
+          <div className="mb-2 flex items-center justify-center gap-2 md:mb-0">
             <Label>Dispute</Label>{" "}
             <div>
               {timeline?.dispute
@@ -245,9 +265,9 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
 
       <div className="mb-10">
         <Label>Description</Label>
-        <div className="flex center ">
+        <div className="center flex ">
           {form?.description ? (
-            <div className="w-full md:w-2/3 max-w-2xl bg-gray-50 rounded-md p-4 h-fit">
+            <div className="h-fit w-full max-w-2xl rounded-md bg-gray-50 p-4 md:w-2/3">
               <QuillViewer value={form?.description} />
             </div>
           ) : (
@@ -257,13 +277,13 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
       </div>
       <div>
         <Label className="mb-2">Creator Fee</Label>
-        <div className="flex center ">{form?.creatorFee?.value} %</div>
+        <div className="center flex ">{form?.creatorFee?.value} %</div>
       </div>
     </div>
   );
 };
 
-const Answers = ({
+const AnswersDisplay = ({
   answers,
   liquidity,
   baseCurrency,
@@ -278,18 +298,18 @@ const Answers = ({
 }) => {
   return (
     <div
-      className="md:grid gap-3 max-w-full"
+      className="max-w-full gap-3 md:grid"
       style={{
         gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
       }}
     >
       {answers?.answers.map((answer, answerIndex) => {
-        const answerLiquidity = liquidity?.rows[answerIndex];
+        const answerLiquidity = liquidity?.rows?.[answerIndex];
 
         return (
           <div
             key={answerIndex}
-            className="flex-1 rounded-md bg-gray-50 py-3 px-5 mb-4 md:mb-0"
+            className="mb-4 flex-1 rounded-md bg-gray-50 px-5 py-3 md:mb-0"
           >
             <div className="text-xl font-semibold uppercase">
               {answerLiquidity?.asset}
@@ -301,31 +321,35 @@ const Answers = ({
             {liquidity &&
             liquidity.deploy &&
             moderation === "Permissionless" ? (
-              <div className="!text-sm mt-3">
-                <div className="table-row mb-1">
-                  <div className="table-cell text-left pr-4">
+              <div className="mt-3 !text-sm">
+                <div className="mb-1 table-row">
+                  <div className="table-cell pr-4 text-left">
                     <Label className="text-xs">Amount</Label>{" "}
                   </div>
                   <div className="table-cell text-left">
-                    <div>{answerLiquidity?.amount ?? "--"}</div>
-                  </div>
-                </div>
-
-                <div className="table-row mb-1">
-                  <div className="table-cell text-left pr-4">
-                    <Label className="text-xs">Weight</Label>{" "}
-                  </div>
-                  <div className="table-cell text-left">
                     <div>
-                      {answerLiquidity?.weight
-                        ? new Decimal(answerLiquidity.weight).toFixed(2)
-                        : "--"}
+                      {liquidity?.amount ?? answerLiquidity?.amount ?? "--"}
                     </div>
                   </div>
                 </div>
 
-                <div className="table-row mb-1">
-                  <div className="table-cell text-left pr-4">
+                {!liquidity.amount && (
+                  <div className="mb-1 table-row">
+                    <div className="table-cell pr-4 text-left">
+                      <Label className="text-xs">Weight</Label>{" "}
+                    </div>
+                    <div className="table-cell text-left">
+                      <div>
+                        {answerLiquidity?.weight
+                          ? new Decimal(answerLiquidity.weight).toFixed(2)
+                          : "--"}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="mb-1 table-row">
+                  <div className="table-cell pr-4 text-left">
                     <Label className="text-xs">Value</Label>{" "}
                   </div>
                   <div className="table-cell text-left">
@@ -347,7 +371,7 @@ const Answers = ({
                 </div>
 
                 <div className="table-row ">
-                  <div className="table-cell text-left pr-4">
+                  <div className="table-cell pr-4 text-left">
                     <Label className="text-xs">Price</Label>{" "}
                   </div>
                   <div className="table-cell text-left">

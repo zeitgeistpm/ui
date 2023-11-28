@@ -32,7 +32,7 @@ interface TableProps {
 }
 
 export interface TableColumn {
-  header: string;
+  header: string | ReactNode;
   type: ColumnType;
   accessor: string;
   width?: string;
@@ -112,11 +112,13 @@ const Cell = ({
   type,
   value,
   rowHeight,
+  className,
   onClick,
 }: {
   type: ColumnType;
   rowHeight: number;
   value: string | number | CurrencyData;
+  className?: string;
   onClick?: () => void;
 }) => {
   const {
@@ -125,13 +127,13 @@ const Cell = ({
     isLoadingError: ztgIsLoadingError,
   } = useZtgPrice();
 
-  const base = `dark:text-white px-ztg-15 h-ztg-72 ${
+  const base = `dark:text-white px-4 h-16 ${
     onClick ? "cursor-pointer" : ""
-  }`;
+  } ${className}`;
   const style = { height: `${rowHeight}px` };
   const skeletonElement = (
     <td
-      className={`font-semibold text-ztg-12-150 ${base}`}
+      className={`text-xs font-semibold ${base} `}
       onClick={onClick}
       style={style}
     >
@@ -149,7 +151,7 @@ const Cell = ({
     case "text":
       return (
         <td
-          className={`text-ztg-14-150 ${base}`}
+          className={`text-sm ${base}`}
           data-test="outcomeText"
           onClick={onClick}
           style={style}
@@ -160,7 +162,7 @@ const Cell = ({
     case "number":
       return (
         <td
-          className={`font-semibold text-ztg-12-150 ${base}`}
+          className={`text-xs font-semibold ${base}`}
           onClick={onClick}
           style={style}
         >
@@ -185,7 +187,7 @@ const Cell = ({
       if (Array.isArray(value)) {
         return (
           <td className={`${base}`} onClick={onClick} style={style}>
-            <div className="flex-end items-center h-full">
+            <div className="flex-end h-full items-center">
               <TableChart data={value} />
             </div>
           </td>
@@ -194,7 +196,7 @@ const Cell = ({
     case "paragraph":
       return (
         <td
-          className={` font-semibold text-ztg-12-150 text-left ${base}`}
+          className={`text-left text-xs font-semibold ${base}`}
           onClick={onClick}
           style={style}
         >
@@ -209,10 +211,10 @@ const Cell = ({
       ) {
         return (
           <td className={`${base} `} onClick={onClick} style={style}>
-            <div className="text-ztg-14-150 font-mediun mb-[2px]">
+            <div className="mb-0.5 text-sm">
               {formatNumberLocalized(value.value)}
             </div>
-            <div className="text-ztg-12-150 font-light text-sky-600">
+            <div className="text-xs font-light text-sky-600">
               $
               {(
                 value.usdValue ?? (ztgPrice?.toNumber() ?? 0) * value.value
@@ -228,7 +230,7 @@ const Cell = ({
         <td className={` ${base}`} onClick={onClick} style={style}>
           <div className="flex items-center">
             <Avatar address={typeof value === "string" ? value : ""} />
-            <div className="font-semibold text-ztg-12-150 ml-ztg-10">
+            <div className="ml-2.5 text-xs font-semibold">
               {typeof value === "string" ? value : ""}
             </div>
           </div>
@@ -239,10 +241,7 @@ const Cell = ({
         return (
           <td className={` ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
-              <div
-                className="font-semibold text-ztg-16-150 uppercase"
-                data-test="tokenText"
-              >
+              <div className="font-semibold uppercase" data-test="tokenText">
                 {value.label}
               </div>
             </div>
@@ -255,11 +254,11 @@ const Cell = ({
           <td className={` ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
               <img
-                className="rounded-ztg-5 w-ztg-40 h-ztg-40 mr-ztg-10"
+                className="mr-2.5 h-10 w-10 rounded-md"
                 src={value.url}
                 loading="lazy"
               />
-              <span className="font-semibold text-ztg-10-150 text-sky-600 uppercase">
+              <span className="text-xxs font-semibold uppercase text-sky-600">
                 {value.label}
               </span>
             </div>
@@ -268,11 +267,7 @@ const Cell = ({
       }
     case "percentage":
       return (
-        <td
-          className={`text-ztg-14-150 ${base}`}
-          onClick={onClick}
-          style={style}
-        >
+        <td className={`text-sm ${base}`} onClick={onClick} style={style}>
           <>{value}</>%
         </td>
       );
@@ -322,7 +317,7 @@ const Table = ({
   }, [loadMoreRef, loadMoreInView, loadMoreThresholdIndex, data]);
 
   const getHeaderClass = (column: TableColumn) => {
-    const base = "px-ztg-15 text-[13px] text-left font-medium";
+    const base = "px-4 text-xxs sm:text-xs text-left font-medium";
 
     if (column.alignment) {
       return `${column.alignment} ${base}`;
@@ -384,6 +379,11 @@ const Table = ({
 
   const columnIsCollapsed = (columnAccessor: string) =>
     collapsedAccessors.has(columnAccessor);
+
+  const renderColumns = columns.filter(
+    (col) => columnIsCollapsed(col.accessor) == false,
+  );
+
   return (
     <>
       {data == null ? (
@@ -394,141 +394,146 @@ const Table = ({
         </div>
       ) : (
         <>
-          <div>
-            <table
-              className="border-separate w-full rounded-xl shadow-xl shadow-gray-100 overflow-hidden"
-              ref={tableRef}
-              style={
-                isOverflowing === true
-                  ? {
-                      display: "block",
-                      whiteSpace: "nowrap",
-                      overflowX: "auto",
-                    }
-                  : {}
-              }
-            >
-              <thead>
-                <tr className="bg-light-gray h-[50px]">
-                  {columns
-                    .filter((col) => columnIsCollapsed(col.accessor) == false)
-                    .map((column, index) => (
-                      <th
-                        key={index}
-                        className={`${getHeaderClass(column)} border-b-2 ${
-                          index == 0 ? "rounded-tl-md" : ""
-                        } ${
-                          index == columns.length - 1 ? "rounded-tr-md" : ""
-                        }`}
-                        style={column.width ? { width: column.width } : {}}
-                      >
-                        <div
-                          className={`${
-                            column.onSort
-                              ? "flex justify-center"
-                              : column.infobox
-                              ? "flex items-center gap-1"
-                              : ""
-                          }`}
-                        >
-                          {column.header}
-                          {column.onSort ? (
-                            <ArrowDown
-                              role="button"
-                              onClick={handleSortClick}
-                              size={14}
-                              className="ml-ztg-8 cursor-pointer"
-                            />
-                          ) : (
-                            <></>
-                          )}
-                          {column.infobox && (
-                            <InfoPopover
-                              title={
-                                <h3 className="flex justify-center items-center mb-4 gap-2">
-                                  <AiOutlineInfoCircle />
-                                  {column.header}
-                                </h3>
-                              }
-                              children={column.infobox}
-                            />
-                          )}
-                        </div>
-                      </th>
-                    ))}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row, index) => {
-                  prepareRow(row);
+          <table
+            className="w-full border-separate rounded-lg shadow-xl shadow-gray-100 "
+            ref={tableRef}
+            style={
+              isOverflowing === true
+                ? {
+                    display: "block",
+                    whiteSpace: "nowrap",
+                    overflowX: "auto",
+                  }
+                : {}
+            }
+          >
+            <thead>
+              <tr className="h-12 bg-light-gray">
+                {renderColumns.map((column, index) => (
+                  <th
+                    key={index}
+                    className={`${getHeaderClass(column)} border-b-2 ${
+                      index == 0 ? "rounded-tl-xl" : ""
+                    } ${index == columns.length - 1 ? "rounded-tr-xl" : ""}
+                    ${column.hideMobile ? "hidden sm:table-cell" : ""}
+                    `}
+                    style={column.width ? { width: column.width } : {}}
+                  >
+                    <div
+                      className={`${
+                        column.onSort
+                          ? "flex justify-center"
+                          : column.infobox
+                            ? "flex items-center gap-1"
+                            : ""
+                      }`}
+                    >
+                      {column.header}
+                      {column.onSort ? (
+                        <ArrowDown
+                          role="button"
+                          onClick={handleSortClick}
+                          size={14}
+                          className="ml-2 cursor-pointer"
+                        />
+                      ) : (
+                        <></>
+                      )}
+                      {column.infobox && (
+                        <InfoPopover
+                          position={
+                            index === 0
+                              ? "bottom-end"
+                              : index > renderColumns.length - 3
+                                ? "bottom-start"
+                                : "bottom"
+                          }
+                          title={
+                            <h3 className="mb-4 flex items-center justify-center gap-2">
+                              <AiOutlineInfoCircle />
+                              {column.header}
+                            </h3>
+                          }
+                          children={column.infobox}
+                        />
+                      )}
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, index) => {
+                prepareRow(row);
 
-                  return (
-                    <tr
-                      ref={
-                        index === loadMoreThresholdIndex ? loadMoreRef : null
-                      }
-                      key={row.id}
-                      className={`
+                return (
+                  <tr
+                    ref={index === loadMoreThresholdIndex ? loadMoreRef : null}
+                    key={row.id}
+                    className={`
                       group
                       border-t-1 border-gray-200
                       transition-colors duration-100 ease-in-out
                       ${
                         showHighlight === true
-                          ? " hover:bg-blue-lighter hover:border-blue-300 "
+                          ? " hover:border-blue-300 hover:bg-blue-lighter "
                           : ""
                       }
                     ${rowColorClass}
-                    ${onRowClick ? "cursor-pointer" : ""} mx-ztg-5`}
-                      onClick={() => handleRowClick(row)}
-                    >
-                      {row.cells
-                        .filter(
-                          (cell) => columnIsCollapsed(cell.column.id) == false,
-                        )
-                        .map((cell, index) => {
-                          return (
-                            <Cell
-                              key={`${row.id}-${index}`}
-                              type={cell.column.type}
-                              value={cell.value}
-                              rowHeight={rowHeightPx}
-                              onClick={
-                                cell.column.onClick &&
-                                cell.column.onClick(row.original)
-                              }
-                            />
-                          );
-                        })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                    ${onRowClick ? "cursor-pointer" : ""} mx-1
+                    
+                    `}
+                    onClick={() => handleRowClick(row)}
+                  >
+                    {row.cells
+                      .filter(
+                        (cell) => columnIsCollapsed(cell.column.id) == false,
+                      )
+                      .map((cell, index) => {
+                        const col = renderColumns[index];
+                        return (
+                          <Cell
+                            key={`${row.id}-${index}`}
+                            type={cell.column.type}
+                            value={cell.value}
+                            rowHeight={rowHeightPx}
+                            onClick={
+                              cell.column.onClick &&
+                              cell.column.onClick(row.original)
+                            }
+                            className={`${
+                              col.hideMobile ? "hidden sm:table-cell" : ""
+                            }`}
+                          />
+                        );
+                      })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
 
-            <div className="">
-              {loadingMore &&
-                range(0, loadingNumber).map((index) => (
-                  <Skeleton key={index} height={80} className="mb-ztg-16" />
-                ))}
-            </div>
-
-            {!loadingMore && rows.length === 0 ? (
-              <div className="w-full flex justify-center">
-                <div className="text-ztg-16-120 font-bold mt-ztg-60">
-                  {noDataMessage}
-                </div>
-              </div>
-            ) : (
-              <></>
-            )}
+          <div className="">
+            {loadingMore &&
+              range(0, loadingNumber).map((index) => (
+                <Skeleton key={index} height={80} className="mb-4" />
+              ))}
           </div>
+
+          {!loadingMore && rows.length === 0 ? (
+            <div className="flex w-full justify-center">
+              <div className="mt-14 font-bold">{noDataMessage}</div>
+            </div>
+          ) : (
+            <></>
+          )}
 
           {onPaginate ? <Paginator onPlusClicked={handlePlusClicked} /> : <></>}
 
           {onLoadMore && !hideLoadMore && (
-            <div className="flex justify-center mt-ztg-16 mb-ztg-20">
+            <div className="mb-5 mt-4 flex justify-center">
               <div
-                className="uppercase text-sky-600 font-bold text-ztg-10-150"
+                className="text-xs font-bold uppercase text-sky-600"
                 role="button"
                 onClick={handleLoadMore}
               >

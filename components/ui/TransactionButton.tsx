@@ -52,7 +52,6 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   }, [extrinsic, sdk]);
 
   const { data: fee } = useExtrinsicFee(extrinsicBase);
-  const { data: constants } = useChainConstants();
 
   const insufficientFeeBalance = fee?.sufficientBalance === false;
 
@@ -92,10 +91,10 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
     } else if (isUsingVPN) {
       return "VPN Blocked";
     } else if (insufficientFeeBalance) {
-      return `Insufficient ${constants?.tokenSymbol}`;
+      return `Insufficient ${fee.symbol}`;
     } else if (loading) {
       return (
-        <div className="w-full center bg-inherit rounded-full">
+        <div className="center w-full rounded-full bg-inherit">
           <Loader variant={"Dark"} className="z-20 h-6 w-6" loading />
         </div>
       );
@@ -108,10 +107,10 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   return (
     <button
       type={type}
-      className={`ztg-transition text-white focus:outline-none disabled:bg-slate-300 disabled:cursor-default 
-        rounded-full w-full h-[56px] ${
+      className={`ztg-transition h-[56px] w-full rounded-full text-white 
+        focus:outline-none disabled:cursor-default disabled:bg-slate-300 ${
           !isDisabled && "active:scale-95"
-        } ${className} ${colorClass}`}
+        } ${colorClass} ${className}`}
       onClick={(e) => click(e)}
       disabled={isDisabled}
       data-test={dataTest}

@@ -7,6 +7,7 @@ import { balanceRootKey } from "./queries/useBalance";
 import { currencyBalanceRootKey } from "./queries/useCurrencyBalances";
 import { tradeItemStateRootQueryKey } from "./queries/useTradeItemState";
 import { useSdkv2 } from "./useSdkv2";
+import { amm2PoolKey } from "./queries/amm2/useAmm2Pool";
 
 export const useSubscribeBlockEvents = () => {
   const [sdk, id] = useSdkv2();
@@ -16,6 +17,7 @@ export const useSubscribeBlockEvents = () => {
     if (sdk && isRpcSdk(sdk)) {
       sdk.api.query.system.events((events) => {
         const accounts = new Set<string>();
+        const amm2MarketIds = new Set<string>();
 
         events.forEach((record) => {
           const { event } = record;
@@ -27,6 +29,10 @@ export const useSubscribeBlockEvents = () => {
               types[index].type === "AccountId32"
             ) {
               accounts.add(data.toString());
+            } else if (event.section === "neoSwaps") {
+              if (event.data.names?.includes("marketId")) {
+                amm2MarketIds.add(event.data["marketId"].toString());
+              }
             }
           });
         });
@@ -49,6 +55,10 @@ export const useSubscribeBlockEvents = () => {
             account,
           ]);
           queryClient.invalidateQueries([id, currencyBalanceRootKey, account]);
+        });
+
+        amm2MarketIds.forEach((marketId) => {
+          queryClient.invalidateQueries([id, amm2PoolKey, Number(marketId)]);
         });
       });
     }

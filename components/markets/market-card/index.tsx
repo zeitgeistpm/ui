@@ -1,6 +1,5 @@
 import type { ScalarRangeType } from "@zeitgeistpm/sdk";
 import Skeleton from "components/ui/Skeleton";
-import { motion } from "framer-motion";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { MarketOutcomes } from "lib/types/markets";
@@ -18,8 +17,7 @@ import {
 } from "@zeitgeistpm/sdk";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import Image from "next/image";
-import MarketImage from "components/ui/MarketImage";
-import { useHover } from "lib/hooks/events/useHover";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -28,11 +26,12 @@ export interface IndexedMarketCardData {
   creation: string;
   creator: string;
   outcomes: MarketOutcomes;
-  marketType: { categorical?: string; scalar?: string[] };
-  scalarType: ScalarRangeType;
+  marketType: MarketType;
+  scalarType: ScalarRangeType | null;
   prediction: { name: string; price: number };
   volume: number;
-  pool: { poolId?: number; volume: string } | null;
+  pool?: { poolId?: number; volume: string } | null;
+  neoPool?: FullMarketFragment["neoPool"] | null;
   baseAsset: string;
   tags?: string[];
   status: string;
@@ -40,6 +39,12 @@ export interface IndexedMarketCardData {
   liquidity?: string;
   numParticipants?: number;
 }
+
+export interface MarketType {
+  categorical?: string;
+  scalar?: string[];
+}
+
 export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
   disableLink?: boolean;
@@ -47,18 +52,16 @@ export interface MarketCardProps extends IndexedMarketCardData {
 
 const MarketCardPredictionBar = ({
   prediction: { name, price },
-  pool,
 }: {
   prediction: { name: string; price: number };
-  pool: {};
 }) => {
   // check if market has liquidity
-  if (Object.keys(pool).length !== 0) {
+  if (price != null) {
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
-      <div className={`w-full h-[30px] transition-all bg-gray-200 relative`}>
-        <div className="text-sm flex justify-between items-center absolute w-full h-full px-2.5">
+      <div className={`relative h-[30px] w-full bg-gray-200 transition-all`}>
+        <div className="absolute flex h-full w-full items-center justify-between px-2.5 text-sm">
           <span className="text-blue">{name}</span>
           <span className="text-blue transition-all">{impliedPercentage}%</span>
         </div>
@@ -73,11 +76,11 @@ const MarketCardPredictionBar = ({
   } else {
     return (
       <>
-        <div className="text-sm flex justify-between mb-1">
+        <div className="mb-1 flex justify-between text-sm">
           <span className="text-gray-500">No liquidity in this market</span>
           <span className="text-gray-500">0%</span>
         </div>
-        <div className="w-full rounded-lg h-1.5 bg-gray-100"></div>
+        <div className="h-1.5 w-full rounded-lg bg-gray-100"></div>
       </>
     );
   }
@@ -111,8 +114,8 @@ const MarketCardDetails = ({
   const imagePath = IOForeignAssetId.is(assetId)
     ? lookupAssetImagePath(assetId.ForeignAsset)
     : IOBaseAssetId.is(assetId)
-    ? lookupAssetImagePath(assetId.Ztg)
-    : "";
+      ? lookupAssetImagePath(assetId.Ztg)
+      : "";
 
   return (
     <div className="flex items-center text-xs">
@@ -126,12 +129,12 @@ const MarketCardDetails = ({
               day: "numeric",
             })}`}
         </span>
-        {isEnding() && <span className="text-red ml-1">Ends Soon</span>}
-        <span className="font-semibold border-l-1 border-l-black pl-1 ml-1 ">
+        {isEnding() && <span className="ml-1 text-red">Ends Soon</span>}
+        <span className="ml-1 border-l-1 border-l-black pl-1 font-semibold ">
           {rows.outcomes} outcomes{" "}
         </span>
       </div>
-      <div className="flex gap-1.5 ml-auto items-center justify-center">
+      <div className="ml-auto flex items-center justify-center gap-1.5">
         {rows.numParticipants != undefined && rows.baseAsset ? (
           <div className="flex items-center gap-0.5">
             <Users size={12} />
@@ -177,6 +180,7 @@ export const MarketCard = ({
   marketType,
   prediction,
   pool,
+  neoPool,
   scalarType,
   volume,
   baseAsset,
@@ -221,8 +225,8 @@ export const MarketCard = ({
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col min-w-full md:min-w-[calc(50%-8px)] lg:min-w-[calc(100%/3-9.67px)]  
-        rounded-[10px] p-5 relative bg-white ztg-transition md:hover:scale-[1.035] ${className}`}
+        className={`ztg-transition group relative flex min-w-full flex-col  
+        rounded-[10px] bg-white p-5 md:min-w-[calc(50%-8px)] md:hover:scale-[1.035] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
@@ -232,12 +236,12 @@ export const MarketCard = ({
               return;
             }
           }}
-          className={`flex flex-col flex-1 gap-4 ${
+          className={`flex flex-1 flex-col gap-4 ${
             disableLink && "cursor-default"
           }`}
         >
-          <div className="w-full h-full flex whitespace-normal gap-4">
-            <h5 className="w-full h-fit line-clamp-2 text-base">{question}</h5>
+          <div className="flex h-full w-full gap-4 whitespace-normal">
+            <h5 className="line-clamp-2 h-fit w-full text-base">{question}</h5>
             {/* {disable for now until we can get image from CMS} */}
             {/* <div className="relative min-w-[84px] min-h-[80px] rounded-xl">
               <MarketImage tags={tags} alt={question} className="rounded-lg" />
@@ -254,9 +258,9 @@ export const MarketCard = ({
                     : formatNumberCompact(Number(prediction.name))}
                 </span>
               </span>
-            ) : pool && marketType?.categorical ? (
-              <MarketCardPredictionBar pool={pool} prediction={prediction} />
-            ) : pool && Object.keys(pool).length !== 0 ? (
+            ) : (pool || neoPool) && marketType?.categorical ? (
+              <MarketCardPredictionBar prediction={prediction} />
+            ) : (pool || neoPool) && scalarType ? (
               <ScalarPriceRange
                 scalarType={scalarType}
                 lowerBound={lower}
@@ -267,7 +271,7 @@ export const MarketCard = ({
               />
             ) : (
               <>
-                <div className="text-sm flex justify-between mb-1">
+                <div className="mb-1 flex justify-between text-sm">
                   <span className="text-gray-500">
                     No liquidity in this market
                   </span>
@@ -275,7 +279,7 @@ export const MarketCard = ({
                     {lower} - {upper}
                   </span>
                 </div>
-                <div className="w-full rounded-lg h-1.5 bg-gray-200"></div>
+                <div className="h-1.5 w-full rounded-lg bg-gray-200"></div>
               </>
             )}
           </div>

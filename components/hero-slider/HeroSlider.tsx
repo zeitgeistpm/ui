@@ -20,7 +20,7 @@ const HeroSlider = ({
 
   return (
     <section
-      className={`relative w-full h-[527px] mx-auto`}
+      className={`relative mx-auto h-[527px] w-full`}
       data-testid="HeroSlider__container"
     >
       {banners.map((banner, index) => (
@@ -42,10 +42,10 @@ const HeroSlider = ({
           }}
         />
       ))}
-      <div className="h-full relative container-fluid">
+      <div className="container-fluid relative h-full">
         {banners.map((banner, index) => (
           <Transition
-            className="absolute h-full w-full container-fluid left-0"
+            className="container-fluid absolute left-0 h-full w-full"
             show={index == slider.currentSlide}
             enter="transition-all duration-1000"
             enterFrom="opacity-0 blur-md"

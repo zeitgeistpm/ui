@@ -2,6 +2,7 @@ import { useAtom } from "jotai";
 import { useMemo } from "react";
 import { useReadyToReportMarkets } from "../../hooks/queries/useReadyToReportMarkets";
 import { useRedeemableMarkets } from "../../hooks/queries/useRedeemableMarkets";
+import { useCourtBacklog } from "../court/useCourtBacklog";
 import { persistentAtom } from "../util/persistent-atom";
 import { Alert, AlertId, withId } from "./types";
 
@@ -33,6 +34,7 @@ const readAlertsAtom = persistentAtom<{ read: AlertId[] }>({
 export const useAlerts = (account?: string): UseAlerts => {
   const { data: marketsReadyToReport } = useReadyToReportMarkets(account);
   const { data: redeemableMarkets } = useRedeemableMarkets(account);
+  const courtBacklog = useCourtBacklog(account);
 
   const [readAlerts, setRead] = useAtom(readAlertsAtom);
 
@@ -50,9 +52,9 @@ export const useAlerts = (account?: string): UseAlerts => {
     if (redeemableMarkets && redeemableMarkets.length > 0) {
       add(
         withId({
+          type: "redeemable-markets",
           account,
           markets: redeemableMarkets,
-          type: "redeemable-markets",
         }),
       );
     }
@@ -61,16 +63,37 @@ export const useAlerts = (account?: string): UseAlerts => {
       marketsReadyToReport.forEach((market) => {
         add(
           withId({
+            type: "ready-to-report-market",
             account,
             market,
-            type: "ready-to-report-market",
           }),
         );
       });
     }
 
+    courtBacklog.forEach((backlogItem) => {
+      if (
+        backlogItem.type === "court-case-ready-for-vote" ||
+        backlogItem.type === "court-case-ready-for-reveal"
+      ) {
+        add(
+          withId({
+            type: backlogItem.type,
+            account,
+            caseId: backlogItem.caseId,
+          }),
+        );
+      }
+    });
+
     return alerts;
-  }, [readAlerts, account, marketsReadyToReport, redeemableMarkets]);
+  }, [
+    readAlerts,
+    courtBacklog,
+    account,
+    marketsReadyToReport,
+    redeemableMarkets,
+  ]);
 
   const setAsRead = (alert: Alert & { dismissible: true }) => {
     if (!alert.dismissible)

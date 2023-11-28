@@ -19,10 +19,10 @@ const NotFoundPage = ({
     <>
       <Image src={src} height={1080} width={1920} alt="404 Page" />
       {backText && backLink ? (
-        <div className="flex justify-center items-center mb-ztg-40">
+        <div className="mb-ztg-40 flex items-center justify-center">
           <button
             onClick={handleClick}
-            className=" font-bold text-sky-600 border border-sky-600 rounded-ztg-10 px-ztg-50 py-ztg-7"
+            className=" rounded-ztg-10 border border-sky-600 px-ztg-50 py-ztg-7 font-bold text-sky-600"
           >
             {backText}
           </button>

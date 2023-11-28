@@ -130,7 +130,7 @@ const RedeemPoolButton = ({
     <SecondaryButton
       onClick={handleRedeemPoolClick}
       disabled={isLoading || isSuccess || userPercentageOwnership.eq(0)}
-      className="max-w-[160px] ml-auto"
+      className="ml-auto max-w-[160px]"
     >
       Redeem Pool
     </SecondaryButton>
@@ -154,7 +154,7 @@ const PoolShareButtons = ({
         <>
           <SecondaryButton
             onClick={() => setManageLiquidityOpen(true)}
-            className="max-w-[160px] ml-auto"
+            className="ml-auto max-w-[160px]"
           >
             Manage Liquidity
           </SecondaryButton>

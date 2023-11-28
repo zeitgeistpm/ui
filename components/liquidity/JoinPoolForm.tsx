@@ -158,7 +158,7 @@ const JoinPoolForm = ({
       className="flex flex-col gap-y-4 md:gap-y-6"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-auto py-5">
+      <div className="flex max-h-[250px] flex-col gap-y-6 overflow-y-auto py-5 md:max-h-[400px]">
         {pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
           const assetName =
@@ -169,13 +169,13 @@ const JoinPoolForm = ({
           return (
             <div
               key={index}
-              className="w-full h-[56px] relative font-medium text-ztg-18-150 "
+              className="relative h-[56px] w-full text-ztg-18-150 font-medium "
             >
-              <div className="absolute h-full left-[15px] top-[14px] truncate w-[40%] capitalize">
+              <div className="absolute left-[15px] top-[14px] h-full w-[40%] truncate capitalize">
                 {assetName}
               </div>
               <Input
-                className={`bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full outline-none
+                className={`h-[56px] w-full rounded-[5px] bg-anti-flash-white px-[15px] text-right outline-none
                             ${
                               formState.errors[id.toString()]?.message
                                 ? "border-2 border-vermilion text-vermilion"
@@ -202,7 +202,7 @@ const JoinPoolForm = ({
                   },
                 })}
               />
-              <div className="text-vermilion text-ztg-12-120 mt-[4px]">
+              <div className="mt-[4px] text-ztg-12-120 text-vermilion">
                 <>{formState.errors[id.toString()]?.message}</>
               </div>
             </div>
@@ -215,12 +215,12 @@ const JoinPoolForm = ({
         {...register("baseAssetPercentage", { min: 0, value: "0" })}
       />
       {market?.status !== "Active" && (
-        <div className="bg-provincial-pink p-4 rounded-md text-sm">
+        <div className="rounded-md bg-provincial-pink p-4 text-sm">
           Market is closed. Cannot provide liquidity for closed market
         </div>
       )}
-      <div className="flex mb-2 text-sm center gap-2">
-        <label className="block font-bold flex-1">
+      <div className="center mb-2 flex gap-2 text-sm">
+        <label className="block flex-1 font-bold">
           Expected Pool Ownership
         </label>
         {prctSharesToReceive.toFixed(1)} %

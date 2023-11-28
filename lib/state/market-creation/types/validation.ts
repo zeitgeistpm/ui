@@ -2,14 +2,13 @@ import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup"
 import { encodeAddress } from "@polkadot/util-crypto";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
-import moment from "moment-timezone";
 import { defaultTags } from "lib/constants/markets";
 import {
   MarketDeadlineConstants,
   useMarketDeadlineConstants,
 } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "lib/state/chaintime";
-import { useMemo } from "react";
+import { isNaN, isNumber } from "lodash-es";
 import * as z from "zod";
 import { SupportedCurrencyTag } from "../../../constants/supported-currencies";
 import { minBaseLiquidity } from "../constants/currency";
@@ -103,26 +102,39 @@ export const createMarketFormValidator = ({
       creatorFee: IOCreatorFee,
     })
     .superRefine((form, ctx) => {
-      const baseLiquidityRow =
-        form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
+      const min = minBaseLiquidity[form.currency];
 
-      if (form.moderation === "Permissionless" && form?.liquidity?.deploy) {
-        const min = minBaseLiquidity[form.currency];
-        const amount = parseFloat(baseLiquidityRow.amount) * 2;
+      let baseLiquidity: number | undefined;
 
-        if (!amount || amount < min) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ["liquidity", "base"],
-            message: `Minimum base liquidity is ${min} ${form.currency}`,
-          });
-        }
+      if (form?.liquidity?.amount) {
+        baseLiquidity = Number(form?.liquidity?.amount);
+      } else {
+        const baseLiquidityRow =
+          form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
+        baseLiquidity = Number(baseLiquidityRow?.amount) * 2;
+      }
+
+      if (isNaN(baseLiquidity) || !isNumber(baseLiquidity)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["liquidity", "amount"],
+          message: "Liquidity must be a number",
+        });
+      }
+
+      if (form.liquidity.deploy && (!baseLiquidity || baseLiquidity < min)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["liquidity", "base"],
+          message: `Minimum base liquidity is ${min} ${form.currency}`,
+        });
       }
     })
     .superRefine((form, ctx) => {
       if (
         form.moderation === "Permissionless" &&
         form.liquidity?.deploy &&
+        form.liquidity?.rows &&
         form.liquidity?.rows?.length < 3
       ) {
         ctx.addIssue({
@@ -144,16 +156,14 @@ export const useMarketCreationFormValidator = (
   const { data: deadlineConstants } = useMarketDeadlineConstants();
   const chainTime = useChainTime();
 
-  return useMemo(() => {
-    if (!deadlineConstants || !chainTime) {
-      return;
-    }
-    return createMarketFormValidator({
-      form,
-      deadlineConstants,
-      chainTime,
-    });
-  }, [form, deadlineConstants, chainTime]);
+  if (!deadlineConstants || !chainTime) {
+    return;
+  }
+  return createMarketFormValidator({
+    form,
+    deadlineConstants,
+    chainTime,
+  });
 };
 
 /**
@@ -176,7 +186,7 @@ export const IOTimeZone = z.string().nonempty();
 
 export const IOTags = z
   .array(z.enum(defaultTags))
-  .min(1, { message: "Must select atleast one category" });
+  .min(1, { message: "Must select at least one category" });
 
 export const IOYesNoAnswers = z
   .object({
@@ -192,9 +202,9 @@ export const IOCategoricalAnswers = z
       .array(
         z
           .string()
-          .min(1, { message: "Answers must be atleast one character long." }),
+          .min(1, { message: "Answers must be at least one character long." }),
       )
-      .min(2, { message: "Must have atleast two answers" })
+      .min(2, { message: "Must have at least two answers" })
       .refine((answers) => new Set(answers).size === answers.length, {
         message: "Answers must be unique.",
       }),
@@ -299,7 +309,8 @@ export const IOSwapFee = z
 
 export const IOLiquidity = z.object({
   deploy: z.boolean(),
-  rows: z.array(IOLiquidityRow),
+  amount: z.optional(z.string()),
+  rows: z.optional(z.array(IOLiquidityRow)),
   swapFee: z.union([
     z.object({
       type: z.literal("preset"),

@@ -10,6 +10,7 @@ import {
   MarketFormData,
   PartialMarketFormData,
   ValidMarketFormData,
+  isAMM2Form,
   marketCreationFormKeys,
 } from "./types/form";
 import {
@@ -181,7 +182,7 @@ export const useMarketDraftEditor = ({
     );
 
     return fieldsState;
-  }, [validator]);
+  }, [draft.form, validator]);
 
   const isTouched = Object.values(fieldsState).some((field) => field.isTouched);
   const isValid = Object.values(fieldsState).every((field) => field.isValid);
@@ -315,9 +316,15 @@ export const useMarketDraftEditor = ({
   useEffect(() => {
     if (!draft.form.answers || !draft.form.liquidity) return;
 
+    const isAMM2 = isAMM2Form(draft.form);
+
     const baseAmount = minBaseLiquidity[draft.form.currency!]
       ? `${minBaseLiquidity[draft.form.currency!] / 2}`
       : "100";
+
+    const amm2Liquidity = isAMM2
+      ? minBaseLiquidity[draft.form.currency!]?.toString() ?? "100"
+      : undefined;
 
     const baseWeight = 64;
     const numOutcomes = draft.form.answers.answers.length;
@@ -330,12 +337,12 @@ export const useMarketDraftEditor = ({
 
     const rows = [
       ...draft.form.answers.answers.map((answer, index) => {
-        const liquidity = draft.form.liquidity?.rows[index];
+        const liquidity = draft.form.liquidity?.rows?.[index];
 
         const amount = new Decimal(
           reset
             ? baseAmount
-            : draft.form.liquidity?.rows[index]?.amount || baseAmount,
+            : draft.form.liquidity?.rows?.[index]?.amount || baseAmount,
         );
 
         const price = reset
@@ -375,6 +382,7 @@ export const useMarketDraftEditor = ({
         ...draft.form,
         liquidity: {
           ...draft.form.liquidity,
+          amount: amm2Liquidity,
           rows,
         },
       },

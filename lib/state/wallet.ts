@@ -2,6 +2,7 @@ import { encodeAddress } from "@polkadot/util-crypto";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { atom, getDefaultStore, useAtom } from "jotai";
+import { u8aToHex, stringToHex } from "@polkadot/util";
 import { isString } from "lodash-es";
 import { useMemo } from "react";
 import { persistentAtom } from "./util/persistent-atom";
@@ -11,10 +12,17 @@ import {
   SubWallet,
   TalismanWallet,
 } from "@talismn/connect-wallets";
+import { Keyring } from "@polkadot/api";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { isPresent } from "lib/types";
+import { KeyringPair } from "@polkadot/keyring/types";
 import { PollingTimeout, poll } from "lib/util/poll";
+import { IProvider } from "@web3auth/base";
+
+//Web3Auth
+import { web3authAtom } from "./util/web3auth-config";
+import { web3AuthWalletInstance } from "./util/web3auth-config";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -33,6 +41,10 @@ export type UseWallet = WalletState & {
    * Whether the wallet is nova wallet.
    */
   isNovaWallet: boolean;
+  /**
+   * Name of the wallet being used
+   */
+  walletId?: string;
   /**
    * Get the active signer for transactions. Is either the real account or the proxy account.
    */
@@ -62,6 +74,12 @@ export type UseWallet = WalletState & {
    * Get the proxy config for an address(real).
    */
   getProxyFor: (address?: string) => ProxyConfig | undefined;
+  /**
+   * Sets up web3 auth wallet
+   */
+  loadWeb3AuthWallet: () => void;
+
+  signRaw: (data: string) => Promise<string | undefined>;
 };
 
 export type ProxyConfig = {
@@ -89,7 +107,7 @@ export type WalletState = {
   /**
    * Instance of the current wallet.
    */
-  wallet?: BaseDotsamaWallet;
+  wallet?: BaseDotsamaWallet | KeyringPairOrExtSigner;
   /**
    * The accounts of the current wallet.
    */
@@ -135,7 +153,7 @@ const store = getDefaultStore();
 /**
  * Atom proxy storage of wallet state.
  */
-const walletAtom = atom<WalletState>({
+export const walletAtom = atom<WalletState>({
   connected: false,
   wallet: undefined,
   accounts: [],
@@ -204,6 +222,7 @@ export const supportedWallets = [
   new PolkadotjsWallet(),
   new SubWallet(),
   new TalismanWallet(),
+  web3AuthWalletInstance,
 ];
 
 let accountsSubscriptionUnsub: VoidFunction | undefined | null;
@@ -215,6 +234,7 @@ let accountsSubscriptionUnsub: VoidFunction | undefined | null;
  * @param walletId the id or wallet itself to enable
  * @returns Promise<boolean> - whether the wallet was enabled
  */
+
 const enableWallet = async (walletId: string) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
 
@@ -223,7 +243,6 @@ const enableWallet = async (walletId: string) => {
   if (!isPresent(wallet)) {
     return;
   }
-
   const enablePoll = async (): Promise<void> => {
     try {
       const extension = await poll(
@@ -237,7 +256,6 @@ const enableWallet = async (walletId: string) => {
           timeout: 10_000,
         },
       );
-
       if (extension === PollingTimeout) {
         throw new Error("Wallet enabling timed out");
       }
@@ -306,11 +324,36 @@ const enableWallet = async (walletId: string) => {
   }
 };
 
+const enabledWeb3Wallet = (keyPair: KeyringPair) => {
+  store.set(walletAtom, (state) => {
+    return {
+      ...state,
+      wallet: { ...keyPair },
+      connected: true,
+      accounts:
+        [keyPair?.address].map((account) => {
+          return {
+            address: encodeAddress(account, 73),
+          };
+        }) ?? [],
+      errors:
+        [keyPair?.address].length === 0
+          ? [
+              {
+                extensionName: "web3auth",
+                type: "NoAccounts",
+              },
+            ]
+          : [],
+    };
+  });
+};
+
 /**
  * Enable wallet on first load if wallet id is set.
  */
 const initialWalletId = store.get(userConfigAtom).walletId;
-if (initialWalletId) {
+if (initialWalletId && initialWalletId !== "web3auth") {
   enableWallet(initialWalletId);
 }
 
@@ -321,33 +364,64 @@ if (initialWalletId) {
 export const useWallet = (): UseWallet => {
   const [userConfig, setUserConfig] = useAtom(userConfigAtom);
   const [walletState, setWalletState] = useAtom(walletAtom);
+  const [web3auth] = useAtom(web3authAtom);
+
+  const loadWeb3AuthWallet = async () => {
+    if (!web3auth) {
+      return;
+    }
+
+    web3auth.status === "not_ready" && (await web3auth.initModal());
+    await web3auth.connect();
+
+    if (web3auth.provider) {
+      const getKeypair = async (provider: IProvider) => {
+        await cryptoWaitReady();
+        const privateKey = await provider.request({
+          method: "private_key",
+        });
+        const keyring = new Keyring({ ss58Format: 73, type: "sr25519" });
+        const keyPair = keyring.addFromUri("0x" + privateKey);
+        return keyPair;
+      };
+      const keyPair = await getKeypair(web3auth.provider);
+      keyPair && enabledWeb3Wallet(keyPair);
+    }
+  };
 
   const selectWallet = (wallet: BaseDotsamaWallet | string) => {
     setUserConfig({
       ...userConfig,
       walletId: isString(wallet) ? wallet : wallet.extensionName,
     });
-    enableWallet(isString(wallet) ? wallet : wallet.extensionName);
+    wallet === "web3auth"
+      ? loadWeb3AuthWallet()
+      : enableWallet(isString(wallet) ? wallet : wallet.extensionName);
   };
 
-  const disconnectWallet = () => {
+  const disconnectWallet = async () => {
     const [newWalletState, newUserConfigState] =
       disconnectWalletStateTransition(walletState, userConfig);
     setWalletState(newWalletState);
     setUserConfig(newUserConfigState);
+    if (web3auth?.status === "connected") {
+      await web3auth.logout();
+    }
   };
 
   const getSigner = (): KeyringPairOrExtSigner | undefined => {
-    if (
-      walletState.wallet == null ||
-      !activeAccount ||
-      !walletState.wallet.signer
-    )
+    if (!walletState.wallet) {
       return;
-    return {
-      address: activeAccount.address,
-      signer: walletState.wallet.signer,
-    };
+    }
+
+    if (walletState.wallet instanceof BaseDotsamaWallet) {
+      return {
+        address: activeAccount?.address,
+        signer: walletState.wallet.signer,
+      };
+    }
+
+    return walletState.wallet;
   };
 
   const selectAccount = (account: InjectedAccount | string) => {
@@ -400,17 +474,39 @@ export const useWallet = (): UseWallet => {
   const isNovaWallet: boolean =
     typeof window === "object" && (window as any).walletExtension?.isNovaWallet;
 
+  const walletId = userConfig.walletId;
+
+  const signRaw = async (data: string) => {
+    if (walletState.wallet instanceof BaseDotsamaWallet) {
+      return walletState.wallet.signer
+        ?.signRaw?.({
+          address: activeAccount?.address,
+          data: stringToHex(data),
+          type: "bytes",
+        })
+        .then((data) => data.signature);
+    }
+
+    if (walletState.wallet && "sign" in walletState.wallet) {
+      const u8 = walletState.wallet.sign(data, {});
+      return u8aToHex(u8);
+    }
+  };
+
   return {
     ...walletState,
     ...userConfig,
     realAddress,
     selectAccount,
     activeAccount: activeAccount,
+    loadWeb3AuthWallet,
     getSigner,
     selectWallet,
     disconnectWallet,
     isNovaWallet,
+    walletId,
     setProxyFor,
     getProxyFor,
+    signRaw,
   };
 };

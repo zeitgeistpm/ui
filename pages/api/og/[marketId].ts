@@ -60,7 +60,7 @@ export default async function (
       },
     });
 
-    prediction = getCurrentPrediction(assets as any, market as any);
+    prediction = getCurrentPrediction(assets as any, market);
   }
 
   const volume = new Decimal(market.pool?.volume ?? 0).div(ZTG).toFixed(2);

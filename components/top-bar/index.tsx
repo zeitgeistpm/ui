@@ -17,6 +17,7 @@ import {
   FiList,
 } from "react-icons/fi";
 import { useCategoryCounts } from "lib/hooks/queries/useCategoryCounts";
+import MarketSearch from "components/markets/MarketSearch";
 import { Alerts } from "./Alerts";
 import Modal from "components/ui/Modal";
 import { DesktopOnboardingModal } from "components/account/OnboardingModal";
@@ -34,11 +35,11 @@ const AccountButton = dynamic(
     ssr: false,
     loading: () => (
       <div
-        className="flex center rounded-full h-[44px] w-[76px] md:w-[186px] border-2 pl-1.5 py-1 md:py-0 bg-black transition-all text-white border-white"
+        className="center flex h-[44px] w-[76px] rounded-full border-2 border-white bg-black py-1 pl-1.5 text-white transition-all md:w-[186px] md:py-0"
         // height={"44px"}
         // width={"186px"}
       >
-        <div className="text-xs animate-pulse">...</div>
+        <div className="animate-pulse text-xs">...</div>
       </div>
     ),
   },
@@ -47,22 +48,22 @@ const AccountButton = dynamic(
 const TopBar = () => {
   return (
     <div
-      className={`w-full py-3.5 fixed top-0 z-40 transition-all duration-300 bg-black h-topbar-height`}
+      className={`fixed top-0 z-40 h-topbar-height w-full bg-black py-3.5 transition-all duration-300`}
     >
-      <div className="h-full relative flex items-center container-fluid">
-        <div className="h-full hidden md:flex items-center justify-center border-r-1 border-blue-600 pr-3 md:pr-7">
+      <div className="relative flex h-full items-center px-4">
+        <div className="hidden h-full items-center justify-center pr-3 md:flex md:pr-7">
           <Link href="/">
             <MenuLogo />
           </Link>
         </div>
-        <div className="md:pl-7 flex flex-1 gap-7">
+        <div className="flex items-center gap-7 border-x-0 border-ztg-blue py-2 md:border-x-1 md:px-7">
           <Menu as="div" className="relative inline-block text-left">
             {({ open, close }) => {
               return (
                 <>
                   <div className="flex gap-2">
-                    <Menu.Button className="text-white font-light relative flex center gap-2">
-                      <div className="relative h-6 w-6 hidden md:block">
+                    <Menu.Button className="center relative flex gap-2 font-light text-white">
+                      <div className="relative hidden h-6 w-6 md:block">
                         <FiGrid size={"100%"} />
                       </div>
                       <div className="hidden md:block">Markets</div>
@@ -70,7 +71,7 @@ const TopBar = () => {
                         <MenuIcon />
                       </div>
                     </Menu.Button>
-                    <Link href="/" className="md:hidden pl-2">
+                    <Link href="/" className="pl-2 md:hidden">
                       <MenuLogo />
                     </Link>
                   </div>
@@ -83,7 +84,7 @@ const TopBar = () => {
                     leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
                     leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                   >
-                    <Menu.Items className="fixed md:absolute left-0 mt-4 md:mt-8 w-full h-full ring-1 ring-gray-200 md:h-auto md:w-64 py-3 px-5 origin-top-right md:rounded-md bg-white focus:outline-none">
+                    <Menu.Items className="fixed left-0 mt-4 h-full w-full origin-top-right bg-white px-5 py-3 ring-1 ring-gray-200 focus:outline-none md:absolute md:mt-8 md:h-auto md:w-64 md:rounded-md">
                       <Menu.Item>
                         {({ active, close }) => (
                           <Link
@@ -91,7 +92,7 @@ const TopBar = () => {
                             onClick={close}
                           >
                             <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3 mb-4`}
+                              className={`group mb-4 flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
                             >
                               <div className="relative h-6 w-6">
                                 <FiGrid size={"100%"} />
@@ -112,7 +113,7 @@ const TopBar = () => {
                             onClick={close}
                           >
                             <button
-                              className={`group flex w-full items-center  px-2 py-2 text-sm gap-3 mb-4 border-b-1 border-gray-300 pb-5`}
+                              className={`group mb-4 flex w-full  items-center gap-3 border-b-1 border-gray-300 px-2 py-2 pb-5 text-sm`}
                             >
                               <div className="relative h-6 w-6">
                                 <FiStar size={"100%"} />
@@ -131,7 +132,7 @@ const TopBar = () => {
                           {({ active }) => (
                             <Link href="/leaderboard/all" onClick={close}>
                               <button
-                                className={`group flex w-full items-center  px-2 py-2 text-sm gap-3 mb-4`}
+                                className={`group mb-4 flex w-full  items-center gap-3 px-2 py-2 text-sm`}
                               >
                                 <div className="relative h-6 w-6">
                                   <FiAward size={"100%"} />
@@ -151,9 +152,9 @@ const TopBar = () => {
                         {({ active }) => (
                           <Link href="/create" onClick={close}>
                             <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3`}
+                              className={`group flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
                             >
-                              <div className="relative h-6 w-6 z-10">
+                              <div className="relative z-10 h-6 w-6">
                                 <FiPlusSquare size={"100%"} />
                               </div>
                               <h3 className="text-sm font-semibold">
@@ -169,9 +170,9 @@ const TopBar = () => {
                           {({ active }) => (
                             <Link href="/court" onClick={close}>
                               <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3 mt-4`}
+                                className={`group mt-4 flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
                               >
-                                <div className="relative h-6 w-6 z-10">
+                                <div className="relative z-10 h-6 w-6">
                                   <Users size={"100%"} />
                                 </div>
                                 <h3 className="text-sm font-semibold">Court</h3>
@@ -188,7 +189,7 @@ const TopBar = () => {
           </Menu>
 
           <Link
-            className="text-white font-light relative hidden md:flex md:center gap-2"
+            className="md:center relative hidden gap-2 font-light text-white md:flex"
             href="/leaderboard/all"
           >
             <div className="relative h-6 w-6">
@@ -197,7 +198,8 @@ const TopBar = () => {
             <div>Leaderboard</div>
           </Link>
         </div>
-        <div className="relative center gap-3">
+        <MarketSearch />
+        <div className="center relative ml-auto gap-3">
           <GetTokensButton />
           <AccountButton />
           <Alerts />
@@ -223,18 +225,18 @@ const GetTokensButton = () => {
         leaveTo="opacity-0 scale-90"
       >
         <Link
-          className="relative h-11 rounded-md p-0.5 overflow-hidden group"
+          className="group relative hidden h-11 overflow-hidden rounded-md p-0.5 sm:block"
           href="/deposit"
         >
           <div
-            className="h-full w-full absolute top-0 left-0 z-10 group-hover:animate-spin group-hover:h-[150%] group-hover:w-[150%] group-hover:-top-6 group-hover:-left-6"
+            className="absolute left-0 top-0 z-10 h-full w-full group-hover:-left-6 group-hover:-top-6 group-hover:h-[150%] group-hover:w-[150%] group-hover:animate-spin"
             style={{
               background:
                 "linear-gradient(180deg, #FF00E6 0%, #F36464 50%, #04C3FF 100%)",
             }}
           />
-          <div className="relative h-full block z-20">
-            <button className="h-full w-full rounded-md px-3 md:px-5 bg-black text-white center">
+          <div className="relative z-20 block h-full sm:w-[125px] ">
+            <button className="center h-full w-full rounded-md bg-black text-white">
               Get Tokens
             </button>
           </div>
@@ -247,15 +249,15 @@ const GetTokensButton = () => {
 const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
   const { data: counts } = useCategoryCounts();
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 grid-flow-row-dense md:h-full">
+    <div className="grid grid-flow-row-dense grid-cols-2 md:h-full md:grid-cols-3">
       {CATEGORIES.map((category, index) => (
         <Link
           key={index}
           onClick={onSelect}
           href={`/markets?status=Active&tag=${category.name}&ordering=Newest&liquidityOnly=true`}
-          className="flex gap-3 items-center pb-6 md:pb-0"
+          className="flex items-center gap-3 pb-6 md:pb-0"
         >
-          <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-gray-300">
+          <div className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-gray-300">
             <Image
               src={category.imagePath}
               fill
@@ -265,7 +267,7 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
           </div>
           <div className="flex flex-col">
             <div className="font-light">{category.name}</div>
-            <div className="font-light text-xs h-[16px]">
+            <div className="h-[16px] text-xs font-light">
               {counts ? counts[index] : ""}
             </div>
           </div>
@@ -282,7 +284,7 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
       <Menu.Item>
         {({ active }) => (
           <button
-            className={`group flex w-full items-center px-2 py-2 text-sm gap-3 mb-4 border-b-1 border-gray-300 pb-5 z-20`}
+            className={`group z-20 mb-4 flex w-full items-center gap-3 border-b-1 border-gray-300 px-2 py-2 pb-5 text-sm`}
             onClick={(event) => {
               event.stopPropagation();
               event.preventDefault();
@@ -292,7 +294,7 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
             <div className="relative h-6 w-6">
               <FiList size={"100%"} />
             </div>
-            <h3 className="text-sm font-semibold flex-1 text-left">
+            <h3 className="flex-1 text-left text-sm font-semibold">
               Categories
             </h3>
             <FiArrowRight size={22} />
@@ -310,9 +312,9 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
         leaveFrom="transform opacity-100 translate-x-0 md:scale-100"
         leaveTo="transform opacity-0 translate-x-6 md:scale-95"
       >
-        <div className="fixed md:absolute ring-1 ring-gray-200 z-50 w-full md:w-[600px] h-full top-0 left-0 md:left-auto md:-right-4 md:ml-4 py-3 px-5 md:translate-x-[100%] md:rounded-md bg-white">
+        <div className="fixed left-0 top-0 z-50 h-full w-full bg-white px-5 py-3 ring-1 ring-gray-200 md:absolute md:-right-4 md:left-auto md:ml-4 md:w-[600px] md:translate-x-[100%] md:rounded-md">
           <div
-            className="md:hidden border-b-1 border-gray-300 mb-6 py-4 flex items-center gap-3 pl-2 cursor-pointer"
+            className="mb-6 flex cursor-pointer items-center gap-3 border-b-1 border-gray-300 py-4 pl-2 md:hidden"
             onClick={() => setCategoriesOpen(false)}
           >
             <FiArrowLeft size={26} />

@@ -70,10 +70,10 @@ const TradeHistoryTable = () => {
 
   return (
     <div className="mb-12">
-      <h2 className="sm:col-span-2 text-center sm:text-start mb-7">
+      <h2 className="mb-7 text-center sm:col-span-2 sm:text-start">
         Latest Trades
       </h2>
-      <div className="shadow-lg rounded-xl">
+      <div className="rounded-xl shadow-lg">
         <Table columns={columns} data={tableData} />
       </div>
     </div>

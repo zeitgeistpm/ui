@@ -81,7 +81,7 @@ export const OracleInput = forwardRef(
         <Input
           value={value}
           spellCheck={false}
-          className={`h-12 w-full text-center rounded-md mb-2 px-4 py-8 transition-all duration-300
+          className={`mb-2 h-12 w-full rounded-md px-4 py-8 text-center transition-all duration-300
                   ${
                     !fieldState.isTouched || !fieldState.isValid
                       ? "bg-gray-100"
@@ -93,19 +93,19 @@ export const OracleInput = forwardRef(
         />
         {wallet?.activeAccount?.address ? (
           <div className="center">
-            <div className="relative flex justify-center items-center">
+            <div className="relative flex items-center justify-center">
               <button
                 type="button"
                 onClick={handleUseConnectedAccount}
                 className={`
             
-            border-gray-300 text-sm relative flex justify-center items-center bg-gray-100 rounded-full transition-all ease-in-out duration-200 
-            border-2 border-transparent
+            relative flex items-center justify-center rounded-full border-2 border-gray-300 border-transparent bg-gray-100 text-sm transition-all 
+            duration-200 ease-in-out
             ${!isSelectedAccount && " border-orange-300"}
           `}
               >
                 <div
-                  className={`relative flex-1 h-full py-2 px-3 transition-all duration-300 ease-[cubic-bezier(.57,.42,.25,1.57)] ${
+                  className={`relative h-full flex-1 px-3 py-2 transition-all duration-300 ease-[cubic-bezier(.57,.42,.25,1.57)] ${
                     isSelectedAccount ? "w-[120px]" : "w-[200px]"
                   }`}
                 >
@@ -121,7 +121,7 @@ export const OracleInput = forwardRef(
                 </div>
 
                 <div
-                  className={`center gap-2 bg-gray-200 py-2 px-3 rounded-full ${
+                  className={`center gap-2 rounded-full bg-gray-200 px-3 py-2 ${
                     isSelectedAccount ? "bg-nyanza-base" : "bg-gray-200"
                   }`}
                 >
@@ -130,7 +130,7 @@ export const OracleInput = forwardRef(
                       <div className="pointer-events-none">
                         <Avatar address={wallet.realAddress} size={18} />
                       </div>
-                      <span className="font-semibold center gap-4">
+                      <span className="center gap-4 font-semibold">
                         {accountname ? (
                           <>
                             {accountname}{" "}
@@ -151,13 +151,13 @@ export const OracleInput = forwardRef(
             <button
               type="button"
               onClick={() => accountModals.openWalletSelect()}
-              className="flex border-gray-300 text-sm bg-gray-100 rounded-full transition-all active:scale-95"
+              className="flex rounded-full border-gray-300 bg-gray-100 text-sm transition-all active:scale-95"
             >
-              <div className="py-2 px-4 text-gray-600">
+              <div className="px-4 py-2 text-gray-600">
                 Connect to use wallet account
               </div>
               <div
-                className={`bg-orange-400 text-white py-2 px-4 rounded-full`}
+                className={`rounded-full bg-orange-400 px-4 py-2 text-white`}
               >
                 Connect
               </div>

@@ -5,7 +5,7 @@ import FormTransactionButton from "components/ui/FormTransactionButton";
 import { identityRootKey } from "lib/hooks/queries/useIdentity";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { queryClient } from "lib/query-client";
+import { appQueryClient } from "lib/query-client";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { UserIdentity } from "lib/types/user-identity";
@@ -69,7 +69,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([id, identityRootKey, address]);
+        appQueryClient.invalidateQueries([id, identityRootKey, address]);
         notificationStore.pushNotification("Successfully set Identity", {
           type: "Success",
         });
@@ -86,7 +86,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([id, identityRootKey, address]);
+        appQueryClient.invalidateQueries([id, identityRootKey, address]);
         notificationStore.pushNotification("Successfully cleared Identity", {
           type: "Success",
         });
@@ -107,7 +107,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         updateIdentity();
       }}
     >
-      <label htmlFor="displayName" className="font-bold mb-2">
+      <label htmlFor="displayName" className="mb-2 font-bold">
         Display Name
       </label>
       <input
@@ -115,12 +115,12 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         id="displayName"
         {...register("displayName", { required: true })}
         className={
-          "rounded-md items-center h-14 px-3 outline-none border-1 border-transparent bg-anti-flash-white " +
+          "h-14 items-center rounded-md border-1 border-transparent bg-anti-flash-white px-3 outline-none " +
           (errors?.displayName ? "border-vermilion" : "")
         }
       />
 
-      <label htmlFor="discord" className="font-bold mt-5 mb-2">
+      <label htmlFor="discord" className="mb-2 mt-5 font-bold">
         Discord
       </label>
 
@@ -129,12 +129,12 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         id="discord"
         {...register("discord")}
         className={
-          "rounded-md items-center h-14 px-3 outline-none border-1 border-transparent bg-anti-flash-white " +
+          "h-14 items-center rounded-md border-1 border-transparent bg-anti-flash-white px-3 outline-none " +
           (errors?.discord ? "border-vermilion" : "")
         }
       />
 
-      <label htmlFor="twitter" className="font-bold mt-5 mb-2">
+      <label htmlFor="twitter" className="mb-2 mt-5 font-bold">
         Twitter
       </label>
 
@@ -143,12 +143,12 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         id="twitter"
         {...register("twitter")}
         className={
-          "rounded-md items-center h-14 px-3 outline-none border-1 border-transparent bg-anti-flash-white mb-5 " +
+          "mb-5 h-14 items-center rounded-md border-1 border-transparent bg-anti-flash-white px-3 outline-none " +
           (errors?.twitter ? "border-vermilion" : "")
         }
       />
 
-      <div className="rounded-lg p-5 mb-5 bg-provincial-pink text-sm">
+      <div className="mb-5 rounded-lg bg-provincial-pink p-5 text-sm">
         Setting an identity requires a deposit of up to {indetityCost}{" "}
         {constants?.tokenSymbol}. This deposit can be retrieved by clearing your
         identity.

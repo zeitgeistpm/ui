@@ -85,12 +85,12 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
 
   return (
     <form className="flex flex-col" onSubmit={(e) => e.preventDefault()}>
-      <div className="flex items-center mb-2 gap-3">
+      <div className="mb-2 flex items-center gap-3">
         <label className="font-bold ">Proxy Account</label>
 
         <InfoPopover
           title={
-            <h3 className="flex justify-center items-center mb-4 gap-2">
+            <h3 className="mb-4 flex items-center justify-center gap-2">
               <AiOutlineInfoCircle />
               Proxy Accounts
             </h3>
@@ -113,13 +113,13 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
           leaveFrom="transform scale-100 opacity-100"
           leaveTo="transform scale-95 opacity-0"
         >
-          <div className="flex gap-2 items-center ml-auto">
+          <div className="ml-auto flex items-center gap-2">
             <Check size={16} className="text-green-500" />
             <div className="text-sm">Saved</div>
           </div>
         </Transition>
       </div>
-      <div className="flex flex-row p-2 mb-2">
+      <div className="mb-2 flex flex-row p-2">
         <input
           type="checkbox"
           {...register("enableProxy")}

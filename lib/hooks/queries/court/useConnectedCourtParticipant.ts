@@ -1,8 +1,8 @@
 import { useWallet } from "lib/state/wallet";
-import { useParticipants } from "./useParticipants";
+import { useCourtParticipants } from "./useCourtParticipants";
 
 export const useConnectedCourtParticipant = () => {
-  const { data: participants } = useParticipants();
+  const { data: participants } = useCourtParticipants();
   const wallet = useWallet();
 
   const participant = participants?.find(

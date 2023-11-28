@@ -47,7 +47,7 @@ export type MarketDraftState = {
 /**
  * Create a new empty draft state.
  */
-export const empty = () => ({
+export const empty = (): MarketDraftState => ({
   isWizard: true,
   currentStep: {
     label: "Currency",
@@ -67,7 +67,7 @@ export const empty = () => ({
     reportingPeriod: reportingPeriodOptions[1],
     disputePeriod: reportingPeriodOptions[1],
     moderation: "Permissionless",
-    creatorFee:{
+    creatorFee: {
       type: "preset",
       value: 0,
     },
@@ -85,4 +85,4 @@ export const empty = () => ({
     Currency: true,
   },
   isPublished: false,
-} satisfies MarketDraftState);
+});

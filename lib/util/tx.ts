@@ -1,6 +1,7 @@
-import { SubmittableExtrinsic } from "@polkadot/api/types";
+import { AddressOrPair, SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
 import { KeyringPairOrExtSigner, isExtSigner } from "@zeitgeistpm/rpc";
+import { useWallet } from "lib/state/wallet";
 
 import type { ApiPromise } from "@polkadot/api";
 
@@ -118,7 +119,6 @@ export const signAndSend = async (
     _unsub: any,
   ) => {
     const { events, status } = result;
-
     if (status.isInBlock) {
       events.forEach(({ phase, event: { data, method, section } }) => {
         console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);

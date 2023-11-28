@@ -27,7 +27,8 @@ export const useExtrinsic = <T>(
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const confirm = useConfirmation();
 
-  const confirmEnabled = wallet.wallet?.extensionName === "web3auth";
+  //Show transaction confirmation modal for web3auth
+  const confirmEnabled = wallet?.walletId === "web3auth";
 
   const notifications = useNotifications();
 
@@ -50,6 +51,7 @@ export const useExtrinsic = <T>(
     }
 
     const signer = wallet.getSigner();
+
     if (!signer) return;
 
     let extrinsic = extrinsicFn(params);
@@ -116,6 +118,7 @@ export const useExtrinsic = <T>(
 
   return {
     send,
+    isReady: !!extrinsic,
     isError,
     isSuccess,
     isLoading,

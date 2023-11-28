@@ -1,13 +1,13 @@
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-
-import { AssetId, IOZtgAssetId, ZTG } from "@zeitgeistpm/sdk";
+import { AssetId, IOForeignAssetId, IOZtgAssetId, ZTG } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
-import { useWallet } from "lib/state/wallet";
-import { useAssetMetadata } from "./useAssetMetadata";
-import { useBalance } from "./useBalance";
-import { useChainConstants } from "./useChainConstants";
-import { useZtgBalance } from "./useZtgBalance";
 import useFeePayingAssetSelection from "lib/state/fee-paying-asset";
+import { useWallet } from "lib/state/wallet";
+import { AssetMetadata, useAllAssetMetadata } from "./useAssetMetadata";
+import { ChainConstants, useChainConstants } from "./useChainConstants";
+import { CurrencyBalance } from "./useCurrencyBalances";
+import { useForeignAssetBalances } from "./useForeignAssetBalances";
+import { useZtgBalance } from "./useZtgBalance";
 
 type FeeAsset = {
   assetId: AssetId;
@@ -26,27 +26,27 @@ export const useFeePayingAsset = (
 ): UseQueryResult<FeeAsset | null> => {
   const { activeAccount: activeAccount } = useWallet();
   const { data: nativeBalance } = useZtgBalance(activeAccount?.address);
+  const { data: foreignAssetBalances } = useForeignAssetBalances(
+    activeAccount?.address,
+  );
   const { data: constants } = useChainConstants();
-
-  const { data: dotMetadata } = useAssetMetadata({ ForeignAsset: 0 });
-  const { data: dotBalance } = useBalance(activeAccount?.address, {
-    ForeignAsset: 0,
-  });
+  const { data: assetMetadata } = useAllAssetMetadata();
   const { assetSelection } = useFeePayingAssetSelection();
 
   const enabled =
     !!nativeBalance &&
-    !!dotMetadata &&
+    !!foreignAssetBalances &&
     !!activeAccount &&
-    !!dotBalance &&
-    !!baseFee;
+    !!assetMetadata &&
+    !!baseFee &&
+    !!constants;
 
   const query = useQuery(
     [
       feePayingAssetKey,
       activeAccount?.address,
       nativeBalance,
-      dotBalance,
+      foreignAssetBalances,
       baseFee,
       assetSelection,
     ],
@@ -63,26 +63,12 @@ export const useFeePayingAsset = (
             };
           }
 
-          const dotFeeFactor = dotMetadata.feeFactor.div(ZTG);
-          const dotFee = baseFee.mul(dotFeeFactor).mul(foreignAssetFeeBuffer);
-
-          if (dotBalance.greaterThan(dotFee)) {
-            return {
-              assetId: {
-                ForeignAsset: 0,
-              },
-              symbol: dotMetadata.symbol,
-              amount: dotFee,
-              sufficientBalance: true,
-            };
-          } else {
-            return {
-              assetId: { Ztg: null },
-              symbol: constants?.tokenSymbol ?? "",
-              amount: baseFee,
-              sufficientBalance: false,
-            };
-          }
+          return findBestFeePayingAsset(
+            foreignAssetBalances,
+            assetMetadata,
+            baseFee,
+            constants,
+          );
         } else {
           const isNative = IOZtgAssetId.is(assetSelection.value);
           if (isNative) {
@@ -92,17 +78,29 @@ export const useFeePayingAsset = (
               amount: baseFee,
               sufficientBalance: true,
             };
-          } else {
-            const dotFeeFactor = dotMetadata.feeFactor.div(ZTG);
-            const dotFee = baseFee.mul(dotFeeFactor).mul(foreignAssetFeeBuffer);
-            return {
-              assetId: {
-                ForeignAsset: 0,
-              },
-              symbol: dotMetadata.symbol,
-              amount: dotFee,
-              sufficientBalance: dotBalance.greaterThan(dotFee),
-            };
+          } else if (IOForeignAssetId.is(assetSelection.value)) {
+            const balance = foreignAssetBalances.find(
+              (asset) =>
+                IOForeignAssetId.is(assetSelection.value) &&
+                assetSelection.value.ForeignAsset === asset.foreignAssetId,
+            );
+            const metadata = assetMetadata?.find(
+              (data) =>
+                IOForeignAssetId.is(assetSelection.value) &&
+                assetSelection.value.ForeignAsset === data[0],
+            )?.[1];
+            const feeFactor = metadata?.feeFactor.div(ZTG);
+            const fee =
+              feeFactor && baseFee.mul(feeFactor).mul(foreignAssetFeeBuffer);
+
+            if (metadata && fee && balance) {
+              return {
+                assetId: assetSelection.value,
+                symbol: metadata?.symbol,
+                amount: fee,
+                sufficientBalance: fee && balance?.balance.greaterThan(fee),
+              };
+            }
           }
         }
       }
@@ -114,4 +112,51 @@ export const useFeePayingAsset = (
   );
 
   return query;
+};
+
+const findBestFeePayingAsset = (
+  foreignAssetBalances: CurrencyBalance[],
+  assetMetadata: [number | "Ztg", AssetMetadata][],
+  baseFee: Decimal,
+  constants: ChainConstants,
+) => {
+  // find first available asset to pay fee, else just return native asset
+  const availableAsset = foreignAssetBalances.find((asset) => {
+    const feeFactor =
+      availableAsset && findFeeFactor(assetMetadata, availableAsset);
+    if (feeFactor) {
+      return asset.balance.greaterThan(
+        baseFee.mul(feeFactor).mul(foreignAssetFeeBuffer),
+      );
+    }
+  });
+
+  if (availableAsset && availableAsset.foreignAssetId != null) {
+    const feeFactor =
+      availableAsset && findFeeFactor(assetMetadata, availableAsset);
+    return {
+      assetId: {
+        ForeignAsset: availableAsset.foreignAssetId,
+      },
+      symbol: availableAsset.symbol,
+      amount: baseFee.mul(feeFactor ?? 1).mul(foreignAssetFeeBuffer),
+      sufficientBalance: true,
+    };
+  } else {
+    return {
+      assetId: { Ztg: null },
+      symbol: constants?.tokenSymbol ?? "",
+      amount: baseFee,
+      sufficientBalance: false,
+    };
+  }
+};
+
+const findFeeFactor = (
+  assetMetadata: [number | "Ztg", AssetMetadata][],
+  asset: CurrencyBalance,
+) => {
+  return assetMetadata
+    .find((data) => asset.foreignAssetId === data[0])?.[1]
+    .feeFactor.div(ZTG);
 };

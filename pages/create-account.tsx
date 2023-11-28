@@ -20,7 +20,7 @@ const walletsConfig = [
 const CreateAccountPage: NextPage = () => {
   return (
     <>
-      <div className="[&>*:not(:last-child)]:mb-6 p-2">
+      <div className="p-2 [&>*:not(:last-child)]:mb-6">
         <h2>Create an account</h2>
         <p className="mt-3">
           Congrats! You're a few steps away from making predictions on the App.
@@ -60,7 +60,7 @@ const CreateAccountPage: NextPage = () => {
           wallet using SubWallet's application:
         </p>
       </div>
-      <div className="grid grid-cols-3 gap-x-8 mt-9">
+      <div className="mt-9 grid grid-cols-3 gap-x-8">
         {walletsConfig.map((wallet, idx) => {
           return (
             <motion.div
@@ -72,12 +72,12 @@ const CreateAccountPage: NextPage = () => {
               className={`w-full rounded-lg`}
             >
               <Link
-                className="center bg-white rounded-lg"
+                className="center rounded-lg bg-white"
                 href={wallet.installUrl}
                 target="_blank"
                 key={idx}
               >
-                <div className="flex items-center h-36">
+                <div className="flex h-36 items-center">
                   <Image
                     src={wallet.logo.src}
                     alt={wallet.logo.alt}
@@ -85,14 +85,14 @@ const CreateAccountPage: NextPage = () => {
                     height={30}
                     quality={100}
                   />
-                  <div className="font-medium ml-4 text-lg">{wallet.title}</div>
+                  <div className="ml-4 text-lg font-medium">{wallet.title}</div>
                 </div>
               </Link>
             </motion.div>
           );
         })}
       </div>
-      <div className="flex text-blue my-9 p-2">
+      <div className="my-9 flex p-2 text-blue">
         {/* TODO: Update href attribute */}
         <Link href="#" className="flex">
           <div className="mr-3">
@@ -102,7 +102,7 @@ const CreateAccountPage: NextPage = () => {
         </Link>
       </div>
       <h2 className="mb-9 p-2">Next Steps</h2>
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col gap-4 md:flex-row">
         <DepositActionableCard />
         <StartTradingActionableCard />
       </div>

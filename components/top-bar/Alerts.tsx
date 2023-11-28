@@ -1,6 +1,10 @@
-import { Menu, Transition, Portal } from "@headlessui/react";
-import Modal from "components/ui/Modal";
+import { Menu, Transition } from "@headlessui/react";
+import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
+import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import {
+  CourtCaseReadyForReveal,
+  CourtCaseReadyForVote,
   ReadyToReportMarketAlertData,
   RedeemableMarketsAlertData,
   RelevantMarketDisputeAlertData,
@@ -9,9 +13,11 @@ import {
 import { useWallet } from "lib/state/wallet";
 import { useRouter } from "next/router";
 import { Fragment, PropsWithChildren, useEffect, useState } from "react";
-import { AiOutlineFileAdd } from "react-icons/ai";
+import { Users } from "react-feather";
+import { AiOutlineEye, AiOutlineFileAdd } from "react-icons/ai";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";
+import { LuVote } from "react-icons/lu";
 
 export const Alerts = () => {
   const wallet = useWallet();
@@ -36,12 +42,12 @@ export const Alerts = () => {
             <div className="flex gap-2">
               <Menu.Button
                 disabled={alerts.length === 0}
-                className="text-white font-light relative flex center gap-2"
+                className="center relative flex gap-2 font-light text-white"
               >
                 <div
                   className={`transition-all ${
                     hasNotifications
-                      ? "text-gray-200 cursor-pointer"
+                      ? "cursor-pointer text-gray-200"
                       : "text-gray-500"
                   }`}
                 >
@@ -50,7 +56,7 @@ export const Alerts = () => {
                     size={24}
                   />
                   {hasNotifications && (
-                    <div className="absolute animate-pulse-scale top-0 right-0 w-3 h-3 rounded-full bg-vermilion"></div>
+                    <div className="absolute right-0 top-0 h-3 w-3 animate-pulse-scale rounded-full bg-vermilion"></div>
                   )}
                 </div>
               </Menu.Button>
@@ -67,7 +73,7 @@ export const Alerts = () => {
               leaveTo="transform opacity-0 "
             >
               <div
-                className="fixed z-40 left-0 top-0 h-screen w-screen bg-black/10 backdrop-blur-sm"
+                className="fixed left-0 top-0 z-40 h-screen w-screen bg-black/10 backdrop-blur-sm"
                 aria-hidden="true"
               />
             </Transition>
@@ -89,22 +95,30 @@ export const Alerts = () => {
                   e.preventDefault();
                 }}
                 className={`
-                  fixed md:absolute right-0 md:left-auto p-2 md:px-4 md:max-h-[664px] 
-                  overflow-y-scroll md:right-0 bottom-0 md:bottom-auto z-50 py-3 top-11 
-                  md:top-auto mt-6 md:mt-6 w-full overflow-hidden h-full md:h-auto md:w-96 pb-20 md:pb-0 
-                  origin-top-right divide-gray-100 md:rounded-md focus:outline-none  
-                  bg-black/20 md:bg-transparent subtle-scroll-bar subtle-scroll-bar-on-hover 
+                  subtle-scroll-bar subtle-scroll-bar-on-hover fixed bottom-0 right-0 top-11 z-50 
+                  mt-6 h-full w-full origin-top-right divide-gray-100 overflow-hidden overflow-y-scroll 
+                  bg-black/20 p-2 py-3 pb-20 focus:outline-none md:absolute md:bottom-auto md:left-auto md:right-0 md:top-auto 
+                  md:mt-6 md:h-auto md:max-h-[664px] md:w-96  
+                  md:rounded-md md:bg-transparent md:px-4 md:pb-0 
                 `}
               >
                 {alerts.map((alert) => (
                   <Menu.Item key={alert.id}>
-                    <div className={`${!hoveringMenu && "backdrop-blur-lg"}`}>
+                    <div
+                      className={`${
+                        !hoveringMenu && "backdrop-blur-lg"
+                      } rounded-lg`}
+                    >
                       {alert.type === "ready-to-report-market" ? (
                         <ReadyToReportMarketAlertItem alert={alert} />
                       ) : alert.type === "market-dispute" ? (
                         <RelevantMarketDisputeItem alert={alert} />
                       ) : alert.type === "redeemable-markets" ? (
                         <RedeemableMarketAlertItem alert={alert} />
+                      ) : alert.type === "court-case-ready-for-vote" ? (
+                        <CourtCaseReadyForVoteAlertItem alert={alert} />
+                      ) : alert.type === "court-case-ready-for-reveal" ? (
+                        <CourtCaseReadyForRevealAlertItem alert={alert} />
                       ) : (
                         // Including this prevents us from not exhausting the switch on alert type.
                         // Should never be reached but caught by the type system.
@@ -126,9 +140,9 @@ const AlertCard: React.FC<PropsWithChildren & { onClick?: () => void }> = ({
   children,
   onClick,
 }) => (
-  <div className="mb-2 md:hover:scale-105 hover:ring-1 ring-[#fa8cce] rounded-md transition-all cursor-pointer">
+  <div className="mb-2 cursor-pointer rounded-md ring-[#fa8cce] transition-all hover:ring-1 md:hover:scale-105">
     <div
-      className={`transition-all bg-white/80 md:bg-white/60 hover:md:bg-white/80  border-1 border-solid border-black/10 py-3 px-4 rounded-md`}
+      className={`rounded-md border-1 border-solid border-black/10  bg-white/80 px-4 py-3 transition-all md:bg-white/60 hover:md:bg-white/80`}
       onClick={onClick}
       style={{
         transform: "translate3d(0,0,0)",
@@ -139,6 +153,88 @@ const AlertCard: React.FC<PropsWithChildren & { onClick?: () => void }> = ({
     </div>
   </div>
 );
+
+const CourtCaseReadyForVoteAlertItem = ({
+  alert,
+}: {
+  alert: CourtCaseReadyForVote;
+}) => {
+  const router = useRouter();
+  const { data: marketId } = useCaseMarketId(alert.caseId);
+  const { data: market } = useMarket({ marketId: marketId! });
+
+  useEffect(() => {
+    router.prefetch(`/court/${alert.caseId}`);
+  }, [alert]);
+
+  return (
+    <AlertCard
+      onClick={() => {
+        router.push(`/court/${alert.caseId}`);
+      }}
+    >
+      <div className="mb-1">
+        <div
+          className="inline-flex items-center gap-1 rounded-full px-1.5 py-1 text-xxs"
+          style={{
+            background:
+              "linear-gradient(131.15deg, rgb(135 238 240 / 40%) 11.02%, rgb(157 0 254 / 40%) 93.27%)",
+          }}
+        >
+          <LuVote size={12} className="text-gray-700" />
+          Ready for vote
+        </div>
+      </div>
+      <div className="pl-1">
+        <h3 className="mb-1 text-sm font-medium">{market?.question}</h3>
+        <p className="text-xxs text-gray-500">
+          You have been drawn as juror for this market and can now vote.
+        </p>
+      </div>
+    </AlertCard>
+  );
+};
+
+const CourtCaseReadyForRevealAlertItem = ({
+  alert,
+}: {
+  alert: CourtCaseReadyForReveal;
+}) => {
+  const router = useRouter();
+  const { data: marketId } = useCaseMarketId(alert.caseId);
+  const { data: market } = useMarket({ marketId: marketId! });
+
+  useEffect(() => {
+    router.prefetch(`/court/${alert.caseId}`);
+  }, [alert]);
+
+  return (
+    <AlertCard
+      onClick={() => {
+        router.push(`/court/${alert.caseId}`);
+      }}
+    >
+      <div className="mb-1">
+        <div
+          className="inline-flex items-center gap-1 rounded-full px-1.5 py-1 text-xxs"
+          style={{
+            background:
+              "linear-gradient(131.15deg, rgb(135 240 170 / 40%) 11.02%, rgb(204 0 254 / 40%) 93.27%)",
+          }}
+        >
+          <AiOutlineEye size={12} className="text-gray-700" />
+          Ready to reveal vote
+        </div>
+      </div>
+      <div className="pl-1">
+        <h3 className="mb-1 text-sm  font-medium">{market?.question}</h3>
+        <p className="text-xxs text-gray-500">
+          You are required to reveal your vote for this court case.
+        </p>
+      </div>
+    </AlertCard>
+  );
+};
 
 const ReadyToReportMarketAlertItem = ({
   alert,
@@ -159,7 +255,7 @@ const ReadyToReportMarketAlertItem = ({
     >
       <div className="mb-1">
         <div
-          className="rounded-full py-1 px-1.5 inline-flex text-xxs items-center gap-1"
+          className="inline-flex items-center gap-1 rounded-full px-1.5 py-1 text-xxs"
           style={{
             background:
               "linear-gradient(131.15deg, rgba(240, 206, 135, 0.4) 11.02%, rgba(254, 0, 152, 0.4) 93.27%)",
@@ -169,8 +265,8 @@ const ReadyToReportMarketAlertItem = ({
           Submit Report
         </div>
       </div>
-      <div>
-        <h3 className="text-sm font-medium pl-1">{alert.market.question}</h3>
+      <div className="pl-1">
+        <h3 className="text-sm font-medium">{alert.market.question}</h3>
       </div>
     </AlertCard>
   );
@@ -196,7 +292,7 @@ const RedeemableMarketAlertItem = ({
     >
       <div className="mb-1">
         <div
-          className="rounded-full py-1 px-1.5 inline-flex text-xxs items-center gap-1"
+          className="inline-flex items-center gap-1 rounded-full px-1.5 py-1 text-xxs"
           style={{
             background:
               "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgb(142 185 231 / 38%) 93.27%)",
@@ -206,8 +302,8 @@ const RedeemableMarketAlertItem = ({
           Redeemable Tokens
         </div>
       </div>
-      <div>
-        <h3 className="text-sm font-medium pl-1">
+      <div className="pl-1">
+        <h3 className="text-sm font-medium">
           You have {alert.markets.length} redeemable markets.
         </h3>
       </div>
