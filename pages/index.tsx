@@ -64,10 +64,9 @@ export async function getStaticProps() {
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
     getPlaiceholder(`/banner.png`),
-    getPlaiceholders(
-      CATEGORIES.map((cat) => `${cat.imagePath}`),
-      { dir: `${path.join(process.cwd())}/public/` },
-    ),
+    getPlaiceholders(CATEGORIES?.map((cat) => `${cat.imagePath}`), {
+      dir: `${path.join(process.cwd())}/public/`,
+    }),
     getPlaiceholders(
       news.map((slide) => slide.imageUrl ?? ""),
       { size: 16 },
@@ -80,10 +79,7 @@ export async function getStaticProps() {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery([categoryCountsKey], () =>
-    getCategoryCounts(
-      sdk.indexer.client,
-      CATEGORIES.map((c) => c.name),
-    ),
+    getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
   );
 
   return {
