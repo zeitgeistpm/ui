@@ -26,7 +26,7 @@ export type TradeItem = {
   cost: Decimal;
 };
 
-export const useLatestTrades = () => {
+export const useLatestTrades = (limit = 3) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
@@ -34,7 +34,7 @@ export const useLatestTrades = () => {
     async () => {
       if (isIndexedSdk(sdk)) {
         const { historicalSwaps } = await sdk.indexer.historicalSwaps({
-          limit: 3,
+          limit: limit,
           order: HistoricalSwapOrderByInput.BlockNumberDesc,
         });
 

@@ -44,8 +44,8 @@ const columns: TableColumn[] = [
   },
 ];
 
-const TradeHistoryTable = () => {
-  const { data: trades } = useLatestTrades();
+const TradeHistoryTable = ({ limit }: { limit?: number }) => {
+  const { data: trades } = useLatestTrades(limit);
   const now = moment();
 
   const tableData: TableData[] | undefined = trades?.map((trade) => {
@@ -69,7 +69,7 @@ const TradeHistoryTable = () => {
   });
 
   return (
-    <div className="mb-12">
+    <div className="">
       <h2 className="mb-7 text-center sm:col-span-2 sm:text-start">
         Latest Trades
       </h2>
