@@ -68,6 +68,7 @@ import { FaChevronUp } from "react-icons/fa";
 import { ScoringRule } from "@zeitgeistpm/indexer";
 import { TradeTabType } from "components/trade-form/TradeTab";
 import ReferendumSummary from "components/ui/ReferendumSummary";
+import LatestTrades from "components/front-page/LatestTrades";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -307,9 +308,9 @@ const Market: NextPage<MarketPageProps> = ({
           ) : (
             <></>
           )}
-          {(marketIsLoading === false && marketHasPool === false) && (
-            <div className="flex h-ztg-22 items-center bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
-              <div className="w-ztg-20 h-ztg-20">
+          {marketIsLoading === false && marketHasPool === false && (
+            <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
+              <div className="h-ztg-20 w-ztg-20">
                 <AlertTriangle size={20} />
               </div>
               <div
@@ -367,6 +368,10 @@ const Market: NextPage<MarketPageProps> = ({
           </div>
 
           <AddressDetails title="Oracle" address={indexedMarket.oracle} />
+          <div className="mt-10">
+            <h2 className="mb-5 text-2xl">Latest Trades</h2>
+            <LatestTrades limit={3} marketId={marketId} />
+          </div>
 
           {market && (marketHasPool || poolDeployed) && (
             <div className="my-12">

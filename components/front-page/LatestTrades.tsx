@@ -44,8 +44,14 @@ const columns: TableColumn[] = [
   },
 ];
 
-const TradeHistoryTable = ({ limit }: { limit?: number }) => {
-  const { data: trades } = useLatestTrades(limit);
+const LatestTrades = ({
+  limit,
+  marketId,
+}: {
+  limit?: number;
+  marketId?: number;
+}) => {
+  const { data: trades } = useLatestTrades(limit, marketId);
   const now = moment();
 
   const tableData: TableData[] | undefined = trades?.map((trade) => {
@@ -70,9 +76,6 @@ const TradeHistoryTable = ({ limit }: { limit?: number }) => {
 
   return (
     <div className="">
-      <h2 className="mb-7 text-center sm:col-span-2 sm:text-start">
-        Latest Trades
-      </h2>
       <div className="rounded-xl shadow-lg">
         <Table columns={columns} data={tableData} />
       </div>
@@ -80,4 +83,4 @@ const TradeHistoryTable = ({ limit }: { limit?: number }) => {
   );
 };
 
-export default TradeHistoryTable;
+export default LatestTrades;

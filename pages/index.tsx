@@ -182,7 +182,12 @@ const IndexPage: NextPage<{
           <PopularCategories imagePlaceholders={categoryPlaceholders} />
         </div>
         <div className="mb-12 flex flex-col gap-4">
-          <LatestTrades />
+          <div>
+            <h2 className="mb-7 text-center sm:col-span-2 sm:text-start">
+              Latest Trades
+            </h2>
+            <LatestTrades />
+          </div>
           <Link
             className="w-full text-center text-ztg-blue"
             href={"/latest-trades"}

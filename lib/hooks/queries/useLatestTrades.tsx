@@ -26,16 +26,26 @@ export type TradeItem = {
   cost: Decimal;
 };
 
-export const useLatestTrades = (limit = 3) => {
+export const useLatestTrades = (limit = 3, marketId?: number) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, transactionHistoryKey],
+    [id, transactionHistoryKey, limit, marketId],
     async () => {
       if (isIndexedSdk(sdk)) {
         const { historicalSwaps } = await sdk.indexer.historicalSwaps({
           limit: limit,
           order: HistoricalSwapOrderByInput.BlockNumberDesc,
+          ...(marketId != null
+            ? {
+                where: {
+                  OR: [
+                    { assetIn_contains: `[${marketId},` },
+                    { assetOut_contains: `[${marketId},` },
+                  ],
+                },
+              }
+            : {}),
         });
 
         const marketIds = new Set<number>();
