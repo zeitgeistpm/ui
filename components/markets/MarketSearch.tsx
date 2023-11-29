@@ -64,7 +64,7 @@ const MarketSearch = () => {
             e.stopPropagation();
             setShowSearch(!showSearch);
             setTimeout(() => {
-              if (showSearch) {
+              if (!showSearch) {
                 inputRef.current?.focus();
               }
             });
