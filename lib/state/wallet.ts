@@ -221,7 +221,9 @@ export type WalletError = {
 /**
  * List of supported wallets.
  */
-export const supportedWallets = isWSX
+
+//TODO: revert logic when ready to go live
+export const supportedWallets = !isWSX
   ? [web3AuthWalletInstance]
   : [
       new PolkadotjsWallet(),

@@ -11,16 +11,18 @@ const AccountModalHead = () => {
   return (
     <div className="flex flex-row justify-between">
       <div className="text-ztg-16-150 font-bold text-black">Account</div>
-      {!isWSX && (
-        <div
-          className="mr-ztg-7 cursor-pointer underline"
-          onClick={() => {
-            switchExtension();
-          }}
-        >
-          Switch wallet extension
-        </div>
-      )}
+      {/* TODO: remove || logic when ready to go live */}
+      {!isWSX ||
+        (isWSX && (
+          <div
+            className="mr-ztg-7 cursor-pointer underline"
+            onClick={() => {
+              switchExtension();
+            }}
+          >
+            Switch wallet extension
+          </div>
+        ))}
     </div>
   );
 };
