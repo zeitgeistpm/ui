@@ -37,7 +37,7 @@ const MarketSearch = () => {
           ref={inputRef}
           className={`h-10 transition-all ${
             showSearch ? "max-w-[500px] px-3" : "max-w-[0px]"
-          } w-full  rounded-lg bg-sky-900  text-white focus:outline-none`}
+          } w-full  rounded-lg bg-sky-900  text-white outline-none`}
           value={searchTerm}
           placeholder="Search markets"
           onChange={(event) => {
@@ -53,6 +53,7 @@ const MarketSearch = () => {
             className="relative right-6 text-sky-600"
             onClick={() => {
               setSearchTerm("");
+              inputRef.current?.focus();
             }}
           >
             <FaDeleteLeft size={16} />
