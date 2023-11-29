@@ -22,6 +22,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CATEGORY_IMAGES } from "lib/constants/category-images";
 import { seededChoice } from "lib/util/random";
 import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
+import { Transition } from "@headlessui/react";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -247,8 +248,8 @@ export const MarketCard = ({
           }`}
         >
           <div className="flex h-[54px] w-full gap-4 whitespace-normal">
-            {marketImage ? (
-              <div className="relative min-h-[54px] min-w-[54px] rounded-xl">
+            <div className="relative min-h-[54px] min-w-[54px] rounded-xl">
+              {marketImage && (
                 <Image
                   alt={"Market image"}
                   src={marketImage}
@@ -260,15 +261,22 @@ export const MarketCard = ({
                   }}
                   sizes={"54px"}
                 />
-              </div>
-            ) : (
-              <Skeleton
-                height={54}
-                width={54}
-                className="relative min-h-[54px] min-w-[54px] rounded-xl"
-              />
-            )}
-            <h5 className="line-clamp-2 h-fit w-full text-base">{question}</h5>
+              )}
+              <Transition
+                show={!Boolean(marketImage)}
+                enter="transition-opacity duration-200"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="transition-opacity duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <Skeleton height={54} width={54} className="rounded-lg" />
+              </Transition>
+            </div>
+            <h5 className="line-clamp-2 h-fit w-full text-base duration-200">
+              {question}
+            </h5>
           </div>
 
           <div className="w-full">
