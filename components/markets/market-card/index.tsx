@@ -19,6 +19,9 @@ import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import Image from "next/image";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { useQuery } from "@tanstack/react-query";
+import { CATEGORY_IMAGES } from "lib/constants/category-images";
+import { seededChoice } from "lib/util/random";
+import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -222,13 +225,7 @@ export const MarketCard = ({
     ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
     : 0;
 
-  const { data: cmsMetadata } = useQuery(
-    ["cms", "metadata", marketId],
-    async () => {
-      const res = await fetch(`/api/cms/market-metadata/${marketId}`);
-      return res.json();
-    },
-  );
+  const { data: marketImage } = useMarketImage({ marketId, tags });
 
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
@@ -250,11 +247,11 @@ export const MarketCard = ({
           }`}
         >
           <div className="flex h-[54px] w-full gap-4 whitespace-normal">
-            {cmsMetadata?.imageUrl && (
+            {marketImage ? (
               <div className="relative min-h-[54px] min-w-[54px] rounded-xl">
                 <Image
                   alt={"Market image"}
-                  src={cmsMetadata.imageUrl}
+                  src={marketImage}
                   fill
                   className="overflow-hidden rounded-lg"
                   style={{
@@ -264,6 +261,12 @@ export const MarketCard = ({
                   sizes={"54px"}
                 />
               </div>
+            ) : (
+              <Skeleton
+                height={54}
+                width={54}
+                className="relative min-h-[54px] min-w-[54px] rounded-xl"
+              />
             )}
             <h5 className="line-clamp-2 h-fit w-full text-base">{question}</h5>
           </div>
@@ -308,6 +311,26 @@ export const MarketCard = ({
       </div>
     </MarketCardContext.Provider>
   );
+};
+
+const useMarketImage = (market: { marketId: number; tags?: string[] }) => {
+  const firstTag = market.tags?.[0];
+
+  const category = (
+    firstTag && firstTag in CATEGORY_IMAGES ? firstTag : "untagged"
+  ) as keyof typeof CATEGORY_IMAGES;
+
+  const fallback = seededChoice(
+    `${market.marketId}`,
+    CATEGORY_IMAGES[category],
+  );
+
+  const cmsQuery = useMarketCmsMetadata(market.marketId);
+
+  return {
+    ...cmsQuery,
+    data: cmsQuery.isFetched ? cmsQuery.data?.imageUrl ?? fallback : undefined,
+  };
 };
 
 export default MarketCard;

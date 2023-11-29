@@ -19,9 +19,9 @@ export const getCmsMarketMetadataFormMarket = async (
 
 export const getCmsMarketMetadataFormMarkets = async (
   marketIds: number[],
-): Promise<CmsMarketMetadata[] | null> => {
+): Promise<CmsMarketMetadata[]> => {
   if (!process.env.NOTION_API_KEY) {
-    return null;
+    throw new Error("Missing NOTION_API_KEY");
   }
 
   const { results: marketMetadata } = await notion.databases.query({
