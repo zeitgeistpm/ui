@@ -25,12 +25,7 @@ import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
-import {
-  ZTG,
-  environment,
-  graphQlEndpoint,
-  marketReferendumMap,
-} from "lib/constants";
+import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
   MarketPageIndexedData,
   getMarket,
@@ -68,6 +63,10 @@ import { FaChevronUp } from "react-icons/fa";
 import { ScoringRule } from "@zeitgeistpm/indexer";
 import { TradeTabType } from "components/trade-form/TradeTab";
 import ReferendumSummary from "components/ui/ReferendumSummary";
+import {
+  CmsMarketMetadata,
+  getCmsMarketMetadataFormMarket,
+} from "lib/cms/get-market-metadata";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -104,9 +103,11 @@ export async function getStaticProps({ params }) {
 
   const [
     market,
+    cmsMetadata,
     // promotionData
   ] = await Promise.all([
     getMarket(client, params.marketid),
+    getCmsMarketMetadataFormMarket(params.marketid),
     // getMarketPromotion(Number(params.marketid)),
   ]);
 
@@ -133,6 +134,7 @@ export async function getStaticProps({ params }) {
       chartSeries: chartSeries ?? null,
       resolutionTimestamp: resolutionTimestamp ?? null,
       promotionData: null,
+      cmsMetadata,
     },
     revalidate:
       environment === "production"
@@ -146,6 +148,7 @@ type MarketPageProps = {
   chartSeries: ChartSeries[];
   resolutionTimestamp: string;
   promotionData: PromotedMarket | null;
+  cmsMetadata: CmsMarketMetadata | null;
 };
 
 const Market: NextPage<MarketPageProps> = ({
@@ -153,11 +156,13 @@ const Market: NextPage<MarketPageProps> = ({
   chartSeries,
   resolutionTimestamp,
   promotionData,
+  cmsMetadata,
 }) => {
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
-  const referendumIndex = marketReferendumMap?.[marketId];
+  console.log(cmsMetadata);
+  const referendumIndex = cmsMetadata?.referendumIndex;
 
   const tradeItem = useTradeItem();
 
@@ -307,9 +312,9 @@ const Market: NextPage<MarketPageProps> = ({
           ) : (
             <></>
           )}
-          {(marketIsLoading === false && marketHasPool === false) && (
-            <div className="flex h-ztg-22 items-center bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
-              <div className="w-ztg-20 h-ztg-20">
+          {marketIsLoading === false && marketHasPool === false && (
+            <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
+              <div className="h-ztg-20 w-ztg-20">
                 <AlertTriangle size={20} />
               </div>
               <div
