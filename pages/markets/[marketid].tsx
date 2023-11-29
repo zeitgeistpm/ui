@@ -307,9 +307,9 @@ const Market: NextPage<MarketPageProps> = ({
           ) : (
             <></>
           )}
-          {(marketIsLoading === false && marketHasPool === false) && (
-            <div className="flex h-ztg-22 items-center bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
-              <div className="w-ztg-20 h-ztg-20">
+          {marketIsLoading === false && marketHasPool === false && (
+            <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
+              <div className="h-ztg-20 w-ztg-20">
                 <AlertTriangle size={20} />
               </div>
               <div
@@ -684,17 +684,17 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
   return !userCanReport ? (
     <></>
   ) : (
-    <div className="px-5 py-8">
+    <div className="px-5 py-10">
       {reportedOutcome ? (
         <ReportResult market={market} outcome={reportedOutcome} />
       ) : (
         <>
-          <h4 className="mb-3 flex items-center gap-2">
+          <h4 className="mb-4 flex items-center gap-2">
             <AiOutlineFileAdd size={20} className="text-gray-600" />
             <span>Report Market Outcome</span>
           </h4>
 
-          <p className="mb-5 text-sm">
+          <p className="mb-6 text-sm">
             Market has closed and the outcome can now be reported.
           </p>
 
@@ -704,7 +704,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
             </p>
           )}
 
-          <div className="mb-2">
+          <div className="mb-4">
             {market.marketType?.scalar ? (
               <ScalarReportBox market={market} onReport={setReportedOutcome} />
             ) : (
