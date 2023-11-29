@@ -15,5 +15,11 @@ export default async function handler(
 
   const metadata = await getCmsMarketMetadataFormMarket(Number(marketid));
 
-  return response.status(200).json(metadata);
+  return response
+    .setHeader(
+      "Cache-Control",
+      "public, s-maxage=180, stale-while-revalidate=21600",
+    )
+    .status(200)
+    .json(metadata);
 }

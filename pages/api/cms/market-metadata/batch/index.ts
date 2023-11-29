@@ -24,7 +24,13 @@ export default async function handler(
       marketIds.map((m) => Number(m)),
     );
 
-    return response.status(200).json(metadata);
+    return response
+      .setHeader(
+        "Cache-Control",
+        "public, s-maxage=180, stale-while-revalidate=21600",
+      )
+      .status(200)
+      .json(metadata);
   } catch (error) {
     console.error(error);
     return response.status(500).json({ error: error.message });
