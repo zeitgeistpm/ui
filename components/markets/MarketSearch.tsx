@@ -45,7 +45,9 @@ const MarketSearch = () => {
             setSearchTerm(event.target.value);
           }}
           onFocus={() => {
-            setShowResults(true);
+            if (searchTerm?.length > 0) {
+              setShowResults(true);
+            }
           }}
         />
         {showSearch && (
@@ -53,7 +55,12 @@ const MarketSearch = () => {
             className="relative right-6 text-sky-600"
             onClick={() => {
               setSearchTerm("");
-              inputRef.current?.focus();
+              if (showResults) {
+                setShowResults(false);
+              }
+              setTimeout(() => {
+                inputRef.current?.focus();
+              }, 66);
             }}
           >
             <FaDeleteLeft size={16} />
