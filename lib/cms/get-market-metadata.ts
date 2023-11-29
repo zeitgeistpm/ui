@@ -28,8 +28,8 @@ export const getCmsMarketMetadataFormMarkets = async (
     database_id: "e725c0b99674440590d3d5d694960172",
     filter: {
       property: "Environment",
-      select: {
-        equals: process.env.NEXT_PUBLIC_VERCEL_ENV!,
+      multi_select: {
+        contains: process.env.NEXT_PUBLIC_VERCEL_ENV!,
       },
       or: marketIds.map((marketId) => ({
         property: "MarketId",
