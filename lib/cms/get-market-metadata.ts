@@ -3,7 +3,7 @@ import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
-export type MarketMetadata = {
+export type CmsMarketMetadata = {
   marketId?: number;
   imageUrl?: string;
   referendumIndex?: number;
@@ -11,7 +11,7 @@ export type MarketMetadata = {
 
 export const getCmsMarketMetadataFormMarket = async (
   marketIds: number,
-): Promise<MarketMetadata | null> => {
+): Promise<CmsMarketMetadata | null> => {
   return getCmsMarketMetadataFormMarkets([marketIds]).then(
     (mm) => mm?.[0] ?? null,
   );
@@ -19,11 +19,11 @@ export const getCmsMarketMetadataFormMarket = async (
 
 export const getCmsMarketMetadataFormMarkets = async (
   marketIds: number[],
-): Promise<MarketMetadata[] | null> => {
+): Promise<CmsMarketMetadata[] | null> => {
   if (!process.env.NOTION_API_KEY) {
     return null;
   }
-  // https://www.notion.so/zeitgeistpm/e725c0b99674440590d3d5d694960172?v=0654e2a2164b48a1a165266cf7a4b60b&pvs=4
+
   const { results: marketMetadata } = await notion.databases.query({
     database_id: "e725c0b99674440590d3d5d694960172",
     filter: {
@@ -34,7 +34,7 @@ export const getCmsMarketMetadataFormMarkets = async (
       or: marketIds.map((marketId) => ({
         property: "MarketId",
         number: {
-          equals: marketId,
+          equals: Number(marketId),
         },
       })),
     },
@@ -44,7 +44,7 @@ export const getCmsMarketMetadataFormMarkets = async (
 };
 
 export const parseMarketMetaData = (data: PageObjectResponse) => {
-  const promotedMarket: MarketMetadata = {};
+  const promotedMarket: CmsMarketMetadata = {};
 
   if (data.properties.MarketId.type === "number") {
     promotedMarket.marketId = data.properties.MarketId.number ?? undefined;
