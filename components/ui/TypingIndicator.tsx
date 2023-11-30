@@ -5,9 +5,11 @@ import { RefObject, useEffect, useRef, useState } from "react";
 export const TypingIndicator = ({
   inputRef,
   isFetching,
+  disabled,
 }: {
   inputRef: RefObject<HTMLInputElement>;
   isFetching: boolean;
+  disabled?: boolean;
 }) => {
   const [index, setIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
@@ -36,6 +38,7 @@ export const TypingIndicator = ({
   }, [inputRef]);
 
   const typingAnimation = async () => {
+    if (disabled) return;
     animate(
       "div",
       { transform: "translateY(0%)", opacity: 0.2 },
@@ -64,6 +67,7 @@ export const TypingIndicator = ({
   const loadingAnimationRef = useRef<Promise<void> | null>(null);
 
   const loadingAnimation = async () => {
+    if (disabled) return;
     animate("div:nth-child(1)", { opacity: 0 }, { duration: 0.1 });
     animate("div:nth-child(3)", { opacity: 0 }, { duration: 0.1 });
 
@@ -105,7 +109,7 @@ export const TypingIndicator = ({
     <div
       ref={scope}
       className={`flex items-center justify-center gap-1 transition-opacity ${
-        isTyping ? "opacity-100" : "opacity-0"
+        isTyping && !disabled ? "opacity-100" : "opacity-0"
       }`}
     >
       <motion.div className="h-1 w-1 rounded-full bg-white"></motion.div>
