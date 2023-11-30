@@ -7,11 +7,11 @@ export const SQUID_ROUTER_ID = "zeitgeist-sdk";
 
 export type UseSquid =
   | {
-      isConnecting: true;
+      connected: false;
     }
   | {
-      isConnecting: false;
-      squid: Squid;
+      connected: true;
+      sdk: Squid;
     };
 
 const squid = new Squid({
@@ -30,12 +30,12 @@ export const useSquid = (): UseSquid => {
 
   if (connected) {
     return {
-      isConnecting: false,
-      squid,
+      connected: true,
+      sdk: squid,
     };
   } else {
     return {
-      isConnecting: true,
+      connected: false,
     };
   }
 };
