@@ -103,7 +103,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
       />
       <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
         {markets?.map((market) => {
-          const volume = market.pool?.volume ?? 0;
+          const volume = market.pool?.volume ?? market.neoPool?.volume ?? 0;
           const scalarType = market.scalarType as ScalarRangeType;
           const stat = stats?.find((s) => s.marketId === market.marketId);
           const question = market.question ?? "";
