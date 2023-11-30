@@ -3,8 +3,11 @@ import { MarketStatus } from "@zeitgeistpm/indexer";
 import { useMarketSearch } from "lib/hooks/queries/useMarketSearch";
 import Link from "next/link";
 import { FaDeleteLeft } from "react-icons/fa6";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, RefObject, use, useEffect, useRef, useState } from "react";
 import { Search, X } from "react-feather";
+import { AnimatePresence, Variants, motion, useAnimate } from "framer-motion";
+import { TAILWIND } from "lib/constants";
+import { TypingIndicator } from "components/ui/TypingIndicator";
 
 const MarketSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,7 +16,7 @@ const MarketSearch = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { data: markets } = useMarketSearch(searchTerm);
+  const { data: markets, isFetching } = useMarketSearch(searchTerm);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -33,39 +36,48 @@ const MarketSearch = () => {
         <Search className="mr-4 text-ztg-blue" />
       </Link>
       <div className="hidden items-center lg:flex">
-        <input
-          ref={inputRef}
-          className={`h-10 transition-all ${
+        <div
+          className={`relative w-full overflow-hidden transition-all ${
             showSearch ? "max-w-[500px] px-3" : "max-w-[0px]"
-          } w-full  rounded-lg bg-sky-900  text-white outline-none`}
-          value={searchTerm}
-          placeholder="Search markets"
-          onChange={(event) => {
-            setShowResults(true);
-            setSearchTerm(event.target.value);
-          }}
-          onFocus={() => {
-            if (searchTerm?.length > 0) {
+          }`}
+        >
+          <input
+            ref={inputRef}
+            className={`h-10 w-full rounded-lg bg-sky-900  px-3 text-white  outline-none transition-all`}
+            value={searchTerm}
+            placeholder="Search markets"
+            onChange={(event) => {
               setShowResults(true);
-            }
-          }}
-        />
-        {showSearch && (
-          <button
-            className="relative right-6 text-sky-600"
-            onClick={() => {
-              setSearchTerm("");
-              if (showResults) {
-                setShowResults(false);
-              }
-              setTimeout(() => {
-                inputRef.current?.focus();
-              }, 66);
+              setSearchTerm(event.target.value);
             }}
-          >
-            <FaDeleteLeft size={16} />
-          </button>
-        )}
+            onFocus={() => {
+              if (searchTerm?.length > 0) {
+                setShowResults(true);
+              }
+            }}
+          />
+
+          <div className="absolute right-12 top-[50%] translate-y-[-50%]">
+            <TypingIndicator inputRef={inputRef} isFetching={isFetching} />
+          </div>
+
+          {showSearch && (
+            <button
+              className="absolute right-6 top-[50%] translate-y-[-50%] text-sky-600"
+              onClick={() => {
+                setSearchTerm("");
+                if (showResults) {
+                  setShowResults(false);
+                }
+                setTimeout(() => {
+                  inputRef.current?.focus();
+                }, 66);
+              }}
+            >
+              <FaDeleteLeft size={16} />
+            </button>
+          )}
+        </div>
 
         <button
           onClick={(e) => {
