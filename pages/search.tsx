@@ -1,14 +1,16 @@
 import { MarketStatus } from "@zeitgeistpm/indexer";
+import { TypingIndicator } from "components/ui/TypingIndicator";
 import { useMarketSearch } from "lib/hooks/queries/useMarketSearch";
 import { NextPage } from "next";
 import Link from "next/link";
 import { use, useEffect, useRef, useState } from "react";
 import { X } from "react-feather";
+import { FaDeleteLeft } from "react-icons/fa6";
 
 const SearchPage: NextPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: markets } = useMarketSearch(searchTerm);
+  const { data: markets, isFetching } = useMarketSearch(searchTerm);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -29,13 +31,16 @@ const SearchPage: NextPage = () => {
             setSearchTerm(event.target.value);
           }}
         />
+        <div className="absolute right-12 top-[50%] translate-y-[-50%]">
+          <TypingIndicator inputRef={inputRef} isFetching={isFetching} />
+        </div>
         <button
           className="absolute right-6 text-sky-600"
           onClick={() => {
             setSearchTerm("");
           }}
         >
-          <X size={16} />
+          <FaDeleteLeft size={16} />
         </button>
       </div>
       {markets && (
