@@ -10,7 +10,7 @@ import { Readable } from "node:stream";
 import path from "path";
 
 export const config: PageConfig = {
-  runtime: "nodejs",
+  runtime: "edge",
 };
 
 const sdkPromise = create({
@@ -60,6 +60,10 @@ export default async function MarketImage(
 
     if (image.body) {
       Readable.fromWeb(image.body as any).pipe(response);
+    } else {
+      return response
+        .status(404)
+        .json({ error: `No market found by id ${marketId}` });
     }
   } else {
     const firstTag = market.tags?.[0];
