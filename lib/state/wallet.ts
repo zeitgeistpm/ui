@@ -43,6 +43,10 @@ export type UseWallet = WalletState & {
   /**
    * Whether the wallet is nova wallet.
    */
+  selectedAddress?: string | undefined;
+  /**
+   * Whether the wallet is nova wallet.
+   */
   isNovaWallet: boolean;
   /**
    * Name of the wallet being used
@@ -523,6 +527,7 @@ export const useWallet = (): UseWallet => {
     loadWeb3AuthWallet,
     getSigner,
     selectWallet,
+    selectedAddress: userConfig.selectedAddress,
     disconnectWallet,
     isNovaWallet,
     walletId,

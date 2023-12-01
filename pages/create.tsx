@@ -5,14 +5,14 @@ import { useRouter } from "next/router";
 import MarketEditor from "components/create/editor/Editor";
 
 const CreateMarketPage: NextPage = () => {
-  const { activeAccount } = useWallet();
+  const { selectedAddress } = useWallet();
   const router = useRouter();
 
   useEffect(() => {
-    if (activeAccount?.address !== process.env.NEXT_PUBLIC_MW) {
+    if (selectedAddress !== process.env.NEXT_PUBLIC_MW) {
       router.push("/markets");
     }
-  }, [activeAccount, router]);
+  }, [router]);
 
   return (
     <div className="mt-10">
