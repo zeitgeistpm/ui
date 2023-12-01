@@ -249,30 +249,17 @@ export const MarketCard = ({
         >
           <div className="flex h-[54px] w-full gap-4 whitespace-normal">
             <div className="relative min-h-[54px] min-w-[54px] rounded-xl">
-              {marketImage && (
-                <Image
-                  alt={"Market image"}
-                  src={marketImage}
-                  fill
-                  className="overflow-hidden rounded-lg"
-                  style={{
-                    objectFit: "cover",
-                    objectPosition: "50% 50%",
-                  }}
-                  sizes={"54px"}
-                />
-              )}
-              <Transition
-                show={!Boolean(marketImage)}
-                enter="transition-opacity duration-200"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="transition-opacity duration-200"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-              >
-                <Skeleton height={54} width={54} className="rounded-lg" />
-              </Transition>
+              <Image
+                alt={"Market image"}
+                src={`/api/market/image/${marketId}`}
+                fill
+                className="overflow-hidden rounded-lg"
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "50% 50%",
+                }}
+                sizes={"54px"}
+              />
             </div>
             <h5 className="line-clamp-2 h-fit w-full text-base duration-200">
               {question}
