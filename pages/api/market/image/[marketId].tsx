@@ -40,12 +40,14 @@ export default async function MarketImage(
 
   const cmsData = await getCmsMarketMetadataFormMarket(market.marketId);
 
+  response.setHeader(
+    "Cache-Control",
+    "public, s-maxage=600, stale-while-revalidate=259200",
+  );
+
   if (cmsData?.imageUrl) {
     const image = await fetch(cmsData.imageUrl);
-    response.setHeader(
-      "Cache-Control",
-      "public, s-maxage=600, stale-while-revalidate=259200",
-    );
+
     response.setHeader(
       "Content-Type",
       image.headers.get("content-type") ?? "image/png",
