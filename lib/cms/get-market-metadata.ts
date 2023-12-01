@@ -4,9 +4,9 @@ import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
 export type CmsMarketMetadata = {
-  marketId?: number;
-  imageUrl?: string;
-  referendumIndex?: number;
+  marketId?: number | null;
+  imageUrl?: string | null;
+  referendumIndex?: number | null;
 };
 
 export const getCmsMarketMetadataFormMarket = async (
@@ -47,16 +47,16 @@ export const parseMarketMetaData = (data: PageObjectResponse) => {
   const promotedMarket: CmsMarketMetadata = {};
 
   if (data.properties.MarketId.type === "number") {
-    promotedMarket.marketId = data.properties.MarketId.number ?? undefined;
+    promotedMarket.marketId = data.properties.MarketId.number ?? null;
   }
 
   if (data.properties.Image.type === "url") {
-    promotedMarket.imageUrl = data.properties.Image.url ?? undefined;
+    promotedMarket.imageUrl = data.properties.Image.url ?? null;
   }
 
   if (data.properties.ReferendumIndex.type === "number") {
     promotedMarket.referendumIndex =
-      data.properties.ReferendumIndex.number ?? undefined;
+      data.properties.ReferendumIndex.number ?? null;
   }
 
   return promotedMarket;

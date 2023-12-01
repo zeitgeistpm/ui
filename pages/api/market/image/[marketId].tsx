@@ -1,21 +1,17 @@
-import { ImageResponse } from "@vercel/og";
-import { isMarketImageBase64Encoded } from "lib/types/create-market";
-import { formatNumberCompact } from "lib/util/format-compact";
-import type { PageConfig } from "next";
-import { Readable } from "node:stream";
+import { create } from "@zeitgeistpm/indexer";
 import fs from "fs";
+import { getCmsMarketMetadataFormMarket } from "lib/cms/get-market-metadata";
+import { graphQlEndpoint } from "lib/constants";
+import { CATEGORY_IMAGES } from "lib/constants/category-images";
+import { seededChoice } from "lib/util/random";
+import type { PageConfig } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
+import { Readable } from "node:stream";
 import path from "path";
 
 export const config: PageConfig = {
   runtime: "nodejs",
 };
-
-import { NextApiRequest, NextApiResponse } from "next";
-import { create } from "@zeitgeistpm/indexer";
-import { graphQlEndpoint } from "lib/constants";
-import { getCmsMarketMetadataFormMarket } from "lib/cms/get-market-metadata";
-import { CATEGORY_IMAGES } from "lib/constants/category-images";
-import { seededChoice } from "lib/util/random";
 
 const sdkPromise = create({
   uri: graphQlEndpoint,
@@ -80,31 +76,3 @@ export default async function MarketImage(
     response.send(imageBuffer);
   }
 }
-
-// export default async function MarketImage(request: NextRequest) {
-//   console.log("IMAGE REQUEST");
-//   const image = await fetch(
-//     new URL(new URL("/category/zeitgeist.png", request.url), import.meta.url)
-//       .href,
-//   ).then((res) => res.arrayBuffer());
-
-//   return new ImageResponse(
-//     (
-//       <img
-//         src={image as any}
-//         style={{
-//           width: 640,
-//           height: 640,
-//           objectFit: "cover",
-//         }}
-//       />
-//     ),
-//     {
-//       headers: {
-//         "Content-Type": "image/png",
-//       },
-//       width: 640,
-//       height: 640,
-//     },
-//   );
-// }
