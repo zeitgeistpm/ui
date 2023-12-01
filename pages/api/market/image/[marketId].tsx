@@ -42,7 +42,7 @@ export default async function MarketImage(
 
   response.setHeader(
     "Cache-Control",
-    "s-maxage=600, stale-while-revalidate=259200",
+    "public, s-maxage=600, stale-while-revalidate=259200",
   );
 
   if (cmsData?.imageUrl) {
