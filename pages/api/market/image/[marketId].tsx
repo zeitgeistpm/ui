@@ -52,10 +52,12 @@ export default async function MarketImage(
       "Content-Type",
       image.headers.get("content-type") ?? "image/png",
     );
+
     response.setHeader(
       "Content-Length",
       image.headers.get("content-length") ?? "0",
     );
+
     if (image.body) {
       Readable.fromWeb(image.body as any).pipe(response);
     }
