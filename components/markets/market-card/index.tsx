@@ -246,7 +246,7 @@ export const MarketCard = ({
           }`}
         >
           <div className="flex h-[54px] w-full gap-4 whitespace-normal">
-            <div className="relative min-h-[54px] min-w-[54px] rounded-xl">
+            <div className="relative min-h-[54px] min-w-[54px] rounded-xl bg-gray-400 bg-opacity-30">
               <Image
                 priority
                 alt={"Market image"}
