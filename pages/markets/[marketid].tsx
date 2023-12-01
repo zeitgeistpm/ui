@@ -9,7 +9,10 @@ import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySect
 import DisputeResult from "components/markets/DisputeResult";
 import { AddressDetails } from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
-import MarketChart from "components/markets/MarketChart";
+import {
+  CategoricalMarketChart,
+  ScalarMarketChart,
+} from "components/markets/MarketChart";
 import MarketHeader from "components/markets/MarketHeader";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ReportResult from "components/markets/ReportResult";
@@ -262,6 +265,9 @@ const Market: NextPage<MarketPageProps> = ({
       poolIdLoading === false) ||
     (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
 
+  const poolCreationDate = new Date(
+    indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
+  );
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -286,23 +292,26 @@ const Market: NextPage<MarketPageProps> = ({
 
           {chartSeries && (indexedMarket?.pool || indexedMarket.neoPool) ? (
             <div className="mt-4">
-              <MarketChart
-                marketId={indexedMarket.marketId}
-                chartSeries={chartSeries}
-                baseAsset={
-                  indexedMarket.pool?.baseAsset ??
-                  indexedMarket.neoPool?.collateral
-                }
-                poolCreationDate={
-                  new Date(
-                    indexedMarket.pool?.createdAt ??
-                      indexedMarket.neoPool?.createdAt ??
-                      "",
-                  )
-                }
-                marketStatus={indexedMarket.status}
-                resolutionDate={new Date(resolutionTimestamp)}
-              />
+              {indexedMarket.scalarType === "number" ? (
+                <ScalarMarketChart
+                  marketId={indexedMarket.marketId}
+                  poolCreationDate={poolCreationDate}
+                  marketStatus={indexedMarket.status}
+                  resolutionDate={new Date(resolutionTimestamp)}
+                />
+              ) : (
+                <CategoricalMarketChart
+                  marketId={indexedMarket.marketId}
+                  chartSeries={chartSeries}
+                  baseAsset={
+                    indexedMarket.pool?.baseAsset ??
+                    indexedMarket.neoPool?.collateral
+                  }
+                  poolCreationDate={poolCreationDate}
+                  marketStatus={indexedMarket.status}
+                  resolutionDate={new Date(resolutionTimestamp)}
+                />
+              )}
             </div>
           ) : (
             <></>
