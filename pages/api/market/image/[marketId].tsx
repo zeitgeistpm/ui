@@ -10,7 +10,7 @@ import { Readable } from "node:stream";
 import path from "path";
 
 export const config: PageConfig = {
-  runtime: "edge",
+  runtime: "nodejs",
 };
 
 const sdkPromise = create({
