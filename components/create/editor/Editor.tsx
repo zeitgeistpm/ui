@@ -38,7 +38,6 @@ import TimezoneSelect from "./inputs/TimezoneSelect";
 import { LiquidityInputAmm2 } from "./inputs/LiquidityAMM2";
 import FeeSelect from "./inputs/FeeSelect";
 import { useWallet } from "lib/state/wallet";
-import { useAccountModals } from "lib/state/account";
 import { isWSX } from "lib/constants";
 import {
   isAMM2Form,
@@ -110,49 +109,11 @@ export const MarketEditor = () => {
     });
   };
 
-  const accountModals = useAccountModals();
-
-  const connect = async () => {
-    if (isNovaWallet) {
-      selectWallet("polkadot-js");
-    } else {
-      accountModals.openWalletSelect();
-    }
-  };
-
   const showLiquidityWarning =
     fieldsState.liquidity.isTouched && form.liquidity?.deploy && isWizard;
 
   const isLoaded = Boolean(chainTime && isFetched);
   const isAMM2Market = isAMM2Form(form);
-
-  if (!activeAccount) {
-    return (
-      <div
-        className="flex items-center justify-center bg-white "
-        style={{ height: "calc(100vh - 100px)" }}
-      >
-        <button
-          className="ztg-transition h-[56px] rounded-full border-4 px-10 text-black 
-        focus:outline-none disabled:cursor-default disabled:bg-slate-300"
-          onClick={() => connect()}
-        >
-          Connect
-        </button>
-      </div>
-    );
-  }
-
-  if (activeAccount.address !== process.env.NEXT_PUBLIC_MW) {
-    return (
-      <div
-        className="flex items-center justify-center bg-white "
-        style={{ height: "calc(100vh - 100px)" }}
-      >
-        <h3>You do not have access to this page</h3>
-      </div>
-    );
-  }
 
   const creationParams = useMemo<
     CreateMarketParams<RpcContext> | undefined
