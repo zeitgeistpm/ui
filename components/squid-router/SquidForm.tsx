@@ -110,8 +110,8 @@ export const SquidForm = () => {
         </>
       ) : (
         <div className="center absolute bottom-0 left-0 right-0 top-0">
-          <div className="overflow-hidden rounded-full bg-black bg-opacity-20 ">
-            <Loader loading variant={"Info"} className="h-12 w-12" />
+          <div className="overflow-hidden rounded-full bg-black bg-opacity-50 ">
+            <Loader loading variant={"Success"} className="h-12 w-12" />
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 import { Fragment, Suspense, useState } from "react";
 
-import { Menu, Transition } from "@headlessui/react";
+import { Dialog, Menu, Transition } from "@headlessui/react";
 import { CATEGORIES } from "components/front-page/PopularCategories";
 import MenuLogo from "components/top-bar/MenuLogo";
 import dynamic from "next/dynamic";
@@ -25,6 +25,7 @@ import Skeleton from "components/ui/Skeleton";
 import { delay } from "lib/util/delay";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import SquidForm from "components/squid-router/SquidForm";
 
 const AccountButton = dynamic(
   async () => {
@@ -212,36 +213,44 @@ const TopBar = () => {
 const GetTokensButton = () => {
   const { activeAccount, connected } = useWallet();
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
+
+  const [showModal, setShowModal] = useState(false);
+
   return (
     <>
-      <Transition
-        as={Fragment}
-        show={Boolean(connected && activeBalance?.eq(0))}
-        enter="transition-all duration-250"
-        enterFrom="opacity-0 scale-90"
-        enterTo="opacity-100 scale-100"
-        leave="transition-all duration-250"
-        leaveFrom="opacity-100 scale-100"
-        leaveTo="opacity-0 scale-90"
+      <button className="group relative hidden h-11 overflow-hidden rounded-md p-0.5 sm:block">
+        <div
+          className="absolute left-0 top-0 z-10 h-full w-full group-hover:-left-6 group-hover:-top-6 group-hover:h-[150%] group-hover:w-[150%] group-hover:animate-spin"
+          style={{
+            background:
+              "linear-gradient(180deg, #FF00E6 0%, #F36464 50%, #04C3FF 100%)",
+          }}
+        />
+        <div className="relative z-20 block h-full sm:w-[125px] ">
+          <button
+            className="center h-full w-full rounded-md bg-black text-white"
+            onClick={() => setShowModal(true)}
+          >
+            Get Tokens
+          </button>
+        </div>
+      </button>
+
+      <Modal
+        onClose={() => {
+          setShowModal(false);
+        }}
+        open={showModal}
       >
-        <Link
-          className="group relative hidden h-11 overflow-hidden rounded-md p-0.5 sm:block"
-          href="/deposit"
-        >
-          <div
-            className="absolute left-0 top-0 z-10 h-full w-full group-hover:-left-6 group-hover:-top-6 group-hover:h-[150%] group-hover:w-[150%] group-hover:animate-spin"
-            style={{
-              background:
-                "linear-gradient(180deg, #FF00E6 0%, #F36464 50%, #04C3FF 100%)",
-            }}
-          />
-          <div className="relative z-20 block h-full sm:w-[125px] ">
-            <button className="center h-full w-full rounded-md bg-black text-white">
-              Get Tokens
-            </button>
+        <Dialog.Panel className="relative min-h-[200px] w-full max-w-[562px] overflow-hidden rounded-lg border-1 border-gray-600 border-opacity-50 bg-black bg-opacity-30 text-white backdrop-blur-lg transition-all">
+          <h2 className="w-full  py-2 text-center text-white text-opacity-75">
+            Deposit
+          </h2>
+          <div className="px-5 py-3">
+            <SquidForm />
           </div>
-        </Link>
-      </Transition>
+        </Dialog.Panel>
+      </Modal>
     </>
   );
 };
