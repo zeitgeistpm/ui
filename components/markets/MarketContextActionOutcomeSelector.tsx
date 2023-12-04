@@ -145,7 +145,7 @@ const MarketContextActionOutcomeSelector = ({
           <div className="relative flex h-full flex-col">
             <div className="">
               <div
-                className="flex cursor-pointer items-center gap-4 px-5 py-6 text-xl"
+                className="flex cursor-pointer items-center gap-4 px-5 py-5 text-lg"
                 onClick={() => setOpen(false)}
               >
                 <BsArrowLeft />
@@ -157,7 +157,7 @@ const MarketContextActionOutcomeSelector = ({
                     type="text"
                     ref={inputRef}
                     placeholder="Search Assets"
-                    className="w-full text-base"
+                    className="w-full text-sm"
                     value={search ?? ""}
                     onChange={(event) => {
                       setSearch(event.target.value);
@@ -175,9 +175,9 @@ const MarketContextActionOutcomeSelector = ({
                   <Listbox.Option
                     key={option.assetIndex}
                     value={option.asset}
-                    className=" cursor-pointer px-5 py-1 text-base hover:bg-opacity-10"
+                    className=" cursor-pointer px-5 py-1 hover:bg-opacity-10"
                   >
-                    <div className="flex items-center gap-3 rounded-md px-5 py-6 hover:bg-slate-100 md:text-sm lg:text-base">
+                    <div className="flex items-center gap-3 rounded-md px-3 py-4 hover:bg-slate-100 md:text-sm lg:text-base">
                       <div
                         className="h-4 w-4 rounded-full "
                         style={{ backgroundColor: option.color }}
