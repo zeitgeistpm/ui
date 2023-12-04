@@ -14,4 +14,5 @@ module.exports = withPlaiceholder({
     ],
   },
   staticPageGenerationTimeout: 300, //5 mins
+  transpilePackages: ["@0xsquid/widget"],
 });

@@ -308,6 +308,7 @@ const DepositPage: NextPage = () => {
   return (
     <>
       <h2 className="mb-6 mt-8 px-2">Deposit Tokens</h2>
+
       <div className="[&>*:not(:last-child)]:mb-8">
         <p className="mt-3 p-2">
           You need some funds to make predictions on our platform. Select from

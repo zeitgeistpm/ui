@@ -20,7 +20,7 @@
   "dependencies": {
     "@0xsquid/sdk": "2.8.6",
     "@0xsquid/squid-types": "^0.1.39",
-    "@0xsquid/widget": "^1.6.20",
+    "@0xsquid/widget": "^1.6.21",
     "@axelar-network/axelarjs-sdk": "^0.13.6",
     "@babel/helper-compilation-targets": "^7.19.3",
     "@dnd-kit/core": "^6.0.8",
@@ -98,6 +98,8 @@
     "uri-js": "^4.4.1",
     "use-debounce": "^7.0.1",
     "validatorjs": "^3.22.1",
+    "viem": "^1.19.11",
+    "wagmi": "^1.4.7",
     "zod": "^3.21.4"
   },
   "devDependencies": {
