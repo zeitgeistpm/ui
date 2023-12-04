@@ -23,6 +23,7 @@ import { CATEGORY_IMAGES } from "lib/constants/category-images";
 import { seededChoice } from "lib/util/random";
 import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { Transition } from "@headlessui/react";
+import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -226,7 +227,12 @@ export const MarketCard = ({
     ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
     : 0;
 
-  const { data: image } = useMarketImage({ marketId, tags });
+  const { data: image } = useMarketImage(
+    { marketId, tags },
+    {
+      fallback: img && isAbsoluteUrl(img) ? img : undefined,
+    },
+  );
 
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
@@ -309,7 +315,12 @@ export const MarketCard = ({
   );
 };
 
-const useMarketImage = (market: { marketId: number; tags?: string[] }) => {
+const useMarketImage = (
+  market: { marketId: number; tags?: string[] },
+  opts?: {
+    fallback?: string;
+  },
+) => {
   const firstTag = market.tags?.[0];
 
   const category = (
@@ -325,7 +336,7 @@ const useMarketImage = (market: { marketId: number; tags?: string[] }) => {
 
   return {
     ...cmsQuery,
-    data: cmsQuery.data?.imageUrl ?? fallback,
+    data: cmsQuery.data?.imageUrl ?? opts?.fallback ?? fallback,
   };
 };
 

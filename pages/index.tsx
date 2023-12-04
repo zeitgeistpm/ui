@@ -33,6 +33,8 @@ import {
 } from "plaiceholder";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
+import { getCmsMarketMetadataForAllMarkets } from "lib/cms/get-market-metadata";
+import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 
 const getPlaiceholders = (
   paths: string[],
@@ -60,6 +62,7 @@ export async function getStaticProps() {
     stats,
     ztgHistory,
     chainProperties,
+    marketsCmsData,
   ] = await Promise.all([
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
@@ -75,6 +78,7 @@ export async function getStaticProps() {
     getNetworkStats(sdk),
     getZTGHistory(),
     sdk.api.rpc.system.properties(),
+    getCmsMarketMetadataForAllMarkets(),
   ]);
 
   const queryClient = new QueryClient();
@@ -85,6 +89,22 @@ export async function getStaticProps() {
       CATEGORIES.map((c) => c.name),
     ),
   );
+
+  for (const marketCmsData of marketsCmsData) {
+    if (marketCmsData.marketId) {
+      queryClient.setQueryData(
+        marketCmsDatakeyForMarket(marketCmsData.marketId),
+        marketCmsData,
+      );
+    }
+  }
+
+  for (const market of [...featuredMarkets, ...trendingMarkets]) {
+    const cmsData = marketsCmsData.find((m) => m.marketId === market.marketId);
+    if (cmsData?.imageUrl) {
+      market.img = cmsData.imageUrl;
+    }
+  }
 
   return {
     props: {
