@@ -16,7 +16,7 @@ export type UseSquid =
 
 export const squid = new Squid({
   baseUrl:
-    process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+    SQUID_TESTNET ?? process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
       ? SQUID_MAINNET
       : SQUID_TESTNET,
   integratorId: SQUID_ROUTER_ID,

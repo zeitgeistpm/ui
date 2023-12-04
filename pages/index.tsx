@@ -33,6 +33,9 @@ import {
 } from "plaiceholder";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
+import Modal from "components/ui/Modal";
+import { Dialog } from "@headlessui/react";
+import dynamic from "next/dynamic";
 
 const getPlaiceholders = (
   paths: string[],
@@ -40,6 +43,10 @@ const getPlaiceholders = (
 ): Promise<IGetPlaiceholderReturn[]> => {
   return Promise.all(paths.map((path) => getPlaiceholder(path, options)));
 };
+
+const SquidForm = dynamic(() => import("components/squid-router/SquidForm"), {
+  ssr: false,
+});
 
 export async function getStaticProps() {
   const client = new GraphQLClient(graphQlEndpoint);
@@ -186,6 +193,17 @@ const IndexPage: NextPage<{
         <div className="mb-12 flex w-full items-center justify-center">
           <GettingStartedSection />
         </div>
+
+        <Modal onClose={() => {}} open>
+          <Dialog.Panel className="relative min-h-[400px] w-full max-w-[562px] overflow-hidden rounded-lg border-1 border-gray-600 border-opacity-50 bg-black bg-opacity-30 text-white backdrop-blur-lg">
+            <h2 className="w-full  py-2 text-center text-white text-opacity-75">
+              Deposit
+            </h2>
+            <div className="px-5 py-3">
+              <SquidForm />
+            </div>
+          </Dialog.Panel>
+        </Modal>
       </div>
     </>
   );
