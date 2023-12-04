@@ -8,16 +8,17 @@ import { useWallet } from "../wallet";
 import { useAtom } from "jotai";
 
 export type UseVourtVote = {
-  vote: CategoricalAssetId;
+  vote?: CategoricalAssetId;
   committed: boolean;
   setVote: (assetId: CategoricalAssetId) => void;
   commitVote: () => void;
+  unCommitVote: () => void;
 };
 
 export type UseCourtVoteProps = {
   caseId: number;
   marketId: number;
-  defaultValue: CategoricalAssetId;
+  defaultValue?: CategoricalAssetId;
 };
 
 const courtVotesAtom = persistentAtom<
@@ -70,10 +71,21 @@ export const useCourtVote = ({
     }));
   };
 
+  const unCommitVote = () => {
+    setCourtVotes((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        committed: false,
+      },
+    }));
+  };
+
   return {
     vote: vote?.assetId ?? defaultValue,
     committed: vote?.committed ?? false,
     setVote,
     commitVote,
+    unCommitVote,
   };
 };
