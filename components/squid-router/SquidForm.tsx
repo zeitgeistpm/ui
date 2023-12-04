@@ -18,8 +18,20 @@ import { Loader } from "../ui/Loader";
 import { ChainData, Token } from "@0xsquid/squid-types";
 import { shortenAddress } from "lib/util";
 import { formatNumberCompact } from "lib/util/format-compact";
+import { persistentAtom } from "lib/state/util/persistent-atom";
+import { useAtom } from "jotai";
+
+const userConfigAtom = persistentAtom({
+  key: "squid-router-user-config",
+  defaultValue: {
+    selectedChainId: "Ethereum",
+    selectedTokenSymbol: "USDC",
+  },
+});
 
 export const SquidForm = () => {
+  const [userConfig, setUserConfig] = useAtom(userConfigAtom);
+
   const squid = useSquid();
   const { address, isConnected } = useAccount();
 
@@ -28,17 +40,14 @@ export const SquidForm = () => {
   const { connect, connectors, error, isLoading, isSuccess, pendingConnector } =
     useConnect();
 
-  const [selectedChainId, setSelectedChainId] = useState("Ethereum");
-  const [selectedTokenSymbol, setSelectedTokenSymbol] = useState("USDC");
-
   const selectedChain = useMemo(() => {
     if (squid.connected) {
       return squid.sdk.chains.find(
-        (c) => c.networkIdentifier === selectedChainId,
+        (c) => c.networkIdentifier === userConfig.selectedChainId,
       );
     }
     return null;
-  }, [squid, selectedChainId]);
+  }, [squid, userConfig.selectedChainId]);
 
   const availableTokens = useMemo(() => {
     if (squid.connected) {
@@ -51,10 +60,12 @@ export const SquidForm = () => {
 
   const selectedToken = useMemo(() => {
     if (availableTokens) {
-      return availableTokens.find((t) => t.symbol === selectedTokenSymbol);
+      return availableTokens.find(
+        (t) => t.symbol === userConfig.selectedTokenSymbol,
+      );
     }
     return availableTokens?.[0];
-  }, [availableTokens, selectedTokenSymbol]);
+  }, [availableTokens, userConfig.selectedTokenSymbol]);
 
   const [amount, setAmount] = useState<number | undefined>(0);
 
@@ -70,14 +81,21 @@ export const SquidForm = () => {
             <div className="relative flex gap-2">
               <ChainSelect
                 className="flex-1"
-                value={selectedChainId}
-                onChange={(chainId) => setSelectedChainId(chainId)}
+                value={userConfig.selectedChainId}
+                onChange={(chainId) =>
+                  setUserConfig((r) => ({ ...r, selectedChainId: chainId }))
+                }
               />
               <TokenSelect
                 className="flex-1"
-                value={selectedTokenSymbol}
+                value={userConfig.selectedTokenSymbol}
                 tokens={availableTokens}
-                onChange={(tokenSymbol) => setSelectedTokenSymbol(tokenSymbol)}
+                onChange={(tokenSymbol) =>
+                  setUserConfig((r) => ({
+                    ...r,
+                    selectedTokenSymbol: tokenSymbol,
+                  }))
+                }
               />
             </div>
           </div>
