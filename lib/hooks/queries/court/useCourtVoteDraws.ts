@@ -6,7 +6,7 @@ import { Vec, u128, StorageKey } from "@polkadot/types";
 
 export const voteDrawsRootKey = "vote-draws";
 
-export const useVoteDrawsForCase = (caseId?: number) => {
+export const useCourtVoteDrawsForCase = (caseId?: number) => {
   const [sdk, id] = useSdkv2();
   const queryClient = useQueryClient();
 
@@ -40,7 +40,7 @@ export const useVoteDrawsForCase = (caseId?: number) => {
   return query;
 };
 
-export const useAllVoteDraws = () => {
+export const useCourtAllVoteDraws = () => {
   const [sdk, id] = useSdkv2();
 
   const enabled = !!sdk && isRpcSdk(sdk);

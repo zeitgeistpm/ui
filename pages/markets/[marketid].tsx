@@ -9,7 +9,10 @@ import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySect
 import DisputeResult from "components/markets/DisputeResult";
 import { AddressDetails } from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
-import MarketChart from "components/markets/MarketChart";
+import {
+  CategoricalMarketChart,
+  ScalarMarketChart,
+} from "components/markets/MarketChart";
 import MarketHeader from "components/markets/MarketHeader";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ReportResult from "components/markets/ReportResult";
@@ -25,7 +28,12 @@ import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
-import { ZTG, environment, graphQlEndpoint } from "lib/constants";
+import {
+  ZTG,
+  environment,
+  graphQlEndpoint,
+  marketReferendumMap,
+} from "lib/constants";
 import {
   MarketPageIndexedData,
   getMarket,
@@ -59,9 +67,10 @@ import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaChevronUp } from "react-icons/fa";
 import { ScoringRule } from "@zeitgeistpm/indexer";
 import { TradeTabType } from "components/trade-form/TradeTab";
+import ReferendumSummary from "components/ui/ReferendumSummary";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -151,6 +160,7 @@ const Market: NextPage<MarketPageProps> = ({
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
+  const referendumIndex = marketReferendumMap?.[marketId];
 
   const tradeItem = useTradeItem();
 
@@ -255,6 +265,9 @@ const Market: NextPage<MarketPageProps> = ({
       poolIdLoading === false) ||
     (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
 
+  const poolCreationDate = new Date(
+    indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
+  );
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -271,7 +284,6 @@ const Market: NextPage<MarketPageProps> = ({
             promotionData={promotionData}
             rejectReason={market?.rejectReason ?? undefined}
           />
-
           {market?.rejectReason && market.rejectReason.length > 0 && (
             <div className="mt-[10px] text-ztg-14-150">
               Market rejected: {market.rejectReason}
@@ -280,28 +292,31 @@ const Market: NextPage<MarketPageProps> = ({
 
           {chartSeries && (indexedMarket?.pool || indexedMarket.neoPool) ? (
             <div className="mt-4">
-              <MarketChart
-                marketId={indexedMarket.marketId}
-                chartSeries={chartSeries}
-                baseAsset={
-                  indexedMarket.pool?.baseAsset ??
-                  indexedMarket.neoPool?.collateral
-                }
-                poolCreationDate={
-                  new Date(
-                    indexedMarket.pool?.createdAt ??
-                      indexedMarket.neoPool?.createdAt ??
-                      "",
-                  )
-                }
-                marketStatus={indexedMarket.status}
-                resolutionDate={new Date(resolutionTimestamp)}
-              />
+              {indexedMarket.scalarType === "number" ? (
+                <ScalarMarketChart
+                  marketId={indexedMarket.marketId}
+                  poolCreationDate={poolCreationDate}
+                  marketStatus={indexedMarket.status}
+                  resolutionDate={new Date(resolutionTimestamp)}
+                />
+              ) : (
+                <CategoricalMarketChart
+                  marketId={indexedMarket.marketId}
+                  chartSeries={chartSeries}
+                  baseAsset={
+                    indexedMarket.pool?.baseAsset ??
+                    indexedMarket.neoPool?.collateral
+                  }
+                  poolCreationDate={poolCreationDate}
+                  marketStatus={indexedMarket.status}
+                  resolutionDate={new Date(resolutionTimestamp)}
+                />
+              )}
             </div>
           ) : (
             <></>
           )}
-          {marketHasPool === false && (
+          {marketIsLoading === false && marketHasPool === false && (
             <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
               <div className="h-ztg-20 w-ztg-20">
                 <AlertTriangle size={20} />
@@ -419,7 +434,11 @@ const Market: NextPage<MarketPageProps> = ({
                 <></>
               )}
             </div>
-
+            {referendumIndex != null && (
+              <div className="mb-12 ">
+                <ReferendumSummary referendumIndex={referendumIndex} />
+              </div>
+            )}
             <SimilarMarketsSection market={market ?? undefined} />
           </div>
         </div>
@@ -674,17 +693,17 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
   return !userCanReport ? (
     <></>
   ) : (
-    <div className="px-5 py-8">
+    <div className="px-5 py-10">
       {reportedOutcome ? (
         <ReportResult market={market} outcome={reportedOutcome} />
       ) : (
         <>
-          <h4 className="mb-3 flex items-center gap-2">
+          <h4 className="mb-4 flex items-center gap-2">
             <AiOutlineFileAdd size={20} className="text-gray-600" />
             <span>Report Market Outcome</span>
           </h4>
 
-          <p className="mb-5 text-sm">
+          <p className="mb-6 text-sm">
             Market has closed and the outcome can now be reported.
           </p>
 
@@ -694,7 +713,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
             </p>
           )}
 
-          <div className="mb-2">
+          <div className="mb-4">
             {market.marketType?.scalar ? (
               <ScalarReportBox market={market} onReport={setReportedOutcome} />
             ) : (

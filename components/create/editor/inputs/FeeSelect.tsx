@@ -64,7 +64,7 @@ const FeeSelect = ({
         <Input
           type="number"
           min={0}
-          className={`w-32 rounded-md bg-gray-100 py-3 pl-4 text-right outline-none ${
+          className={`w-32 rounded-r-none bg-gray-100 py-3 pl-4 text-right outline-none ${
             value?.type === "custom" && isValid && "bg-nyanza-base"
           }`}
           value={Number(value?.value).toString()}

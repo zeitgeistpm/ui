@@ -4095,14 +4095,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/augment-api@npm:2.23.1, @zeitgeistpm/augment-api@npm:^2.23.1":
-  version: 2.23.1
-  resolution: "@zeitgeistpm/augment-api@npm:2.23.1"
+"@zeitgeistpm/augment-api@npm:2.24.0, @zeitgeistpm/augment-api@npm:^2.24.0":
+  version: 2.24.0
+  resolution: "@zeitgeistpm/augment-api@npm:2.24.0"
   peerDependencies:
     "@polkadot/api-base": "*"
     "@polkadot/rpc-core": "*"
     "@polkadot/types": "*"
-  checksum: 87751b2b100b5bc304e0a4a925cd7bbb15fb90eb03b6ea229d8f9ec4043a33c5ee20a5a915d9576daf73cfd1b2692c2945455b2c6e43592e3be9e4d14632991f
+  checksum: 45079ef8856891b449da9ee4e2a21e2c9cdfb45c7d8818d045a133da42d138ecf7257c9850a056a3b5222b146cc6358a82a8ea2d535e740108561fb4235ed0c7
   languageName: node
   linkType: hard
 
@@ -4183,14 +4183,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^3.18.1":
-  version: 3.18.1
-  resolution: "@zeitgeistpm/indexer@npm:3.18.1"
+"@zeitgeistpm/indexer@npm:^3.19.0":
+  version: 3.19.0
+  resolution: "@zeitgeistpm/indexer@npm:3.19.0"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: 8dd36e336f74fee95ad09c7f94f0cd0217fbc68820b661982e381fa8102fe547239ae955cc21355e94f26d6276cf4d4ee074b90715ecee00634bf9bfd4bcbc0f
+  checksum: 7aa9faf1b7fbeb3b39f37a8b17656b93de54ff4185166940497fc741a997bf9f04dad190f7cdf0423375149c6fb218d82d4761678e78ce3b7899c3f36d98483b
   languageName: node
   linkType: hard
 
@@ -4208,12 +4208,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk@npm:2.47.1":
-  version: 2.47.1
-  resolution: "@zeitgeistpm/sdk@npm:2.47.1"
+"@zeitgeistpm/sdk@npm:2.48.0":
+  version: 2.48.0
+  resolution: "@zeitgeistpm/sdk@npm:2.48.0"
   dependencies:
-    "@zeitgeistpm/augment-api": ^2.23.1
-    "@zeitgeistpm/indexer": ^3.18.1
+    "@zeitgeistpm/augment-api": ^2.24.0
+    "@zeitgeistpm/indexer": ^3.19.0
     "@zeitgeistpm/rpc": ^2.14.0
     "@zeitgeistpm/utility": ^2.24.0
     "@zeitgeistpm/web3.storage": ^2.15.0
@@ -4230,7 +4230,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 44186464d5d99301ac9dd3af5732fbac7aa6bde8ce38f6b2f7f49f51f7577f188af794af030107738b2e5c5dfafe798ac4809ad38950c4276717ad59aa9a71c7
+  checksum: 89397bf0f5460f4be8c8c87056aff9d0a685242c1fa90395d06b6e9857ecba27e8b76c975ad215a764f8013df5f5845936d14759cf9692d30d9e309c546a8e93
   languageName: node
   linkType: hard
 
@@ -4286,11 +4286,11 @@ __metadata:
     "@web3auth/modal": ^7.0.4
     "@yornaath/batshit": ^0.8.0
     "@yornaath/batshit-devtools-react": ^0.5.4
-    "@zeitgeistpm/augment-api": 2.23.1
+    "@zeitgeistpm/augment-api": 2.24.0
     "@zeitgeistpm/avatara-nft-sdk": ^1.3.1
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
-    "@zeitgeistpm/sdk": 2.47.1
+    "@zeitgeistpm/sdk": 2.48.0
     "@zeitgeistpm/utility": ^2.20.0
     autoprefixer: 10.2.5
     axios: ^0.21.4
@@ -4323,6 +4323,7 @@ __metadata:
     prettier-plugin-tailwindcss: ^0.5.7
     pure-react-carousel: ^1.27.8
     react: ^18.2.0
+    react-circular-progressbar: ^2.1.0
     react-color: ^2.19.3
     react-countdown-circle-timer: ^2.5.4
     react-data-table-component: ^6.11.8
@@ -10697,6 +10698,15 @@ __metadata:
   bin:
     rc: ./cli.js
   checksum: 2e26e052f8be2abd64e6d1dabfbd7be03f80ec18ccbc49562d31f617d0015fbdbcf0f9eed30346ea6ab789e0fdfe4337f033f8016efdbee0df5354751842080e
+  languageName: node
+  linkType: hard
+
+"react-circular-progressbar@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "react-circular-progressbar@npm:2.1.0"
+  peerDependencies:
+    react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: dc118010a8f94733daafac586c969f7e889ad0736d96a0fda79406ee62e9410848abfd3dee4887bb0ff46b99e1f8c86ee1afabc88dfbf4dcb95107b22de1d6d7
   languageName: node
   linkType: hard
 

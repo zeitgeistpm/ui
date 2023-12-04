@@ -2,7 +2,7 @@ import Avatar from "components/ui/Avatar";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Link from "next/link";
 import DelegateButton from "./DelegateButton";
-import { useParticipants } from "lib/hooks/queries/court/useParticipants";
+import { useCourtParticipants } from "lib/hooks/queries/court/useCourtParticipants";
 import Decimal from "decimal.js";
 import { ZTG } from "@zeitgeistpm/sdk";
 
@@ -41,7 +41,7 @@ const columns: TableColumn[] = [
 ];
 
 const JurorsTable = () => {
-  const { data: participants } = useParticipants();
+  const { data: participants } = useCourtParticipants();
 
   const tableData: TableData[] | undefined = participants
     ?.filter((p) => p.type === "Juror")

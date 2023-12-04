@@ -1,26 +1,9 @@
 import { Dialog } from "@headlessui/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
-import Avatar from "components/ui/Avatar";
-import FormTransactionButton from "components/ui/FormTransactionButton";
 import InfoPopover from "components/ui/InfoPopover";
-import Input from "components/ui/Input";
 import Modal from "components/ui/Modal";
-import Decimal from "decimal.js";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
-import {
-  participantsRootKey,
-  useParticipants,
-} from "lib/hooks/queries/court/useParticipants";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
-import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useNotifications } from "lib/state/notifications";
-import { useWallet } from "lib/state/wallet";
-import { shortenAddress } from "lib/util";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { IoIosInformation } from "react-icons/io";
 import ManageDelegationsForm from "./ManageDelegationsForm";
 
 const ManageDelegationButton = ({ className }: { className?: string }) => {
@@ -38,7 +21,9 @@ const ManageDelegationButton = ({ className }: { className?: string }) => {
         >
           {connectedParticipant?.type === "Delegator"
             ? "Manage Delegated Stake"
-            : "Become a Delegator"}
+            : connectedParticipant?.type === "Juror"
+              ? "Switch to Delegating"
+              : "Become a Delegator"}
         </button>
         {connectedParticipant?.type === "Juror" && (
           <div className="absolute right-0 top-0 translate-x-[50%] translate-y-[-50%] rounded-full bg-orange-500 p-[0.5]">
@@ -47,6 +32,7 @@ const ManageDelegationButton = ({ className }: { className?: string }) => {
               className="text-white"
               position="top-end"
               popoverCss="-ml-12"
+              icon={<IoIosInformation />}
             >
               You are currently a juror. If you delegate to other jurors your
               stake will be removed from your personal stake and delegated

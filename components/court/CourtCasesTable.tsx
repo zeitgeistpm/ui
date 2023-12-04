@@ -7,57 +7,171 @@ import Table, { TableColumn, TableData } from "components/ui/Table";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { CourtCaseInfo } from "lib/hooks/queries/court/useCourtCase";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
-import { useVoteDrawsForCase } from "lib/hooks/queries/court/useVoteDraws";
+import { useCourtVoteDrawsForCase } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
 import { CourtStage, getCourtStage } from "lib/state/court/get-stage";
 import { useWallet } from "lib/state/wallet";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { LuVote } from "react-icons/lu";
 import { courtStageCopy } from "./CourtStageTimer";
-
-const columns: TableColumn[] = [
-  {
-    header: "#",
-    accessor: "id",
-    type: "text",
-  },
-  {
-    header: "Case",
-    accessor: "case",
-    type: "component",
-  },
-  {
-    header: "Status",
-    accessor: "status",
-    type: "component",
-  },
-  {
-    header: "Voting Ends",
-    accessor: "ends",
-    type: "text",
-  },
-  {
-    header: "",
-    accessor: "actions",
-    type: "component",
-  },
-];
+import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
+import { useCourtBacklog } from "lib/state/court/useCourtBacklog";
+import { MdOutlinePendingActions } from "react-icons/md";
+import { FaLongArrowAltDown } from "react-icons/fa";
+import { BsFillTriangleFill } from "react-icons/bs";
+import { motion } from "framer-motion";
+import { TAILWIND } from "lib/constants";
 
 export const CourtCasesTable = () => {
   const { data: cases } = useCourtCases();
   const time = useChainTime();
+  const wallet = useWallet();
 
-  cases?.sort((a, b) => {
-    if (b.case.status.type === "Reassigned") return -1;
-    return a.case.roundEnds.vote.toNumber() > b.case.roundEnds.vote.toNumber()
-      ? 1
-      : 0;
-  });
+  const courtBacklog = useCourtBacklog(wallet.realAddress);
 
-  const tableData: TableData[] | undefined = cases?.map((courtCase) => {
+  const sortedCase = useMemo(() => {
+    return cases?.sort((a, b) => {
+      if (
+        b.case.status.type === "Closed" &&
+        a.case.status.type === "Reassigned"
+      )
+        return 1;
+
+      if (b.case.status.type === "Closed") return -1;
+      if (b.case.status.type === "Reassigned") return -1;
+
+      const aBacklogItem = courtBacklog.findIndex(
+        (item) => item.caseId === a.id,
+      );
+      const bBacklogItem = courtBacklog.findIndex(
+        (item) => item.caseId === b.id,
+      );
+
+      if (aBacklogItem !== -1 && bBacklogItem !== -1) {
+        return aBacklogItem > bBacklogItem ? -1 : 1;
+      }
+
+      if (aBacklogItem !== -1 && bBacklogItem === -1) return -1;
+
+      return a.case.roundEnds.vote.toNumber() > b.case.roundEnds.vote.toNumber()
+        ? 1
+        : 0;
+    });
+  }, [cases, courtBacklog]);
+
+  const actionableCount = courtBacklog.filter((item) => item.actionable).length;
+
+  const backlogNotificationTransition = {
+    duration: 1,
+    ease: "easeInOut",
+    times: [0, 0.2, 0.5, 0.8, 1],
+    repeat: 5,
+  };
+
+  const columns: TableColumn[] = [
+    {
+      header: "#",
+      accessor: "id",
+      type: "text",
+      hideMobile: true,
+    },
+    {
+      header: "Case",
+      accessor: "case",
+      type: "component",
+    },
+    {
+      header: "Status",
+      accessor: "status",
+      type: "component",
+    },
+    {
+      header: "Aggregation Ends",
+      accessor: "ends",
+      type: "text",
+      hideMobile: true,
+    },
+    {
+      header: (
+        <div className="center relative flex-1">
+          {actionableCount > 0 ? (
+            <div className="center absolute -top-6 translate-y-[-50%]">
+              <motion.div
+                animate={{
+                  translateY: ["0%", "-20%", "0%"],
+                  backgroundColor: [
+                    TAILWIND.theme.colors["slate"][200],
+                    TAILWIND.theme.colors["orange"][400],
+                    TAILWIND.theme.colors["slate"][200],
+                  ],
+                  color: [
+                    TAILWIND.theme.colors["gray"][500],
+                    TAILWIND.theme.colors["orange"][800],
+                    TAILWIND.theme.colors["gray"][500],
+                  ],
+                }}
+                transition={backlogNotificationTransition}
+                className={`center relative z-20 flex gap-2 rounded-lg px-3 py-3 text-gray-500`}
+              >
+                <div className="relative z-20">
+                  You are required to take action
+                </div>
+                <motion.div
+                  animate={{
+                    backgroundColor: [
+                      TAILWIND.theme.colors["orange"][400],
+                      TAILWIND.theme.colors["orange"][300],
+                      TAILWIND.theme.colors["orange"][400],
+                    ],
+                    color: [
+                      TAILWIND.theme.colors["orange"][800],
+                      TAILWIND.theme.colors["orange"][700],
+                      TAILWIND.theme.colors["orange"][800],
+                    ],
+                  }}
+                  transition={backlogNotificationTransition}
+                  className="center gap-1 rounded-md  p-1 "
+                >
+                  <div>{actionableCount}</div>
+                  <MdOutlinePendingActions size={16} />
+                </motion.div>
+              </motion.div>
+              <div className="center absolute inset-0 bottom-0 left-0 z-10 w-full translate-y-[20%] text-orange-400">
+                <motion.div
+                  animate={{
+                    translateY: ["40%", "-15%", "40%"],
+                    color: [
+                      TAILWIND.theme.colors["slate"][200],
+                      TAILWIND.theme.colors["orange"][400],
+                      TAILWIND.theme.colors["slate"][200],
+                    ],
+                  }}
+                  transition={backlogNotificationTransition}
+                >
+                  <BsFillTriangleFill
+                    className="rotate-180"
+                    size={24}
+                    style={{
+                      transform: "scale(1.5, 1) rotate(180deg)",
+                    }}
+                  />
+                </motion.div>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+      ),
+      accessor: "actions",
+      type: "component",
+    },
+  ];
+
+  const tableData: TableData[] | undefined = sortedCase?.map((courtCase) => {
     return {
       id: `${courtCase.id}`,
       case: <CaseNameForCaseId id={courtCase.id} />,
@@ -67,7 +181,9 @@ export const CourtCasesTable = () => {
         new Intl.DateTimeFormat("default", {
           dateStyle: "medium",
           timeStyle: "short",
-        }).format(blockDate(time, courtCase.case.roundEnds.vote.toNumber())),
+        }).format(
+          blockDate(time, courtCase.case.roundEnds.aggregation.toNumber()),
+        ),
       actions: <CaseActions caseId={courtCase.id} courtCase={courtCase.case} />,
     };
   });
@@ -85,7 +201,7 @@ const CaseNameForCaseId = (props: { id: number }) => {
   return (
     <>
       {market ? (
-        <div className="text-sm">{market?.question}</div>
+        <div className="break-words text-sm">{market?.question}</div>
       ) : (
         <Skeleton />
       )}
@@ -161,7 +277,7 @@ const CaseActions = ({
     }
   }, [chainTime, market]);
 
-  const { data: draws } = useVoteDrawsForCase(caseId);
+  const { data: draws } = useCourtVoteDrawsForCase(caseId);
 
   const connectedParticipantDraw = draws?.find(
     (draw) => draw.courtParticipant.toString() === wallet.realAddress,
@@ -181,13 +297,10 @@ const CaseActions = ({
     <div className="flex w-full items-center justify-center">
       <Link href={`/court/${caseId}`}>
         <button
-          className={`
-          center line-clamp-1 gap-3 self-end rounded-full border-2 border-gray-300 px-5 py-1.5 text-xs hover:border-gray-400 disabled:opacity-50 md:min-w-[220px]
-            ${canVote && "animate-pulse border-ztg-blue bg-ztg-blue text-white"}
-            ${
-              canReveal &&
-              "animate-pulse border-purple-500 bg-purple-500 text-white"
-            }
+          className={` 
+          center relative line-clamp-1 gap-3 self-end overflow-visible rounded-full border-2 border-gray-300 px-5 py-1.5 text-xs hover:border-gray-400 disabled:opacity-50 md:min-w-[220px]
+            ${canVote && "border-ztg-blue bg-ztg-blue text-white"}
+            ${canReveal && "border-purple-500 bg-purple-500 text-white"}
           `}
         >
           {canVote ? (
@@ -199,7 +312,15 @@ const CaseActions = ({
               <AiOutlineEye size={18} /> <span>Reveal Vote</span>
             </>
           ) : (
-            "View Case"
+            <>
+              <span className="hidden md:inline">View Case</span>
+              <span className="inline md:hidden">View</span>
+            </>
+          )}
+          {(canVote || canReveal) && (
+            <div className="absolute right-1 top-0 h-2 w-2 translate-y-[-50%] ">
+              <div className="h-full w-full animate-pulse-scale rounded-full bg-orange-500" />
+            </div>
           )}
         </button>
       </Link>
@@ -237,7 +358,8 @@ const caseStatusCopy: Record<
   },
   reassigned: {
     title: "Reassigned",
-    description: "Case has been reassigned and winners paid out.",
+    description:
+      "All juror and delegator stakes were reassigned, by losers paying the winners.",
     color: "text-gray-400",
   },
   closed: {
