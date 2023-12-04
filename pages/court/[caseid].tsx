@@ -45,6 +45,7 @@ import { CourtAppealForm } from "components/court/CourtAppealForm";
 import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
+import { sortBy } from "lodash-es";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -410,7 +411,12 @@ const Votes = ({
     })
     .sort((a, b) => b.count - a.count);
 
-  const showLeaderIndicator = votes?.some((vote) => vote.count > 0);
+  const sortedVotes = sortBy(votes, "count").reverse();
+
+  const showLeaderIndicator =
+    isRevealed &&
+    votes?.some((vote) => vote.count > 0) &&
+    sortedVotes?.[0]?.count > sortedVotes?.[1]?.count;
 
   return (
     <div
@@ -418,23 +424,19 @@ const Votes = ({
         showLeaderIndicator && isRevealed && "[&>*:first-child]:bg-green-200"
       }`}
     >
-      {votes?.map(({ category, count }, index) => {
+      {sortedVotes?.map(({ category, count }, index) => {
         const leader = votes?.[0];
-        const isTied = index > 0 && count === leader.count;
 
         return (
           <div
             key={category.ticker}
             className={`relative flex flex-1 flex-col rounded-md border-1 text-xs shadow-sm md:min-w-[200px] ${
-              showLeaderIndicator &&
-              isRevealed &&
-              index === 0 &&
-              "border-green-300"
+              showLeaderIndicator && index === 0 && "border-green-300"
             }`}
           >
             {showLeaderIndicator && isRevealed && index === 0 && (
               <div className=" absolute right-3 top-0 translate-y-[-50%] rounded-xl bg-green-400 px-2 text-xxs text-white">
-                {isTied ? "Tied" : "Leading"}
+                Leading
               </div>
             )}
             <div className="rounded-top-md flex items-center gap-2 overflow-hidden bg-gray-500 bg-opacity-10">
