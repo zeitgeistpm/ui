@@ -24,6 +24,7 @@ import { seededChoice } from "lib/util/random";
 import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { Transition } from "@headlessui/react";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
+import { isMarketImageBase64Encoded } from "lib/types/create-market";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -230,7 +231,10 @@ export const MarketCard = ({
   const { data: image } = useMarketImage(
     { marketId, tags },
     {
-      fallback: img && isAbsoluteUrl(img) ? img : undefined,
+      fallback:
+        img && isAbsoluteUrl(img) && !isMarketImageBase64Encoded(img)
+          ? img
+          : undefined,
     },
   );
 
