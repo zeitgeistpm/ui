@@ -226,6 +226,8 @@ export const MarketCard = ({
     ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
     : 0;
 
+  const { data: image } = useMarketImage({ marketId, tags });
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
@@ -250,7 +252,7 @@ export const MarketCard = ({
               <Image
                 priority
                 alt={"Market image"}
-                src={`/api/market/image/${marketId}`}
+                src={image}
                 fill
                 className="overflow-hidden rounded-lg"
                 style={{
@@ -305,6 +307,26 @@ export const MarketCard = ({
       </div>
     </MarketCardContext.Provider>
   );
+};
+
+const useMarketImage = (market: { marketId: number; tags?: string[] }) => {
+  const firstTag = market.tags?.[0];
+
+  const category = (
+    firstTag && firstTag in CATEGORY_IMAGES ? firstTag : "untagged"
+  ) as keyof typeof CATEGORY_IMAGES;
+
+  const fallback = seededChoice(
+    `${market.marketId}`,
+    CATEGORY_IMAGES[category],
+  );
+
+  const cmsQuery = useMarketCmsMetadata(market.marketId);
+
+  return {
+    ...cmsQuery,
+    data: cmsQuery.data?.imageUrl ?? fallback,
+  };
 };
 
 export default MarketCard;

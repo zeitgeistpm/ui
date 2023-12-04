@@ -65,7 +65,7 @@ import { TradeTabType } from "components/trade-form/TradeTab";
 import ReferendumSummary from "components/ui/ReferendumSummary";
 import {
   CmsMarketMetadata,
-  getCmsMarketMetadataFormMarket,
+  getCmsMarketMetadataForMarket,
 } from "lib/cms/get-market-metadata";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
@@ -107,7 +107,7 @@ export async function getStaticProps({ params }) {
     // promotionData
   ] = await Promise.all([
     getMarket(client, params.marketid),
-    getCmsMarketMetadataFormMarket(params.marketid),
+    getCmsMarketMetadataForMarket(params.marketid),
     // getMarketPromotion(Number(params.marketid)),
   ]);
 

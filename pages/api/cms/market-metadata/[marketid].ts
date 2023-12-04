@@ -1,4 +1,4 @@
-import { getCmsMarketMetadataFormMarket } from "lib/cms/get-market-metadata";
+import { getCmsMarketMetadataForMarket } from "lib/cms/get-market-metadata";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -13,7 +13,7 @@ export default async function handler(
       .json({ error: `Request needs market id in params` });
   }
 
-  const metadata = await getCmsMarketMetadataFormMarket(Number(marketid));
+  const metadata = await getCmsMarketMetadataForMarket(Number(marketid));
 
   return response
     .setHeader(

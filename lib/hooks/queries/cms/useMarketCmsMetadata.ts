@@ -2,9 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import * as batshit from "@yornaath/batshit";
 import { CmsMarketMetadata } from "lib/cms/get-market-metadata";
 
+export const marketCmsDataRootKey = ["cms", "market-metadata"];
+
+export const marketCmsDatakeyForMarket = (marketId: string | number) => [
+  ...marketCmsDataRootKey,
+  Number(marketId),
+];
+
 export const useMarketCmsMetadata = (marketId: string | number) => {
   return useQuery<CmsMarketMetadata | null>(
-    ["cms", "market-metadata", Number(marketId)],
+    marketCmsDatakeyForMarket(marketId),
     async () => {
       return batcher.fetch(Number(marketId));
     },

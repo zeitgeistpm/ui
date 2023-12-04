@@ -1,4 +1,4 @@
-import { getCmsMarketMetadataFormMarkets } from "lib/cms/get-market-metadata";
+import { getCmsMarketMetadataForMarkets } from "lib/cms/get-market-metadata";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -20,7 +20,7 @@ export default async function handler(
         .json({ error: `Request market ids needs to be an array` });
     }
 
-    const metadata = await getCmsMarketMetadataFormMarkets(
+    const metadata = await getCmsMarketMetadataForMarkets(
       marketIds.map((m) => Number(m)),
     );
 

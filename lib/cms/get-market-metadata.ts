@@ -2,6 +2,7 @@ import { Client, isFullPage } from "@notionhq/client";
 import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
+const DB_ID = "e725c0b99674440590d3d5d694960172";
 
 export type CmsMarketMetadata = {
   marketId?: number | null;
@@ -9,15 +10,15 @@ export type CmsMarketMetadata = {
   referendumIndex?: number | null;
 };
 
-export const getCmsMarketMetadataFormMarket = async (
+export const getCmsMarketMetadataForMarket = async (
   marketIds: number,
 ): Promise<CmsMarketMetadata | null> => {
-  return getCmsMarketMetadataFormMarkets([marketIds]).then(
+  return getCmsMarketMetadataForMarkets([marketIds]).then(
     (mm) => mm?.[0] ?? null,
   );
 };
 
-export const getCmsMarketMetadataFormMarkets = async (
+export const getCmsMarketMetadataForMarkets = async (
   marketIds: number[],
 ): Promise<CmsMarketMetadata[]> => {
   if (!process.env.NOTION_API_KEY) {
@@ -25,7 +26,7 @@ export const getCmsMarketMetadataFormMarkets = async (
   }
 
   const { results: marketMetadata } = await notion.databases.query({
-    database_id: "e725c0b99674440590d3d5d694960172",
+    database_id: DB_ID,
     filter: {
       property: "Environment",
       multi_select: {
@@ -41,6 +42,20 @@ export const getCmsMarketMetadataFormMarkets = async (
   });
 
   return marketMetadata.filter(isFullPage).map(parseMarketMetaData) ?? null;
+};
+
+export const getCmsMarketMetadataForAllMarkets = async (): Promise<
+  CmsMarketMetadata[]
+> => {
+  if (!process.env.NOTION_API_KEY) {
+    throw new Error("Missing NOTION_API_KEY");
+  }
+
+  const { results: marketMetadata } = await notion.databases.query({
+    database_id: DB_ID,
+  });
+
+  return marketMetadata?.filter(isFullPage).map(parseMarketMetaData) ?? [];
 };
 
 export const parseMarketMetaData = (data: PageObjectResponse) => {
