@@ -19,6 +19,7 @@ export type Amm2Pool = {
   baseAsset: AssetId;
   liquidity: Decimal;
   swapFee: Decimal;
+  totalShares: Decimal;
   reserves: ReserveMap;
   assetIds: MarketOutcomeAssetId[];
 };
@@ -56,6 +57,9 @@ export const useAmm2Pool = (marketId?: number) => {
           baseAsset: parseAssetIdString(unwrappedRes.collateral.toString())!,
           liquidity: new Decimal(unwrappedRes.liquidityParameter.toString()),
           swapFee: new Decimal(unwrappedRes.swapFee.toString()),
+          totalShares: new Decimal(
+            unwrappedRes.liquiditySharesManager.totalShares.toString(),
+          ),
           reserves,
           assetIds,
         };
