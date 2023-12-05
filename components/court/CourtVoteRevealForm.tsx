@@ -54,7 +54,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
 
   const { send, isReady, isLoading, isBroadcasting } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk) && salt) {
+      if (isRpcSdk(sdk) && salt && vote) {
         return sdk.api.tx.court.revealVote(
           caseId,
           {
@@ -128,7 +128,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
         <div className="mb-8 mt-6">
           <MarketContextActionOutcomeSelector
             market={market}
-            selected={vote}
+            selected={vote ?? outcomeAssets[0]}
             options={outcomeAssets}
             onChange={onChangeSelectedOutcome}
             disabled={committed}

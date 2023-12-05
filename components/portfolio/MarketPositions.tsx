@@ -160,10 +160,11 @@ export const MarketPositions = ({
       foreignAssetPrices,
       usdZtgPrice,
     );
+
     return (
       pos.userBalance
         .mul(pos.price)
-        .mul(baseAssetUsdPrice)
+        .mul(baseAssetUsdPrice ?? 0)
         .div(ZTG)
         .toNumber() >= MIN_USD_DISPLAY_AMOUNT
     );
@@ -203,31 +204,31 @@ export const MarketPositions = ({
                   userBalance: userBalance.div(ZTG).toNumber(),
                   price: {
                     value: price.toNumber(),
-                    usdValue: price.mul(baseAssetUsdPrice).toNumber(),
+                    usdValue: price.mul(baseAssetUsdPrice ?? 0).toNumber(),
                   },
                   cost: {
                     value: avgCost,
                     usdValue: new Decimal(avgCost)
-                      .mul(baseAssetUsdPrice)
+                      .mul(baseAssetUsdPrice ?? 0)
                       .toNumber(),
                   },
                   upnl: {
                     value: upnl,
                     usdValue: new Decimal(upnl)
-                      .mul(baseAssetUsdPrice)
+                      .mul(baseAssetUsdPrice ?? 0)
                       .toNumber(),
                   },
                   rpnl: {
                     value: rpnl,
                     usdValue: new Decimal(rpnl)
-                      .mul(baseAssetUsdPrice)
+                      .mul(baseAssetUsdPrice ?? 0)
                       .toNumber(),
                   },
                   value: {
                     value: userBalance.mul(price).div(ZTG).toNumber(),
                     usdValue: userBalance
                       .mul(price)
-                      .mul(baseAssetUsdPrice)
+                      .mul(baseAssetUsdPrice ?? 0)
                       .div(ZTG)
                       .toNumber(),
                   },
