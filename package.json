@@ -25,6 +25,7 @@
     "@babel/helper-compilation-targets": "^7.19.3",
     "@dnd-kit/core": "^6.0.8",
     "@dnd-kit/sortable": "^7.0.2",
+    "@ethersproject/bignumber": "^5.7.0",
     "@headlessui/react": "^1.7.17",
     "@headlessui/tailwindcss": "^0.1.2",
     "@metamask/sdk-react": "^0.14.1",
@@ -99,7 +100,7 @@
     "use-debounce": "^7.0.1",
     "validatorjs": "^3.22.1",
     "viem": "^1.19.11",
-    "wagmi": "^1.4.7",
+    "wagmi": "^0.12.13",
     "zod": "^3.21.4"
   },
   "devDependencies": {

@@ -11,7 +11,9 @@ import {
   useDisconnect,
   useNetwork,
   useSwitchNetwork,
+  useSigner,
 } from "wagmi";
+import { BigNumber, parseFixed, formatFixed } from "@ethersproject/bignumber";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { Connector } from "wagmi";
 import { Loader } from "../ui/Loader";
@@ -20,6 +22,13 @@ import { shortenAddress } from "lib/util";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { persistentAtom } from "lib/state/util/persistent-atom";
 import { useAtom } from "jotai";
+import TransactionButton from "components/ui/TransactionButton";
+import { al } from "vitest/dist/reporters-5f784f42";
+import Decimal from "decimal.js";
+import { RouteResponse, TransactionResponse } from "@0xsquid/sdk/dist/types";
+import { useDebounce } from "use-debounce";
+import Skeleton from "components/ui/Skeleton";
+import { CircularProgressbar } from "react-circular-progressbar";
 
 const userConfigAtom = persistentAtom({
   key: "squid-router-user-config",
@@ -40,6 +49,10 @@ export const SquidForm = () => {
   const { connect, connectors, error, isLoading, isSuccess, pendingConnector } =
     useConnect();
 
+  const [amount, setAmount] = useState<number | undefined>(0);
+
+  const [debouncedAmount] = useDebounce(amount, 500);
+
   const selectedChain = useMemo(() => {
     if (squid.connected) {
       return squid.sdk.chains.find(
@@ -48,6 +61,10 @@ export const SquidForm = () => {
     }
     return null;
   }, [squid, userConfig.selectedChainId]);
+
+  const { data: signer } = useSigner({
+    chainId: Number(selectedChain?.chainId),
+  });
 
   const availableTokens = useMemo(() => {
     if (squid.connected) {
@@ -59,19 +76,116 @@ export const SquidForm = () => {
   }, [squid, selectedChain]);
 
   const selectedToken = useMemo(() => {
-    if (availableTokens) {
-      return availableTokens.find(
+    return (
+      availableTokens?.find(
         (t) => t.symbol === userConfig.selectedTokenSymbol,
-      );
-    }
-    return availableTokens?.[0];
+      ) ?? availableTokens?.[0]
+    );
   }, [availableTokens, userConfig.selectedTokenSymbol]);
 
-  const [amount, setAmount] = useState<number | undefined>(0);
+  const [route, setRoute] = useState<RouteResponse["route"] | null>(null);
+  const [depositing, setDepositing] = useState(false);
+  const [calculatingRoute, setCalculatingRoute] = useState(false);
+  const [totalFeeCost, setTotalFeeCost] = useState<Decimal | null>(null);
+
+  useEffect(() => {
+    if (squid.connected && selectedChain && selectedToken && signer && amount) {
+      const moonbeamChain = squid.sdk.chains.find((c) =>
+        c.networkName.toLowerCase().match(/moonbeam|moonbase/),
+      );
+
+      const wormHoleToken = squid.sdk.tokens.find(
+        (t) =>
+          t.symbol.match(/USDC\.wh/gi) && t.chainId === moonbeamChain?.chainId,
+      );
+
+      if (!wormHoleToken) {
+        return alert("Moonbeam token not found");
+      }
+
+      setCalculatingRoute(true);
+
+      squid.sdk
+        .getRoute({
+          fromChain: selectedChain.chainId,
+          fromAmount: parseFixed(
+            amount?.toString(),
+            Number(selectedToken.decimals),
+          ).toString(),
+          fromToken: selectedToken.address,
+          toChain: wormHoleToken.chainId,
+          toToken: wormHoleToken.address,
+          fromAddress: address,
+          toAddress: address,
+          slippageConfig: {
+            autoMode: 1,
+          },
+          enableBoost: true,
+        })
+        .then(({ route }) => {
+          setRoute(route);
+
+          const totalGasCost = route.estimate.gasCosts.reduce(
+            (acc, gasCost) => {
+              return acc.add(
+                new Decimal(
+                  formatFixed(
+                    gasCost.amount,
+                    Number(gasCost.token.decimals),
+                  ).toString(),
+                ).mul(selectedToken.usdPrice ?? 0),
+              );
+            },
+            new Decimal(0),
+          );
+
+          const totalFeeCost = route.estimate.feeCosts.reduce(
+            (acc, feeCost) => {
+              return acc.add(
+                new Decimal(
+                  formatFixed(
+                    feeCost.amount,
+                    Number(feeCost.token.decimals),
+                  ).toString(),
+                ).mul(selectedToken.usdPrice ?? 0),
+              );
+            },
+            new Decimal(0),
+          );
+
+          setTotalFeeCost(totalGasCost.add(totalFeeCost));
+        })
+        .finally(() => {
+          setCalculatingRoute(false);
+        });
+    }
+  }, [debouncedAmount, squid.connected, selectedChain, selectedToken, signer]);
+
+  const onClickDeposit = async () => {
+    if (route && squid.connected && signer) {
+      setDepositing(true);
+      try {
+        const tx = (await squid.sdk.executeRoute({
+          route,
+          signer,
+        })) as TransactionResponse;
+
+        console.log({ tx });
+
+        const result = await tx.wait();
+
+        console.log({ result });
+      } catch (error) {
+        console.warn(error);
+      }
+
+      setDepositing(false);
+    }
+  };
 
   return (
     <div className="h-full w-full">
-      {squid.connected ? (
+      {squid.connected && squid.sdk.chains.length && squid.sdk.tokens.length ? (
         <>
           <div className="mb-4">
             <div className="mb-2 flex items-center">
@@ -100,7 +214,7 @@ export const SquidForm = () => {
             </div>
           </div>
 
-          <div className="w-full rounded-lg border-1 border-none bg-black bg-opacity-30 p-4">
+          <div className="mb-3 w-full rounded-lg border-1 border-none bg-black bg-opacity-30 p-4">
             <div className="relative mb-2">
               <input
                 value={amount === 0 ? undefined : amount}
@@ -124,7 +238,35 @@ export const SquidForm = () => {
             </div>
           </div>
 
-          <SwapTransactionButton />
+          <div className="center h-12 gap-1 text-sm">
+            {calculatingRoute ? (
+              <>
+                <div className="font-bold text-white text-opacity-70">
+                  Routing..
+                </div>
+                <div className="h-[9px] w-[9px] animate-pulse-scale rounded-full bg-purple-400" />
+              </>
+            ) : (
+              <>
+                <span className="text-white text-opacity-40">Fees + Gas:</span>
+                <span className="text-white text-opacity-70">
+                  $ {totalFeeCost?.toFixed(2) ?? "0.00"}
+                </span>
+              </>
+            )}
+          </div>
+
+          <div className="center mt-4">
+            <TransactionButton
+              className="w-full"
+              disabled={
+                !isConnected || !amount || calculatingRoute || depositing
+              }
+              onClick={onClickDeposit}
+            >
+              {calculatingRoute ? "..." : "Deposit"}
+            </TransactionButton>
+          </div>
         </>
       ) : (
         <div className="center absolute bottom-0 left-0 right-0 top-0">
@@ -158,13 +300,11 @@ const ChainSelect = ({
 
   const options = useMemo<SelectOption<string>[]>(() => {
     if (squid.connected) {
-      return squid.sdk.chains
-        .filter((c) => !c.networkName.toLowerCase().match("moonbeam"))
-        .map((c) => ({
-          imageSrc: c.chainIconURI,
-          label: c.networkName,
-          value: c.networkIdentifier,
-        }));
+      return squid.sdk.chains.map((c) => ({
+        imageSrc: c.chainIconURI,
+        label: c.networkName,
+        value: c.networkIdentifier,
+      }));
     }
     return [];
   }, [squid, value]);
@@ -333,7 +473,7 @@ const WalletConnectButton = ({
   }, [isSuccess]);
 
   const onClickConnect = () => {
-    if (!selectedChainIsConnectedChain && selectedChain) {
+    if (isConnected && !selectedChainIsConnectedChain && selectedChain) {
       switchNetwork?.(Number(selectedChain.chainId));
     } else {
       setShowWalletSelect(true);
@@ -347,7 +487,9 @@ const WalletConnectButton = ({
         onClick={onClickConnect}
       >
         {!isConnected ? (
-          "Connect Wallet"
+          <div className="flex flex-1 items-center justify-center gap-1 self-end text-center">
+            Connect Wallet
+          </div>
         ) : selectedChainIsConnectedChain ? (
           <>
             <div className="flex flex-1 items-center gap-1 group-hover:hidden">

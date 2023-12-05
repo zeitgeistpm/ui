@@ -1,3 +1,4 @@
+import { TAILWIND } from "lib/constants";
 import { isString } from "lodash-es";
 
 export type LoaderProps = {
@@ -7,7 +8,7 @@ export type LoaderProps = {
   lineThrough?: boolean;
 };
 
-export type LoaderVariant = "Success" | "Info" | "Error" | "Dark";
+export type LoaderVariant = "Success" | "Info" | "Error" | "Dark" | "Purple";
 
 export const Loader = ({
   className,
@@ -32,7 +33,7 @@ export const Loader = ({
       <div className="center absolute left-0 top-0 z-20 h-full w-full scale-[0.84] rounded-full bg-inherit">
         {lineThrough && (
           <div
-            className="absolute, left-0 top-0 h-[102%] w-[6%] rotate-45 bg-red"
+            className="absolute, left-0 top-0 h-[102%] w-[8%] rotate-45 bg-red"
             style={{
               background: `linear-gradient(218deg, ${
                 gradient?.[0] ?? "rgba(0,0,0,0.2)"
@@ -55,5 +56,10 @@ const getGradient = (type: LoaderVariant): [string, string] => {
       return ["#C43131", "#FF6B00"];
     case "Dark":
       return ["rgb(10,10,10, 0.35)", "rgba(10,10,10, 0.85)"];
+    case "Purple":
+      return [
+        TAILWIND.theme.colors.purple[500],
+        TAILWIND.theme.colors.purple[600],
+      ];
   }
 };

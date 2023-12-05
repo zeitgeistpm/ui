@@ -1,7 +1,7 @@
 import { useSquid } from "lib/hooks/squid-router/useSquid";
 import { formatChainsForWagmi } from "lib/squid/formatChainsForWagmi";
 import { useMemo } from "react";
-import { WagmiConfig, configureChains, createConfig } from "wagmi";
+import { WagmiConfig, configureChains, createClient } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
@@ -11,13 +11,13 @@ import { publicProvider } from "wagmi/providers/public";
 export const WagmiProvider = ({ children }) => {
   const squid = useSquid();
 
-  const config = useMemo(() => {
-    const { chains, publicClient, webSocketPublicClient } = configureChains(
+  const client = useMemo(() => {
+    const { chains, provider, webSocketProvider } = configureChains(
       squid.connected ? formatChainsForWagmi(squid.sdk.chains) : [mainnet],
       [alchemyProvider({ apiKey: "yourAlchemyApiKey" }), publicProvider()],
     );
 
-    const wagmiConfig = createConfig({
+    const wagmiConfig = createClient({
       autoConnect: true,
       connectors: [
         new MetaMaskConnector({ chains }),
@@ -28,12 +28,12 @@ export const WagmiProvider = ({ children }) => {
           },
         }),
       ],
-      publicClient,
-      webSocketPublicClient,
+      provider,
+      webSocketProvider,
     });
 
     return wagmiConfig;
   }, [squid.connected]);
 
-  return <WagmiConfig config={config}>{children}</WagmiConfig>;
+  return <WagmiConfig client={client}>{children}</WagmiConfig>;
 };
