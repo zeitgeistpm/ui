@@ -182,7 +182,13 @@ const BuyForm = ({
     const subscription = watch((value, { name, type }) => {
       const changedByUser = type != null;
 
-      if (!changedByUser || !maxSpendableBalance || !maxAmountIn) return;
+      if (
+        !changedByUser ||
+        !maxSpendableBalance ||
+        maxSpendableBalance.eq(0) ||
+        !maxAmountIn
+      )
+        return;
 
       if (name === "percentage") {
         const max = maxSpendableBalance.greaterThan(maxAmountIn)
@@ -255,9 +261,9 @@ const BuyForm = ({
               },
               validate: (value) => {
                 if (value > (maxSpendableBalance?.div(ZTG).toNumber() ?? 0)) {
-                  return `Insufficient balance. Current balance: ${maxSpendableBalance
+                  return `Insufficient balance (${maxSpendableBalance
                     ?.div(ZTG)
-                    .toFixed(3)}`;
+                    .toFixed(3)}${baseSymbol})`;
                 } else if (value <= 0) {
                   return "Value cannot be zero or less";
                 } else if (maxAmountIn?.div(ZTG)?.lessThanOrEqualTo(value)) {

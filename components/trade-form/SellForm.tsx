@@ -166,7 +166,13 @@ const SellForm = ({
     const subscription = watch((value, { name, type }) => {
       const changedByUser = type != null;
 
-      if (!changedByUser || !selectedAssetBalance || !maxAmountIn) return;
+      if (
+        !changedByUser ||
+        !selectedAssetBalance ||
+        selectedAssetBalance.eq(0) ||
+        !maxAmountIn
+      )
+        return;
 
       if (name === "percentage") {
         const max = selectedAssetBalance.greaterThan(maxAmountIn)
