@@ -37,3 +37,5 @@ export const WagmiProvider = ({ children }) => {
 
   return <WagmiConfig client={client}>{children}</WagmiConfig>;
 };
+
+export default WagmiProvider;

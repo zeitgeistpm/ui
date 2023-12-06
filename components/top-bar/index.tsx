@@ -25,7 +25,33 @@ import Skeleton from "components/ui/Skeleton";
 import { delay } from "lib/util/delay";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
-import SquidForm from "components/squid-router/SquidForm";
+import { Loader } from "components/ui/Loader";
+
+const SquidForm = dynamic(() => import("components/squid-router/SquidForm"), {
+  ssr: false,
+  loading() {
+    return (
+      <div className="center absolute bottom-0 left-0 right-0 top-0">
+        <div className="overflow-hidden rounded-full bg-black bg-opacity-50 ">
+          <Loader loading variant={"Success"} className="h-12 w-12" />
+        </div>
+      </div>
+    );
+  },
+});
+
+const WagmiProvider = dynamic(() => import("components/wagmi/WagmiProvider"), {
+  ssr: false,
+  loading() {
+    return (
+      <div className="center absolute bottom-0 left-0 right-0 top-0">
+        <div className="overflow-hidden rounded-full bg-black bg-opacity-50 ">
+          <Loader loading variant={"Success"} className="h-12 w-12" />
+        </div>
+      </div>
+    );
+  },
+});
 
 const AccountButton = dynamic(
   async () => {
@@ -247,7 +273,11 @@ const GetTokensButton = () => {
             Deposit
           </h2>
           <div className="px-5 py-3">
-            <SquidForm />
+            <Suspense fallback={<div>LOADING</div>}>
+              <WagmiProvider>
+                <SquidForm />
+              </WagmiProvider>
+            </Suspense>
           </div>
         </Dialog.Panel>
       </Modal>

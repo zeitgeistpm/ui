@@ -5,7 +5,6 @@ import { Hydrate, QueryClientProvider } from "@tanstack/react-query";
 import * as Fathom from "fathom-client";
 
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
-import Devtools from "components/devtools";
 import DefaultLayout from "layouts/DefaultLayout";
 import { appQueryClient } from "lib/query-client";
 import Head from "next/head";
@@ -14,9 +13,8 @@ import React, { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 
 // font optimization from @next/font
-import { inter, kanit, roboto_mono } from "lib/util/fonts";
 import { useWallet } from "lib/state/wallet";
-import { WagmiProvider } from "components/wagmi/WagmiProvider";
+import { inter, kanit, roboto_mono } from "lib/util/fonts";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -83,33 +81,30 @@ const MyApp = ({ Component, pageProps }) => {
       </style>
       <QueryClientProvider client={appQueryClient}>
         <Hydrate state={pageProps.dehydratedState}>
-          <WagmiProvider>
-            <AvatarContext.Provider
-              value={{
-                api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
-                ipfs: {
-                  node: { url: process.env.NEXT_PUBLIC_IPFS_NODE ?? "" },
-                },
-                rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
-                indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
-                avatarCollectionId:
-                  process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
-                badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
-                avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
-                prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
-              }}
-            >
-              <Head>
-                <title>Zeitgeist - Prediction Markets</title>
-              </Head>
-              <DefaultLayout>
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
-              </DefaultLayout>
-              {/* <Devtools /> */}
-            </AvatarContext.Provider>
-          </WagmiProvider>
+          <AvatarContext.Provider
+            value={{
+              api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
+              ipfs: {
+                node: { url: process.env.NEXT_PUBLIC_IPFS_NODE ?? "" },
+              },
+              rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
+              indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
+              avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
+              badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
+              avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
+              prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
+            }}
+          >
+            <Head>
+              <title>Zeitgeist - Prediction Markets</title>
+            </Head>
+            <DefaultLayout>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </DefaultLayout>
+            {/* <Devtools /> */}
+          </AvatarContext.Provider>
         </Hydrate>
       </QueryClientProvider>
     </div>
