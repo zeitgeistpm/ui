@@ -5,7 +5,6 @@ import { Hydrate, QueryClientProvider } from "@tanstack/react-query";
 import * as Fathom from "fathom-client";
 
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
-import Devtools from "components/devtools";
 import DefaultLayout from "layouts/DefaultLayout";
 import { appQueryClient } from "lib/query-client";
 import Head from "next/head";
@@ -14,8 +13,8 @@ import React, { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 
 // font optimization from @next/font
-import { inter, kanit, roboto_mono } from "lib/util/fonts";
 import { useWallet } from "lib/state/wallet";
+import { inter, kanit, roboto_mono } from "lib/util/fonts";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -85,7 +84,9 @@ const MyApp = ({ Component, pageProps }) => {
           <AvatarContext.Provider
             value={{
               api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
-              ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE ?? "" } },
+              ipfs: {
+                node: { url: process.env.NEXT_PUBLIC_IPFS_NODE ?? "" },
+              },
               rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
               indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
               avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,

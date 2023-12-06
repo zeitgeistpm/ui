@@ -11,7 +11,9 @@ module.exports = withPlaiceholder({
       "ipfs-gateway.zeitgeist.pm",
       "cdn.discordapp.com",
       "images.unsplash.com",
+      "s2.coinmarketcap.com",
     ],
   },
   staticPageGenerationTimeout: 300, //5 mins
+  transpilePackages: ["@0xsquid/widget"],
 });

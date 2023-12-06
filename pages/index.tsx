@@ -25,14 +25,14 @@ import {
 } from "lib/hooks/queries/useAssetUsdPrice";
 import { NextPage } from "next";
 
+import { dehydrate, QueryClient } from "@tanstack/react-query";
+import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
 import path from "path";
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
-import { dehydrate, QueryClient } from "@tanstack/react-query";
-import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
 
 const getPlaiceholders = (
   paths: string[],

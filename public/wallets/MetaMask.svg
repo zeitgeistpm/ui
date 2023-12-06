@@ -1,0 +1,48 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45" width="45" height="45">
+	<title>metamask_old-svg</title>
+	<style>
+		.s0 { fill: #e17726;stroke: #e17726;stroke-linecap: round;stroke-linejoin: round;stroke-width: .4 } 
+		.s1 { fill: #e27625;stroke: #e27625;stroke-linecap: round;stroke-linejoin: round;stroke-width: .4 } 
+		.s2 { fill: #d5bfb2;stroke: #d5bfb2;stroke-linecap: round;stroke-linejoin: round;stroke-width: .4 } 
+		.s3 { fill: #233447;stroke: #233447;stroke-linecap: round;stroke-linejoin: round;stroke-width: .4 } 
+		.s4 { fill: #cc6228;stroke: #cc6228;stroke-linecap: round;stroke-linejoin: round;stroke-width: .4 } 
+		.s5 { fill: #e27525;stroke: #e27525;stroke-linecap: round;stroke-linejoin: round;stroke-width: .4 } 
+		.s6 { fill: #f5841f;stroke: #f5841f;stroke-linecap: round;stroke-linejoin: round;stroke-width: .4 } 
+		.s7 { fill: #c0ac9d;stroke: #c0ac9d;stroke-linecap: round;stroke-linejoin: round;stroke-width: .4 } 
+		.s8 { fill: #161616;stroke: #161616;stroke-linecap: round;stroke-linejoin: round;stroke-width: .4 } 
+		.s9 { fill: #763e1a;stroke: #763e1a;stroke-linecap: round;stroke-linejoin: round;stroke-width: .4 } 
+	</style>
+	<g id="Layer">
+		<path id="Layer" class="s0" d="m38 7l-13.2 9.7 2.5-5.7z"/>
+		<g id="Layer">
+			<path id="Layer" class="s1" d="m18.4 11l2.3 5.8-13-9.8z"/>
+			<path id="Layer" class="s1" d="m39.4 29.7l-2.2 7.2-7.5-2 3.5-5.4z"/>
+			<path id="Layer" class="s1" d="m12.4 29.5l3.5 5.4-7.5 2-2.1-7.2z"/>
+			<path id="Layer" class="s1" d="m20.6 16l0.2 8-7.4-0.3 2.1-3.2z"/>
+			<path id="Layer" class="s1" d="m32.2 23.7l-7.4 0.3 0.2-8.1 5.2 4.6z"/>
+			<path id="Layer" class="s1" d="m16.5 29.7l3.9 3-4.5 2.2z"/>
+			<path id="Layer" class="s1" d="m29.1 29.7l0.6 5.2-4.4-2.2z"/>
+		</g>
+		<path id="Layer" class="s2" d="m25.6 36.8v-1.2l-0.3-2.9 4.4 2.2z"/>
+		<path id="Layer" class="s2" d="m20.4 32.7l-0.4 2.9v1.2l-4.1-1.9z"/>
+		<path id="Layer" class="s3" d="m20.1 27.8l-3.7-1.1 2.6-1.2z"/>
+		<path id="Layer" class="s3" d="m25.5 27.8l1.1-2.3 2.6 1.2z"/>
+		<path id="Layer" class="s4" d="m12.4 29.7l4.1-0.2-0.6 5.4z"/>
+		<path id="Layer" class="s4" d="m33.2 29.7l-3.5 5.2-0.6-5.4z"/>
+		<path id="Layer" class="s4" d="m29.2 26.7l-2.6-1.2-1.1 2.3-0.7-3.8 7.4-0.3z"/>
+		<path id="Layer" class="s4" d="m13.4 23.7l7.4 0.3-0.7 3.8-1.1-2.3-2.6 1.2z"/>
+		<path id="Layer" class="s5" d="m16.4 26.7l0.1 3-3.1-6z"/>
+		<path id="Layer" class="s5" d="m32.2 23.7l-3.1 6 0.1-3z"/>
+		<path id="Layer" class="s5" d="m21.2 26.4l-0.2 5.9-0.9-4.5 0.7-3.8z"/>
+		<path id="Layer" class="s5" d="m25.5 27.8l-0.9 4.5-0.1-6 0.3-2.3z"/>
+		<path id="Layer" class="s6" d="m29.2 26.7l-0.1 3-3.8 3-0.7-0.4 0.9-4.5z"/>
+		<path id="Layer" class="s6" d="m20.1 27.8l0.9 4.5-0.6 0.4-3.9-3-0.1-3z"/>
+		<path id="Layer" class="s7" d="m29.7 34.9l-1.4 1.2-3 2h-5l-3-2-1.4-1.2 4.1 1.9v-1.2l0.3-0.3h5l0.3 0.3v1.2z"/>
+		<path id="Layer" class="s8" d="m25.6 35.6l-0.3-0.3h-5l-0.3 0.3 0.4-2.9 0.6-0.4h3.6l0.7 0.4z"/>
+		<path id="Layer" class="s9" d="m39.2 17.9l-1 0.8 0.8 0.6-1.1 1 0.7 0.4-1.6 1.8-6.8-2-4.9-4.1 12.7-9.4 1.6 5-1.1 5.4z"/>
+		<path id="Layer" class="s9" d="m7.7 7l12.7 9.4-4.9 4.1-6.9 2-1.5-1.8 0.6-0.4-1-1 0.8-0.6-1.1-0.8 0.7-0.5-1.1-5.4z"/>
+		<path id="Layer" class="s6" d="m39.4 29.7h-6.2-4.1l3.1-6-2-3.2 6.8 2z"/>
+		<path id="Layer" class="s6" d="m13.4 23.7l3.1 6h-4.1-6.1l2.3-7.2 6.9-2z"/>
+		<path id="Layer" class="s6" d="m24.7 26.4l-0.1 5.9h-3.6v-5.9l-0.2-2.4-0.4-7.6-2-5.4h8.9l-2 5.4-0.5 7.6z"/>
+	</g>
+</svg>

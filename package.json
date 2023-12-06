@@ -18,11 +18,17 @@
     "prunable": "ts-prune | grep -v 'used in module' | grep -v '^pages.*\\- [default|getStaticPaths|getStaticProps]' | grep -v 'playwright.config.ts'"
   },
   "dependencies": {
+    "@0xsquid/sdk": "2.8.6",
+    "@0xsquid/squid-types": "^0.1.39",
+    "@0xsquid/widget": "^1.6.21",
+    "@axelar-network/axelarjs-sdk": "^0.13.6",
     "@babel/helper-compilation-targets": "^7.19.3",
     "@dnd-kit/core": "^6.0.8",
     "@dnd-kit/sortable": "^7.0.2",
+    "@ethersproject/bignumber": "^5.7.0",
     "@headlessui/react": "^1.7.17",
     "@headlessui/tailwindcss": "^0.1.2",
+    "@metamask/sdk-react": "^0.14.1",
     "@notionhq/client": "^2.2.3",
     "@plaiceholder/next": "^2.5.0",
     "@polkadot/api": "^10.10.1",
@@ -93,6 +99,8 @@
     "uri-js": "^4.4.1",
     "use-debounce": "^7.0.1",
     "validatorjs": "^3.22.1",
+    "viem": "^1.19.11",
+    "wagmi": "^0.12.13",
     "zod": "^3.21.4"
   },
   "devDependencies": {
