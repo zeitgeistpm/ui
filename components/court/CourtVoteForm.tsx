@@ -21,11 +21,13 @@ import { HiOutlineDocumentDownload } from "react-icons/hi";
 export type CourtVoteFormProps = {
   caseId: number;
   market: FullMarketFragment;
+  onVote?: () => void;
 };
 
 export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
   caseId,
   market,
+  onVote,
 }) => {
   const [sdk, id] = useSdkv2();
   const queryClient = useQueryClient();
@@ -65,6 +67,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
         commitVote();
         queryClient.invalidateQueries([id, voteDrawsRootKey, caseId]);
         queryClient.invalidateQueries([id, voteDrawsRootKey, "all"]);
+        onVote?.();
       },
     },
   );
@@ -82,7 +85,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
         <div className="mb-8 mt-6">
           <MarketContextActionOutcomeSelector
             market={market}
-            selected={vote}
+            selected={vote ?? outcomeAssets[0]}
             options={outcomeAssets}
             disabled={committed}
             onChange={(assetId) => {
@@ -142,8 +145,10 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
                 <code className="mb-4 block text-xs">
                   <span>
                     vote_item = VoteItem::Outcome(OutcomeReport::Categorical(
-                    {vote.CategoricalOutcome[1]})) {"->"}{" "}
-                    {market.categories?.[vote.CategoricalOutcome[1]].ticker}
+                    {vote?.CategoricalOutcome[1] ?? "null"})) {"->"}{" "}
+                    {vote
+                      ? market.categories?.[vote.CategoricalOutcome[1]]?.ticker
+                      : "--"}
                   </span>
                   <br />
                   <span className="text-black">salt</span> ={" "}

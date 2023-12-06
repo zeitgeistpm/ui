@@ -30,9 +30,9 @@ import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 import NotFoundPage from "pages/404";
 import { IGetPlaiceholderReturn, getPlaiceholder } from "plaiceholder";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
-import { LuVote } from "react-icons/lu";
+import { LuReplace, LuVote } from "react-icons/lu";
 import { PiBooks } from "react-icons/pi";
 import {
   DAY_SECONDS,
@@ -43,6 +43,8 @@ import {
 } from "lib/constants";
 import { CourtAppealForm } from "components/court/CourtAppealForm";
 import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
+import { useCourtVote } from "lib/state/court/useVoteOutcome";
+import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -160,28 +162,59 @@ const CasePage: NextPage = ({
     }
   }, [time, market, courtCase]);
 
+  const { prompt } = useConfirmation();
+  const [recastVoteEnabled, setRecastVoteEnabled] = useState(false);
+
+  const { unCommitVote } = useCourtVote({
+    caseId,
+    marketId: market.marketId,
+  });
+
+  const onClickRecastVote = async () => {
+    if (
+      await prompt({
+        title: "Recast Vote",
+        description: "Are you sure you want to recast your vote?",
+      })
+    ) {
+      unCommitVote();
+      setRecastVoteEnabled(true);
+    }
+  };
+
+  const onVote = () => {
+    setRecastVoteEnabled(false);
+  };
+
   const actionSection = (
     <>
       {stage?.type === "vote" && (
         <>
-          {isDrawnJuror && (
+          {(isDrawnJuror || recastVoteEnabled) && (
             <>
-              <CourtVoteForm market={market} caseId={caseId} />
+              <CourtVoteForm market={market} caseId={caseId} onVote={onVote} />
             </>
           )}
 
-          {hasSecretVote && (
+          {hasSecretVote && !recastVoteEnabled && (
             <div className="overflow-hidden rounded-xl px-6 py-6 shadow-lg">
               <div className="flex flex-col items-center gap-3">
                 <div className="text-blue-500">
                   <LuVote size={64} />
                 </div>
                 <h3 className="text mb-2 text-blue-500">You have voted</h3>
-                <p className="text-center text-sm text-gray-500">
+                <p className="mb-3 text-center text-sm text-gray-500">
                   Your vote is secret during voting, but when court goes into
                   aggregation you can reveal your vote to the public by coming
                   back to this page.
                 </p>
+                <button
+                  className="center gap-3 rounded-md bg-blue-500 px-4 py-2 text-white"
+                  onClick={onClickRecastVote}
+                >
+                  Recast Vote
+                  <LuReplace size={14} />
+                </button>
               </div>
             </div>
           )}

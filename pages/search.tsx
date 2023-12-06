@@ -1,38 +1,50 @@
 import { MarketStatus } from "@zeitgeistpm/indexer";
+import { TypingIndicator } from "components/ui/TypingIndicator";
 import { useMarketSearch } from "lib/hooks/queries/useMarketSearch";
 import { NextPage } from "next";
 import Link from "next/link";
-import { useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { X } from "react-feather";
+import { FaDeleteLeft } from "react-icons/fa6";
 
 const SearchPage: NextPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: markets } = useMarketSearch(searchTerm);
+  const { data: markets, isFetching } = useMarketSearch(searchTerm);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setTimeout(() => {
+      inputRef?.current?.focus();
+    }, 66);
+  }, [inputRef]);
+
   return (
-    <div className="mt-4">
-      <div className="flex items-center px-2">
+    <div className="relative mt-2">
+      <div className="fixed left-0 right-0 top-16 mt-1 flex items-center">
         <input
-          className="h-8 w-full max-w-[500px] rounded-md border border-sky-200 px-2 focus:outline-none"
+          className="h-12 w-full flex-1 border bg-gray-200 px-5 focus:outline-none"
           value={searchTerm}
+          ref={inputRef}
           placeholder="Search markets"
           onChange={(event) => {
             setSearchTerm(event.target.value);
           }}
         />
+        <div className="absolute right-12 top-[50%] translate-y-[-50%]">
+          <TypingIndicator inputRef={inputRef} isFetching={isFetching} />
+        </div>
         <button
-          className="relative right-6 text-sky-600"
+          className="absolute right-6 text-sky-600"
           onClick={() => {
             setSearchTerm("");
           }}
         >
-          <X size={16} />
+          <FaDeleteLeft size={16} />
         </button>
       </div>
       {markets && (
-        <div className="flex flex-col py-4">
-          <div className="px-2 text-sky-600">Results</div>
-
+        <div className="flex flex-col py-4 pt-12">
           {markets.length > 0 ? (
             markets?.map((market) => (
               <Link
@@ -45,8 +57,8 @@ const SearchPage: NextPage = () => {
                 <div
                   className={`ml-auto w-16 rounded-md px-2 py-1 text-center text-xs text-white ${
                     market.status === MarketStatus.Active
-                      ? "bg-sheen-green"
-                      : "bg-vermilion"
+                      ? "bg-green-400"
+                      : "bg-gray-400"
                   }`}
                 >
                   {market.status === MarketStatus.Active
