@@ -50,6 +50,12 @@ const columns: TableColumn[] = [
     type: "component",
   },
   {
+    header: "Weight",
+    accessor: "weight",
+    type: "number",
+    hideMobile: true,
+  },
+  {
     header: "",
     accessor: "actions",
     type: "component",
@@ -184,6 +190,7 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
             )}
           </div>
         ),
+        weight: draw.weight.toNumber(),
         actions: (
           <>
             {stage?.type === "vote" && draw.vote.isSecret && (
