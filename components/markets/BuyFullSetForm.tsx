@@ -59,10 +59,10 @@ const BuyFullSetForm = ({
     fee,
   } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk)) {
+      if (isRpcSdk(sdk) && amount && amount !== "") {
         return sdk.api.tx.predictionMarkets.buyCompleteSet(
           marketId,
-          new Decimal(amount).mul(ZTG).toNumber(),
+          new Decimal(amount).mul(ZTG).toFixed(0),
         );
       }
     },
@@ -152,7 +152,7 @@ const BuyFullSetForm = ({
           </p>
           <p className="mb-7 text-center text-sm">
             <span className="text-sky-600">Price Per Set: </span>1{" "}
-            {metadata?.symbol}
+            {currencyMetadata?.name}
           </p>
         </div>
       </div>
