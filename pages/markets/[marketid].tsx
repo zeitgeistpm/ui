@@ -71,6 +71,7 @@ import { FaChevronUp } from "react-icons/fa";
 import { ScoringRule } from "@zeitgeistpm/indexer";
 import { TradeTabType } from "components/trade-form/TradeTab";
 import ReferendumSummary from "components/ui/ReferendumSummary";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -684,6 +685,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
 
   const wallet = useWallet();
   const { data: stage } = useMarketStage(market);
+  const { data: chainConstants } = useChainConstants();
 
   const connectedWalletIsOracle = market.oracle === wallet.realAddress;
 
@@ -708,9 +710,15 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
           </p>
 
           {stage?.type === "OpenReportingPeriod" && (
-            <p className="-mt-3 mb-6 text-sm italic text-gray-500">
-              Oracle failed to report. Reporting is now open to all.
-            </p>
+            <>
+              <p className="-mt-3 mb-6 text-sm italic text-gray-500">
+                Oracle failed to report. Reporting is now open to all.
+              </p>
+              <p className="mb-6 text-sm">
+                Bond cost: ${chainConstants?.markets.outsiderBond}{" "}
+                {chainConstants?.tokenSymbol}
+              </p>
+            </>
           )}
 
           <div className="mb-4">
