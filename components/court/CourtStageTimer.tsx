@@ -107,8 +107,8 @@ export const courtStageCopy: Record<
     color: "bg-orange-400",
   },
   reassigned: {
-    title: "Reassigned",
-    description: "The case is now reassigned. Winners paid out.",
+    title: "Settled",
+    description: "The case is now settled and winners have been paid out.",
     color: "bg-gray-400",
   },
   closed: {

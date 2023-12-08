@@ -357,9 +357,9 @@ const caseStatusCopy: Record<
     color: "text-orange-400",
   },
   reassigned: {
-    title: "Reassigned",
+    title: "Settled",
     description:
-      "All juror and delegator stakes were reassigned, by losers paying the winners.",
+      "The case is settled and stakes were reassigned by losers paying the winners.",
     color: "text-gray-400",
   },
   closed: {
