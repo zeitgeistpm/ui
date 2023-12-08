@@ -127,6 +127,7 @@ const CasePage: NextPage = ({
   const { data: selectedDraws } = useCourtVoteDrawsForCase(caseId);
 
   const { data: marketId } = useCaseMarketId(caseId);
+
   let { data: dynamicMarket } = useMarket(
     marketId != null ? { marketId } : undefined,
   );
@@ -331,7 +332,7 @@ const CasePage: NextPage = ({
           </div>
 
           <div className="mb-6 md:max-w-[900px]">
-            <CourtStageTimer stage={stage} />
+            <CourtStageTimer caseId={caseId} market={market} />
           </div>
 
           {market.description && (

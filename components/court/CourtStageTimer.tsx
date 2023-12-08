@@ -1,13 +1,38 @@
 import { isInfinity } from "@zeitgeistpm/utility/dist/infinity";
 import * as Time from "@zeitgeistpm/utility/dist/time";
 import Skeleton from "components/ui/Skeleton";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
+import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
-import { CourtStage } from "lib/state/court/get-stage";
+import { CourtStage, getCourtStage } from "lib/state/court/get-stage";
 import moment from "moment";
 import { useMemo } from "react";
 
-export const CourtStageTimer = ({ stage }: { stage?: CourtStage }) => {
+export const CourtStageTimer = ({
+  market: initialMarket,
+  caseId,
+}: {
+  market?: FullMarketFragment;
+  caseId: number;
+}) => {
   const time = useChainTime();
+
+  const { data: courtCase } = useCourtCase(caseId);
+  const { data: marketId } = useCaseMarketId(caseId);
+
+  let { data: dynamicMarket } = useMarket(
+    marketId != null ? { marketId } : undefined,
+  );
+
+  const market = dynamicMarket ?? initialMarket;
+
+  const stage = useMemo(() => {
+    if (time && market && courtCase) {
+      return getCourtStage(time, market, courtCase);
+    }
+  }, [time, market, courtCase]);
 
   const timeLeft = useMemo(() => {
     if (!time || !stage) return undefined;
