@@ -10,21 +10,18 @@ import { BarChart2, Droplet, Users } from "react-feather";
 import ScalarPriceRange from "../ScalarPriceRange";
 import MarketCardContext from "./context";
 
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import {
   IOBaseAssetId,
   IOForeignAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
-import { lookupAssetImagePath } from "lib/constants/foreign-asset";
-import Image from "next/image";
-import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { useQuery } from "@tanstack/react-query";
 import { CATEGORY_IMAGES } from "lib/constants/category-images";
-import { seededChoice } from "lib/util/random";
+import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
-import { Transition } from "@headlessui/react";
-import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
+import Image from "next/image";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -327,14 +324,13 @@ const useMarketImage = (
 ) => {
   const firstTag = market.tags?.[0];
 
-  const category = (
+  const tag = (
     firstTag && firstTag in CATEGORY_IMAGES ? firstTag : "untagged"
   ) as keyof typeof CATEGORY_IMAGES;
 
-  const fallback = seededChoice(
-    `${market.marketId}`,
-    CATEGORY_IMAGES[category],
-  );
+  const category = CATEGORY_IMAGES[tag];
+
+  const fallback = category[market.marketId % category.length];
 
   const cmsQuery = useMarketCmsMetadata(market.marketId);
 
