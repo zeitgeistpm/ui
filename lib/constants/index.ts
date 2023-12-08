@@ -5,6 +5,7 @@ import { EndpointOption, Environment } from "../types";
 
 export const isWSX = process.env.NEXT_PUBLIC_CLIENT === "wsx";
 export const wsxID = process.env.NEXT_PUBLIC_VERCEL_ENV === "staging" ? 3 : 3;
+export const wsxAssetIdString = `{"foreignAsset":${wsxID}}`;
 
 export const ZTG = 10 ** 10;
 
