@@ -38,15 +38,17 @@ export const useLatestTrades = (limit?: number, marketId?: number) => {
           limit: limit,
           order: HistoricalSwapOrderByInput.BlockNumberDesc,
           where: {
-            ...swapsMetaFilter,
-            ...(marketId != null
-              ? {
-                  OR: [
-                    { assetIn_contains: `[${marketId},` },
-                    { assetOut_contains: `[${marketId},` },
-                  ],
-                }
-              : {}),
+            AND: [
+              swapsMetaFilter,
+              marketId != null
+                ? {
+                    OR: [
+                      { assetIn_contains: `[${marketId},` },
+                      { assetOut_contains: `[${marketId},` },
+                    ],
+                  }
+                : {},
+            ],
           },
         });
 
