@@ -137,7 +137,7 @@ const customStyles = {
 const DropDownSelect = ({
   label,
   options,
-  add,
+  onChange,
   portal,
   isOpen = false,
 }: {
@@ -145,7 +145,7 @@ const DropDownSelect = ({
   options: MarketFilter[];
   portal?: HTMLDivElement;
   isOpen?: boolean;
-  add: (val: MarketFilter) => void;
+  onChange: (val: MarketFilter) => void;
 }) => {
   return (
     <ReactSelect<MarketFilter>
@@ -159,7 +159,7 @@ const DropDownSelect = ({
       instanceId={`${label}-select`}
       menuIsOpen={isOpen}
       onChange={(val: MarketFilter) => {
-        add(val);
+        onChange(val);
       }}
       captureMenuScroll={false}
       components={{
