@@ -84,18 +84,18 @@ export async function getStaticProps() {
   // );
 
   return {
-    // props: {
-    //   dehydratedState: dehydrate(queryClient),
-    //   news: news,
-    //   featuredMarkets: featuredMarkets ?? [],
-    //   trendingMarkets: trendingMarkets ?? [],
-    //   bannerPlaceholder: bannerPlaceholder.base64 ?? "",
-    //   categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
-    //   newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
-    //   stats,
-    //   ztgHistory,
-    //   chainProperties: chainProperties.toPrimitive(),
-    // },
+    props: {
+      // dehydratedState: dehydrate(queryClient),
+      // news: news,
+      // featuredMarkets: featuredMarkets ?? [],
+      // trendingMarkets: trendingMarkets ?? [],
+      // bannerPlaceholder: bannerPlaceholder.base64 ?? "",
+      // categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
+      // newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
+      // stats,
+      // ztgHistory,
+      // chainProperties: chainProperties.toPrimitive(),
+    },
     revalidate:
       environment === "production"
         ? 1 * 60 //1min
