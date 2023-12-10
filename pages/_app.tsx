@@ -22,8 +22,8 @@ const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
 const domain = process.env["NEXT_PUBLIC_DOMAIN"];
 const hotjarSiteId = process.env["NEXT_PUBLIC_HOTJAR_SITE_ID"];
 const isProduction =
-  process.env.NEXT_PUBLIC_SITE_URL === "https://app.zeitgeist.pm";
-const theWSX = "https://app.thewsx.com/";
+  process.env.NEXT_PUBLIC_SITE_URL === "https://app.zeitgeist.pm" ||
+  "https://app.thewsx.com";
 
 const MyApp = ({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
@@ -31,10 +31,6 @@ const MyApp = ({ Component, pageProps }) => {
   const wallet = useWallet();
 
   useEffect(() => {
-    if (window.location.hostname === theWSX) {
-      process.env.NEXT_PUBLIC_CLIENT === "wsx";
-    }
-
     if (!isProduction) {
       return;
     }
