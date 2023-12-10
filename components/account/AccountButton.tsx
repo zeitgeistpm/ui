@@ -33,6 +33,7 @@ import {
 } from "./OnboardingModal";
 import SettingsModal from "components/settings/SettingsModal";
 import CopyIcon from "../ui/CopyIcon";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 const BalanceRow = ({
   imgPath,
@@ -197,27 +198,38 @@ const AccountButton: FC<{
                         }`}
                       >
                         <div
-                          className={`flex h-full items-center rounded-full border-2 bg-black py-1 pl-1.5 text-white transition-all md:py-0 ${
+                          className={`flex h-full w-max items-center rounded-full border-2 bg-black py-1 pl-1.5 text-white transition-all md:py-0 ${
                             open ? "border-sunglow-2" : "border-white"
                           }`}
                         >
-                          <div className={`rounded-full ring-2`}>
-                            {activeAccount?.address && (
-                              <Avatar
-                                zoomed
-                                address={activeAccount?.address}
-                                deps={avatarDeps}
-                              />
-                            )}
-                          </div>
-                          <span
-                            className={`hidden h-full pl-2 text-sm font-medium leading-[40px] transition-all md:block ${
-                              open ? "text-sunglow-2" : "text-white"
-                            }`}
-                          >
-                            {activeAccount &&
-                              shortenAddress(activeAccount?.address, 6, 4)}
-                          </span>
+                          {!isWSX && (
+                            <div className={`rounded-full ring-2`}>
+                              {activeAccount?.address && (
+                                <Avatar
+                                  zoomed
+                                  address={activeAccount?.address}
+                                  deps={avatarDeps}
+                                />
+                              )}
+                            </div>
+                          )}
+                          {isWSX ? (
+                            <span className="hidden h-full min-w-fit pl-2 text-sm font-medium leading-[40px] transition-all md:block">
+                              {formatNumberCompact(
+                                wsxBalance?.div(ZTG).abs().toNumber() ?? 0,
+                              )}{" "}
+                              WSX
+                            </span>
+                          ) : (
+                            <span
+                              className={`hidden h-full pl-2 text-sm font-medium leading-[40px] transition-all md:block ${
+                                open ? "text-sunglow-2" : "text-white"
+                              }`}
+                            >
+                              {activeAccount &&
+                                shortenAddress(activeAccount?.address, 6, 4)}
+                            </span>
+                          )}
 
                           <div className="pr-1">
                             <ChevronDown
