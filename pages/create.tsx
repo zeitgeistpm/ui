@@ -5,11 +5,11 @@ import { useRouter } from "next/router";
 import MarketEditor from "components/create/editor/Editor";
 
 const CreateMarketPage: NextPage = () => {
-  const { selectedAddress } = useWallet();
+  const { activeAccount } = useWallet();
   const router = useRouter();
 
   useEffect(() => {
-    if (selectedAddress !== process.env.NEXT_PUBLIC_MW) {
+    if (activeAccount?.address !== process.env.NEXT_PUBLIC_MW) {
       router.push("/markets");
     }
   }, [router]);
