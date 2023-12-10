@@ -6,6 +6,7 @@ import {
 import DropDownSelect from "./DropDownSelect";
 import { useMarketFiltersContext } from "./MarketFiltersContainer";
 import { isWSX } from "lib/constants";
+import { MarketFilter } from "lib/types/market-filter";
 
 export type MarketFiltersDropdownsProps = {
   className?: string;
@@ -20,7 +21,23 @@ const Divider = () => {
 const MarketFiltersDropdowns = ({
   className = "",
 }: MarketFiltersDropdownsProps) => {
-  const { selectedMenu, portal, addActiveFilter } = useMarketFiltersContext();
+  const {
+    selectedMenu,
+    portal,
+    addActiveFilter,
+    removeActiveFilter,
+    activeFilters,
+  } = useMarketFiltersContext();
+
+  const updateFilters = (marketFilter: MarketFilter) => {
+    const isFilterActive = activeFilters.find(
+      (filter) => filter.value === marketFilter.value,
+    );
+
+    isFilterActive
+      ? removeActiveFilter(marketFilter)
+      : addActiveFilter(marketFilter);
+  };
   return (
     <div className={className}>
       {!isWSX && (
@@ -28,7 +45,7 @@ const MarketFiltersDropdowns = ({
           <DropDownSelect
             label="Category"
             options={marketTagFilterOptions}
-            add={addActiveFilter}
+            onChange={updateFilters}
             portal={portal}
             isOpen={selectedMenu === "Category"}
           />
@@ -36,7 +53,7 @@ const MarketFiltersDropdowns = ({
           <DropDownSelect
             label="Currency"
             options={marketCurrencyFilterOptions}
-            add={addActiveFilter}
+            onChange={updateFilters}
             portal={portal}
             isOpen={selectedMenu === "Currency"}
           />
@@ -46,7 +63,7 @@ const MarketFiltersDropdowns = ({
       <DropDownSelect
         label="Status"
         options={marketStatusFilterOptions}
-        add={addActiveFilter}
+        onChange={updateFilters}
         portal={portal}
         isOpen={selectedMenu === "Status"}
       />

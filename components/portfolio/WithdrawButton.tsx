@@ -2,6 +2,7 @@ import { Dialog } from "@headlessui/react";
 import type { ApiPromise } from "@polkadot/api";
 import { isRpcSdk } from "@zeitgeistpm/sdk";
 import FormTransactionButton from "components/ui/FormTransactionButton";
+import Input from "components/ui/Input";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
@@ -13,13 +14,13 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChain } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { assetsAreEqual } from "lib/util/assets-are-equal";
+import { convertDecimals } from "lib/util/convert-decimals";
 import { countDecimals } from "lib/util/count-decimals";
+import { formatNumberCompact } from "lib/util/format-compact";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
-import Input from "components/ui/Input";
-import { convertDecimals } from "lib/util/convert-decimals";
-import { formatNumberCompact } from "lib/util/format-compact";
 
 const WithdrawButton = ({
   toChain,
@@ -136,6 +137,12 @@ const WithdrawModal = ({
     ? convertDecimals(new Decimal(amount), 0, assetDecimals)
     : new Decimal(0);
 
+  const maxSendAmount = assetsAreEqual(fee?.assetId, {
+    ForeignAsset: foreignAssetId,
+  })
+    ? balance.minus(fee?.amount ?? 0)
+    : balance;
+
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
       if (isRpcSdk(sdk) && wallet.realAddress) {
@@ -181,18 +188,22 @@ const WithdrawModal = ({
       if (name === "percentage") {
         setValue(
           "amount",
-          balance.mul(value.percentage).div(100).div(ZTG).toNumber(),
+          maxSendAmount.mul(value.percentage).div(100).div(ZTG).toNumber(),
         );
       } else if (name === "amount" && value.amount !== "") {
         setValue(
           "percentage",
-          new Decimal(value.amount).mul(ZTG).div(balance).mul(100).toString(),
+          new Decimal(value.amount)
+            .mul(ZTG)
+            .div(maxSendAmount)
+            .mul(100)
+            .toString(),
         );
       }
       trigger("amount");
     });
     return () => subscription.unsubscribe();
-  }, [watch]);
+  }, [watch, maxSendAmount]);
 
   const onSubmit = () => {
     transfer();
@@ -233,8 +244,8 @@ const WithdrawModal = ({
                 },
                 //todo: validate transfer where fee is paid in same asset as the one being transferred
                 validate: (value) => {
-                  if (balance.div(ZTG).lessThan(value)) {
-                    return `Insufficient balance. Current balance: ${balance
+                  if (maxSendAmount.div(ZTG).lessThan(value)) {
+                    return `Insufficient balance. Current balance: ${maxSendAmount
                       .div(ZTG)
                       .toFixed(3)}`;
                   } else if (value <= 0) {

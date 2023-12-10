@@ -70,7 +70,6 @@ const TransferModal = ({
   address: string;
 }) => {
   const { data: assetMetadata, isSuccess } = useAllAssetMetadata();
-  const { data: chainConstants } = useChainConstants();
   const notifications = useNotifications();
 
   const options = useMemo<AssetOption[]>(() => {
