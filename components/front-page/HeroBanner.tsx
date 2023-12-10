@@ -31,7 +31,7 @@ export const HeroBanner = ({
             Welcome to the Future of Betting
           </h1>
           <h2 className="mb-8 text-xl leading-6">
-            Zeitgeist is a new innovative platform for predicting future events
+            Zeitgeist is an innovative platform for predicting future events
           </h2>
           <div className="mb-14 flex gap-4">
             <Link
