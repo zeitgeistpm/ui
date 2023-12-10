@@ -14,7 +14,7 @@
 // import MarketScroll from "components/markets/MarketScroll";
 // import { GraphQLClient } from "graphql-request";
 // import { getNews, News } from "lib/cms/get-news";
-// import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
+import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
 // import getFeaturedMarkets from "lib/gql/featured-markets";
 // import { getNetworkStats } from "lib/gql/get-network-stats";
 // import { getCategoryCounts } from "lib/gql/popular-categories";
@@ -42,66 +42,66 @@ import { NextPage } from "next";
 //   return Promise.all(paths.map((path) => getPlaiceholder(path, options)));
 // };
 
-// export async function getStaticProps() {
-//   const client = new GraphQLClient(graphQlEndpoint);
-//   const sdk = await create({
-//     provider: endpointOptions.map((e) => e.value),
-//     indexer: graphQlEndpoint,
-//     storage: ZeitgeistIpfs(),
-//   });
+export async function getStaticProps() {
+  // const client = new GraphQLClient(graphQlEndpoint);
+  // const sdk = await create({
+  //   provider: endpointOptions.map((e) => e.value),
+  //   indexer: graphQlEndpoint,
+  //   storage: ZeitgeistIpfs(),
+  // });
 
-//   const news = await getNews();
+  // const news = await getNews();
 
-//   const [
-//     featuredMarkets,
-//     trendingMarkets,
-//     bannerPlaceholder,
-//     categoryPlaceholders,
-//     newsImagePlaceholders,
-//     stats,
-//     ztgHistory,
-//     chainProperties,
-//   ] = await Promise.all([
-//     getFeaturedMarkets(client, sdk),
-//     getTrendingMarkets(client, sdk),
-//     getPlaiceholder(`/banner.png`),
-//     getPlaiceholders(CATEGORIES?.map((cat) => `${cat.imagePath}`), {
-//       dir: `${path.join(process.cwd())}/public/`,
-//     }),
-//     getPlaiceholders(
-//       news.map((slide) => slide.imageUrl ?? ""),
-//       { size: 16 },
-//     ),
-//     getNetworkStats(sdk),
-//     getZTGHistory(),
-//     sdk.api.rpc.system.properties(),
-//   ]);
+  // const [
+  //   featuredMarkets,
+  //   trendingMarkets,
+  //   bannerPlaceholder,
+  //   categoryPlaceholders,
+  //   newsImagePlaceholders,
+  //   stats,
+  //   ztgHistory,
+  //   chainProperties,
+  // ] = await Promise.all([
+  //   getFeaturedMarkets(client, sdk),
+  //   getTrendingMarkets(client, sdk),
+  //   getPlaiceholder(`/banner.png`),
+  //   getPlaiceholders(CATEGORIES?.map((cat) => `${cat.imagePath}`), {
+  //     dir: `${path.join(process.cwd())}/public/`,
+  //   }),
+  //   getPlaiceholders(
+  //     news.map((slide) => slide.imageUrl ?? ""),
+  //     { size: 16 },
+  //   ),
+  //   getNetworkStats(sdk),
+  //   getZTGHistory(),
+  //   sdk.api.rpc.system.properties(),
+  // ]);
 
-//   const queryClient = new QueryClient();
+  // const queryClient = new QueryClient();
 
-//   await queryClient.prefetchQuery([categoryCountsKey], () =>
-//     getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
-//   );
+  // await queryClient.prefetchQuery([categoryCountsKey], () =>
+  //   getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
+  // );
 
-//   return {
-//     props: {
-//       dehydratedState: dehydrate(queryClient),
-//       news: news,
-//       featuredMarkets: featuredMarkets ?? [],
-//       trendingMarkets: trendingMarkets ?? [],
-//       bannerPlaceholder: bannerPlaceholder.base64 ?? "",
-//       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
-//       newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
-//       stats,
-//       ztgHistory,
-//       chainProperties: chainProperties.toPrimitive(),
-//     },
-//     revalidate:
-//       environment === "production"
-//         ? 1 * 60 //1min
-//         : 60 * 60,
-//   };
-// }
+  return {
+    // props: {
+    //   dehydratedState: dehydrate(queryClient),
+    //   news: news,
+    //   featuredMarkets: featuredMarkets ?? [],
+    //   trendingMarkets: trendingMarkets ?? [],
+    //   bannerPlaceholder: bannerPlaceholder.base64 ?? "",
+    //   categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
+    //   newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
+    //   stats,
+    //   ztgHistory,
+    //   chainProperties: chainProperties.toPrimitive(),
+    // },
+    revalidate:
+      environment === "production"
+        ? 1 * 60 //1min
+        : 60 * 60,
+  };
+}
 
 const IndexPage: NextPage<{
   // news: News[];
