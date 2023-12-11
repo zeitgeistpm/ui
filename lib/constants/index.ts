@@ -88,6 +88,7 @@ export const graphQlEndpoints: EndpointOption[] = [
 const getEnvironment = (): Environment => {
   const environments = ["production", "staging"];
   const env = process.env.NEXT_PUBLIC_VERCEL_ENV;
+  console.log(env);
   if (env == null || !["production", "staging"].includes(env)) {
     throw Error(
       `Invalid environment, please set NEXT_PUBLIC_VERCEL_ENV environment variable to one of ${environments.join(
