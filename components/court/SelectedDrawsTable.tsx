@@ -235,15 +235,17 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
 
   const [salt, setSalt] = useState("");
 
-  const { send, isBroadcasting, isLoading } = useExtrinsic(
+  const { send, isBroadcasting, isLoading, isReady } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk)) {
-        return sdk.api.tx.court.denounceVote(
-          caseId,
-          draw.courtParticipant.toString(),
-          { Outcome: selectedVoteOutcome[1] },
-          salt,
-        );
+        try {
+          return sdk.api.tx.court.denounceVote(
+            caseId,
+            draw.courtParticipant.toString(),
+            { Outcome: selectedVoteOutcome[1] },
+            salt,
+          );
+        } catch (error) {}
       }
     },
     {
@@ -302,7 +304,7 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
             />
           </div>
           <TransactionButton
-            disabled={isLoading || isBroadcasting}
+            disabled={isLoading || isBroadcasting || !isReady}
             loading={isBroadcasting}
             onClick={() => send()}
             className="!bg-orange-400"
