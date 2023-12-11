@@ -297,7 +297,7 @@ const CasePage: NextPage = ({
                 dateStyle: "medium",
               }).format(market.period.end)}
             </HeaderStat>
-            <HeaderStat label="Reported Outcome">
+            <HeaderStat label="Reported Outcome" border={false}>
               {reportedOutcome !== undefined
                 ? market.categories?.[reportedOutcome].name
                 : "-"}
