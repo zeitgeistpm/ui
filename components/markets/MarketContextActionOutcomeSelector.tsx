@@ -102,17 +102,29 @@ const MarketContextActionOutcomeSelector = ({
                 length={24}
                 text={market.categories?.[getIndexOf(selected)].name ?? ""}
               >
-                {(text) => (
-                  <>
-                    {hideValue ? (
-                      <div className="center gap-2">
-                        <span>{revealed ? text : "∗∗∗∗∗∗"}</span>
-                      </div>
-                    ) : (
-                      text
-                    )}
-                  </>
-                )}
+                {(text) => {
+                  const option = assetOptions.find(
+                    (a) => getIndexOf(a.asset) === getIndexOf(selected),
+                  );
+
+                  return (
+                    <>
+                      {hideValue ? (
+                        <div className="center gap-2">
+                          <span>{revealed ? text : "∗∗∗∗∗∗"}</span>
+                        </div>
+                      ) : (
+                        <div className="center gap-2">
+                          <div
+                            className="h-3 w-3 rounded-full "
+                            style={{ backgroundColor: option?.color }}
+                          ></div>
+                          {text}
+                        </div>
+                      )}
+                    </>
+                  );
+                }}
               </TruncatedText>
               {!disabled && <RiArrowDownSLine />}
             </div>
