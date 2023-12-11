@@ -246,11 +246,21 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
   const { send, isBroadcasting, isLoading, isReady } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk)) {
+        console.log(
+          caseId,
+          draw.courtParticipant.toString(),
+          { Outcome: selectedVoteOutcome.CategoricalOutcome[1] },
+          salt,
+        );
         try {
           return sdk.api.tx.court.denounceVote(
             caseId,
             draw.courtParticipant.toString(),
-            { Outcome: selectedVoteOutcome[1] },
+            {
+              Outcome: {
+                Categorical: selectedVoteOutcome.CategoricalOutcome[1],
+              },
+            },
             salt,
           );
         } catch (error) {}
