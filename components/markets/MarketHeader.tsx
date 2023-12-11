@@ -46,13 +46,17 @@ import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
 import CourtStageTimer from "components/court/CourtStageTimer";
 
 export const UserIdentity: FC<
-  PropsWithChildren<{ user: string; className?: string }>
-> = ({ user, className }) => {
+  PropsWithChildren<{
+    user: string;
+    shorten?: { start?: number; end?: number };
+    className?: string;
+  }>
+> = ({ user, shorten, className }) => {
   const { data: identity } = useIdentity(user ?? "");
   const displayName =
     identity && identity.displayName?.length !== 0
       ? identity.displayName
-      : shortenAddress(user, 10, 10);
+      : shortenAddress(user, shorten?.start ?? 10, shorten?.end ?? 10);
   return (
     <div className={`inline-flex items-center gap-1 ${className}`}>
       <Avatar address={user} copy={false} size={18} />

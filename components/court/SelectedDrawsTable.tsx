@@ -9,6 +9,7 @@ import {
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
+import { UserIdentity } from "components/markets/MarketHeader";
 import Avatar from "components/ui/Avatar";
 import InfoPopover from "components/ui/InfoPopover";
 import Input from "components/ui/Input";
@@ -76,13 +77,17 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
       return {
         juror: (
           <div className="flex items-center gap-3">
-            <Avatar address={draw.courtParticipant.toString()} size={18} />
+            <UserIdentity
+              user={draw.courtParticipant.toString()}
+              shorten={{ start: 4, end: 4 }}
+            />
+            {/* <Avatar address={draw.courtParticipant.toString()} size={18} />
             <div className="hidden text-sm md:block">
               {shortenAddress(draw.courtParticipant.toString())}
             </div>
             <div className="block text-sm md:hidden">
               {shortenAddress(draw.courtParticipant.toString(), 2, 2)}
-            </div>
+            </div> */}
           </div>
         ),
         status: <div>{status}</div>,
