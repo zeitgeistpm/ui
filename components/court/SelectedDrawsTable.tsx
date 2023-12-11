@@ -39,12 +39,7 @@ const columns: TableColumn[] = [
     accessor: "juror",
     type: "component",
   },
-  {
-    header: "Status",
-    accessor: "status",
-    type: "component",
-    hideMobile: true,
-  },
+
   {
     header: "Vote",
     accessor: "vote",
@@ -90,7 +85,7 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
             </div> */}
           </div>
         ),
-        status: <div>{status}</div>,
+
         vote: (
           <div
             className={`
