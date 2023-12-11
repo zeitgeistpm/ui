@@ -103,7 +103,7 @@ export const courtStageCopy: Record<
   },
   appeal: {
     title: "Appeal",
-    description: "Jurors can now appeal the case.",
+    description: "The case can now be appealed.",
     color: "bg-orange-400",
   },
   reassigned: {

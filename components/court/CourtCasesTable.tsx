@@ -353,7 +353,7 @@ const caseStatusCopy: Record<
   },
   appeal: {
     title: "Appeal",
-    description: "Jurors can now appeal the voted outcome.",
+    description: "The case can now be appealed.",
     color: "text-orange-400",
   },
   reassigned: {
