@@ -48,6 +48,7 @@ import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 import { sortBy } from "lodash-es";
 import { FaBackwardStep } from "react-icons/fa6";
 import { IoMdArrowBack } from "react-icons/io";
+import { useCourtSalt } from "lib/state/court/useCourtSalt";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -174,6 +175,11 @@ const CasePage: NextPage = ({
     marketId: market.marketId,
   });
 
+  const { resetBackedUpState } = useCourtSalt({
+    caseId,
+    marketId: market.marketId,
+  });
+
   const onClickRecastVote = async () => {
     if (
       await prompt({
@@ -182,6 +188,7 @@ const CasePage: NextPage = ({
       })
     ) {
       unCommitVote();
+      resetBackedUpState();
       setRecastVoteEnabled(true);
     }
   };

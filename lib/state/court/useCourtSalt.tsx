@@ -25,6 +25,7 @@ export type UseCourtSalt = {
   isBackedUp: boolean;
   setPhraseSeed: (phraseSeed: CourtSaltPhraseStorage) => Promise<boolean>;
   downloadBackup: () => void;
+  resetBackedUpState: () => void;
 };
 
 const courtSaltPhrasesAtom = persistentAtom<
@@ -146,11 +147,19 @@ export const useCourtSalt = ({
     }));
   };
 
+  const resetBackedUpState = () => {
+    setBackupDownloads((state) => ({
+      ...state,
+      [id]: false,
+    }));
+  };
+
   return {
     salt,
     phraseStorage,
     isBackedUp,
     setPhraseSeed,
     downloadBackup,
+    resetBackedUpState,
   };
 };

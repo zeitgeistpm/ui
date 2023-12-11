@@ -279,7 +279,7 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
             the juror voted for and the <b>salt</b> that was used when voting.
           </p>
           <div className="mb-2 flex items-center">
-            <label className="flex-1 text-gray-500">Voted Outcome:</label>
+            <label className="flex-1 text-gray-500">Vote:</label>
             <div className="inline-block pr-5 !text-sm">
               <MarketContextActionOutcomeSelector
                 market={market}
