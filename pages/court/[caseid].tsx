@@ -46,6 +46,8 @@ import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 import { sortBy } from "lodash-es";
+import { FaBackwardStep } from "react-icons/fa6";
+import { IoMdArrowBack } from "react-icons/io";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -269,7 +271,12 @@ const CasePage: NextPage = ({
     <div className="relative mt-6 flex flex-auto gap-12">
       <main className="flex-1">
         <section className="mb-6">
-          <h2 className="text-base font-normal">Case — #{caseId}</h2>
+          <div className="flex items-center gap-3">
+            <Link href="/court">
+              <IoMdArrowBack />
+            </Link>
+            <h2 className="text-base font-normal">Case — #{caseId}</h2>
+          </div>
           <h1 className="text-[32px] font-extrabold">{market?.question}</h1>
 
           <div className="mb-2 flex flex-wrap items-center gap-2">
