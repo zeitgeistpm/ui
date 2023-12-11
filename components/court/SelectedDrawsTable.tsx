@@ -22,6 +22,7 @@ import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { CourtStage } from "lib/state/court/get-stage";
+import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
 import { useMemo, useState } from "react";
 import { BsShieldFillExclamation } from "react-icons/bs";
@@ -64,6 +65,7 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
   market,
   stage,
 }) => {
+  const wallet = useWallet();
   const { data: constants } = useChainConstants();
 
   const data: TableData[] | undefined = useMemo(() => {
@@ -193,14 +195,20 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
         weight: draw.weight.toNumber(),
         actions: (
           <>
-            {stage?.type === "vote" && draw.vote.isSecret && (
-              <DenounceVoteButton caseId={caseId} draw={draw} market={market} />
-            )}
+            {stage?.type === "vote" &&
+              draw.vote.isSecret &&
+              wallet.realAddress !== draw.courtParticipant.toString() && (
+                <DenounceVoteButton
+                  caseId={caseId}
+                  draw={draw}
+                  market={market}
+                />
+              )}
           </>
         ),
       };
     });
-  }, [selectedDraws]);
+  }, [selectedDraws, wallet.realAddress]);
 
   return (
     <div className="!break-words text-sm md:text-base">
