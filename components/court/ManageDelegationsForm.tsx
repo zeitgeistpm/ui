@@ -44,10 +44,10 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
     percentage: string;
     delegates: string[];
   }>({
-    reValidateMode: "onChange",
     mode: "onChange",
+
     defaultValues: {
-      delegates: connectedParticipant?.delegations,
+      delegates: connectedParticipant?.delegations ?? [],
       amount: connectedParticipant?.stake?.div(ZTG).toNumber(),
     },
   });
@@ -247,7 +247,11 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
 
       <FormTransactionButton
         className="w-full max-w-[250px]"
-        disabled={formState.isValid === false || isLoading}
+        disabled={
+          formState.isValid === false ||
+          isLoading ||
+          getValues("delegates").length === 0
+        }
       >
         Delegate Stake
       </FormTransactionButton>
