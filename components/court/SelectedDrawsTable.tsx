@@ -142,7 +142,14 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
                   </InfoPopover>
                 </div>
               ) : draw.vote.isDenounced ? (
-                <span className="text-red-400">Denounced</span>
+                <div className="center gap-1">
+                  <span className="text-red-400">Denounced</span>
+                  <InfoPopover>
+                    this vote was denounced and wont be counted. This means that
+                    someone was able to get the secret salt used when voting and
+                    denounce it.
+                  </InfoPopover>
+                </div>
               ) : (
                 "Unknown"
               )}
@@ -282,7 +289,7 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
   return (
     <>
       <button
-        className="center gap-2 rounded-md border-2 border-orange-400 px-2 py-1 text-sm text-orange-400"
+        className="center gap-2 rounded-md border-2 border-red-400 px-2 py-1 text-sm text-red-400"
         onClick={() => setOpen(true)}
       >
         <BsShieldFillExclamation size={12} />

@@ -49,6 +49,7 @@ import { sortBy } from "lodash-es";
 import { FaBackwardStep } from "react-icons/fa6";
 import { IoMdArrowBack } from "react-icons/io";
 import { useCourtSalt } from "lib/state/court/useCourtSalt";
+import { BsShieldFillExclamation } from "react-icons/bs";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -160,6 +161,7 @@ const CasePage: NextPage = ({
   const isDrawnJuror = connectedParticipantDraw?.vote.isDrawn;
   const hasSecretVote = connectedParticipantDraw?.vote.isSecret;
   const hasRevealedVote = connectedParticipantDraw?.vote.isRevealed;
+  const hasDenouncedVote = connectedParticipantDraw?.vote.isDenounced;
 
   const stage = useMemo(() => {
     if (time && market && courtCase) {
@@ -199,6 +201,25 @@ const CasePage: NextPage = ({
 
   const actionSection = (
     <>
+      {(stage?.type === "vote" || stage?.type === "aggregation") &&
+        hasDenouncedVote && (
+          <div className="overflow-hidden rounded-xl px-6 py-6 shadow-lg">
+            <div className="flex flex-col items-center gap-3">
+              <div className="text-red-400">
+                <BsShieldFillExclamation size={64} />
+              </div>
+              <h3 className="text mb-2 text-red-400">
+                Your vote was denounced
+              </h3>
+              <p className="mb-3 text-center text-sm text-gray-500">
+                Your vote was denounced and wont be counted. This means that
+                someone was able to get your secret salt used when voting and
+                denounce it.
+              </p>
+            </div>
+          </div>
+        )}
+
       {stage?.type === "vote" && (
         <>
           {(isDrawnJuror || recastVoteEnabled) && (
