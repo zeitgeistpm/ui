@@ -141,7 +141,7 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
                 <div className="center gap-1">
                   <span className="text-red-400">Denounced</span>
                   <InfoPopover>
-                    this vote was denounced and wont be counted. This means that
+                    This vote was denounced and wont be counted. This means that
                     someone was able to get the secret salt used when voting and
                     denounce it.
                   </InfoPopover>
