@@ -67,19 +67,14 @@ export const CourtAppealForm = ({ caseId }: { caseId: number }) => {
               </div>
             </Disclosure.Button>
             <Disclosure.Panel className="text-gray-500">
-              At the end of the appeal period and if there are no further
-              appeals, all accounts which provided appeal bonds and didn’t
-              appeal on the winner outcome, get their funds back. In this case,
-              if the appealed outcome is not equal to the winner outcome, the
-              appeal was justified. Otherwise the appeal bond is slashed and
-              given to the treasury. This punishes the malicious behaviour that
-              someone appeals the correct outcome.
+              If no further appeals are made after the appeal period finishes,
+              accounts that appealed when the outcome was incorrect will be
+              refunded. Accounts that appealed when the outcome was correct will
+              be slashed.
               <br />
               <br />
-              The last possible call to appeal is necessary for the global
-              dispute to get triggered, because there has to be some kind of
-              financial commitment to appeal the winner outcome of the last
-              appeal round.
+              Once four appeals have been made the global dispute system will be
+              actived to resolve the case.
             </Disclosure.Panel>
           </Disclosure>
         </div>
