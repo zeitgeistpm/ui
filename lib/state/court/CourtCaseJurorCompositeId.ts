@@ -16,7 +16,7 @@ export const courtCaseJurorCompositeId = (params: {
   marketId: number;
   caseId: number;
   juror: string;
-}) => {
+}): CourtCaseJurorCompositeId => {
   const { data: courtCase } = useCourtCase(params.caseId);
 
   const round = courtCase
