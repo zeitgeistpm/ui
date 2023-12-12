@@ -42,7 +42,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
     defaultValue: outcomeAssets[0],
   });
 
-  const { salt, setPhraseSeed } = useCourtSalt({
+  const { salt, restoreBackup } = useCourtSalt({
     marketId: market.marketId,
     caseId: caseId,
   });
@@ -110,7 +110,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
       const parsed = IOCourtSaltPhraseStorage.safeParse(JSON.parse(raw));
 
       if (parsed.success) {
-        const wasSet = await setPhraseSeed(parsed.data);
+        const wasSet = await restoreBackup(parsed.data);
         setHasDroppedFile(wasSet);
       }
     }

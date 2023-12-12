@@ -11,6 +11,9 @@ import {
   CourtCaseJurorCompositeId,
   courtCaseJurorCompositeId,
 } from "./CourtCaseJurorCompositeId";
+import { useCourtVote } from "./useVoteOutcome";
+import { useMarket } from "lib/hooks/queries/useMarket";
+import { getIndexOf } from "@zeitgeistpm/sdk";
 
 export type UseCourtSaltParams = {
   marketId: number;
@@ -23,8 +26,9 @@ export type UseCourtSalt = {
   salt: CourtSalt;
   phraseStorage: CourtSaltPhraseStorage;
   isBackedUp: boolean;
-  setPhraseSeed: (phraseSeed: CourtSaltPhraseStorage) => Promise<boolean>;
+  restoreBackup: (phraseSeed: CourtSaltPhraseStorage) => Promise<boolean>;
   downloadBackup: () => void;
+  resetBackedUpState: () => void;
 };
 
 const courtSaltPhrasesAtom = persistentAtom<
@@ -52,6 +56,13 @@ export const useCourtSalt = ({
     courtSaltBackupDownloadedAtom,
   );
 
+  const { data: market } = useMarket({ marketId });
+
+  const { vote } = useCourtVote({
+    caseId,
+    marketId,
+  });
+
   const id = courtCaseJurorCompositeId({
     marketId,
     caseId,
@@ -77,7 +88,7 @@ export const useCourtSalt = ({
 
   const salt = create<CourtSalt>(blake2AsU8a(phraseStorage.phrase));
 
-  const setPhraseSeed = async (backup: CourtSaltPhraseStorage) => {
+  const restoreBackup = async (backup: CourtSaltPhraseStorage) => {
     let error: Error | undefined;
     let proceed = true;
 
@@ -134,11 +145,13 @@ export const useCourtSalt = ({
   const isBackedUp = backupDownloads[id];
 
   const downloadBackup = () => {
+    const outcome =
+      vote && market ? market?.categories?.[getIndexOf(vote)].name : vote;
     downloadText(
       `zeitgeist-court-case[${caseId}]-juror[${shortenAddress(
         wallet.realAddress!,
       )}].txt`,
-      JSON.stringify(phraseStorage, undefined, 2),
+      JSON.stringify({ ...phraseStorage, vote: outcome }, undefined, 2),
     );
     setBackupDownloads((state) => ({
       ...state,
@@ -146,11 +159,19 @@ export const useCourtSalt = ({
     }));
   };
 
+  const resetBackedUpState = () => {
+    setBackupDownloads((state) => ({
+      ...state,
+      [id]: false,
+    }));
+  };
+
   return {
     salt,
     phraseStorage,
     isBackedUp,
-    setPhraseSeed,
+    restoreBackup,
     downloadBackup,
+    resetBackedUpState,
   };
 };

@@ -123,11 +123,12 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
 
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
-          <h3 className="mb-8">
+          <h3 className="mb-4">
             {connectedParticipant?.type === "Juror"
               ? "Increase Personal Stake"
               : "Become a Juror"}
           </h3>
+
           <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
             <form
               onSubmit={handleSubmit(onSubmit)}
@@ -179,6 +180,12 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
                 disabled={!balance || balance.lessThanOrEqualTo(0)}
                 {...register("percentage", { value: "0" })}
               />
+
+              {connectedParticipant?.type === "Juror" && (
+                <div className="relative mb-5 mt-4 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
+                  This will set the new staked amount.
+                </div>
+              )}
 
               <div className="my-[4px] mb-5 h-[16px] text-center text-ztg-12-120 text-vermilion">
                 <>{formState.errors["amount"]?.message}</>

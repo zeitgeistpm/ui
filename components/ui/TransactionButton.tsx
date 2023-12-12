@@ -108,9 +108,9 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
     <button
       type={type}
       className={`ztg-transition h-[56px] w-full rounded-full text-white 
-        focus:outline-none disabled:cursor-default disabled:bg-slate-300 ${
+        focus:outline-none disabled:cursor-default  ${
           !isDisabled && "active:scale-95"
-        } ${colorClass} ${className}`}
+        } ${colorClass} ${className} disabled:!bg-slate-300`}
       onClick={(e) => click(e)}
       disabled={isDisabled}
       data-test={dataTest}
