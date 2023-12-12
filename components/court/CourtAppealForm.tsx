@@ -33,7 +33,6 @@ export const CourtAppealForm = ({ caseId }: { caseId: number }) => {
 
   const bond = useMemo(() => {
     const appealRound = (courtCase?.appeals.length ?? 0) + 1;
-    console.log(chainConstants?.court.appealBond);
     return new Decimal(chainConstants?.court.appealBond ?? 0)
       .mul(Math.pow(2, appealRound))
       .toNumber();
