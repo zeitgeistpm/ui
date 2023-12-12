@@ -332,7 +332,7 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
         onClick={() => setOpen(true)}
       >
         <BsShieldFillExclamation size={12} />
-        <span className="hidden md:block">denounce</span>
+        <span className="hidden md:block">Denounce</span>
       </button>
 
       <Modal open={open} onClose={onClose}>
