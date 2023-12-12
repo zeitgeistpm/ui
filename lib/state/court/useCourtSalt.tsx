@@ -58,7 +58,7 @@ export const useCourtSalt = ({
 
   const { data: market } = useMarket({ marketId });
 
-  const { vote, setVote, committed } = useCourtVote({
+  const { vote } = useCourtVote({
     caseId,
     marketId,
   });
