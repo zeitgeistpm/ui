@@ -45,6 +45,7 @@ const marketQuery = gql`
       where: {
         pool: { poolId_eq: $poolId }
         marketId_not_in: ${hiddenMarketIds}
+        hasValidMetaCategories_eq: true
         ${marketMetaFilter}
       }
     ) {
