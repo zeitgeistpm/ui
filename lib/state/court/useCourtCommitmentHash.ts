@@ -3,8 +3,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { createCourtCommitmentHash } from "lib/util/create-vote-commitment-hash";
 import { useMemo } from "react";
 import { useWallet } from "../wallet";
-import { CourtSaltPhraseStorage } from "./CourtSaltPhraseStorage";
-import { CourtSalt, useCourtSalt } from "./useCourtSalt";
+import { CourtSalt } from "./useCourtSalt";
 
 export type UseCourtCommitmentHash = {
   commitmentHash?: Uint8Array;
