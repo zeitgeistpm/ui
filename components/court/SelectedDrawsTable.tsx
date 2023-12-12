@@ -70,7 +70,6 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
 
   const data: TableData[] | undefined = useMemo(() => {
     return selectedDraws?.map((draw) => {
-      const status = draw.vote.type;
       return {
         juror: (
           <div className="flex items-center gap-3">
@@ -78,13 +77,6 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
               user={draw.courtParticipant.toString()}
               shorten={{ start: 4, end: 4 }}
             />
-            {/* <Avatar address={draw.courtParticipant.toString()} size={18} />
-            <div className="hidden text-sm md:block">
-              {shortenAddress(draw.courtParticipant.toString())}
-            </div>
-            <div className="block text-sm md:hidden">
-              {shortenAddress(draw.courtParticipant.toString(), 2, 2)}
-            </div> */}
           </div>
         ),
 
@@ -200,6 +192,7 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
           </div>
         ),
         weight: draw.weight.toNumber(),
+
         actions: (
           <>
             {stage?.type === "vote" &&
