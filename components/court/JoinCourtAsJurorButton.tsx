@@ -183,12 +183,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
 
               {connectedParticipant?.type === "Juror" && (
                 <div className="relative mb-5 mt-4 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
-                  This will set the new staked amount. <br />
-                  <b>
-                    Not increase your stake by the selected amount.
-                  </b> <br /> <br />
-                  However you can only set a new amount that is larger than your
-                  current stake.
+                  This will set the new staked amount.
                 </div>
               )}
 
