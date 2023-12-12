@@ -115,7 +115,7 @@ export const roundCopy: Record<
   },
   "3": {
     description:
-      "This case has been appealed for the third time and is starting a new round of voting. If it does not reach a majority vote, the case will be moved to global disputes.",
+      "This case has been appealed for the third time and is starting its last round of voting. If it is appealed a fourth time it will be moved to global disputes.",
     className: "text-orange-800 bg-orange-400",
   },
 };
