@@ -21,6 +21,7 @@ import { getCurrentPrediction } from "lib/util/assets";
 import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { marketMetaFilter } from "./constants";
+import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 
 const poolChangesQuery = gql`
   query PoolChanges($start: DateTime, $end: DateTime) {
@@ -165,6 +166,11 @@ const getTrendingMarkets = async (
 
       const prediction = getCurrentPrediction(assets, market);
 
+      if (!market.categories) {
+        console.log("No categories for market", market.marketId);
+        return null;
+      }
+
       const marketCategories: MarketOutcomes = market.categories.map(
         (category, index) => {
           const asset = assets[index];
@@ -200,7 +206,7 @@ const getTrendingMarkets = async (
     }),
   );
 
-  return trendingMarkets;
+  return trendingMarkets.filter(isNotNull);
 };
 
 const lookupPrice = (
