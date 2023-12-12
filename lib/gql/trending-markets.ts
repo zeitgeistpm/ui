@@ -152,6 +152,11 @@ const getTrendingMarkets = async (
 
       const market = marketsRes.markets[0];
 
+      if (!market) {
+        console.log("No market");
+        return null;
+      }
+
       const assetsRes = await client.request<{
         assets: {
           pool: { poolId: number };
