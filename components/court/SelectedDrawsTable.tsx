@@ -282,6 +282,7 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
         <BsShieldFillExclamation size={12} />
         <span className="hidden md:block">denounce</span>
       </button>
+
       <Modal open={open} onClose={onClose}>
         <Dialog.Panel className="relative max-w-[640px] rounded-ztg-10 bg-white p-[15px]">
           <h3 className="mb-2">Denounce Vote</h3>
