@@ -1,5 +1,7 @@
 import { Dialog } from "@headlessui/react";
 import { ZrmlCourtDraw } from "@polkadot/types/lookup";
+import { u8aToHex } from "@polkadot/util";
+import { blake2AsU8a } from "@polkadot/util-crypto";
 import { useQueryClient } from "@tanstack/react-query";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import {
@@ -22,10 +24,12 @@ import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { CourtStage } from "lib/state/court/get-stage";
+import { CourtSalt } from "lib/state/court/useCourtSalt";
 import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BsShieldFillExclamation } from "react-icons/bs";
+import { create } from "ts-opaque";
 
 export type SelectedDrawsTableProps = {
   caseId: number;
@@ -241,11 +245,51 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
     outcomeAssets[0],
   );
 
-  const [salt, setSalt] = useState("");
+  const [secretInput, setSecretInput] = useState("");
+  const [showError, setShowError] = useState(false);
+
+  const parsedSalt = useMemo<
+    { error: string } | { salt: string } | null
+  >(() => {
+    const input = secretInput.trim();
+
+    if (!isRpcSdk(sdk)) return null;
+
+    if (input.length === 0)
+      return {
+        error: "Input is empty",
+      };
+
+    if (input.startsWith("0x")) {
+      try {
+        const salt = sdk.api.createType("H256", input).toHex();
+        return {
+          salt,
+        };
+      } catch (error) {
+        return {
+          error: "Invalid hex input",
+        };
+      }
+    }
+
+    if (input.split(" ").length !== 12) {
+      return {
+        error: "Invalid secret phrase, should be 12 words long.",
+      };
+    }
+
+    const salt = create<CourtSalt>(blake2AsU8a(input));
+
+    return {
+      valid: true,
+      salt: u8aToHex(salt),
+    };
+  }, [secretInput, sdk]);
 
   const { send, isBroadcasting, isLoading, isReady } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk)) {
+      if (isRpcSdk(sdk) && parsedSalt && "salt" in parsedSalt) {
         try {
           return sdk.api.tx.court.denounceVote(
             caseId,
@@ -255,9 +299,11 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
                 Categorical: selectedVoteOutcome.CategoricalOutcome[1],
               },
             },
-            salt,
+            parsedSalt.salt,
           );
-        } catch (error) {}
+        } catch (error) {
+          console.info("error", error);
+        }
       }
     },
     {
@@ -270,8 +316,14 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
   const onClose = () => {
     setOpen(false);
     setSelectedVoteOutcome(outcomeAssets[0]);
-    setSalt("");
+    setSecretInput("");
   };
+
+  useEffect(() => {
+    if (open) {
+      setShowError(false);
+    }
+  }, [open]);
 
   return (
     <>
@@ -291,8 +343,13 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
             the voting phase. To denounce you have to know the <b>outcome</b>{" "}
             the juror voted for and the <b>salt</b> that was used when voting.
           </p>
-          <div className="mb-2 flex items-center">
-            <label className="flex-1 text-gray-500">Vote:</label>
+          <div className="mb-4 flex items-center">
+            <label className="flex flex-1 items-center gap-1 text-gray-500">
+              Vote
+              <InfoPopover>
+                You have to know the outcome the juror voted for.
+              </InfoPopover>
+            </label>
             <div className="inline-block pr-5 !text-sm">
               <MarketContextActionOutcomeSelector
                 market={market}
@@ -304,18 +361,33 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
               />
             </div>
           </div>
-          <div className="mb-6 flex items-center">
-            <label className="flex-1 text-gray-500">Salt:</label>
-            <Input
-              type="text"
-              value={salt}
-              onChange={(e) => {
-                setSalt(e.target.value);
-              }}
-              className="w-2/3 text-sm"
-              placeholder="0x....."
-            />
+          <div className="mb-2 flex items-center">
+            <label className="flex flex-1 items-center gap-1 text-gray-500">
+              Salt
+              <InfoPopover>
+                Either the salt used when the juror voted or the secret phrase
+                that was used to generate the salt is valid input.
+              </InfoPopover>
+            </label>
+            <div className="w-2/3">
+              <Input
+                type="text"
+                value={secretInput}
+                onChange={(e) => {
+                  setSecretInput(e.target.value);
+                }}
+                onBlur={(e) => setShowError(Boolean(e.target.value))}
+                className="w-full text-sm"
+                placeholder={`0x..... or 12 word secret phrase `}
+              />
+            </div>
           </div>
+          <div className="mb-4 mr-4 mt-2 h-6 text-right">
+            {parsedSalt && "error" in parsedSalt && showError && (
+              <div className="text-xs text-red-400">{parsedSalt.error}</div>
+            )}
+          </div>
+
           <TransactionButton
             disabled={isLoading || isBroadcasting || !isReady}
             loading={isBroadcasting}
