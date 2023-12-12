@@ -49,7 +49,7 @@ export const CourtStageTimer = ({
     ? 100
     : ((stage.totalTime - stage.remainingBlocks) / stage.totalTime) * 100;
 
-  const round = 3 || courtCase?.appeals.length;
+  const round = courtCase?.appeals.length;
 
   return (
     <>
