@@ -9,6 +9,7 @@ import { useChainTime } from "lib/state/chaintime";
 import { CourtStage, getCourtStage } from "lib/state/court/get-stage";
 import moment from "moment";
 import { useMemo } from "react";
+import InfoPopover from "components/ui/InfoPopover";
 
 export const CourtStageTimer = ({
   market: initialMarket,
@@ -48,6 +49,8 @@ export const CourtStageTimer = ({
     ? 100
     : ((stage.totalTime - stage.remainingBlocks) / stage.totalTime) * 100;
 
+  const round = 3 || courtCase?.appeals.length;
+
   return (
     <>
       <div className="inline-block w-full">
@@ -58,11 +61,25 @@ export const CourtStageTimer = ({
           <div className="text-sm text-sky-600">
             {courtStageCopy[stage.type].description}
           </div>
-          {stage.type !== "closed" && stage.type !== "reassigned" && (
-            <div className="ml-auto text-right text-black">
-              {timeLeft?.humanize()} left
-            </div>
-          )}
+          <div className="ml-auto flex items-center gap-2">
+            {stage.type !== "closed" && stage.type !== "reassigned" && (
+              <div className=" text-right text-black">
+                {timeLeft?.humanize()} left
+              </div>
+            )}
+            {round && (
+              <div
+                className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs ${
+                  roundCopy[round as 1 | 2 | 3].className
+                }`}
+              >
+                Round {round}{" "}
+                <InfoPopover>
+                  {roundCopy[round as 1 | 2 | 3].description}
+                </InfoPopover>
+              </div>
+            )}
+          </div>
         </div>
         <div className="w-full">
           <div className="text-right text-xs text-sky-600">
@@ -80,6 +97,27 @@ export const CourtStageTimer = ({
       </div>
     </>
   );
+};
+
+export const roundCopy: Record<
+  1 | 2 | 3,
+  { description: string; className: string }
+> = {
+  "1": {
+    description:
+      "This case outcome has been appealed and is starting a new round of voting.",
+    className: "text-gray-500 bg-slate-100",
+  },
+  "2": {
+    description:
+      "This case has been appealed for the second time and is starting a new round of voting.",
+    className: "text-gray-500 bg-slate-100",
+  },
+  "3": {
+    description:
+      "This case has been appealed for the third time and is starting a new round of voting. If it does not reach a majority vote, the case will be moved to global disputes.",
+    className: "text-orange-800 bg-orange-400",
+  },
 };
 
 export const courtStageCopy: Record<
