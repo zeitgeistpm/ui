@@ -10,6 +10,7 @@ import { CourtStage, getCourtStage } from "lib/state/court/get-stage";
 import moment from "moment";
 import { useMemo } from "react";
 import InfoPopover from "components/ui/InfoPopover";
+import { CourtAppealRound } from "lib/state/court/types";
 
 export const CourtStageTimer = ({
   market: initialMarket,
@@ -49,7 +50,9 @@ export const CourtStageTimer = ({
     ? 100
     : ((stage.totalTime - stage.remainingBlocks) / stage.totalTime) * 100;
 
-  const round = courtCase?.appeals.length;
+  const round = courtCase
+    ? (courtCase.appeals.length as CourtAppealRound)
+    : undefined;
 
   return (
     <>
@@ -69,14 +72,10 @@ export const CourtStageTimer = ({
             )}
             {round && (
               <div
-                className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs ${
-                  roundCopy[round as 1 | 2 | 3].className
-                }`}
+                className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs ${roundCopy[round].className}`}
               >
                 Round {round}{" "}
-                <InfoPopover>
-                  {roundCopy[round as 1 | 2 | 3].description}
-                </InfoPopover>
+                <InfoPopover>{roundCopy[round].description}</InfoPopover>
               </div>
             )}
           </div>
@@ -100,7 +99,7 @@ export const CourtStageTimer = ({
 };
 
 export const roundCopy: Record<
-  1 | 2 | 3,
+  CourtAppealRound,
   { description: string; className: string }
 > = {
   "1": {

@@ -1,5 +1,6 @@
 import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
 import Opaque, { create } from "ts-opaque";
+import { CourtAppealRound } from "./types";
 
 export type CourtCaseJurorCompositeId = Opaque<
   string,
@@ -18,8 +19,11 @@ export const courtCaseJurorCompositeId = (params: {
 }) => {
   const { data: courtCase } = useCourtCase(params.caseId);
 
-  const round = courtCase?.appeals.length;
-  const roundIdentifier = round ? `-round[${round}]` : "";
+  const round = courtCase
+    ? (courtCase.appeals.length as CourtAppealRound)
+    : undefined;
+
+  const roundIdentifier = round ? `-appeal-round[${round}]` : "";
 
   return create<CourtCaseJurorCompositeId>(
     `${params.marketId}-${params.caseId}${roundIdentifier}-${params.juror}`,
