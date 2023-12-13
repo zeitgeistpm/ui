@@ -21,6 +21,7 @@ import { getCurrentPrediction } from "lib/util/assets";
 import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { marketMetaFilter } from "./constants";
+import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 
 const poolChangesQuery = gql`
   query PoolChanges($start: DateTime, $end: DateTime) {
@@ -45,6 +46,8 @@ const marketQuery = gql`
       where: {
         pool: { poolId_eq: $poolId }
         marketId_not_in: ${hiddenMarketIds}
+        hasValidMetaCategories_eq: true
+        categories_isNull: false
         ${marketMetaFilter}
       }
     ) {
@@ -149,6 +152,11 @@ const getTrendingMarkets = async (
 
       const market = marketsRes.markets[0];
 
+      if (!market) {
+        console.log("No market");
+        return null;
+      }
+
       const assetsRes = await client.request<{
         assets: {
           pool: { poolId: number };
@@ -162,6 +170,11 @@ const getTrendingMarkets = async (
       const assets = assetsRes.assets;
 
       const prediction = getCurrentPrediction(assets, market);
+
+      if (!market.categories) {
+        console.log("No categories for market", market.marketId);
+        return null;
+      }
 
       const marketCategories: MarketOutcomes = market.categories.map(
         (category, index) => {
@@ -198,7 +211,7 @@ const getTrendingMarkets = async (
     }),
   );
 
-  return trendingMarkets;
+  return trendingMarkets.filter(isNotNull);
 };
 
 const lookupPrice = (
