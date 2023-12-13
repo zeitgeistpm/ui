@@ -10,17 +10,42 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { IOCourtSaltPhraseStorage } from "lib/state/court/CourtSaltPhraseStorage";
 import { useCourtCommitmentHash } from "lib/state/court/useCourtCommitmentHash";
-import { useCourtSalt } from "lib/state/court/useCourtSalt";
+import { CourtSalt, useCourtSalt } from "lib/state/court/useCourtSalt";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
+import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
+import { createCourtCommitmentHash } from "lib/util/create-vote-commitment-hash";
 import React, { useRef, useState } from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BsFillFileEarmarkDiffFill } from "react-icons/bs";
+import { HexString } from "@polkadot/util/types";
 
 export type CourtVoteRevealFormProps = {
   caseId: number;
   market: FullMarketFragment;
   secretVote?: ZrmlCourtDraw["vote"]["asSecret"];
+};
+
+const useOutcomeMatchingCommitmentHash = (
+  salt: CourtSalt,
+  commitmentHash: HexString,
+  outcomeAssets: CategoricalAssetId[],
+) => {
+  const [sdk] = useSdkv2();
+  const wallet = useWallet();
+  if (isRpcSdk(sdk) && wallet.realAddress) {
+    const outcome = outcomeAssets.find((assetId) => {
+      const assetHash = createCourtCommitmentHash(
+        sdk,
+        wallet.realAddress!,
+        assetId,
+        salt,
+      );
+      return u8aToHex(assetHash) === commitmentHash;
+    });
+
+    return outcome;
+  }
 };
 
 export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
@@ -47,19 +72,27 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
     caseId: caseId,
   });
 
+  const matchingOutcome = useOutcomeMatchingCommitmentHash(
+    salt,
+    secretVote?.commitment.toHex() ?? `0x`,
+    outcomeAssets,
+  );
+
   const { commitmentHash } = useCourtCommitmentHash({
     salt,
-    selectedOutcome: vote,
+    selectedOutcome: matchingOutcome ?? vote,
   });
 
   const { send, isReady, isLoading, isBroadcasting } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && salt && vote) {
+        const assetIndex =
+          matchingOutcome?.CategoricalOutcome[1] ?? vote.CategoricalOutcome[1];
         return sdk.api.tx.court.revealVote(
           caseId,
           {
             Outcome: {
-              Categorical: vote.CategoricalOutcome[1],
+              Categorical: assetIndex,
             },
           },
           salt,
@@ -128,15 +161,15 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
         <div className="mb-8 mt-6">
           <MarketContextActionOutcomeSelector
             market={market}
-            selected={vote ?? outcomeAssets[0]}
+            selected={matchingOutcome ?? vote ?? outcomeAssets[0]}
             options={outcomeAssets}
             onChange={onChangeSelectedOutcome}
-            disabled={committed}
-            hideValue={committed}
+            disabled={Boolean(committed || matchingOutcome)}
+            hideValue={Boolean(committed || matchingOutcome)}
           />
         </div>
 
-        {!committed && (
+        {!committed && !matchingOutcome && (
           <>
             <div className="mb-6 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
               <div className="text-sm text-gray-700">
@@ -154,7 +187,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
           onChange={onFileInputChange}
         />
 
-        {commitmentHashMatches ? (
+        {commitmentHashMatches || matchingOutcome ? (
           <div
             className="relative mb-6 w-full resize-none rounded-md border-black border-opacity-30 bg-transparent text-center font-semibold"
             onDragOver={onCourtSaltBackupDragOver}
