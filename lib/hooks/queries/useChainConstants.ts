@@ -35,6 +35,7 @@ export type ChainConstants = {
     minJurorStake: number;
     inflationPeriodBlocks: number;
     maxDelegations: number;
+    appealBond: number;
   };
 };
 
@@ -91,6 +92,7 @@ export const useChainConstants = () => {
           minJurorStake: consts.court.minJurorStake.toNumber() / ZTG,
           inflationPeriodBlocks: consts.court.inflationPeriod.toNumber(),
           maxDelegations: consts.court.maxDelegations.toNumber(),
+          appealBond: consts.court.appealBond.toNumber() / ZTG,
         },
       };
 
