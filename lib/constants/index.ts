@@ -3,7 +3,7 @@ import resolveTailwindConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../../tailwind.config";
 import { EndpointOption, Environment } from "../types";
 
-export const isWSX = process.env.NEXT_PUBLIC_CLIENT === "wsx";
+export const isWSX = false;
 export const wsxID = process.env.NEXT_PUBLIC_VERCEL_ENV === "staging" ? 3 : 3;
 export const wsxAssetIdString = `{"foreignAsset":${wsxID}}`;
 
