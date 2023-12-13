@@ -10,42 +10,18 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { IOCourtSaltPhraseStorage } from "lib/state/court/CourtSaltPhraseStorage";
 import { useCourtCommitmentHash } from "lib/state/court/useCourtCommitmentHash";
-import { CourtSalt, useCourtSalt } from "lib/state/court/useCourtSalt";
+import { useCourtSalt } from "lib/state/court/useCourtSalt";
+import { useOutcomeMatchingCommitmentHash } from "lib/state/court/useOutcomeMatchingCommitmentHash";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
-import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
-import { createCourtCommitmentHash } from "lib/util/create-vote-commitment-hash";
 import React, { useRef, useState } from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BsFillFileEarmarkDiffFill } from "react-icons/bs";
-import { HexString } from "@polkadot/util/types";
 
 export type CourtVoteRevealFormProps = {
   caseId: number;
   market: FullMarketFragment;
   secretVote?: ZrmlCourtDraw["vote"]["asSecret"];
-};
-
-const useOutcomeMatchingCommitmentHash = (
-  salt: CourtSalt,
-  commitmentHash: HexString,
-  outcomeAssets: CategoricalAssetId[],
-) => {
-  const [sdk] = useSdkv2();
-  const wallet = useWallet();
-  if (isRpcSdk(sdk) && wallet.realAddress) {
-    const outcome = outcomeAssets.find((assetId) => {
-      const assetHash = createCourtCommitmentHash(
-        sdk,
-        wallet.realAddress!,
-        assetId,
-        salt,
-      );
-      return u8aToHex(assetHash) === commitmentHash;
-    });
-
-    return outcome;
-  }
 };
 
 export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
