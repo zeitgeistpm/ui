@@ -4,7 +4,7 @@ import { ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
 import { CourtCasesTable } from "components/court/CourtCasesTable";
 import JoinCourtAsJurorButton from "components/court/JoinCourtAsJurorButton";
 import ManageDelegationButton from "components/court/ManageDelegationButton";
-import CourtUnstakeButton from "components/court/PrepareExitCourt";
+import CourtUnstakeButton from "components/court/CourtUnstakeButton";
 import InfoPopover from "components/ui/InfoPopover";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
