@@ -8,6 +8,7 @@ export default function Document() {
   return (
     <Html>
       <Head>
+        {/* TODO make dynamic */}
         {useAnalytics && (
           <Script id="google-analytics" strategy="afterInteractive">
             {`
@@ -25,7 +26,7 @@ export default function Document() {
             strategy="afterInteractive"
           />
         )}
-        <meta name="title" content="The Washington Stock Exchange" />
+        {/* TODO make dynamic */}
         <meta
           name="description"
           content="The application interface for The Washington Stock Exchange. Built on Polkadot, powered by Zeitgeist, the leader in decentralized prediction markets."
