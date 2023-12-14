@@ -22,6 +22,7 @@ import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import Image from "next/image";
+import { useMarketImage } from "lib/hooks/useMarketImage";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -314,30 +315,6 @@ export const MarketCard = ({
       </div>
     </MarketCardContext.Provider>
   );
-};
-
-const useMarketImage = (
-  market: { marketId: number; tags?: string[] },
-  opts?: {
-    fallback?: string;
-  },
-) => {
-  const firstTag = market.tags?.[0];
-
-  const tag = (
-    firstTag && firstTag in CATEGORY_IMAGES ? firstTag : "untagged"
-  ) as keyof typeof CATEGORY_IMAGES;
-
-  const category = CATEGORY_IMAGES[tag];
-
-  const fallback = category[market.marketId % category.length];
-
-  const cmsQuery = useMarketCmsMetadata(market.marketId);
-
-  return {
-    ...cmsQuery,
-    data: cmsQuery.data?.imageUrl ?? opts?.fallback ?? fallback,
-  };
 };
 
 export default MarketCard;
