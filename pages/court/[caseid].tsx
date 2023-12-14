@@ -50,6 +50,8 @@ import { FaBackwardStep } from "react-icons/fa6";
 import { IoMdArrowBack } from "react-icons/io";
 import { useCourtSalt } from "lib/state/court/useCourtSalt";
 import { BsShieldFillExclamation } from "react-icons/bs";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -129,6 +131,7 @@ const CasePage: NextPage = ({
 
   const { data: courtCase } = useCourtCase(caseId);
   const { data: selectedDraws } = useCourtVoteDrawsForCase(caseId);
+  const { data: chainConstants } = useChainConstants();
 
   const { data: marketId } = useCaseMarketId(caseId);
 
@@ -181,6 +184,11 @@ const CasePage: NextPage = ({
     caseId,
     marketId: market.marketId,
   });
+
+  const round = courtCase?.appeals.length ?? 0;
+  const minJurorStake = chainConstants?.court.minJurorStake ?? 0;
+  const requestedVoteWeight = Math.pow(2, round) * 31 + Math.pow(2, round) - 1;
+  const totalSlashableStake = requestedVoteWeight * minJurorStake;
 
   const onClickRecastVote = async () => {
     if (
@@ -318,10 +326,16 @@ const CasePage: NextPage = ({
                 dateStyle: "medium",
               }).format(market.period.end)}
             </HeaderStat>
-            <HeaderStat label="Reported Outcome" border={false}>
+            <HeaderStat label="Reported Outcome">
               {reportedOutcome !== undefined
                 ? market.categories?.[reportedOutcome].name
                 : "-"}
+            </HeaderStat>
+            <HeaderStat
+              label={`Slashable ${chainConstants?.tokenSymbol}`}
+              border={false}
+            >
+              {formatNumberCompact(totalSlashableStake)}
             </HeaderStat>
           </div>
 
