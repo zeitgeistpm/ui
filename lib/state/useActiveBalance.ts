@@ -6,6 +6,9 @@ import Decimal from "decimal.js";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 import { ZTG } from "@zeitgeistpm/sdk";
 import { wsxIdObject } from "lib/constants";
+import { walletAtom, store } from "./wallet";
+import { useAtom } from "jotai";
+import { formatNumberLocalized } from "lib/util";
 
 const useActiveBalance = (
   userAddress: string | undefined,
@@ -13,6 +16,7 @@ const useActiveBalance = (
 ) => {
   const assetId = foreignAssetId || wsxIdObject;
   const [balance, setBalance] = useState<Decimal | undefined>(undefined);
+  const [walletState, setWalletState] = useAtom(walletAtom);
   const [sdk, id] = useSdkv2();
   const confirm = useConfirmation();
 
@@ -27,7 +31,6 @@ const useActiveBalance = (
         sdk.api.query.tokens.accounts &&
         IOForeignAssetId.is(assetId)
       ) {
-        console.log(encodeAddress(userAddress, 73));
         try {
           unsubscribe = await sdk.api.query.tokens.accounts(
             userAddress,
@@ -57,24 +60,27 @@ const useActiveBalance = (
   }, [sdk, userAddress]);
 
   useEffect(() => {
-    // Check if previous balance was 0 and current balance is 100
-    // console.log(
-    //   balance?.div(ZTG).abs().toNumber(),
-    //   prevBalance?.div(ZTG).abs().toNumber(),
-    // );
-    // if (
-    //   prevBalance?.equals(new Decimal(0)) &&
-    //   balance?.equals(new Decimal(100))
-    // ) {
-    //   // Place your logic here
-    //   confirm.prompt({
-    //     title: "Welcome to The Washington Stock Exchange!",
-    //     description: `In just a few moments your account will be funded with 100 WSX tokens.
-    //       These tokens can be used to trade on prediction markets on The WSX platform.`,
-    //   });
-    // }
-  }, [balance]);
-  console.log(balance?.div(ZTG).abs().toNumber());
+    if (
+      balance &&
+      balance?.div(ZTG).abs().toNumber() <= 1000 &&
+      walletState.newUser
+    ) {
+      // Place your logic here
+      store.set(walletAtom, (state) => {
+        return {
+          ...state,
+          newUser: false,
+        };
+      });
+      confirm.prompt({
+        title: "Your account is now funded!",
+        description: `You have ${formatNumberLocalized(
+          balance?.div(ZTG).abs().toNumber(),
+        )} WSX in your account.`,
+      });
+    }
+  }, [balance, walletState.newUser]);
+
   return balance;
 };
 

@@ -26,6 +26,7 @@ import { web3AuthWalletInstance } from "./util/web3auth-config";
 import { isWSX } from "lib/constants";
 import { checkNewUser } from "./wsx";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
+import useActiveBalance from "./useActiveBalance";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -123,6 +124,10 @@ export type WalletState = {
    * Error messages of the wallet.
    */
   errors: WalletError[];
+  /**
+   * Checks if user is new via call to DB.
+   */
+  newUser: boolean;
 };
 
 /**
@@ -155,7 +160,7 @@ const disconnectWalletStateTransition = (
  * Atom proxy storage.
  * Used to access and write all atom state in the app.
  */
-const store = getDefaultStore();
+export const store = getDefaultStore();
 
 /**
  * Atom proxy storage of wallet state.
@@ -165,6 +170,7 @@ export const walletAtom = atom<WalletState>({
   wallet: undefined,
   accounts: [],
   errors: [],
+  newUser: false,
 });
 
 /**
@@ -335,12 +341,13 @@ const enableWallet = async (walletId: string) => {
   }
 };
 
-const enabledWeb3Wallet = (keyPair: KeyringPair) => {
+const enabledWeb3Wallet = (keyPair: KeyringPair, newUser?: boolean) => {
   store.set(walletAtom, (state) => {
     return {
       ...state,
       wallet: { ...keyPair },
       connected: true,
+      newUser: newUser ?? false,
       accounts:
         [keyPair?.address].map((account) => {
           return {
@@ -401,15 +408,15 @@ export const useWallet = (): UseWallet => {
 
       if (keyPair.address) {
         const response = await checkNewUser(keyPair.address);
-        enabledWeb3Wallet(keyPair);
         console.log(response);
         if (response.success) {
+          enabledWeb3Wallet(keyPair, true);
           await confirm.prompt({
             title: "Welcome to The Washington Stock Exchange!",
             description: `In just a few moments your account will be funded with 100 WSX tokens.
               These tokens can be used to trade on prediction markets on The WSX platform.`,
           });
-        }
+        } else enabledWeb3Wallet(keyPair);
       }
     }
   };
