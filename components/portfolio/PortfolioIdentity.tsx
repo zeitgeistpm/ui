@@ -3,6 +3,7 @@ import DiscordIcon from "components/icons/DiscordIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
 import SettingsModal from "components/settings/SettingsModal";
 import Avatar from "components/ui/Avatar";
+import { isWSX } from "lib/constants";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
@@ -37,45 +38,47 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
   return (
     <>
       <div className="mb-5 flex w-full flex-col justify-center gap-y-2 sm:gap-y-5">
-        <div className="flex flex-col gap-5 sm:flex-row">
-          <div>{address && <Avatar address={address} size={100} />}</div>
-          <div className="flex flex-col justify-center">
-            <div className="mb-2 flex items-center gap-2">
-              <div>
-                {isOwned && !hasIdentity && (
-                  <div className="text-xs font-extrabold text-gray-500">
-                    wallet name
+        {!isWSX && (
+          <div className="flex flex-col gap-5 sm:flex-row">
+            <div>{address && <Avatar address={address} size={100} />}</div>
+            <div className="flex flex-col justify-center">
+              <div className="mb-2 flex items-center gap-2">
+                <div>
+                  {isOwned && !hasIdentity && (
+                    <div className="text-xs font-extrabold text-gray-500">
+                      wallet name
+                    </div>
+                  )}
+                  {isOwned && hasIdentity && (
+                    <div className="text-xs font-extrabold text-gray-500">
+                      on chain name
+                    </div>
+                  )}
+                  <div className="text-xl font-extrabold sm:text-4xl">
+                    {name}{" "}
                   </div>
-                )}
-                {isOwned && hasIdentity && (
-                  <div className="text-xs font-extrabold text-gray-500">
-                    on chain name
-                  </div>
-                )}
-                <div className="text-xl font-extrabold sm:text-4xl">
-                  {name}{" "}
                 </div>
-              </div>
 
-              {isOwned && !hasIdentity && (
-                <div className="flex flex-1 items-center justify-end">
-                  <button
-                    className="center gap-2 rounded-lg bg-ztg-blue px-3 py-2 text-sm text-white"
-                    onClick={() => setShowSettingsModal(true)}
-                  >
-                    Set On-Chain Identity <FaUserCheck />
-                  </button>
-                </div>
-              )}
-            </div>
-            <div className="hidden text-sm sm:block md:text-base">
-              {address}
-            </div>
-            <div className="text-sm sm:hidden">
-              {shortenAddress(address, 12, 26)}
+                {isOwned && !hasIdentity && (
+                  <div className="flex flex-1 items-center justify-end">
+                    <button
+                      className="center gap-2 rounded-lg bg-ztg-blue px-3 py-2 text-sm text-white"
+                      onClick={() => setShowSettingsModal(true)}
+                    >
+                      Set On-Chain Identity <FaUserCheck />
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="hidden text-sm sm:block md:text-base">
+                {address}
+              </div>
+              <div className="text-sm sm:hidden">
+                {shortenAddress(address, 12, 26)}
+              </div>
             </div>
           </div>
-        </div>
+        )}
         <div className="flex flex-wrap gap-3 text-sm text-white">
           {identity?.twitter && (
             <a

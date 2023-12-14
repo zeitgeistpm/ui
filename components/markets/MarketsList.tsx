@@ -15,6 +15,7 @@ import { filterTypes } from "lib/constants/market-filter";
 import { ZTG } from "lib/constants";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 import { isWSX } from "lib/constants";
+import { HeroBannerWSX } from "components/front-page/HeroBannerWSX";
 
 export type MarketsListProps = {
   className?: string;

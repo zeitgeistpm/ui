@@ -13,7 +13,6 @@ export const useBalance = (
   blockNumber?: number,
 ) => {
   const [sdk, id] = useSdkv2();
-
   const query = useQuery(
     [id, balanceRootKey, "free", address, assetId, blockNumber],
     async () => {

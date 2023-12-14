@@ -4,9 +4,10 @@ import tailwindConfig from "../../tailwind.config";
 import { EndpointOption, Environment } from "../types";
 
 // IMPORTANT: this should be false for all other branches other than the wsx branch.
-export const isWSX = false;
+export const isWSX = true;
 
 export const wsxID = process.env.NEXT_PUBLIC_VERCEL_ENV === "staging" ? 3 : 3;
+export const wsxIdObject = { foreignAsset: wsxID };
 export const wsxAssetIdString = `{"foreignAsset":${wsxID}}`;
 
 export const ZTG = 10 ** 10;

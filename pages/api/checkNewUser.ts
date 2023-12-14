@@ -33,7 +33,13 @@ export default async function checkNewUser(req, res) {
       const fundResponse = await fundUser(wallet);
 
       if (fundResponse.success) {
-        return res.status(200).json({ success: true, data: response.data });
+        return res
+          .status(200)
+          .json({
+            success: true,
+            data: response.data,
+            txHash: fundResponse.txHash,
+          });
       } else {
         return res.status(500).json({ error: fundResponse.error });
       }

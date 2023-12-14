@@ -10,13 +10,14 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useAccountModals } from "lib/state/account";
 import { useUserLocation } from "lib/hooks/useUserLocation";
-import { useWallet } from "lib/state/wallet";
+import { useWallet, walletAtom } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { FaNetworkWired } from "react-icons/fa";
+import { useEffect, useMemo } from "react";
 
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FC, Fragment, PropsWithChildren, useState } from "react";
+import React, { FC, Fragment, PropsWithChildren, use, useState } from "react";
 import {
   ArrowRight,
   BarChart,
@@ -34,6 +35,9 @@ import {
 import SettingsModal from "components/settings/SettingsModal";
 import CopyIcon from "../ui/CopyIcon";
 import { formatNumberCompact } from "lib/util/format-compact";
+import useActiveBalance from "lib/state/useActiveBalance";
+import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
+import { useRef } from "react";
 
 const BalanceRow = ({
   imgPath,
@@ -90,6 +94,7 @@ const AccountButton: FC<{
     isNovaWallet,
     getProxyFor,
     realAddress,
+    walletId,
   } = useWallet();
   const proxy = getProxyFor(activeAccount?.address);
 
@@ -99,6 +104,7 @@ const AccountButton: FC<{
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const confirm = useConfirmation();
 
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: polkadotBalance } = useBalance(activeAccount?.address, {
@@ -108,6 +114,12 @@ const AccountButton: FC<{
     ForeignAsset: 3,
   });
 
+  const balance = useActiveBalance(activeAccount?.address, {
+    ForeignAsset: 3,
+  });
+
+  // console.log(balance?.div(ZTG).abs().toNumber());
+
   const { data: constants } = useChainConstants();
 
   const isMobileDevice =
@@ -116,6 +128,10 @@ const AccountButton: FC<{
     );
 
   const connect = async () => {
+    if (isWSX) {
+      selectWallet("web3auth");
+      return;
+    }
     if (isNovaWallet) {
       selectWallet("polkadot-js");
     } else {
@@ -151,7 +167,16 @@ const AccountButton: FC<{
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {hasWallet === true ? (
+          {isWSX ? (
+            <HeaderActionButton
+              disabled={
+                locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)
+              }
+              onClick={() => connect()}
+            >
+              Get Started
+            </HeaderActionButton>
+          ) : hasWallet === true ? (
             <HeaderActionButton
               disabled={
                 locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)
@@ -216,7 +241,7 @@ const AccountButton: FC<{
                           {isWSX ? (
                             <span className="hidden h-full min-w-fit pl-2 text-sm font-medium leading-[40px] transition-all md:block">
                               {formatNumberCompact(
-                                wsxBalance?.div(ZTG).abs().toNumber() ?? 0,
+                                balance?.div(ZTG).abs().toNumber() ?? 0,
                               )}{" "}
                               WSX
                             </span>
@@ -316,7 +341,7 @@ const AccountButton: FC<{
                           <BalanceRow
                             imgPath="/currencies/wsx-currency.png"
                             units="WSX"
-                            balance={wsxBalance}
+                            balance={balance}
                           />
                         ) : (
                           <>

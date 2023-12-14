@@ -402,13 +402,13 @@ export const useWallet = (): UseWallet => {
       if (keyPair.address) {
         const response = await checkNewUser(keyPair.address);
         enabledWeb3Wallet(keyPair);
+        console.log(response);
         if (response.success) {
           await confirm.prompt({
-            title: "Welcome to The Washington Exchange!",
-            description: `In just a few moments (1-2 mins) your account will be funded with 1000 WSX tokens.
+            title: "Welcome to The Washington Stock Exchange!",
+            description: `In just a few moments your account will be funded with 100 WSX tokens.
               These tokens can be used to trade on prediction markets on The WSX platform.`,
           });
-        } else {
         }
       }
     }
