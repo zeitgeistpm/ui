@@ -50,9 +50,10 @@ export const CourtStageTimer = ({
     ? 100
     : ((stage.totalTime - stage.remainingBlocks) / stage.totalTime) * 100;
 
-  const round = courtCase
-    ? (courtCase.appeals.length as CourtAppealRound)
-    : undefined;
+  const round =
+    courtCase && courtCase.appeals.length
+      ? (courtCase.appeals.length as CourtAppealRound)
+      : undefined;
 
   return (
     <>
