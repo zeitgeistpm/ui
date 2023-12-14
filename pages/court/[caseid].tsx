@@ -52,6 +52,7 @@ import { useCourtSalt } from "lib/state/court/useCourtSalt";
 import { BsShieldFillExclamation } from "react-icons/bs";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { formatNumberCompact } from "lib/util/format-compact";
+import { calculateSlashableStake } from "lib/util/court/calculateSlashableStake";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -185,10 +186,10 @@ const CasePage: NextPage = ({
     marketId: market.marketId,
   });
 
-  const round = courtCase?.appeals.length ?? 0;
-  const minJurorStake = chainConstants?.court.minJurorStake ?? 0;
-  const requestedVoteWeight = Math.pow(2, round) * 31 + Math.pow(2, round) - 1;
-  const totalSlashableStake = requestedVoteWeight * minJurorStake;
+  const totalSlashableStake = calculateSlashableStake(
+    courtCase?.appeals.length ?? 0,
+    chainConstants?.court.minJurorStake ?? 0,
+  );
 
   const onClickRecastVote = async () => {
     if (
