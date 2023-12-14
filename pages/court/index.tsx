@@ -4,7 +4,7 @@ import { ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
 import { CourtCasesTable } from "components/court/CourtCasesTable";
 import JoinCourtAsJurorButton from "components/court/JoinCourtAsJurorButton";
 import ManageDelegationButton from "components/court/ManageDelegationButton";
-import PrepareExitCourtButton from "components/court/PrepareExitCourt";
+import CourtUnstakeButton from "components/court/PrepareExitCourt";
 import InfoPopover from "components/ui/InfoPopover";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
@@ -179,7 +179,7 @@ const CourtPage: NextPage = ({
                   <ManageDelegationButton className="w-full md:w-auto" />
 
                   {!connectedParticipant?.prepareExit && (
-                    <PrepareExitCourtButton className="w-full md:w-auto" />
+                    <CourtUnstakeButton className="w-full md:w-auto" />
                   )}
                 </div>
               </div>
