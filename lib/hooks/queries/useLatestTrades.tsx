@@ -39,7 +39,6 @@ export const useLatestTrades = (limit?: number, marketId?: number) => {
           order: HistoricalSwapOrderByInput.BlockNumberDesc,
           where: {
             AND: [
-              swapsMetaFilter,
               marketId != null
                 ? {
                     OR: [

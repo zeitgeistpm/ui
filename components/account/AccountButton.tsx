@@ -427,21 +427,23 @@ const AccountButton: FC<{
                           </Link>
                         )}
                       </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="mb-3 flex cursor-pointer items-center px-6 hover:bg-slate-100"
-                            onClick={() => setShowSettingsModal(true)}
-                          >
-                            <Settings />
-                            <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                      {!isWSX && (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className="mb-3 flex cursor-pointer items-center px-6 hover:bg-slate-100"
+                              onClick={() => setShowSettingsModal(true)}
                             >
-                              Settings
-                            </button>
-                          </div>
-                        )}
-                      </Menu.Item>
+                              <Settings />
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                              >
+                                Settings
+                              </button>
+                            </div>
+                          )}
+                        </Menu.Item>
+                      )}
                       <Menu.Item>
                         {({ active }) => (
                           <div
