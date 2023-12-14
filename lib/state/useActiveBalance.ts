@@ -19,7 +19,6 @@ const useActiveBalance = (
   const [walletState, setWalletState] = useAtom(walletAtom);
   const [sdk, id] = useSdkv2();
   const confirm = useConfirmation();
-
   useEffect(() => {
     let unsubscribe;
 
@@ -62,10 +61,9 @@ const useActiveBalance = (
   useEffect(() => {
     if (
       balance &&
-      balance?.div(ZTG).abs().toNumber() <= 1000 &&
+      balance?.div(ZTG).abs().toNumber() <= 100 &&
       walletState.newUser
     ) {
-      // Place your logic here
       store.set(walletAtom, (state) => {
         return {
           ...state,
@@ -80,7 +78,8 @@ const useActiveBalance = (
       });
     }
   }, [balance, walletState.newUser]);
-
+  console.log(balance?.div(ZTG).abs().toNumber());
+  console.log(walletState.newUser);
   return balance;
 };
 
