@@ -410,12 +410,12 @@ export const useWallet = (): UseWallet => {
         const response = await checkNewUser(keyPair.address);
         console.log(response);
         if (response.success) {
-          enabledWeb3Wallet(keyPair, true);
           await confirm.prompt({
             title: "Welcome to The Washington Stock Exchange!",
             description: `In just a few moments your account will be funded with 100 WSX tokens.
               These tokens can be used to trade on prediction markets on The WSX platform.`,
           });
+          enabledWeb3Wallet(keyPair, true);
         } else enabledWeb3Wallet(keyPair);
       }
     }
