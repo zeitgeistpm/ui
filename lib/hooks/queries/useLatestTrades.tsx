@@ -12,6 +12,7 @@ import Decimal from "decimal.js";
 import { BLOCK_TIME_SECONDS } from "lib/constants";
 import { getMarketHeaders, MarketHeader } from "lib/gql/market-header";
 import { useSdkv2 } from "../useSdkv2";
+import { swapsMetaFilter } from "./constants";
 
 export const transactionHistoryKey = "latest-trades";
 
@@ -26,16 +27,29 @@ export type TradeItem = {
   cost: Decimal;
 };
 
-export const useLatestTrades = () => {
+export const useLatestTrades = (limit?: number, marketId?: number) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, transactionHistoryKey],
+    [id, transactionHistoryKey, limit, marketId],
     async () => {
       if (isIndexedSdk(sdk)) {
         const { historicalSwaps } = await sdk.indexer.historicalSwaps({
-          limit: 3,
+          limit: limit,
           order: HistoricalSwapOrderByInput.BlockNumberDesc,
+          where: {
+            AND: [
+              swapsMetaFilter,
+              marketId != null
+                ? {
+                    OR: [
+                      { assetIn_contains: `[${marketId},` },
+                      { assetOut_contains: `[${marketId},` },
+                    ],
+                  }
+                : {},
+            ],
+          },
         });
 
         const marketIds = new Set<number>();

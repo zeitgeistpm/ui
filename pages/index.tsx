@@ -1,4 +1,5 @@
 import { GenericChainProperties } from "@polkadot/types";
+import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
 import { BgBallGfx } from "components/front-page/BgBallFx";
 import GettingStartedSection from "components/front-page/GettingStartedSection";
@@ -13,28 +14,27 @@ import WatchHow from "components/front-page/WatchHow";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
+import { getCmsMarketMetadataForAllMarkets } from "lib/cms/get-market-metadata";
 import { getNews, News } from "lib/cms/get-news";
 import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
+import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import {
   getZTGHistory,
   ZtgPriceHistory,
 } from "lib/hooks/queries/useAssetUsdPrice";
+import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
 import { NextPage } from "next";
-
+import Link from "next/link";
 import path from "path";
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
-import { dehydrate, QueryClient } from "@tanstack/react-query";
-import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
-import { getCmsMarketMetadataForAllMarkets } from "lib/cms/get-market-metadata";
-import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 
 const getPlaiceholders = (
   paths: string[],
@@ -67,10 +67,9 @@ export async function getStaticProps() {
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
     getPlaiceholder(`/banner.png`),
-    getPlaiceholders(
-      CATEGORIES.map((cat) => `${cat.imagePath}`),
-      { dir: `${path.join(process.cwd())}/public/` },
-    ),
+    getPlaiceholders(CATEGORIES?.map((cat) => `${cat.imagePath}`), {
+      dir: `${path.join(process.cwd())}/public/`,
+    }),
     getPlaiceholders(
       news.map((slide) => slide.imageUrl ?? ""),
       { size: 16 },
@@ -84,10 +83,7 @@ export async function getStaticProps() {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery([categoryCountsKey], () =>
-    getCategoryCounts(
-      sdk.indexer.client,
-      CATEGORIES.map((c) => c.name),
-    ),
+    getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
   );
 
   for (const marketCmsData of marketsCmsData) {
@@ -200,8 +196,20 @@ const IndexPage: NextPage<{
         <div className="mb-12">
           <PopularCategories imagePlaceholders={categoryPlaceholders} />
         </div>
-
-        <LatestTrades />
+        <div className="mb-12 flex flex-col gap-4">
+          <div>
+            <h2 className="mb-7 text-center sm:col-span-2 sm:text-start">
+              Latest Trades
+            </h2>
+            <LatestTrades />
+          </div>
+          <Link
+            className="w-full text-center text-ztg-blue"
+            href={"/latest-trades"}
+          >
+            View more
+          </Link>
+        </div>
 
         <div className="mb-12 flex w-full items-center justify-center">
           <GettingStartedSection />

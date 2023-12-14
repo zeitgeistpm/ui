@@ -70,6 +70,8 @@ import {
   CmsMarketMetadata,
   getCmsMarketMetadataForMarket,
 } from "lib/cms/get-market-metadata";
+import LatestTrades from "components/front-page/LatestTrades";
+import Link from "next/link";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -169,7 +171,7 @@ const Market: NextPage<MarketPageProps> = ({
 
   const tradeItem = useTradeItem();
 
-  const outcomeAssets = indexedMarket.outcomeAssets.map(
+  const outcomeAssets = indexedMarket?.outcomeAssets?.map(
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
   );
@@ -381,6 +383,18 @@ const Market: NextPage<MarketPageProps> = ({
           </div>
 
           <AddressDetails title="Oracle" address={indexedMarket.oracle} />
+          {marketHasPool === true && (
+            <div className="mt-10 flex flex-col gap-4">
+              <h3 className="mb-5 text-2xl">Latest Trades</h3>
+              <LatestTrades limit={3} marketId={marketId} />
+              <Link
+                className="w-full text-center text-ztg-blue"
+                href={`/latest-trades?marketId=${marketId}`}
+              >
+                View more
+              </Link>
+            </div>
+          )}
 
           {market && (marketHasPool || poolDeployed) && (
             <div className="my-12">
