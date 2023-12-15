@@ -1,6 +1,5 @@
 import { Menu, Transition } from "@headlessui/react";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import {
   CourtCaseReadyForReveal,
@@ -13,7 +12,6 @@ import {
 import { useWallet } from "lib/state/wallet";
 import { useRouter } from "next/router";
 import { Fragment, PropsWithChildren, useEffect, useState } from "react";
-import { Users } from "react-feather";
 import { AiOutlineEye, AiOutlineFileAdd } from "react-icons/ai";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";
