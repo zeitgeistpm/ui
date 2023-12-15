@@ -4,7 +4,7 @@ import * as Time from "@zeitgeistpm/utility/dist/time";
 import InfoPopover from "components/ui/InfoPopover";
 import Skeleton from "components/ui/Skeleton";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
+import { useCourtCase } from "lib/hooks/queries/court/useCourtCases";
 import { useChainTime } from "lib/state/chaintime";
 import { CourtStage } from "lib/state/court/get-stage";
 import { CourtAppealRound } from "lib/state/court/types";
@@ -146,7 +146,7 @@ export const courtStageCopy: Record<
   },
   closed: {
     title: "Closed",
-    description: "The case is now closed. Waiting to be reassigned.",
+    description: "The case is now closed. Waiting to be settled.",
     color: "bg-orange-400",
   },
 };

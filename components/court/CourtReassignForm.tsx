@@ -2,9 +2,10 @@ import { Disclosure } from "@headlessui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk";
 import TransactionButton from "components/ui/TransactionButton";
-import Decimal from "decimal.js";
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
-import { courtCasesRootKey } from "lib/hooks/queries/court/useCourtCases";
+import {
+  courtCaseRootKey,
+  useCourtCase,
+} from "lib/hooks/queries/court/useCourtCases";
 import { voteDrawsRootKey } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -27,7 +28,7 @@ export const CourtReassignForm = ({ caseId }: { caseId: number }) => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([id, courtCasesRootKey]);
+        queryClient.invalidateQueries([id, courtCaseRootKey]);
         queryClient.invalidateQueries([id, voteDrawsRootKey]);
       },
     },

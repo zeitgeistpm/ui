@@ -1,8 +1,8 @@
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "../chaintime";
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
 import { useMemo } from "react";
 import { getCourtStage } from "./get-stage";
+import { useCourtCase } from "lib/hooks/queries/court/useCourtCases";
 
 export const useCourtStage = ({
   marketId,

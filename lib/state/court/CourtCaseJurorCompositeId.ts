@@ -1,6 +1,6 @@
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
 import Opaque, { create } from "ts-opaque";
 import { CourtAppealRound } from "./types";
+import { useCourtCase } from "lib/hooks/queries/court/useCourtCases";
 
 export type CourtCaseJurorCompositeId = Opaque<
   string,
