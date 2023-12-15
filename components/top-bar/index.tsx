@@ -19,7 +19,7 @@ import {
 import { useCategoryCounts } from "lib/hooks/queries/useCategoryCounts";
 import MarketSearch from "components/markets/MarketSearch";
 import { Alerts } from "./Alerts";
-import { isWSX } from "lib/constants";
+import { isNTT } from "lib/constants";
 import { delay } from "lib/util/delay";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
@@ -46,7 +46,7 @@ const AccountButton = dynamic(
 const TopBar = () => {
   return (
     <div
-      className={`fixed top-0 z-40 h-topbar-height w-full bg-black py-3.5 transition-all duration-300`}
+      className={`border-ntt-blue fixed top-0 z-40 h-topbar-height w-full border-b-4 bg-white py-3.5 transition-all duration-300`}
     >
       <div className="relative flex h-full items-center px-4">
         <div className="hidden h-full items-center justify-center pr-3 md:flex md:pr-7">
@@ -54,7 +54,7 @@ const TopBar = () => {
             <MenuLogo />
           </Link>
         </div>
-        {!isWSX && (
+        {!isNTT && (
           <div className="flex items-center gap-7 border-x-0 border-ztg-blue py-2 md:border-x-1 md:px-7">
             <Menu as="div" className="relative inline-block text-left">
               {({ open, close }) => {
@@ -201,7 +201,7 @@ const TopBar = () => {
         )}
         <MarketSearch />
         <div className="center relative ml-auto gap-3">
-          {!isWSX && <GetTokensButton />}
+          {!isNTT && <GetTokensButton />}
           <AccountButton />
           <Alerts />
         </div>

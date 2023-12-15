@@ -13,7 +13,7 @@ import { MarketOutcomes } from "lib/types/markets";
 import { MarketStatus } from "@zeitgeistpm/indexer";
 import { hiddenMarketIds } from "lib/constants/markets";
 import { marketMetaFilter } from "./constants";
-import { isWSX } from "../../constants";
+import { isNTT } from "../../constants";
 import { ScoringRule } from "@zeitgeistpm/indexer";
 
 export const rootKey = "markets-filtered";
@@ -70,7 +70,7 @@ export const useInfiniteMarkets = (
             status_not_in: [MarketStatus.Destroyed],
             status_in: statuses.length === 0 ? undefined : statuses,
             tags_containsAny: tags?.length === 0 ? undefined : tags,
-            baseAsset_in: isWSX
+            baseAsset_in: isNTT
               ? ['{"foreignAsset":3}']
               : currencies?.length !== 0
                 ? currencies

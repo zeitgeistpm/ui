@@ -1,7 +1,7 @@
 import type { ScalarRangeType } from "@zeitgeistpm/sdk";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
-import { ZTG, isWSX } from "lib/constants";
+import { ZTG, isNTT } from "lib/constants";
 import { MarketOutcomes } from "lib/types/markets";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";

@@ -172,10 +172,10 @@ export const useMarketCreationFormValidator = (
  * -------------
  */
 
-export const IOCurrency = z.enum<SupportedCurrencyTag, ["ZTG", "DOT", "WSX"]>([
+export const IOCurrency = z.enum<SupportedCurrencyTag, ["ZTG", "DOT", "NTT"]>([
   "ZTG",
   "DOT",
-  "WSX",
+  "NTT",
 ]);
 
 export const IOQuestion = z

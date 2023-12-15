@@ -2,10 +2,10 @@ import { BaseDotsamaWallet } from "@talismn/connect-wallets";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { Web3Auth } from "@web3auth/modal";
 import { atom } from "jotai";
-import { isWSX } from "lib/constants";
+import { isNTT } from "lib/constants";
 
-export const clientId = isWSX
-  ? process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_WSX
+export const clientId = isNTT
+  ? process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_NTT
   : process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
 
 class Web3AuthWallet extends BaseDotsamaWallet {

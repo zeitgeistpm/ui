@@ -4,14 +4,14 @@ import { Keyring } from "@polkadot/keyring";
 
 export default async function checkNewUser(req, res) {
   if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY
+    !process.env.NEXT_PUBLIC_SUPABASE_URL_NTT ||
+    !process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY_NTT
   ) {
     return;
   }
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY,
+    process.env.NEXT_PUBLIC_SUPABASE_URL_NTT,
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY_NTT,
     { auth: { persistSession: false } },
   );
 
@@ -33,13 +33,11 @@ export default async function checkNewUser(req, res) {
       const fundResponse = await fundUser(wallet);
 
       if (fundResponse.success) {
-        return res
-          .status(200)
-          .json({
-            success: true,
-            data: response.data,
-            txHash: fundResponse.txHash,
-          });
+        return res.status(200).json({
+          success: true,
+          data: response.data,
+          txHash: fundResponse.txHash,
+        });
       } else {
         return res.status(500).json({ error: fundResponse.error });
       }
@@ -56,7 +54,7 @@ export default async function checkNewUser(req, res) {
 }
 
 async function fundUser(wallet) {
-  if (!process.env.NEXT_PUBLIC_SEED) {
+  if (!process.env.NEXT_PUBLIC_SEED_NTT) {
     return { error: "Error connecting" };
   }
   const provider = new WsProvider("wss://bsr.zeitgeist.pm");
@@ -64,14 +62,14 @@ async function fundUser(wallet) {
 
   try {
     const keyring = new Keyring({ type: "sr25519" });
-    const masterAccount = keyring.addFromUri(process.env.NEXT_PUBLIC_SEED);
+    const masterAccount = keyring.addFromUri(process.env.NEXT_PUBLIC_SEED_NTT);
 
     // const amount = 1_000_000_000_000_0; // 1000 tokens
     const amount = 1_000_000_000_000; // 100 tokens
 
     const transfer = api.tx.assetManager.transfer(
       wallet,
-      { ForeignAsset: 3 },
+      { ForeignAsset: 4 },
       amount,
     );
 

@@ -1,16 +1,16 @@
 import { FC } from "react";
 import Logo from "../icons/ZeitgeistIcon";
-import { isWSX } from "lib/constants";
+import { isNTT } from "lib/constants";
 import Image from "next/image";
 
 const MenuLogo: FC<{}> = () => {
-  return isWSX ? (
+  return isNTT ? (
     <Image
-      className="hidden sm:block invert"
-      src="/wsx/wsx-logo-header.svg"
-      alt="Washington Stock Exchange logo"
-      width={247}
-      height={106}
+      className="hidden sm:block"
+      src="/ntt/logo.svg"
+      alt="NTT Global logo"
+      width={140}
+      height={50}
     />
   ) : (
     <div className="flex items-center gap-4">

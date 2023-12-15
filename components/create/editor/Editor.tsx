@@ -38,7 +38,7 @@ import TimezoneSelect from "./inputs/TimezoneSelect";
 import { LiquidityInputAmm2 } from "./inputs/LiquidityAMM2";
 import FeeSelect from "./inputs/FeeSelect";
 import { useWallet } from "lib/state/wallet";
-import { isWSX } from "lib/constants";
+import { isNTT } from "lib/constants";
 import {
   isAMM2Form,
   marketFormDataToExtrinsicParams,
@@ -199,7 +199,7 @@ export const MarketEditor = () => {
               </h2>
             </div>
             <CurrencySelect
-              options={isWSX ? ["ZTG", "DOT", "WSX"] : ["ZTG", "DOT"]}
+              options={isNTT ? ["ZTG", "DOT", "NTT"] : ["ZTG", "DOT"]}
               {...input("currency")}
             />
             {showLiquidityWarning && (

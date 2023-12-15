@@ -3,12 +3,12 @@ import axios from "axios";
 import Link from "next/link";
 import { useNotifications } from "lib/state/notifications";
 import { useForm } from "react-hook-form";
-import { endpointOptions, isWSX } from "lib/constants";
+import { endpointOptions, isNTT } from "lib/constants";
 import Input from "./Input";
 import Image from "next/image";
 
-const emailList = isWSX
-  ? "https://emails.zeitgeist.pm/wsx-subscribe"
+const emailList = isNTT
+  ? "https://emails.zeitgeist.pm/ntt-subscribe"
   : "https://emails.zeitgeist.pm/app-subscribe";
 
 const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
@@ -43,14 +43,14 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
       <div className="mb-auto flex h-10 w-full items-center gap-3">
         <Input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-          className={`h-full grow rounded-md border-[1px] bg-anti-flash-white p-2 text-ztg-12-120 text-sky-600 focus:outline-none ${
+          className={`h-full grow rounded-md border-[1px] bg-anti-flash-white p-2 text-sm text-white focus:outline-none ${
             invalid ? "border-vermilion" : "border-none"
           }`}
           type="email"
         />
         <button
           type="submit"
-          className={`center h-full flex-shrink rounded-full bg-ztg-blue px-5 text-ztg-16-150 text-white ${
+          className={`center h-full flex-shrink rounded-full bg-ztg-blue px-5 text-white ${
             invalid ? "cursor-default" : "cursor-pointer"
           } disabled:opacity-60`}
           disabled={invalid}
@@ -72,7 +72,7 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
   return (
     <div className={`${className}`}>
       <h6 className="mb-1 font-semibold text-white">{title}</h6>
-      <div className="flex flex-col text-ztg-14-150 text-sky-600">
+      <div className="flex flex-col text-ztg-14-150 text-white">
         {links.map(({ text, href }, idx) => {
           return (
             <Link
@@ -93,12 +93,12 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
 const FooterMenus = () => {
   return (
     <>
-      {isWSX ? (
+      {isNTT ? (
         <div className="grid w-full grid-cols-3 gap-7">
           <FooterMenu
             className="col-span-1"
             title="General"
-            links={[{ text: "Website", href: "https://thewsx.com" }]}
+            links={[{ text: "Website", href: "https://www.global.ntt/" }]}
           />
           {/* <FooterMenu
             className="col-span-1"
@@ -145,14 +145,14 @@ const FooterMenus = () => {
 
 const Footer = () => {
   return (
-    <div className="mt-auto flex w-full flex-col bg-[#1C1C1C] pb-24 pt-12">
+    <div className="bg-ntt-blue mt-auto flex w-full flex-col pb-24 pt-12">
       <div className="container-fluid">
         <div className="mb-8 flex flex-wrap justify-between gap-12 md:mb-16 md:flex-nowrap lg:gap-36">
-          <FooterMenus />
-          <FooterNewsletterSub title="Subscribe to Newsletter" />
+          {/* <FooterMenus /> */}
+          {/* <FooterNewsletterSub title="Subscribe to Newsletter" /> */}
         </div>
         <div className="flex flex-col gap-5 md:flex-row">
-          {isWSX ? (
+          {isNTT ? (
             <Image
               className=" mx-auto block invert"
               src="/wsx/powered-ztg.svg"
@@ -165,7 +165,7 @@ const Footer = () => {
               © 2022 Equipoise Corp.
             </span>
           )}
-          <span className="text-[11px] leading-relaxed text-sky-600">
+          <span className="text-[11px] leading-relaxed text-white">
             Please be advised that Equipoise Corp. d/b/a Zeitgeist is registered
             under the laws of Panama, and Zeitgeist has not sought licensing
             with any other regulatory authority of any country or jurisdiction,

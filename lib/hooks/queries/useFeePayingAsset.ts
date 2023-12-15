@@ -8,7 +8,7 @@ import { ChainConstants, useChainConstants } from "./useChainConstants";
 import { CurrencyBalance } from "./useCurrencyBalances";
 import { useForeignAssetBalances } from "./useForeignAssetBalances";
 import { useZtgBalance } from "./useZtgBalance";
-import { isWSX } from "lib/constants";
+import { isNTT } from "lib/constants";
 import { useEffect } from "react";
 
 type FeeAsset = {
@@ -54,7 +54,7 @@ export const useFeePayingAsset = (
     ],
     async () => {
       if (enabled) {
-        if (assetSelection.label === "Default" && !isWSX) {
+        if (assetSelection.label === "Default" && !isNTT) {
           // if user has ztg, use that to pay
           if (nativeBalance.greaterThanOrEqualTo(baseFee)) {
             return {
