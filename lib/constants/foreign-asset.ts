@@ -54,6 +54,13 @@ const BATTERY_STATION_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     coinGeckoId: "polkadot",
     tokenSymbol: "NTT",
   },
+  4: {
+    //todo: add NTT logo
+    image: "/currencies/ausd.jpg",
+    withdrawSupported: false,
+    coinGeckoId: "polkadot",
+    tokenSymbol: "NTT",
+  },
 };
 
 const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
