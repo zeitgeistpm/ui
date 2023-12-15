@@ -4,26 +4,25 @@ import { blockDate } from "@zeitgeistpm/utility/dist/time";
 import InfoPopover from "components/ui/InfoPopover";
 import Skeleton from "components/ui/Skeleton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
+import { motion } from "framer-motion";
+import { TAILWIND } from "lib/constants";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { CourtCaseInfo } from "lib/hooks/queries/court/useCourtCase";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
 import { useCourtVoteDrawsForCase } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
-import { CourtStage, getCourtStage } from "lib/state/court/get-stage";
+import { CourtStage } from "lib/state/court/get-stage";
+import { useCourtBacklog } from "lib/state/court/useCourtBacklog";
+import { useCourtStage } from "lib/state/court/useCourtStage";
 import { useWallet } from "lib/state/wallet";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { AiOutlineEye } from "react-icons/ai";
-import { LuVote } from "react-icons/lu";
-import { courtStageCopy } from "./CourtStageTimer";
-import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
-import { useCourtBacklog } from "lib/state/court/useCourtBacklog";
-import { MdOutlinePendingActions } from "react-icons/md";
-import { FaLongArrowAltDown } from "react-icons/fa";
 import { BsFillTriangleFill } from "react-icons/bs";
-import { motion } from "framer-motion";
-import { TAILWIND } from "lib/constants";
+import { LuVote } from "react-icons/lu";
+import { MdOutlinePendingActions } from "react-icons/md";
+import { courtStageCopy } from "./CourtStageTimer";
 
 export const CourtCasesTable = () => {
   const { data: cases } = useCourtCases();
@@ -211,14 +210,11 @@ const CaseNameForCaseId = (props: { id: number }) => {
 
 const CaseStatus = ({ courtCase }: { courtCase: CourtCaseInfo }) => {
   const { data: marketId } = useCaseMarketId(courtCase.id);
-  const { data: market } = useMarket({ marketId: marketId! });
-  const chainTime = useChainTime();
 
-  const stage = useMemo(() => {
-    if (market && chainTime) {
-      return getCourtStage(chainTime, market, courtCase.case);
-    }
-  }, [chainTime, market]);
+  const stage = useCourtStage({
+    caseId: courtCase.id,
+    marketId,
+  });
 
   const percentage =
     stage && isInfinity(stage.remainingBlocks)
@@ -271,11 +267,10 @@ const CaseActions = ({
   const { data: market } = useMarket({ marketId: marketId! });
   const chainTime = useChainTime();
 
-  const stage = useMemo(() => {
-    if (market && chainTime) {
-      return getCourtStage(chainTime, market, courtCase);
-    }
-  }, [chainTime, market]);
+  const stage = useCourtStage({
+    caseId,
+    marketId,
+  });
 
   const { data: draws } = useCourtVoteDrawsForCase(caseId);
 
@@ -364,7 +359,8 @@ const caseStatusCopy: Record<
   },
   closed: {
     title: "Closed",
-    description: "Case has been closed. Waiting to be reassigned.",
+    description:
+      "Case has been closed. Payouts will be made once case is settled.",
     color: "text-gray-400",
   },
 };
