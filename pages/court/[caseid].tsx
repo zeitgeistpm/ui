@@ -8,6 +8,7 @@ import {
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import { CourtAppealForm } from "components/court/CourtAppealForm";
+import { CourtReassignForm } from "components/court/CourtReassignForm";
 import CourtStageTimer from "components/court/CourtStageTimer";
 import { CourtVoteForm } from "components/court/CourtVoteForm";
 import { CourtVoteRevealForm } from "components/court/CourtVoteRevealForm";
@@ -292,6 +293,8 @@ const CasePage: NextPage = ({
       )}
 
       {stage?.type === "appeal" && <CourtAppealForm caseId={caseId} />}
+
+      {stage?.type === "closed" && <CourtReassignForm caseId={caseId} />}
     </>
   );
 
