@@ -28,6 +28,7 @@ export type AlertData = { account: string; dismissible?: true } & (
   | RedeemableMarketsAlertData
   | CourtCaseReadyForVote
   | CourtCaseReadyForReveal
+  | CourtCaseReadyToSettle
 );
 
 export type ReadyToReportMarketAlertData = {
@@ -52,6 +53,11 @@ export type CourtCaseReadyForVote = {
 
 export type CourtCaseReadyForReveal = {
   type: "court-case-ready-for-reveal";
+  caseId: number;
+};
+
+export type CourtCaseReadyToSettle = {
+  type: "court-case-ready-to-settle";
   caseId: number;
 };
 
@@ -84,6 +90,11 @@ export const withId = (alert: AlertData): Alert => {
         ...alert,
       };
     case "court-case-ready-for-reveal":
+      return {
+        id: create(`${alert.account}-${alert.type}-${alert.caseId}`),
+        ...alert,
+      };
+    case "court-case-ready-to-settle":
       return {
         id: create(`${alert.account}-${alert.type}-${alert.caseId}`),
         ...alert,
