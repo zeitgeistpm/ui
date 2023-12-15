@@ -14,8 +14,6 @@ import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import { filterTypes } from "lib/constants/market-filter";
 import { ZTG } from "lib/constants";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
-import { isNTT } from "lib/constants";
-import { HeroBannerNTT } from "components/front-page/HeroBannerNTT";
 
 export type MarketsListProps = {
   className?: string;

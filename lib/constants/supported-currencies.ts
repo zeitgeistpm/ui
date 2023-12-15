@@ -29,9 +29,9 @@ export const supportedCurrencies = [
   {
     name: "NTT" as const,
     description: "Create market with NTT as the base asset.",
-    image: "/currencies/NTT-currency.png",
-    twColor: "ztg-blue",
-    assetId: { ForeignAsset: 3 } as const,
+    image: "/currencies/ntt-currency.png",
+    twColor: "ntt-blue",
+    assetId: { ForeignAsset: 4 } as const,
   } satisfies CurrencyMetadata,
 ] as const;
 

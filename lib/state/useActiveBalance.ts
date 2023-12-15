@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { encodeAddress } from "@polkadot/util-crypto";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { isRpcSdk, AssetId, IOForeignAssetId } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
@@ -79,7 +78,6 @@ const useActiveBalance = (
     }
   }, [balance, walletState.newUser]);
   console.log(balance?.div(ZTG).abs().toNumber());
-  console.log(walletState.newUser);
   return balance;
 };
 

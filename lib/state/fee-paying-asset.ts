@@ -18,7 +18,7 @@ const useFeePayingAssetSelection = () => {
   const [state, setState] = useAtom(feePayingAssetStateAtom);
 
   useEffect(() => {
-    isNTT && setState({ label: "NTT", value: { ForeignAsset: 3 } });
+    isNTT && setState({ label: "NTT", value: { ForeignAsset: 4 } });
   }, [isNTT]);
 
   const setAsset = (selection: SelectedFeeAsset) => {

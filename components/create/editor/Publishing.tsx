@@ -149,7 +149,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
           type: "Info",
           lifetime: 60,
         });
-
+        console.log(creationParams, feeDetails?.assetId);
         const result = await sdk.model.markets.create(
           creationParams,
           IOForeignAssetId.is(feeDetails?.assetId)

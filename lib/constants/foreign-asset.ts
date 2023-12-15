@@ -47,7 +47,7 @@ const BATTERY_STATION_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     coinGeckoId: "polkadot",
     tokenSymbol: "ROC",
   },
-  3: {
+  4: {
     //todo: add NTT logo
     image: "/currencies/NTT-currency.png",
     withdrawSupported: false,

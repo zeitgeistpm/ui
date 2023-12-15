@@ -156,7 +156,7 @@ const Footer = () => {
             <Image
               className=" mx-auto block invert"
               src="/wsx/powered-ztg.svg"
-              alt="Zeitgeist logo "
+              alt="ZeitgePubist logo "
               width={247}
               height={106}
             />
