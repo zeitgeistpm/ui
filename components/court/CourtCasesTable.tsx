@@ -7,8 +7,10 @@ import Table, { TableColumn, TableData } from "components/ui/Table";
 import { motion } from "framer-motion";
 import { TAILWIND } from "lib/constants";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
-import { CourtCaseInfo } from "lib/hooks/queries/court/useCourtCase";
-import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
+import {
+  CourtCaseInfo,
+  useCourtCases,
+} from "lib/hooks/queries/court/useCourtCases";
 import { useCourtVoteDrawsForCase } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
