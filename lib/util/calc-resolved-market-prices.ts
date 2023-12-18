@@ -2,14 +2,19 @@ import { FullMarketFragment, ScoringRule } from "@zeitgeistpm/indexer";
 import Decimal from "decimal.js";
 import { MarketPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { calcScalarResolvedPrices } from "./calc-scalar-winnings";
+import { parseAssetIdString } from "./parse-asset-id";
+import { IOBaseAssetId, MarketId } from "@zeitgeistpm/sdk";
 
 export const calcResolvedMarketPrices = (
   market: FullMarketFragment,
 ): MarketPrices => {
-  const assetIds =
+  const assetIds = (
     market.scoringRule === ScoringRule.Lmsr
-      ? market.neoPool?.account.balances.map((b) => b.assetId)
-      : market.pool?.assets.map((a) => a.assetId);
+      ? market.neoPool?.account.balances.map((b) =>
+          parseAssetIdString(b.assetId),
+        )
+      : market.pool?.assets.map((a) => parseAssetIdString(a.assetId))
+  )?.filter((assetId) => IOBaseAssetId.is(assetId) === false);
 
   const spotPrices: MarketPrices = new Map();
 
@@ -27,9 +32,13 @@ export const calcResolvedMarketPrices = (
     );
 
     assetIds?.forEach((assetId, index) => {
-      if (assetId.toLowerCase().includes("short")) {
+      const scalarAsset = assetId as {
+        ScalarOutcome: [MarketId, "Short" | "Long"];
+      };
+
+      if (scalarAsset.ScalarOutcome[1] === "Short") {
         spotPrices.set(index, shortTokenValue);
-      } else if (assetId.toLowerCase().includes("long")) {
+      } else if (scalarAsset.ScalarOutcome[1] === "Long") {
         spotPrices.set(index, longTokenValue);
       }
     });
