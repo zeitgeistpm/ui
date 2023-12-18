@@ -46,7 +46,7 @@ const AccountButton = dynamic(
 const TopBar = () => {
   return (
     <div
-      className={`border-ntt-blue fixed top-0 z-40 h-topbar-height w-full border-b-4 bg-white py-3.5 transition-all duration-300`}
+      className={`fixed top-0 z-40 h-topbar-height w-full border-b-4 border-ntt-blue bg-white py-3.5 transition-all duration-300`}
     >
       <div className="relative flex h-full items-center px-4">
         <div className="hidden h-full items-center justify-center pr-3 md:flex md:pr-7">
@@ -86,10 +86,7 @@ const TopBar = () => {
                       <Menu.Items className="fixed left-0 mt-4 h-full w-full origin-top-right bg-white px-5 py-3 ring-1 ring-gray-200 focus:outline-none md:absolute md:mt-8 md:h-auto md:w-64 md:rounded-md">
                         <Menu.Item>
                           {({ active, close }) => (
-                            <Link
-                              href="/markets?status=Active&ordering=Newest&liquidityOnly=true"
-                              onClick={close}
-                            >
+                            <Link href="/leaderboard/year" onClick={close}>
                               <button
                                 className={`group mb-4 flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
                               >

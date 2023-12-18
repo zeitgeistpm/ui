@@ -1,5 +1,5 @@
 import { BaseAssetId, IOForeignAssetId } from "@zeitgeistpm/sdk";
-import { environment } from "lib/constants";
+import { COIN_GECKO_API_KEY, environment } from "lib/constants";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 
 export type BasePrices = {
@@ -35,7 +35,7 @@ export const getBaseAssetHistoricalPrices = async (): Promise<BasePrices> => {
   const pricesRes = await Promise.all(
     coinGeckoIds.map((id) =>
       fetch(
-        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=max`,
+        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=10000&${COIN_GECKO_API_KEY}`,
       ),
     ),
   );

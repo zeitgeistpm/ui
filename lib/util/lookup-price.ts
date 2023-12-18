@@ -10,6 +10,6 @@ export const lookUpAssetPrice = (
   const assetId = parseAssetId(baseAsset).unwrap();
 
   return IOForeignAssetId.is(assetId)
-    ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)
+    ? foreignAssetPrices[assetId.ForeignAsset.toString()]
     : ztgPrice;
 };

@@ -156,7 +156,9 @@ export const signAndSend = async (
         const unsub = await tx.signAndSend(
           signer,
           {
-            ...(foreignAssetNumber != null ? { assetId: 4 } : {}),
+            ...(foreignAssetNumber != null
+              ? { assetId: foreignAssetNumber }
+              : {}),
           },
           (result) => {
             cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
