@@ -62,43 +62,41 @@ const PoolTable = ({
       : amm2Pool?.assetIds;
 
   const tableData: TableData[] =
-    (amm2Pool &&
-      assetIds?.map((assetId, index) => {
-        let amount: Decimal | undefined;
-        let usdValue: Decimal | undefined;
-        let category:
-          | { color?: string | null; name?: string | null }
-          | undefined
-          | null;
+    assetIds?.map((assetId, index) => {
+      let amount: Decimal | undefined;
+      let usdValue: Decimal | undefined;
+      let category:
+        | { color?: string | null; name?: string | null }
+        | undefined
+        | null;
 
-        if (IOBaseAssetId.is(assetId)) {
-          amount = basePoolBalance ?? undefined;
-          usdValue = basePoolBalance?.mul(baseAssetUsdPrice ?? 0);
-          category = { color: "#ffffff", name: metadata?.symbol };
-        } else {
-          amount =
-            market?.scoringRule === ScoringRule.Cpmm
-              ? new Decimal(balances?.[index]?.free.toString() ?? 0)
-              : lookupAssetReserve(amm2Pool?.reserves, assetId);
-          usdValue = amount
-            ?.mul(spotPrices?.get(index) ?? 0)
-            ?.mul(baseAssetUsdPrice ?? 0);
-          category = market?.categories?.[index];
-        }
+      if (IOBaseAssetId.is(assetId)) {
+        amount = basePoolBalance ?? undefined;
+        usdValue = basePoolBalance?.mul(baseAssetUsdPrice ?? 0);
+        category = { color: "#ffffff", name: metadata?.symbol };
+      } else {
+        amount =
+          market?.scoringRule === ScoringRule.Cpmm
+            ? new Decimal(balances?.[index]?.free.toString() ?? 0)
+            : lookupAssetReserve(amm2Pool?.reserves, assetId);
+        usdValue = amount
+          ?.mul(spotPrices?.get(index) ?? 0)
+          ?.mul(baseAssetUsdPrice ?? 0);
+        category = market?.categories?.[index];
+      }
 
-        return {
-          token: {
-            token: true,
-            color: colors[index] || "#ffffff",
-            label: category?.name ?? "",
-          },
-          poolBalance: {
-            value: amount?.div(ZTG).toDecimalPlaces(2).toNumber() ?? 0,
-            usdValue: usdValue?.div(ZTG).toDecimalPlaces(2).toNumber(),
-          },
-        };
-      })) ??
-    [];
+      return {
+        token: {
+          token: true,
+          color: colors[index] || "#ffffff",
+          label: category?.name ?? "",
+        },
+        poolBalance: {
+          value: amount?.div(ZTG).toDecimalPlaces(2).toNumber() ?? 0,
+          usdValue: usdValue?.div(ZTG).toDecimalPlaces(2).toNumber(),
+        },
+      };
+    }) ?? [];
 
   return <Table data={tableData} columns={poolTableColums} />;
 };
