@@ -483,10 +483,7 @@ export async function getStaticProps({ params }) {
       timePeriod: period,
       bannerPlaceholder: bannerPlaceholder.base64,
     },
-    revalidate:
-      environment === "production"
-        ? 10 * 60 //10min
-        : 60 * 60,
+    revalidate: 60 * 60 * 24, //1 day
   };
 }
 
