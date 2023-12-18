@@ -29,6 +29,7 @@ import {
   getBaseAssetHistoricalPrices,
   lookupPrice,
 } from "lib/gql/historical-prices";
+import { marketMetaFilter } from "lib/hooks/queries/constants";
 import {
   avatarPartsKey,
   getAvatarParts,
@@ -48,14 +49,15 @@ import { useMemo } from "react";
 // "In events": swaps, buy full set
 // "Out events": swaps, sell full set, redeem
 
-const TimePeriodItems = ["month", "year", "all"] as const;
+// const TimePeriodItems = ["month", "year", "all"] as const;
+const TimePeriodItems = ["month"] as const;
 type TimePeriod = (typeof TimePeriodItems)[number];
 
 const durationLookup: { [key in TimePeriod]: number } = {
   // week: DAY_SECONDS * 1000 * 7,
   month: DAY_SECONDS * 1000 * 30,
-  year: DAY_SECONDS * 1000 * 365,
-  all: DAY_SECONDS * 1000 * 365 * 100,
+  // year: DAY_SECONDS * 1000 * 365,
+  // all: DAY_SECONDS * 1000 * 365 * 100,
 };
 
 type Trade = {
