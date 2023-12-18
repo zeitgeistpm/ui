@@ -152,6 +152,7 @@ export const signAndSend = async (
           },
         );
       } else if (isWSX) {
+        console.log(signer, foreignAssetNumber);
         const unsub = await tx.signAndSend(
           signer,
           {

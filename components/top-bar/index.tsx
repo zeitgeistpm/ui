@@ -86,10 +86,7 @@ const TopBar = () => {
                       <Menu.Items className="fixed left-0 mt-4 h-full w-full origin-top-right bg-white px-5 py-3 ring-1 ring-gray-200 focus:outline-none md:absolute md:mt-8 md:h-auto md:w-64 md:rounded-md">
                         <Menu.Item>
                           {({ active, close }) => (
-                            <Link
-                              href="/markets?status=Active&ordering=Newest&liquidityOnly=true"
-                              onClick={close}
-                            >
+                            <Link href="/leaderboard/year" onClick={close}>
                               <button
                                 className={`group mb-4 flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
                               >
