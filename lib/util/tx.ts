@@ -152,12 +152,11 @@ export const signAndSend = async (
           },
         );
       } else if (isNTT) {
+        console.log(signer, foreignAssetNumber);
         const unsub = await tx.signAndSend(
           signer,
           {
-            ...(foreignAssetNumber != null
-              ? { assetId: foreignAssetNumber }
-              : {}),
+            ...(foreignAssetNumber != null ? { assetId: 4 } : {}),
           },
           (result) => {
             cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);

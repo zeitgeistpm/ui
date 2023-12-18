@@ -18,6 +18,7 @@ const useActiveBalance = (
   const [walletState, setWalletState] = useAtom(walletAtom);
   const [sdk, id] = useSdkv2();
   const confirm = useConfirmation();
+
   useEffect(() => {
     let unsubscribe;
 
@@ -77,6 +78,7 @@ const useActiveBalance = (
       });
     }
   }, [balance, walletState.newUser]);
+  console.log(userAddress);
   console.log(balance?.div(ZTG).abs().toNumber());
   return balance;
 };
