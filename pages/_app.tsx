@@ -60,6 +60,7 @@ const MyApp = ({ Component, pageProps }) => {
 
   useEffect(() => {
     if (wallet.walletId === "web3auth") {
+      console.log("test");
       const init = async () => {
         await wallet.loadWeb3AuthWallet();
       };
