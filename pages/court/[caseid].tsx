@@ -45,6 +45,11 @@ import { CourtAppealForm } from "components/court/CourtAppealForm";
 import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
+import { sortBy } from "lodash-es";
+import { FaBackwardStep } from "react-icons/fa6";
+import { IoMdArrowBack } from "react-icons/io";
+import { useCourtSalt } from "lib/state/court/useCourtSalt";
+import { BsShieldFillExclamation } from "react-icons/bs";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -126,6 +131,7 @@ const CasePage: NextPage = ({
   const { data: selectedDraws } = useCourtVoteDrawsForCase(caseId);
 
   const { data: marketId } = useCaseMarketId(caseId);
+
   let { data: dynamicMarket } = useMarket(
     marketId != null ? { marketId } : undefined,
   );
@@ -155,6 +161,7 @@ const CasePage: NextPage = ({
   const isDrawnJuror = connectedParticipantDraw?.vote.isDrawn;
   const hasSecretVote = connectedParticipantDraw?.vote.isSecret;
   const hasRevealedVote = connectedParticipantDraw?.vote.isRevealed;
+  const hasDenouncedVote = connectedParticipantDraw?.vote.isDenounced;
 
   const stage = useMemo(() => {
     if (time && market && courtCase) {
@@ -170,6 +177,11 @@ const CasePage: NextPage = ({
     marketId: market.marketId,
   });
 
+  const { resetBackedUpState } = useCourtSalt({
+    caseId,
+    marketId: market.marketId,
+  });
+
   const onClickRecastVote = async () => {
     if (
       await prompt({
@@ -178,6 +190,7 @@ const CasePage: NextPage = ({
       })
     ) {
       unCommitVote();
+      resetBackedUpState();
       setRecastVoteEnabled(true);
     }
   };
@@ -188,6 +201,25 @@ const CasePage: NextPage = ({
 
   const actionSection = (
     <>
+      {(stage?.type === "vote" || stage?.type === "aggregation") &&
+        hasDenouncedVote && (
+          <div className="overflow-hidden rounded-xl px-6 py-6 shadow-lg">
+            <div className="flex flex-col items-center gap-3">
+              <div className="text-red-400">
+                <BsShieldFillExclamation size={64} />
+              </div>
+              <h3 className="text mb-2 text-red-400">
+                Your vote was denounced
+              </h3>
+              <p className="mb-3 text-center text-sm text-gray-500">
+                Your vote was denounced and wont be counted. This means that
+                someone was able to get your secret salt used when voting and
+                denounce it.
+              </p>
+            </div>
+          </div>
+        )}
+
       {stage?.type === "vote" && (
         <>
           {(isDrawnJuror || recastVoteEnabled) && (
@@ -267,7 +299,12 @@ const CasePage: NextPage = ({
     <div className="relative mt-6 flex flex-auto gap-12">
       <main className="flex-1">
         <section className="mb-6">
-          <h2 className="text-base font-normal">Case — #{caseId}</h2>
+          <div className="flex items-center gap-3">
+            <Link href="/court">
+              <IoMdArrowBack />
+            </Link>
+            <h2 className="text-base font-normal">Case — #{caseId}</h2>
+          </div>
           <h1 className="text-[32px] font-extrabold">{market?.question}</h1>
 
           <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -281,7 +318,7 @@ const CasePage: NextPage = ({
                 dateStyle: "medium",
               }).format(market.period.end)}
             </HeaderStat>
-            <HeaderStat label="Reported Outcome">
+            <HeaderStat label="Reported Outcome" border={false}>
               {reportedOutcome !== undefined
                 ? market.categories?.[reportedOutcome].name
                 : "-"}
@@ -330,7 +367,7 @@ const CasePage: NextPage = ({
           </div>
 
           <div className="mb-6 md:max-w-[900px]">
-            <CourtStageTimer stage={stage} />
+            <CourtStageTimer caseId={caseId} market={market} />
           </div>
 
           {market.description && (
@@ -410,7 +447,12 @@ const Votes = ({
     })
     .sort((a, b) => b.count - a.count);
 
-  const showLeaderIndicator = votes?.some((vote) => vote.count > 0);
+  const sortedVotes = sortBy(votes, "count").reverse();
+
+  const showLeaderIndicator =
+    isRevealed &&
+    votes?.some((vote) => vote.count > 0) &&
+    sortedVotes?.[0]?.count > sortedVotes?.[1]?.count;
 
   return (
     <div
@@ -418,23 +460,19 @@ const Votes = ({
         showLeaderIndicator && isRevealed && "[&>*:first-child]:bg-green-200"
       }`}
     >
-      {votes?.map(({ category, count }, index) => {
+      {sortedVotes?.map(({ category, count }, index) => {
         const leader = votes?.[0];
-        const isTied = index > 0 && count === leader.count;
 
         return (
           <div
             key={category.ticker}
             className={`relative flex flex-1 flex-col rounded-md border-1 text-xs shadow-sm md:min-w-[200px] ${
-              showLeaderIndicator &&
-              isRevealed &&
-              index === 0 &&
-              "border-green-300"
+              showLeaderIndicator && index === 0 && "border-green-300"
             }`}
           >
             {showLeaderIndicator && isRevealed && index === 0 && (
               <div className=" absolute right-3 top-0 translate-y-[-50%] rounded-xl bg-green-400 px-2 text-xxs text-white">
-                {isTied ? "Tied" : "Leading"}
+                Leading
               </div>
             )}
             <div className="rounded-top-md flex items-center gap-2 overflow-hidden bg-gray-500 bg-opacity-10">
