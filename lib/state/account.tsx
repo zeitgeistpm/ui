@@ -1,4 +1,5 @@
 import { atom, useAtom } from "jotai";
+import { useDisclaimerModal, useDisclaimerStatus } from "./disclaimer";
 
 const accountsAtom = atom({
   accountSelectModalOpen: false,
@@ -7,6 +8,9 @@ const accountsAtom = atom({
 
 export const useAccountModals = () => {
   const [state, setState] = useAtom(accountsAtom);
+  const { showDisclaimer, setHideDisclaimer, setShowDisclaimer } =
+    useDisclaimerModal();
+  const { disclaimerAccepted } = useDisclaimerStatus();
 
   return {
     ...state,
@@ -14,7 +18,13 @@ export const useAccountModals = () => {
       setState({ ...state, accountSelectModalOpen: true });
     },
     openWalletSelect: () => {
-      setState({ ...state, walletSelectModalOpen: true });
+      console.log(disclaimerAccepted);
+
+      if (disclaimerAccepted) {
+        setState({ ...state, walletSelectModalOpen: true });
+      } else {
+        setShowDisclaimer();
+      }
     },
     closeAccountSelect: () => {
       setState({ ...state, accountSelectModalOpen: false });

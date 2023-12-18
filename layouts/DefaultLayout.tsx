@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 
 import { Account } from "components/account/Account";
 import { ConfirmationProvider } from "components/confirmation/ConfirmationProvider";
+import { DisclamerProvider } from "components/onboarding/DisclaimerProvider";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
@@ -89,6 +90,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
         </div>
         <NotificationCenter />
         <ConfirmationProvider />
+        <DisclamerProvider />
       </TradeItemContext.Provider>
       <Account />
       <Onboarding />
