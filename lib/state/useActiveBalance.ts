@@ -79,7 +79,7 @@ const useActiveBalance = (
     }
   }, [balance, walletState.newUser]);
   // console.log(userAddress);
-  // console.log(balance?.div(ZTG).abs().toNumber());
+  console.log(balance?.div(ZTG).abs().toNumber());
   return balance;
 };
 
