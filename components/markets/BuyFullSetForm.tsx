@@ -1,25 +1,25 @@
-import { isRpcSdk, parseAssetId } from "@zeitgeistpm/sdk";
-import Input from "components/ui/Input";
+import {
+  IOBaseAssetId,
+  IOForeignAssetId,
+  isRpcSdk,
+  parseAssetId,
+} from "@zeitgeistpm/sdk";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import { useGlobalKeyPress } from "lib/hooks/events/useGlobalKeyPress";
+import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { useGlobalKeyPress } from "lib/hooks/events/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useState, useEffect } from "react";
-import {
-  getMetadataForCurrency,
-  SupportedCurrencyTag,
-} from "lib/constants/supported-currencies";
-import Image from "next/image";
-import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
-import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { formatNumberCompact } from "lib/util/format-compact";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 const BuyFullSetForm = ({
   marketId,
@@ -107,11 +107,11 @@ const BuyFullSetForm = ({
 
   useGlobalKeyPress("Enter", handleSignTransaction);
 
-  const currencyMetadata = getMetadataForCurrency(
-    (metadata?.symbol && ["ZTG", "DOT"].includes(metadata.symbol)
-      ? metadata.symbol
-      : "ZTG") as SupportedCurrencyTag,
-  );
+  const imagePath = IOForeignAssetId.is(baseAssetId)
+    ? lookupAssetImagePath(baseAssetId.ForeignAsset)
+    : IOBaseAssetId.is(baseAssetId)
+      ? lookupAssetImagePath(baseAssetId.Ztg)
+      : "";
 
   return (
     <div className="w-full">
@@ -119,11 +119,11 @@ const BuyFullSetForm = ({
         <div className="mb-7 flex items-center justify-center">
           <div className="flex items-center justify-center gap-2">
             <span>Your Balance: </span>
-            {currencyMetadata?.image && (
+            {imagePath && (
               <Image
                 width={20}
                 height={20}
-                src={currencyMetadata?.image}
+                src={imagePath}
                 alt="Currency token logo"
                 className="rounded-full"
               />
