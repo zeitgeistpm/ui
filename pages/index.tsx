@@ -33,6 +33,7 @@ import {
 } from "plaiceholder";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
+import Link from "next/link";
 
 const getPlaiceholders = (
   paths: string[],
@@ -64,10 +65,9 @@ export async function getStaticProps() {
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
     getPlaiceholder(`/banner.png`),
-    getPlaiceholders(
-      CATEGORIES.map((cat) => `${cat.imagePath}`),
-      { dir: `${path.join(process.cwd())}/public/` },
-    ),
+    getPlaiceholders(CATEGORIES?.map((cat) => `${cat.imagePath}`), {
+      dir: `${path.join(process.cwd())}/public/`,
+    }),
     getPlaiceholders(
       news.map((slide) => slide.imageUrl ?? ""),
       { size: 16 },
@@ -80,10 +80,7 @@ export async function getStaticProps() {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery([categoryCountsKey], () =>
-    getCategoryCounts(
-      sdk.indexer.client,
-      CATEGORIES.map((c) => c.name),
-    ),
+    getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
   );
 
   return {
@@ -180,8 +177,20 @@ const IndexPage: NextPage<{
         <div className="mb-12">
           <PopularCategories imagePlaceholders={categoryPlaceholders} />
         </div>
-
-        <LatestTrades />
+        <div className="mb-12 flex flex-col gap-4">
+          <div>
+            <h2 className="mb-7 text-center sm:col-span-2 sm:text-start">
+              Latest Trades
+            </h2>
+            <LatestTrades />
+          </div>
+          <Link
+            className="w-full text-center text-ztg-blue"
+            href={"/latest-trades"}
+          >
+            View more
+          </Link>
+        </div>
 
         <div className="mb-12 flex w-full items-center justify-center">
           <GettingStartedSection />
