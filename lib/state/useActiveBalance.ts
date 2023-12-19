@@ -5,7 +5,7 @@ import { isRpcSdk, AssetId, IOForeignAssetId } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 import { ZTG } from "@zeitgeistpm/sdk";
-import { wsxIdObject } from "lib/constants";
+import { nttIDObject } from "lib/constants";
 import { walletAtom, store } from "./wallet";
 import { useAtom } from "jotai";
 import { formatNumberLocalized } from "lib/util";
@@ -14,11 +14,12 @@ const useActiveBalance = (
   userAddress: string | undefined,
   foreignAssetId?: AssetId,
 ) => {
-  const assetId = foreignAssetId || wsxIdObject;
+  const assetId = foreignAssetId || nttIDObject;
   const [balance, setBalance] = useState<Decimal | undefined>(undefined);
   const [walletState, setWalletState] = useAtom(walletAtom);
   const [sdk, id] = useSdkv2();
   const confirm = useConfirmation();
+
   useEffect(() => {
     let unsubscribe;
 
@@ -74,7 +75,7 @@ const useActiveBalance = (
         title: "Your account is now funded!",
         description: `You have ${formatNumberLocalized(
           balance?.div(ZTG).abs().toNumber(),
-        )} WSX in your account.`,
+        )} NTT in your account.`,
       });
     }
   }, [balance, walletState.newUser]);

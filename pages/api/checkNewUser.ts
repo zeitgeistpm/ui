@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Keyring } from "@polkadot/keyring";
+import { nttID } from "lib/constants";
 
 export default async function checkNewUser(req, res) {
   if (
@@ -33,13 +34,11 @@ export default async function checkNewUser(req, res) {
       const fundResponse = await fundUser(wallet);
 
       if (fundResponse.success) {
-        return res
-          .status(200)
-          .json({
-            success: true,
-            data: response.data,
-            txHash: fundResponse.txHash,
-          });
+        return res.status(200).json({
+          success: true,
+          data: response.data,
+          txHash: fundResponse.txHash,
+        });
       } else {
         return res.status(500).json({ error: fundResponse.error });
       }
@@ -71,7 +70,7 @@ async function fundUser(wallet) {
 
     const transfer = api.tx.assetManager.transfer(
       wallet,
-      { ForeignAsset: 3 },
+      { ForeignAsset: nttID },
       amount,
     );
 

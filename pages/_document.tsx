@@ -51,7 +51,7 @@ export default function Document() {
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
 
-        {/* TODO: swap for WSX Twitter  */}
+        {/* TODO: swap for NTT Twitter  */}
         <meta key="twitter:site" name="twitter:site" content="@ZeitgeistPM" />
         <meta
           key="twitter:card"

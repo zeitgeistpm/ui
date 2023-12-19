@@ -3,12 +3,12 @@ import axios from "axios";
 import Link from "next/link";
 import { useNotifications } from "lib/state/notifications";
 import { useForm } from "react-hook-form";
-import { endpointOptions, isWSX } from "lib/constants";
+import { endpointOptions, isNTT } from "lib/constants";
 import Input from "./Input";
 import Image from "next/image";
 
-const emailList = isWSX
-  ? "https://emails.zeitgeist.pm/wsx-subscribe"
+const emailList = isNTT
+  ? "https://emails.zeitgeist.pm/NTT-subscribe"
   : "https://emails.zeitgeist.pm/app-subscribe";
 
 const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
@@ -50,7 +50,7 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
         />
         <button
           type="submit"
-          className={`center h-full flex-shrink rounded-full bg-ztg-blue px-5 text-ztg-16-150 text-white ${
+          className={`center bg-ntt-blue h-full flex-shrink rounded-full px-5 text-ztg-16-150 text-white ${
             invalid ? "cursor-default" : "cursor-pointer"
           } disabled:opacity-60`}
           disabled={invalid}
@@ -93,12 +93,12 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
 const FooterMenus = () => {
   return (
     <>
-      {isWSX ? (
+      {isNTT ? (
         <div className="grid w-full grid-cols-3 gap-7">
           <FooterMenu
             className="col-span-1"
             title="General"
-            links={[{ text: "Website", href: "https://thewsx.com" }]}
+            links={[{ text: "Website", href: "https://theNTT.com" }]}
           />
           {/* <FooterMenu
             className="col-span-1"
@@ -152,10 +152,10 @@ const Footer = () => {
           <FooterNewsletterSub title="Subscribe to Newsletter" />
         </div>
         <div className="flex flex-col gap-5 md:flex-row">
-          {isWSX ? (
+          {isNTT ? (
             <Image
               className=" mx-auto block invert"
-              src="/wsx/powered-ztg.svg"
+              src="/ntt/powered-ztg.svg"
               alt="Zeitgeist logo "
               width={247}
               height={106}
