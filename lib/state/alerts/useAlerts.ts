@@ -72,10 +72,7 @@ export const useAlerts = (account?: string): UseAlerts => {
     }
 
     courtBacklog.forEach((backlogItem) => {
-      if (
-        backlogItem.type === "court-case-ready-for-vote" ||
-        backlogItem.type === "court-case-ready-for-reveal"
-      ) {
+      if (backlogItem.actionable) {
         add(
           withId({
             type: backlogItem.type,
