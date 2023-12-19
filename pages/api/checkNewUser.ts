@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Keyring } from "@polkadot/keyring";
-import { nttAssetIdString } from "lib/constants";
+import { nttID } from "lib/constants";
 
 export default async function checkNewUser(req, res) {
   if (
@@ -70,7 +70,7 @@ async function fundUser(wallet) {
 
     const transfer = api.tx.assetManager.transfer(
       wallet,
-      { nttAssetIdString },
+      { ForeignAsset: nttID },
       amount,
     );
 

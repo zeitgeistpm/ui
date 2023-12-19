@@ -1,11 +1,11 @@
 import { NextPage } from "next";
 import MarketsList from "components/markets/MarketsList";
-// import { HeroBannerNTT } from "components/front-page/HeroBannerNTT";
+import { HeroBannerWSX } from "components/front-page/HeroBannerWSX";
 
 const MarketsPage: NextPage = () => {
   return (
     <>
-      {/* <HeroBannerNTT /> */}
+      <HeroBannerWSX />
       <MarketsList />
     </>
   );
