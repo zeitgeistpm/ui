@@ -2,25 +2,25 @@ import {
   MarketWhereInput,
   HistoricalSwapWhereInput,
 } from "@zeitgeistpm/indexer";
-import { isWSX, wsxAssetIdString, wsxID } from "lib/constants";
+import { isNTT, nttAssetIdString, nttID } from "lib/constants";
 
 export const marketMetaFilter: MarketWhereInput = {
   question_isNull: false,
   question_not_eq: "",
   categories_isNull: false,
   hasValidMetaCategories_eq: true,
-  ...(isWSX ? { baseAsset_eq: wsxAssetIdString } : {}),
-  ...(!isWSX ? { baseAsset_not_eq: wsxAssetIdString } : {}),
+  ...(isNTT ? { baseAsset_eq: nttAssetIdString } : {}),
+  ...(!isNTT ? { baseAsset_not_eq: nttAssetIdString } : {}),
 };
 
 export const swapsMetaFilter: HistoricalSwapWhereInput = {
-  ...(isWSX
+  ...(isNTT
     ? {
-        assetIn_eq: wsxAssetIdString,
-        assetOut_eq: wsxAssetIdString,
+        assetIn_eq: nttAssetIdString,
+        assetOut_eq: nttAssetIdString,
       }
     : {
-        assetIn_not_eq: wsxAssetIdString,
-        assetOut_not_eq: wsxAssetIdString,
+        assetIn_not_eq: nttAssetIdString,
+        assetOut_not_eq: nttAssetIdString,
       }),
 };

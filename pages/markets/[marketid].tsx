@@ -67,7 +67,7 @@ import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
-import { isWSX } from "lib/constants";
+import { isNTT } from "lib/constants";
 import { FaChevronUp } from "react-icons/fa";
 import { ScoringRule } from "@zeitgeistpm/indexer";
 import { TradeTabType } from "components/trade-form/TradeTab";
@@ -378,7 +378,7 @@ const Market: NextPage<MarketPageProps> = ({
             )}
           </div>
 
-          {!isWSX && (
+          {!isNTT && (
             <AddressDetails title="Oracle" address={indexedMarket.oracle} />
           )}
           {marketHasPool === true && (
@@ -394,7 +394,7 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           )}
 
-          {!isWSX && market && (marketHasPool || poolDeployed) && (
+          {!isNTT && market && (marketHasPool || poolDeployed) && (
             <div className="my-12">
               <div
                 className="mb-8 flex cursor-pointer items-center text-mariner"
@@ -457,7 +457,7 @@ const Market: NextPage<MarketPageProps> = ({
                 <ReferendumSummary referendumIndex={referendumIndex} />
               </div>
             )}
-            {!isWSX && <SimilarMarketsSection market={market ?? undefined} />}
+            {!isNTT && <SimilarMarketsSection market={market ?? undefined} />}
           </div>
         </div>
       </div>

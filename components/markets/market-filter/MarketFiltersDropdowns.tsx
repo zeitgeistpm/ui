@@ -5,7 +5,7 @@ import {
 } from "lib/constants/market-filter";
 import DropDownSelect from "./DropDownSelect";
 import { useMarketFiltersContext } from "./MarketFiltersContainer";
-import { isWSX } from "lib/constants";
+import { isNTT } from "lib/constants";
 import { MarketFilter } from "lib/types/market-filter";
 
 export type MarketFiltersDropdownsProps = {
@@ -40,7 +40,7 @@ const MarketFiltersDropdowns = ({
   };
   return (
     <div className={className}>
-      {!isWSX && (
+      {!isNTT && (
         <>
           <DropDownSelect
             label="Category"

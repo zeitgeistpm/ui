@@ -4,7 +4,7 @@ import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
 import Avatar from "components/ui/Avatar";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
-import { SUPPORTED_WALLET_NAMES, isWSX } from "lib/constants";
+import { SUPPORTED_WALLET_NAMES, isNTT, nttID } from "lib/constants";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -110,12 +110,12 @@ const AccountButton: FC<{
   const { data: polkadotBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 0,
   });
-  const { data: wsxBalance } = useBalance(activeAccount?.address, {
-    ForeignAsset: 3,
+  const { data: NTTBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: nttID,
   });
 
   const balance = useActiveBalance(activeAccount?.address, {
-    ForeignAsset: 3,
+    ForeignAsset: nttID,
   });
 
   // console.log(balance?.div(ZTG).abs().toNumber());
@@ -128,7 +128,7 @@ const AccountButton: FC<{
     );
 
   const connect = async () => {
-    if (isWSX) {
+    if (isNTT) {
       selectWallet("web3auth");
       return;
     }
@@ -167,7 +167,7 @@ const AccountButton: FC<{
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {isWSX ? (
+          {isNTT ? (
             <HeaderActionButton
               disabled={
                 locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)
@@ -227,7 +227,7 @@ const AccountButton: FC<{
                             open ? "border-sunglow-2" : "border-white"
                           }`}
                         >
-                          {!isWSX && (
+                          {!isNTT && (
                             <div className={`rounded-full ring-2`}>
                               {activeAccount?.address && (
                                 <Avatar
@@ -238,12 +238,12 @@ const AccountButton: FC<{
                               )}
                             </div>
                           )}
-                          {isWSX ? (
+                          {isNTT ? (
                             <span className="hidden h-full min-w-fit pl-2 text-sm font-medium leading-[40px] transition-all md:block">
                               {formatNumberCompact(
                                 balance?.div(ZTG).abs().toNumber() ?? 0,
                               )}{" "}
-                              WSX
+                              NTT
                             </span>
                           ) : (
                             <span
@@ -337,10 +337,10 @@ const AccountButton: FC<{
                   <Menu.Items className="fixed left-0 z-40 mt-3 h-full w-full origin-top-right divide-y divide-gray-100 overflow-hidden bg-white py-3 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:absolute md:left-auto md:right-0 md:mt-6 md:h-auto md:w-64 md:rounded-md">
                     <div className="">
                       <div className="mb-3 flex flex-col gap-2 border-b-2 px-6 py-2">
-                        {isWSX ? (
+                        {isNTT ? (
                           <BalanceRow
-                            imgPath="/currencies/wsx-currency.png"
-                            units="WSX"
+                            imgPath="/currencies/NTT-currency.png"
+                            units="NTT"
                             balance={balance}
                           />
                         ) : (
@@ -376,7 +376,7 @@ const AccountButton: FC<{
                           )}
                         </Menu.Item>
                       </div>
-                      {!isWSX && (
+                      {!isNTT && (
                         <Menu.Item>
                           {({ active }) => (
                             <div
@@ -427,7 +427,7 @@ const AccountButton: FC<{
                           </Link>
                         )}
                       </Menu.Item>
-                      {!isWSX && (
+                      {!isNTT && (
                         <Menu.Item>
                           {({ active }) => (
                             <div

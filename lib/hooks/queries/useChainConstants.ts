@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk";
 import { ZTG } from "lib/constants";
 import { useSdkv2 } from "../useSdkv2";
-import { isWSX } from "lib/constants";
+import { isNTT } from "lib/constants";
 
 export type ChainConstants = {
   tokenSymbol: string;
@@ -58,8 +58,8 @@ export const useChainConstants = () => {
       const blockTimeSec =
         (consts.timestamp.minimumPeriod.toNumber() * 2) / 1000;
       const config: ChainConstants = {
-        tokenSymbol: isWSX
-          ? "WSX"
+        tokenSymbol: isNTT
+          ? "NTT"
           : properties.tokenSymbol.toString().replace("[", "").replace("]", ""),
         ss58Prefix: consts.system.ss58Prefix.toNumber(),
         blockTimeSec: blockTimeSec,

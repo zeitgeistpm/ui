@@ -7,7 +7,7 @@ import type { ApiPromise } from "@polkadot/api";
 
 import { UseNotifications } from "lib/state/notifications";
 import { unsubOrWarns } from "./unsub-or-warns";
-import { isWSX } from "lib/constants";
+import { isNTT } from "lib/constants";
 
 type GenericCallback = (...args: any[]) => void;
 
@@ -151,7 +151,7 @@ export const signAndSend = async (
             cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
           },
         );
-      } else if (isWSX) {
+      } else if (isNTT) {
         console.log(signer, foreignAssetNumber);
         const unsub = await tx.signAndSend(
           signer,

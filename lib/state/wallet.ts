@@ -23,10 +23,9 @@ import { IProvider } from "@web3auth/base";
 //Web3Auth
 import { web3authAtom } from "./util/web3auth-config";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
-import { isWSX } from "lib/constants";
-import { checkNewUser } from "./wsx";
+import { isNTT } from "lib/constants";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
-import useActiveBalance from "./useActiveBalance";
+import { checkNewUser } from "./check-user";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -233,7 +232,7 @@ export type WalletError = {
  */
 
 //TODO: revert logic when ready to go live
-export const supportedWallets = !isWSX
+export const supportedWallets = !isNTT
   ? [web3AuthWalletInstance]
   : [
       new PolkadotjsWallet(),
@@ -412,8 +411,8 @@ export const useWallet = (): UseWallet => {
         if (response.success) {
           await confirm.prompt({
             title: "Welcome to The Washington Stock Exchange!",
-            description: `In just a few moments your account will be funded with 100 WSX tokens.
-              These tokens can be used to trade on prediction markets on The WSX platform.`,
+            description: `In just a few moments your account will be funded with 100 NTT tokens.
+              These tokens can be used to trade on prediction markets on The NTT platform.`,
           });
           enabledWeb3Wallet(keyPair, true);
         } else enabledWeb3Wallet(keyPair);

@@ -44,7 +44,7 @@ import { MarketDispute } from "lib/types/markets";
 import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
 import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
 import CourtStageTimer from "components/court/CourtStageTimer";
-import { isWSX } from "lib/constants";
+import { isNTT } from "lib/constants";
 
 export const UserIdentity: FC<
   PropsWithChildren<{
@@ -450,7 +450,7 @@ const MarketHeader: FC<{
           <Skeleton width="150px" height="20px" />
         )}
       </div>
-      {!isWSX && (
+      {!isNTT && (
         <>
           <div className="relative mb-4 flex items-center gap-3">
             <AddressDetails title="Creator" address={market.creator} />

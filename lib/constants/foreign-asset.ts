@@ -47,13 +47,6 @@ const BATTERY_STATION_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     coinGeckoId: "polkadot",
     tokenSymbol: "ROC",
   },
-  3: {
-    //todo: add WSX logo
-    image: "/currencies/wsx-currency.png",
-    withdrawSupported: false,
-    coinGeckoId: "polkadot",
-    tokenSymbol: "WSX",
-  },
   4: {
     //todo: add NTT logo
     image: "/currencies/ausd.jpg",

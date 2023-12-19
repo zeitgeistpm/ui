@@ -1,9 +1,9 @@
 import { expect } from "@playwright/test";
 import test from "./lib/test";
-import { isWSX } from "lib/constants";
+import { isNTT } from "lib/constants";
 
 test.describe("pages open without errors", () => {
-  const testRoutes = isWSX
+  const testRoutes = isNTT
     ? [{ path: "/markets", testId: "marketCard" }]
     : [
         { path: "/", testId: "indexPage" },
