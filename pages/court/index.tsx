@@ -4,7 +4,7 @@ import { ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
 import { CourtCasesTable } from "components/court/CourtCasesTable";
 import JoinCourtAsJurorButton from "components/court/JoinCourtAsJurorButton";
 import ManageDelegationButton from "components/court/ManageDelegationButton";
-import PrepareExitCourtButton from "components/court/PrepareExitCourt";
+import CourtUnstakeButton from "components/court/CourtUnstakeButton";
 import InfoPopover from "components/ui/InfoPopover";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
@@ -111,7 +111,7 @@ const CourtPage: NextPage = ({
               voting rights to active jurors.
             </p>
 
-            <div className="mb-4 inline-block w-full min-w-[260px] rounded-md bg-slate-200 bg-opacity-50 px-6 py-5 backdrop-blur-[2px] md:w-auto">
+            <div className="mb-4 inline-block w-full rounded-md bg-slate-200 bg-opacity-50 px-6 py-5 backdrop-blur-[2px] md:w-auto lg:min-w-[580px]">
               <div className="flex">
                 <h3 className="mb-1 flex-1 text-lg text-gray-800">My Stake</h3>
                 {connectedParticipant && (
@@ -178,9 +178,10 @@ const CourtPage: NextPage = ({
                   <JoinCourtAsJurorButton className="w-full md:w-auto" />
                   <ManageDelegationButton className="w-full md:w-auto" />
 
-                  {!connectedParticipant?.prepareExit && (
-                    <PrepareExitCourtButton className="w-full md:w-auto" />
-                  )}
+                  {connectedParticipant &&
+                    !connectedParticipant?.prepareExit && (
+                      <CourtUnstakeButton className="w-full md:w-auto" />
+                    )}
                 </div>
               </div>
             </div>

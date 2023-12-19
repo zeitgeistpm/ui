@@ -7,22 +7,33 @@ import {
   create,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import { CourtAppealForm } from "components/court/CourtAppealForm";
+import { CourtReassignForm } from "components/court/CourtReassignForm";
 import CourtStageTimer from "components/court/CourtStageTimer";
 import { CourtVoteForm } from "components/court/CourtVoteForm";
 import { CourtVoteRevealForm } from "components/court/CourtVoteRevealForm";
 import { SelectedDrawsTable } from "components/court/SelectedDrawsTable";
+import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
 import { AddressDetails } from "components/markets/MarketAddresses";
 import { HeaderStat } from "components/markets/MarketHeader";
+import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
+import { useCourtCase } from "lib/hooks/queries/court/useCourtCases";
 import { useCourtVoteDrawsForCase } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
-import { getCourtStage } from "lib/state/court/get-stage";
+import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
+import { useCourtSalt } from "lib/state/court/useCourtSalt";
+import { useCourtStage } from "lib/state/court/useCourtStage";
+import { useCourtVote } from "lib/state/court/useVoteOutcome";
 import { useWallet } from "lib/state/wallet";
 import { isMarketCategoricalOutcome } from "lib/types";
+import { calculateSlashableStake } from "lib/util/court/calculateSlashableStake";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { sortBy } from "lodash-es";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,26 +41,11 @@ import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 import NotFoundPage from "pages/404";
 import { IGetPlaiceholderReturn, getPlaiceholder } from "plaiceholder";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
-import { LuReplace, LuVote } from "react-icons/lu";
-import { PiBooks } from "react-icons/pi";
-import {
-  DAY_SECONDS,
-  endpointOptions,
-  environment,
-  graphQlEndpoint,
-  ZTG,
-} from "lib/constants";
-import { CourtAppealForm } from "components/court/CourtAppealForm";
-import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
-import { useCourtVote } from "lib/state/court/useVoteOutcome";
-import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
-import { sortBy } from "lodash-es";
-import { FaBackwardStep } from "react-icons/fa6";
-import { IoMdArrowBack } from "react-icons/io";
-import { useCourtSalt } from "lib/state/court/useCourtSalt";
 import { BsShieldFillExclamation } from "react-icons/bs";
+import { IoMdArrowBack } from "react-icons/io";
+import { LuReplace, LuVote } from "react-icons/lu";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -129,6 +125,7 @@ const CasePage: NextPage = ({
 
   const { data: courtCase } = useCourtCase(caseId);
   const { data: selectedDraws } = useCourtVoteDrawsForCase(caseId);
+  const { data: chainConstants } = useChainConstants();
 
   const { data: marketId } = useCaseMarketId(caseId);
 
@@ -163,11 +160,10 @@ const CasePage: NextPage = ({
   const hasRevealedVote = connectedParticipantDraw?.vote.isRevealed;
   const hasDenouncedVote = connectedParticipantDraw?.vote.isDenounced;
 
-  const stage = useMemo(() => {
-    if (time && market && courtCase) {
-      return getCourtStage(time, market, courtCase);
-    }
-  }, [time, market, courtCase]);
+  const stage = useCourtStage({
+    caseId: caseid as string,
+    marketId,
+  });
 
   const { prompt } = useConfirmation();
   const [recastVoteEnabled, setRecastVoteEnabled] = useState(false);
@@ -181,6 +177,11 @@ const CasePage: NextPage = ({
     caseId,
     marketId: market.marketId,
   });
+
+  const totalSlashableStake = calculateSlashableStake(
+    courtCase?.appeals.length ?? 0,
+    chainConstants?.court.minJurorStake ?? 0,
+  );
 
   const onClickRecastVote = async () => {
     if (
@@ -292,6 +293,8 @@ const CasePage: NextPage = ({
       )}
 
       {stage?.type === "appeal" && <CourtAppealForm caseId={caseId} />}
+
+      {stage?.type === "closed" && <CourtReassignForm caseId={caseId} />}
     </>
   );
 
@@ -318,10 +321,16 @@ const CasePage: NextPage = ({
                 dateStyle: "medium",
               }).format(market.period.end)}
             </HeaderStat>
-            <HeaderStat label="Reported Outcome" border={false}>
+            <HeaderStat label="Reported Outcome">
               {reportedOutcome !== undefined
                 ? market.categories?.[reportedOutcome].name
                 : "-"}
+            </HeaderStat>
+            <HeaderStat
+              label={`Slashable ${chainConstants?.tokenSymbol}`}
+              border={false}
+            >
+              {formatNumberCompact(totalSlashableStake)}
             </HeaderStat>
           </div>
 

@@ -32,6 +32,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { assetsAreEqual } from "lib/util/assets-are-equal";
+import { perbillToNumber } from "lib/util/perbill-to-number";
 
 const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
@@ -73,6 +74,9 @@ const BuyForm = ({
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
   const { data: pool } = useAmm2Pool(marketId);
 
+  const swapFee = pool?.swapFee.div(ZTG);
+  const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
+
   const outcomeAssets = market?.outcomeAssets.map(
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
@@ -106,13 +110,13 @@ const BuyForm = ({
     minAmountOut,
   } = useMemo(() => {
     const amountOut =
-      assetReserve && pool.liquidity
+      assetReserve && pool.liquidity && swapFee
         ? calculateSwapAmountOutForBuy(
             assetReserve,
             amountIn,
             pool.liquidity,
-            new Decimal(0.01),
-            new Decimal(0.001),
+            swapFee,
+            creatorFee,
           )
         : new Decimal(0);
 
