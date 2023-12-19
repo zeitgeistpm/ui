@@ -130,7 +130,7 @@ const TopBar = () => {
                       <div className="block md:hidden">
                         <Menu.Item>
                           {({ active }) => (
-                            <Link href="/leaderboard/all" onClick={close}>
+                            <Link href="/leaderboard/year" onClick={close}>
                               <button
                                 className={`group mb-4 flex w-full  items-center gap-3 px-2 py-2 text-sm`}
                               >
@@ -190,7 +190,7 @@ const TopBar = () => {
 
           <Link
             className="md:center relative hidden gap-2 font-light text-white md:flex"
-            href="/leaderboard/all"
+            href="/leaderboard/year"
           >
             <div className="relative h-6 w-6">
               <FiAward size={"100%"} />
