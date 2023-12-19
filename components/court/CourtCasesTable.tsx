@@ -1,29 +1,33 @@
 import { ZrmlCourtCourtInfo } from "@polkadot/types/lookup";
 import { isInfinity } from "@zeitgeistpm/utility/dist/infinity";
+import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { blockDate } from "@zeitgeistpm/utility/dist/time";
 import InfoPopover from "components/ui/InfoPopover";
 import Skeleton from "components/ui/Skeleton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
+import { motion } from "framer-motion";
+import { TAILWIND } from "lib/constants";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
-import { CourtCaseInfo } from "lib/hooks/queries/court/useCourtCase";
-import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
+import {
+  CourtCaseInfo,
+  useCourtCases,
+} from "lib/hooks/queries/court/useCourtCases";
 import { useCourtVoteDrawsForCase } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
-import { CourtStage, getCourtStage } from "lib/state/court/get-stage";
+import { CourtStage } from "lib/state/court/get-stage";
+import { useCourtBacklog } from "lib/state/court/useCourtBacklog";
+import { useCourtStage } from "lib/state/court/useCourtStage";
 import { useWallet } from "lib/state/wallet";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { AiOutlineEye } from "react-icons/ai";
-import { LuVote } from "react-icons/lu";
-import { courtStageCopy } from "./CourtStageTimer";
-import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
-import { useCourtBacklog } from "lib/state/court/useCourtBacklog";
-import { MdOutlinePendingActions } from "react-icons/md";
-import { FaLongArrowAltDown } from "react-icons/fa";
 import { BsFillTriangleFill } from "react-icons/bs";
-import { motion } from "framer-motion";
-import { TAILWIND } from "lib/constants";
+import { LuClipboardCheck, LuVote } from "react-icons/lu";
+import { MdOutlinePendingActions } from "react-icons/md";
+import { courtStageCopy } from "./CourtStageTimer";
+import { groupBy, sortBy } from "lodash-es";
+import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 
 export const CourtCasesTable = () => {
   const { data: cases } = useCourtCases();
@@ -32,35 +36,28 @@ export const CourtCasesTable = () => {
 
   const courtBacklog = useCourtBacklog(wallet.realAddress);
 
-  const sortedCase = useMemo(() => {
-    return cases?.sort((a, b) => {
-      if (
-        b.case.status.type === "Closed" &&
-        a.case.status.type === "Reassigned"
+  const backlogCases = courtBacklog
+    .map((item) => cases?.find((c) => c.id === item.caseId))
+    .filter(isNotNull);
+
+  const restCases =
+    cases
+      ?.filter(
+        (courtCase) => !backlogCases?.find((item) => item.id === courtCase.id),
       )
-        return 1;
+      .filter(isNotNull) ?? [];
 
-      if (b.case.status.type === "Closed") return -1;
-      if (b.case.status.type === "Reassigned") return -1;
+  const sortedRestCases = sortBy(restCases, (courtCase) => {
+    if (
+      courtCase.case.roundEnds.preVote.toNumber() >= (time?.block ?? 0) &&
+      courtCase.case.roundEnds.vote.toNumber() < (time?.block ?? 0)
+    )
+      return 4;
 
-      const aBacklogItem = courtBacklog.findIndex(
-        (item) => item.caseId === a.id,
-      );
-      const bBacklogItem = courtBacklog.findIndex(
-        (item) => item.caseId === b.id,
-      );
-
-      if (aBacklogItem !== -1 && bBacklogItem !== -1) {
-        return aBacklogItem > bBacklogItem ? -1 : 1;
-      }
-
-      if (aBacklogItem !== -1 && bBacklogItem === -1) return -1;
-
-      return a.case.roundEnds.vote.toNumber() > b.case.roundEnds.vote.toNumber()
-        ? 1
-        : 0;
-    });
-  }, [cases, courtBacklog]);
+    if (courtCase.case.status.type === "Open") return 3;
+    if (courtCase.case.status.type === "Closed") return 2;
+    return 0;
+  }).reverse();
 
   const actionableCount = courtBacklog.filter((item) => item.actionable).length;
 
@@ -171,7 +168,10 @@ export const CourtCasesTable = () => {
     },
   ];
 
-  const tableData: TableData[] | undefined = sortedCase?.map((courtCase) => {
+  const tableData: TableData[] | undefined = [
+    ...backlogCases,
+    ...sortedRestCases,
+  ]?.map((courtCase) => {
     return {
       id: `${courtCase.id}`,
       case: <CaseNameForCaseId id={courtCase.id} />,
@@ -211,14 +211,11 @@ const CaseNameForCaseId = (props: { id: number }) => {
 
 const CaseStatus = ({ courtCase }: { courtCase: CourtCaseInfo }) => {
   const { data: marketId } = useCaseMarketId(courtCase.id);
-  const { data: market } = useMarket({ marketId: marketId! });
-  const chainTime = useChainTime();
 
-  const stage = useMemo(() => {
-    if (market && chainTime) {
-      return getCourtStage(chainTime, market, courtCase.case);
-    }
-  }, [chainTime, market]);
+  const stage = useCourtStage({
+    caseId: courtCase.id,
+    marketId,
+  });
 
   const percentage =
     stage && isInfinity(stage.remainingBlocks)
@@ -268,16 +265,15 @@ const CaseActions = ({
   const wallet = useWallet();
 
   const { data: marketId } = useCaseMarketId(caseId);
-  const { data: market } = useMarket({ marketId: marketId! });
-  const chainTime = useChainTime();
 
-  const stage = useMemo(() => {
-    if (market && chainTime) {
-      return getCourtStage(chainTime, market, courtCase);
-    }
-  }, [chainTime, market]);
+  const stage = useCourtStage({
+    caseId,
+    marketId,
+  });
 
   const { data: draws } = useCourtVoteDrawsForCase(caseId);
+
+  const connectedCourtParticipant = useConnectedCourtParticipant();
 
   const connectedParticipantDraw = draws?.find(
     (draw) => draw.courtParticipant.toString() === wallet.realAddress,
@@ -293,13 +289,19 @@ const CaseActions = ({
     );
   }, [stage, connectedParticipantDraw]);
 
+  const canSettle = useMemo(() => {
+    return stage?.type === "closed" && Boolean(connectedCourtParticipant);
+  }, [stage, connectedParticipantDraw]);
+
   return (
     <div className="flex w-full items-center justify-center">
       <Link href={`/court/${caseId}`}>
         <button
           className={` 
           center relative line-clamp-1 gap-3 self-end overflow-visible rounded-full border-2 border-gray-300 px-5 py-1.5 text-xs hover:border-gray-400 disabled:opacity-50 md:min-w-[220px]
-            ${canVote && "border-ztg-blue bg-ztg-blue text-white"}
+            ${
+              (canVote || canSettle) && "border-ztg-blue bg-ztg-blue text-white"
+            }
             ${canReveal && "border-purple-500 bg-purple-500 text-white"}
           `}
         >
@@ -311,13 +313,17 @@ const CaseActions = ({
             <>
               <AiOutlineEye size={18} /> <span>Reveal Vote</span>
             </>
+          ) : canSettle ? (
+            <>
+              <LuClipboardCheck size={18} /> <span>Settle Case</span>
+            </>
           ) : (
             <>
               <span className="hidden md:inline">View Case</span>
               <span className="inline md:hidden">View</span>
             </>
           )}
-          {(canVote || canReveal) && (
+          {(canVote || canReveal || canSettle) && (
             <div className="absolute right-1 top-0 h-2 w-2 translate-y-[-50%] ">
               <div className="h-full w-full animate-pulse-scale rounded-full bg-orange-500" />
             </div>
@@ -364,7 +370,8 @@ const caseStatusCopy: Record<
   },
   closed: {
     title: "Closed",
-    description: "Case has been closed. Waiting to be reassigned.",
+    description:
+      "Case has been closed. Payouts will be made once case is settled.",
     color: "text-gray-400",
   },
 };
