@@ -99,7 +99,7 @@ const MyApp = ({ Component, pageProps }) => {
             <Head>
               <title>
                 {isNTT
-                  ? "The NTT - Powered by Zeitgeist"
+                  ? "NTT Global Project Management Portal - Powered by Zeitgeist"
                   : "Zeitgeist - Prediction Markets"}
               </title>
             </Head>

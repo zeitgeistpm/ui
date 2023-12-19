@@ -9,7 +9,7 @@ export default function Document() {
     <Html>
       <Head>
         {/* TODO make dynamic */}
-        {useAnalytics && (
+        {/* {useAnalytics && (
           <Script id="google-analytics" strategy="afterInteractive">
             {`
           window.dataLayer = window.dataLayer || [];
@@ -25,11 +25,11 @@ export default function Document() {
             src="https://www.googletagmanager.com/gtag/js?id=G-HRMGM0K16B"
             strategy="afterInteractive"
           />
-        )}
+        )} */}
         {/* TODO make dynamic */}
         <meta
           name="description"
-          content="The application interface for The Washington Stock Exchange. Built on Polkadot, powered by Zeitgeist, the leader in decentralized prediction markets."
+          content="The application interface for NTT Global Project Management Portal."
         />
         <link
           rel="apple-touch-icon"
