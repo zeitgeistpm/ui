@@ -48,6 +48,7 @@ import {
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
@@ -706,6 +707,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
 
   const wallet = useWallet();
   const { data: stage } = useMarketStage(market);
+  const { data: chainConstants } = useChainConstants();
 
   const connectedWalletIsOracle = market.oracle === wallet.realAddress;
 
@@ -730,9 +732,15 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
           </p>
 
           {stage?.type === "OpenReportingPeriod" && (
-            <p className="-mt-3 mb-6 text-sm italic text-gray-500">
-              Oracle failed to report. Reporting is now open to all.
-            </p>
+            <>
+              <p className="-mt-3 mb-6 text-sm italic text-gray-500">
+                Oracle failed to report. Reporting is now open to all.
+              </p>
+              <p className="mb-6 text-sm">
+                Bond cost: ${chainConstants?.markets.outsiderBond}{" "}
+                {chainConstants?.tokenSymbol}
+              </p>
+            </>
           )}
 
           <div className="mb-4">
