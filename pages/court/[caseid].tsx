@@ -24,6 +24,7 @@ import { useCourtVoteDrawsForCase } from "lib/hooks/queries/court/useCourtVoteDr
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
+import { useMarketImage } from "lib/hooks/useMarketImage";
 import { useChainTime } from "lib/state/chaintime";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 import { useCourtSalt } from "lib/state/court/useCourtSalt";
@@ -31,9 +32,11 @@ import { useCourtStage } from "lib/state/court/useCourtStage";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
 import { useWallet } from "lib/state/wallet";
 import { isMarketCategoricalOutcome } from "lib/types";
+import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { calculateSlashableStake } from "lib/util/court/calculateSlashableStake";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { sortBy } from "lodash-es";
+import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -298,6 +301,15 @@ const CasePage: NextPage = ({
     </>
   );
 
+  const { data: marketImage } = useMarketImage(market, {
+    fallback:
+      market.img &&
+      isAbsoluteUrl(market.img) &&
+      !isMarketImageBase64Encoded(market.img)
+        ? market.img
+        : undefined,
+  });
+
   return (
     <div className="relative mt-6 flex flex-auto gap-12">
       <main className="flex-1">
@@ -308,30 +320,49 @@ const CasePage: NextPage = ({
             </Link>
             <h2 className="text-base font-normal">Case — #{caseId}</h2>
           </div>
-          <h1 className="text-[32px] font-extrabold">{market?.question}</h1>
+          <div className="flex items-center gap-3">
+            <div className="hidden lg:block">
+              <div className="relative h-16 w-16 overflow-hidden rounded-lg">
+                <Image
+                  alt={"Market image"}
+                  src={marketImage}
+                  fill
+                  className="overflow-hidden rounded-lg"
+                  style={{
+                    objectFit: "cover",
+                    objectPosition: "50% 50%",
+                  }}
+                  sizes={"100px"}
+                />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-[32px] font-extrabold">{market?.question}</h1>
 
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <HeaderStat label="Started">
-              {new Intl.DateTimeFormat("default", {
-                dateStyle: "medium",
-              }).format(market.period.start)}
-            </HeaderStat>
-            <HeaderStat label="Ended">
-              {new Intl.DateTimeFormat("default", {
-                dateStyle: "medium",
-              }).format(market.period.end)}
-            </HeaderStat>
-            <HeaderStat label="Reported Outcome">
-              {reportedOutcome !== undefined
-                ? market.categories?.[reportedOutcome].name
-                : "-"}
-            </HeaderStat>
-            <HeaderStat
-              label={`Slashable ${chainConstants?.tokenSymbol}`}
-              border={false}
-            >
-              {formatNumberCompact(totalSlashableStake)}
-            </HeaderStat>
+              <div className="mb-2 flex flex-wrap items-center gap-2 lg:pl-1">
+                <HeaderStat label="Started">
+                  {new Intl.DateTimeFormat("default", {
+                    dateStyle: "medium",
+                  }).format(market.period.start)}
+                </HeaderStat>
+                <HeaderStat label="Ended">
+                  {new Intl.DateTimeFormat("default", {
+                    dateStyle: "medium",
+                  }).format(market.period.end)}
+                </HeaderStat>
+                <HeaderStat label="Reported Outcome">
+                  {reportedOutcome !== undefined
+                    ? market.categories?.[reportedOutcome].name
+                    : "-"}
+                </HeaderStat>
+                <HeaderStat
+                  label={`Slashable ${chainConstants?.tokenSymbol}`}
+                  border={false}
+                >
+                  {formatNumberCompact(totalSlashableStake)}
+                </HeaderStat>
+              </div>
+            </div>
           </div>
 
           <Link

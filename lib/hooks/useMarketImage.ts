@@ -1,8 +1,9 @@
 import { CATEGORY_IMAGES } from "lib/constants/category-images";
 import { useMarketCmsMetadata } from "./queries/cms/useMarketCmsMetadata";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 
 export const useMarketImage = (
-  market: { marketId: number; tags?: string[] },
+  market: FullMarketFragment | { marketId: number; tags?: string[] },
   opts?: {
     fallback?: string;
   },
