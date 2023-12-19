@@ -118,7 +118,7 @@ export const BreakdownSlot = ({
       <div className="mb-1 flex items-center font-mono">
         <div className="font-semibold sm:w-2/3">
           {formatNumberLocalized(value.div(ZTG).toNumber())}{" "}
-          {isNTT ? "WSX" : "ZTG"}
+          {isNTT ? "NTT" : "ZTG"}
         </div>
         <div
           className={`hidden w-1/3 flex-1 sm:block ${

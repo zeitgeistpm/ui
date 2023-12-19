@@ -71,7 +71,7 @@ const HeaderActionButton: FC<
 > = ({ onClick, disabled, children }) => {
   return (
     <button
-      className={`flex w-[185px] cursor-pointer items-center justify-center rounded-full border-2 border-white px-6 font-medium leading-[40px] text-white disabled:cursor-default disabled:opacity-30`}
+      className={`border-ntt-blue text-ntt-blue flex w-[185px] cursor-pointer items-center justify-center rounded-full border-2 px-6 font-medium leading-[40px] disabled:cursor-default disabled:opacity-30`}
       onClick={onClick}
       disabled={disabled}
     >
@@ -110,15 +110,10 @@ const AccountButton: FC<{
   const { data: polkadotBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 0,
   });
-  const { data: NTTBalance } = useBalance(activeAccount?.address, {
-    ForeignAsset: nttID,
-  });
 
   const balance = useActiveBalance(activeAccount?.address, {
     ForeignAsset: nttID,
   });
-
-  // console.log(balance?.div(ZTG).abs().toNumber());
 
   const { data: constants } = useChainConstants();
 
@@ -216,15 +211,15 @@ const AccountButton: FC<{
                       <div
                         className={`relative z-30 flex	h-full flex-1 cursor-pointer items-center justify-end rounded-full  ${
                           open
-                            ? "border-orange-500"
+                            ? "border-black"
                             : pathname === "/"
                               ? " border-white"
                               : "border-black"
                         }`}
                       >
                         <div
-                          className={`flex h-full w-max items-center rounded-full border-2 bg-black py-1 pl-1.5 text-white transition-all md:py-0 ${
-                            open ? "border-sunglow-2" : "border-white"
+                          className={`bg-ntt-blue flex h-full w-max items-center rounded-full border-2 py-1 pl-1.5 text-white transition-all md:py-0 ${
+                            open ? "border-black" : "border-white"
                           }`}
                         >
                           {!isNTT && (
@@ -339,7 +334,7 @@ const AccountButton: FC<{
                       <div className="mb-3 flex flex-col gap-2 border-b-2 px-6 py-2">
                         {isNTT ? (
                           <BalanceRow
-                            imgPath="/currencies/NTT-currency.png"
+                            imgPath="/currencies/ntt-currency.png"
                             units="NTT"
                             balance={balance}
                           />
