@@ -385,7 +385,6 @@ export const useWallet = (): UseWallet => {
   const confirm = useConfirmation();
 
   const loadWeb3AuthWallet = async () => {
-    console.log("web3auth", web3auth);
     if (!web3auth) {
       return;
     }
@@ -394,7 +393,6 @@ export const useWallet = (): UseWallet => {
     await web3auth.connect();
 
     if (web3auth.provider) {
-      console.log("web3auth provider", web3auth.provider);
       const getKeypair = async (provider: IProvider) => {
         await cryptoWaitReady();
         const privateKey = await provider.request({
@@ -406,7 +404,6 @@ export const useWallet = (): UseWallet => {
       };
 
       const keyPair = await getKeypair(web3auth.provider);
-      console.log("keyPair", keyPair);
 
       if (keyPair.address) {
         const response = await checkNewUser(keyPair.address);

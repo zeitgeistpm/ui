@@ -61,7 +61,7 @@ const useActiveBalance = (
   useEffect(() => {
     if (
       balance &&
-      balance?.div(ZTG).abs().toNumber() <= 100 &&
+      balance?.div(ZTG).abs().toNumber() === 100 &&
       walletState.newUser
     ) {
       store.set(walletAtom, (state) => {
