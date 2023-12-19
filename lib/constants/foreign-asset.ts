@@ -49,7 +49,7 @@ const BATTERY_STATION_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
   },
   4: {
     //todo: add NTT logo
-    image: "/currencies/ausd.jpg",
+    image: "/currencies/ntt-currency.png",
     withdrawSupported: false,
     coinGeckoId: "polkadot",
     tokenSymbol: "NTT",
