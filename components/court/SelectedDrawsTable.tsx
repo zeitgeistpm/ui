@@ -98,7 +98,8 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
                   </span>
                 ) : stage?.type === "closed" ||
                   stage?.type === "appeal" ||
-                  stage?.type === "reassigned" ? (
+                  stage?.type === "reassigned" ||
+                  stage?.type === "aggregation" ? (
                   <span className="text-orange-500">Failed to vote</span>
                 ) : (
                   <span className="text-blue-400">Waiting for vote</span>
@@ -332,7 +333,7 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
         onClick={() => setOpen(true)}
       >
         <BsShieldFillExclamation size={12} />
-        <span className="hidden md:block">denounce</span>
+        <span className="hidden md:block">Denounce</span>
       </button>
 
       <Modal open={open} onClose={onClose}>

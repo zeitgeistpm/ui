@@ -1,22 +1,17 @@
 import { Transition } from "@headlessui/react";
 import { MarketStatus } from "@zeitgeistpm/indexer";
+import { TypingIndicator } from "components/ui/TypingIndicator";
 import { useMarketSearch } from "lib/hooks/queries/useMarketSearch";
 import Link from "next/link";
-import { FaDeleteLeft } from "react-icons/fa6";
+import { useRouter } from "next/router";
 import {
   Fragment,
   KeyboardEventHandler,
-  RefObject,
-  use,
   useEffect,
   useRef,
   useState,
 } from "react";
 import { Search, X } from "react-feather";
-import { AnimatePresence, Variants, motion, useAnimate } from "framer-motion";
-import { TAILWIND } from "lib/constants";
-import { TypingIndicator } from "components/ui/TypingIndicator";
-import { useRouter } from "next/router";
 
 const MarketSearch = () => {
   const router = useRouter();
@@ -128,7 +123,7 @@ const MarketSearch = () => {
                 }, 66);
               }}
             >
-              <FaDeleteLeft size={16} />
+              <X size={16} />
             </button>
           )}
         </div>

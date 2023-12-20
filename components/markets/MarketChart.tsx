@@ -161,15 +161,13 @@ export const ScalarMarketChart = ({
       <div className="ml-auto">
         <TimeFilters onClick={handleFilterChange} value={chartFilter} />
       </div>
-      {chartData && (
-        <TimeSeriesChart
-          data={chartData}
-          series={[series]}
-          yUnits={"Prediction"}
-          yDomain={[lowerBound, upperBound]}
-          isLoading={isLoading}
-        />
-      )}
+      <TimeSeriesChart
+        data={chartData}
+        series={[series]}
+        yUnits={"Prediction"}
+        yDomain={[lowerBound, upperBound]}
+        isLoading={isLoading}
+      />
     </div>
   );
 };

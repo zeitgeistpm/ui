@@ -21,6 +21,18 @@ describe("amm2", () => {
 
       expect(amountOut.toFixed(0)).toEqual("158496250072");
     });
+
+    test("should work with fees", () => {
+      const amountOut = calculateSwapAmountOutForBuy(
+        new Decimal(1_000_000_000_000),
+        new Decimal(109270000000),
+        new Decimal(1_442_695_040_889),
+        new Decimal(0.03),
+        new Decimal(0.005),
+      );
+
+      expect(amountOut.toFixed(0)).toEqual("203706311364");
+    });
   });
 
   describe("calculateSwapAmountOutForSell", () => {

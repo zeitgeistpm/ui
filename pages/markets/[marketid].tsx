@@ -1,10 +1,15 @@
 import { Disclosure, Transition } from "@headlessui/react";
-import { FullMarketFragment, MarketStatus } from "@zeitgeistpm/indexer";
+import {
+  FullMarketFragment,
+  MarketStatus,
+  ScoringRule,
+} from "@zeitgeistpm/indexer";
 import {
   MarketOutcomeAssetId,
   ScalarRangeType,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import LatestTrades from "components/front-page/LatestTrades";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import DisputeResult from "components/markets/DisputeResult";
 import { AddressDetails } from "components/markets/MarketAddresses";
@@ -23,6 +28,8 @@ import CategoricalReportBox from "components/outcomes/CategoricalReportBox";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
+import { TradeTabType } from "components/trade-form/TradeTab";
+import ReferendumSummary from "components/ui/ReferendumSummary";
 import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
@@ -42,6 +49,7 @@ import {
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
@@ -62,6 +70,7 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
@@ -69,11 +78,6 @@ import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { isNTT } from "lib/constants";
 import { FaChevronUp } from "react-icons/fa";
-import { ScoringRule } from "@zeitgeistpm/indexer";
-import { TradeTabType } from "components/trade-form/TradeTab";
-import ReferendumSummary from "components/ui/ReferendumSummary";
-import LatestTrades from "components/front-page/LatestTrades";
-import Link from "next/link";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -702,6 +706,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
 
   const wallet = useWallet();
   const { data: stage } = useMarketStage(market);
+  const { data: chainConstants } = useChainConstants();
 
   const connectedWalletIsOracle = market.oracle === wallet.realAddress;
 
@@ -726,9 +731,15 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
           </p>
 
           {stage?.type === "OpenReportingPeriod" && (
-            <p className="-mt-3 mb-6 text-sm italic text-gray-500">
-              Oracle failed to report. Reporting is now open to all.
-            </p>
+            <>
+              <p className="-mt-3 mb-6 text-sm italic text-gray-500">
+                Oracle failed to report. Reporting is now open to all.
+              </p>
+              <p className="mb-6 text-sm">
+                Bond cost: ${chainConstants?.markets.outsiderBond}{" "}
+                {chainConstants?.tokenSymbol}
+              </p>
+            </>
           )}
 
           <div className="mb-4">
