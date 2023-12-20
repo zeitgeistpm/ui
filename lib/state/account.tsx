@@ -10,7 +10,6 @@ export const useAccountModals = () => {
   const [state, setState] = useAtom(accountsAtom);
 
   const { showDisclaimer, disclaimerAccepted } = useDisclaimer(() => {
-    console.log("accepted");
     setState({ ...state, walletSelectModalOpen: true });
   });
 
@@ -20,8 +19,6 @@ export const useAccountModals = () => {
       setState({ ...state, accountSelectModalOpen: true });
     },
     openWalletSelect: () => {
-      console.log(disclaimerAccepted);
-
       if (disclaimerAccepted) {
         setState({ ...state, walletSelectModalOpen: true });
       } else {
