@@ -12,6 +12,7 @@ export type ChainConstants = {
     maxDisputes: number;
     disputeBond: number; // initial dispute amount
     oracleBond: number;
+    outsiderBond: number;
     advisoryBond: number;
     validityBond: number;
     maxCategories: number;
@@ -34,6 +35,7 @@ export type ChainConstants = {
     minJurorStake: number;
     inflationPeriodBlocks: number;
     maxDelegations: number;
+    appealBond: number;
   };
 };
 
@@ -67,6 +69,7 @@ export const useChainConstants = () => {
           maxDisputes: consts.predictionMarkets.maxDisputes.toNumber(),
           disputeBond: consts.predictionMarkets.disputeBond.toNumber() / ZTG,
           oracleBond: consts.predictionMarkets.oracleBond.toNumber() / ZTG,
+          outsiderBond: consts.predictionMarkets.outsiderBond.toNumber() / ZTG,
           advisoryBond: consts.predictionMarkets.advisoryBond.toNumber() / ZTG,
           validityBond: consts.predictionMarkets.validityBond.toNumber() / ZTG,
           maxCategories: consts.predictionMarkets.maxCategories.toNumber(),
@@ -91,6 +94,7 @@ export const useChainConstants = () => {
           minJurorStake: consts.court.minJurorStake.toNumber() / ZTG,
           inflationPeriodBlocks: consts.court.inflationPeriod.toNumber(),
           maxDelegations: consts.court.maxDelegations.toNumber(),
+          appealBond: consts.court.appealBond.toNumber() / ZTG,
         },
       };
 

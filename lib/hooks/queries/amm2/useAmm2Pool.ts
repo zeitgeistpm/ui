@@ -76,9 +76,10 @@ export const useAmm2Pool = (marketId?: number) => {
 };
 
 export const lookupAssetReserve = (
-  map: ReserveMap,
+  map?: ReserveMap,
   asset?: string | AssetId,
 ) => {
+  if (!map) return;
   const assetId = parseAssetIdString(asset);
   if (IOMarketOutcomeAssetId.is(assetId)) {
     return map.get(

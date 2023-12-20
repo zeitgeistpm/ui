@@ -11,6 +11,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { IOCourtSaltPhraseStorage } from "lib/state/court/CourtSaltPhraseStorage";
 import { useCourtCommitmentHash } from "lib/state/court/useCourtCommitmentHash";
 import { useCourtSalt } from "lib/state/court/useCourtSalt";
+import { useOutcomeMatchingCommitmentHash } from "lib/state/court/useOutcomeMatchingCommitmentHash";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
 import { shortenAddress } from "lib/util";
 import React, { useRef, useState } from "react";
@@ -42,24 +43,32 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
     defaultValue: outcomeAssets[0],
   });
 
-  const { salt, setPhraseSeed } = useCourtSalt({
+  const { salt, restoreBackup } = useCourtSalt({
     marketId: market.marketId,
     caseId: caseId,
   });
 
+  const matchingOutcome = useOutcomeMatchingCommitmentHash(
+    salt,
+    secretVote?.commitment.toHex() ?? `0x`,
+    outcomeAssets,
+  );
+
   const { commitmentHash } = useCourtCommitmentHash({
     salt,
-    selectedOutcome: vote,
+    selectedOutcome: matchingOutcome ?? vote,
   });
 
   const { send, isReady, isLoading, isBroadcasting } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && salt && vote) {
+        const assetIndex =
+          matchingOutcome?.CategoricalOutcome[1] ?? vote.CategoricalOutcome[1];
         return sdk.api.tx.court.revealVote(
           caseId,
           {
             Outcome: {
-              Categorical: vote.CategoricalOutcome[1],
+              Categorical: assetIndex,
             },
           },
           salt,
@@ -70,7 +79,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
     {
       onSuccess: () => {
         queryClient.invalidateQueries([id, voteDrawsRootKey, caseId]);
-        queryClient.invalidateQueries([id, voteDrawsRootKey, "all"]);
+        queryClient.invalidateQueries([id, voteDrawsRootKey]);
       },
     },
   );
@@ -110,7 +119,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
       const parsed = IOCourtSaltPhraseStorage.safeParse(JSON.parse(raw));
 
       if (parsed.success) {
-        const wasSet = await setPhraseSeed(parsed.data);
+        const wasSet = await restoreBackup(parsed.data);
         setHasDroppedFile(wasSet);
       }
     }
@@ -128,15 +137,15 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
         <div className="mb-8 mt-6">
           <MarketContextActionOutcomeSelector
             market={market}
-            selected={vote ?? outcomeAssets[0]}
+            selected={matchingOutcome ?? vote ?? outcomeAssets[0]}
             options={outcomeAssets}
             onChange={onChangeSelectedOutcome}
-            disabled={committed}
-            hideValue={committed}
+            disabled={Boolean(committed || matchingOutcome)}
+            hideValue={Boolean(committed || matchingOutcome)}
           />
         </div>
 
-        {!committed && (
+        {!committed && !matchingOutcome && (
           <>
             <div className="mb-6 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
               <div className="text-sm text-gray-700">
@@ -154,7 +163,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
           onChange={onFileInputChange}
         />
 
-        {commitmentHashMatches ? (
+        {commitmentHashMatches || matchingOutcome ? (
           <div
             className="relative mb-6 w-full resize-none rounded-md border-black border-opacity-30 bg-transparent text-center font-semibold"
             onDragOver={onCourtSaltBackupDragOver}

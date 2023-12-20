@@ -32,6 +32,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { assetsAreEqual } from "lib/util/assets-are-equal";
+import { perbillToNumber } from "lib/util/perbill-to-number";
 
 const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
@@ -73,6 +74,9 @@ const BuyForm = ({
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
   const { data: pool } = useAmm2Pool(marketId);
 
+  const swapFee = pool?.swapFee.div(ZTG);
+  const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
+
   const outcomeAssets = market?.outcomeAssets.map(
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
@@ -106,13 +110,13 @@ const BuyForm = ({
     minAmountOut,
   } = useMemo(() => {
     const amountOut =
-      assetReserve && pool.liquidity
+      assetReserve && pool.liquidity && swapFee
         ? calculateSwapAmountOutForBuy(
             assetReserve,
             amountIn,
             pool.liquidity,
-            new Decimal(0.01),
-            new Decimal(0.001),
+            swapFee,
+            creatorFee,
           )
         : new Decimal(0);
 
@@ -182,7 +186,13 @@ const BuyForm = ({
     const subscription = watch((value, { name, type }) => {
       const changedByUser = type != null;
 
-      if (!changedByUser || !maxSpendableBalance || !maxAmountIn) return;
+      if (
+        !changedByUser ||
+        !maxSpendableBalance ||
+        maxSpendableBalance.eq(0) ||
+        !maxAmountIn
+      )
+        return;
 
       if (name === "percentage") {
         const max = maxSpendableBalance.greaterThan(maxAmountIn)
@@ -255,9 +265,9 @@ const BuyForm = ({
               },
               validate: (value) => {
                 if (value > (maxSpendableBalance?.div(ZTG).toNumber() ?? 0)) {
-                  return `Insufficient balance. Current balance: ${maxSpendableBalance
+                  return `Insufficient balance (${maxSpendableBalance
                     ?.div(ZTG)
-                    .toFixed(3)}`;
+                    .toFixed(3)}${baseSymbol})`;
                 } else if (value <= 0) {
                   return "Value cannot be zero or less";
                 } else if (maxAmountIn?.div(ZTG)?.lessThanOrEqualTo(value)) {

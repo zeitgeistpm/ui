@@ -45,7 +45,7 @@ const ScalarReportBox = ({
 
   const { send, isLoading, isBroadcasting, isSuccess } = useExtrinsic(
     () => {
-      if (!isRpcSdk(sdk)) return;
+      if (!isRpcSdk(sdk) || scalarReportValue === "") return;
 
       const outcomeReport: any = {
         scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
@@ -174,10 +174,14 @@ const ScalarReportBox = ({
         disabled={reportDisabled}
         loading={isBroadcasting}
       >
-        Report Outcome{" "}
-        {formatScalarOutcome(
-          new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
-          market.scalarType as ScalarRangeType,
+        {scalarReportValue != null && scalarReportValue != "" && (
+          <>
+            Report Outcome{" "}
+            {formatScalarOutcome(
+              new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
+              market.scalarType as ScalarRangeType,
+            )}
+          </>
         )}
       </TransactionButton>
     </>

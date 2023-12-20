@@ -13,7 +13,7 @@ import { useCourtCommitmentHash } from "lib/state/court/useCourtCommitmentHash";
 import { useCourtSalt } from "lib/state/court/useCourtSalt";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { FaArrowRight } from "react-icons/fa";
 import { HiOutlineDocumentDownload } from "react-icons/hi";
@@ -66,7 +66,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
       onSuccess: () => {
         commitVote();
         queryClient.invalidateQueries([id, voteDrawsRootKey, caseId]);
-        queryClient.invalidateQueries([id, voteDrawsRootKey, "all"]);
+        queryClient.invalidateQueries([id, voteDrawsRootKey]);
         onVote?.();
       },
     },
@@ -137,7 +137,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
                 </p>
                 <p className="mb-4 text-sm">
                   This is supplied to the chain instead of the direct outcome
-                  when voting, so that the voted outcome is not known to other
+                  when voting, so that the vote is not known to other
                   participants. Yet ensures that when its revealed it can be
                   verified that the committed vote and what was revealed was
                   correct.

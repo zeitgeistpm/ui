@@ -7,22 +7,33 @@ import {
   create,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import { CourtAppealForm } from "components/court/CourtAppealForm";
+import { CourtReassignForm } from "components/court/CourtReassignForm";
 import CourtStageTimer from "components/court/CourtStageTimer";
 import { CourtVoteForm } from "components/court/CourtVoteForm";
 import { CourtVoteRevealForm } from "components/court/CourtVoteRevealForm";
 import { SelectedDrawsTable } from "components/court/SelectedDrawsTable";
+import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
 import { AddressDetails } from "components/markets/MarketAddresses";
 import { HeaderStat } from "components/markets/MarketHeader";
+import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
+import { useCourtCase } from "lib/hooks/queries/court/useCourtCases";
 import { useCourtVoteDrawsForCase } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
-import { getCourtStage } from "lib/state/court/get-stage";
+import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
+import { useCourtSalt } from "lib/state/court/useCourtSalt";
+import { useCourtStage } from "lib/state/court/useCourtStage";
+import { useCourtVote } from "lib/state/court/useVoteOutcome";
 import { useWallet } from "lib/state/wallet";
 import { isMarketCategoricalOutcome } from "lib/types";
+import { calculateSlashableStake } from "lib/util/court/calculateSlashableStake";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { sortBy } from "lodash-es";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,21 +41,11 @@ import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 import NotFoundPage from "pages/404";
 import { IGetPlaiceholderReturn, getPlaiceholder } from "plaiceholder";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
+import { BsShieldFillExclamation } from "react-icons/bs";
+import { IoMdArrowBack } from "react-icons/io";
 import { LuReplace, LuVote } from "react-icons/lu";
-import { PiBooks } from "react-icons/pi";
-import {
-  DAY_SECONDS,
-  endpointOptions,
-  environment,
-  graphQlEndpoint,
-  ZTG,
-} from "lib/constants";
-import { CourtAppealForm } from "components/court/CourtAppealForm";
-import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
-import { useCourtVote } from "lib/state/court/useVoteOutcome";
-import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -124,8 +125,10 @@ const CasePage: NextPage = ({
 
   const { data: courtCase } = useCourtCase(caseId);
   const { data: selectedDraws } = useCourtVoteDrawsForCase(caseId);
+  const { data: chainConstants } = useChainConstants();
 
   const { data: marketId } = useCaseMarketId(caseId);
+
   let { data: dynamicMarket } = useMarket(
     marketId != null ? { marketId } : undefined,
   );
@@ -155,12 +158,12 @@ const CasePage: NextPage = ({
   const isDrawnJuror = connectedParticipantDraw?.vote.isDrawn;
   const hasSecretVote = connectedParticipantDraw?.vote.isSecret;
   const hasRevealedVote = connectedParticipantDraw?.vote.isRevealed;
+  const hasDenouncedVote = connectedParticipantDraw?.vote.isDenounced;
 
-  const stage = useMemo(() => {
-    if (time && market && courtCase) {
-      return getCourtStage(time, market, courtCase);
-    }
-  }, [time, market, courtCase]);
+  const stage = useCourtStage({
+    caseId: caseid as string,
+    marketId,
+  });
 
   const { prompt } = useConfirmation();
   const [recastVoteEnabled, setRecastVoteEnabled] = useState(false);
@@ -170,6 +173,16 @@ const CasePage: NextPage = ({
     marketId: market.marketId,
   });
 
+  const { resetBackedUpState } = useCourtSalt({
+    caseId,
+    marketId: market.marketId,
+  });
+
+  const totalSlashableStake = calculateSlashableStake(
+    courtCase?.appeals.length ?? 0,
+    chainConstants?.court.minJurorStake ?? 0,
+  );
+
   const onClickRecastVote = async () => {
     if (
       await prompt({
@@ -178,6 +191,7 @@ const CasePage: NextPage = ({
       })
     ) {
       unCommitVote();
+      resetBackedUpState();
       setRecastVoteEnabled(true);
     }
   };
@@ -188,6 +202,25 @@ const CasePage: NextPage = ({
 
   const actionSection = (
     <>
+      {(stage?.type === "vote" || stage?.type === "aggregation") &&
+        hasDenouncedVote && (
+          <div className="overflow-hidden rounded-xl px-6 py-6 shadow-lg">
+            <div className="flex flex-col items-center gap-3">
+              <div className="text-red-400">
+                <BsShieldFillExclamation size={64} />
+              </div>
+              <h3 className="text mb-2 text-red-400">
+                Your vote was denounced
+              </h3>
+              <p className="mb-3 text-center text-sm text-gray-500">
+                Your vote was denounced and wont be counted. This means that
+                someone was able to get your secret salt used when voting and
+                denounce it.
+              </p>
+            </div>
+          </div>
+        )}
+
       {stage?.type === "vote" && (
         <>
           {(isDrawnJuror || recastVoteEnabled) && (
@@ -260,6 +293,8 @@ const CasePage: NextPage = ({
       )}
 
       {stage?.type === "appeal" && <CourtAppealForm caseId={caseId} />}
+
+      {stage?.type === "closed" && <CourtReassignForm caseId={caseId} />}
     </>
   );
 
@@ -267,7 +302,12 @@ const CasePage: NextPage = ({
     <div className="relative mt-6 flex flex-auto gap-12">
       <main className="flex-1">
         <section className="mb-6">
-          <h2 className="text-base font-normal">Case — #{caseId}</h2>
+          <div className="flex items-center gap-3">
+            <Link href="/court">
+              <IoMdArrowBack />
+            </Link>
+            <h2 className="text-base font-normal">Case — #{caseId}</h2>
+          </div>
           <h1 className="text-[32px] font-extrabold">{market?.question}</h1>
 
           <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -285,6 +325,12 @@ const CasePage: NextPage = ({
               {reportedOutcome !== undefined
                 ? market.categories?.[reportedOutcome].name
                 : "-"}
+            </HeaderStat>
+            <HeaderStat
+              label={`Slashable ${chainConstants?.tokenSymbol}`}
+              border={false}
+            >
+              {formatNumberCompact(totalSlashableStake)}
             </HeaderStat>
           </div>
 
@@ -330,7 +376,7 @@ const CasePage: NextPage = ({
           </div>
 
           <div className="mb-6 md:max-w-[900px]">
-            <CourtStageTimer stage={stage} />
+            <CourtStageTimer caseId={caseId} market={market} />
           </div>
 
           {market.description && (
@@ -410,7 +456,12 @@ const Votes = ({
     })
     .sort((a, b) => b.count - a.count);
 
-  const showLeaderIndicator = votes?.some((vote) => vote.count > 0);
+  const sortedVotes = sortBy(votes, "count").reverse();
+
+  const showLeaderIndicator =
+    isRevealed &&
+    votes?.some((vote) => vote.count > 0) &&
+    sortedVotes?.[0]?.count > sortedVotes?.[1]?.count;
 
   return (
     <div
@@ -418,23 +469,19 @@ const Votes = ({
         showLeaderIndicator && isRevealed && "[&>*:first-child]:bg-green-200"
       }`}
     >
-      {votes?.map(({ category, count }, index) => {
+      {sortedVotes?.map(({ category, count }, index) => {
         const leader = votes?.[0];
-        const isTied = index > 0 && count === leader.count;
 
         return (
           <div
             key={category.ticker}
             className={`relative flex flex-1 flex-col rounded-md border-1 text-xs shadow-sm md:min-w-[200px] ${
-              showLeaderIndicator &&
-              isRevealed &&
-              index === 0 &&
-              "border-green-300"
+              showLeaderIndicator && index === 0 && "border-green-300"
             }`}
           >
             {showLeaderIndicator && isRevealed && index === 0 && (
               <div className=" absolute right-3 top-0 translate-y-[-50%] rounded-xl bg-green-400 px-2 text-xxs text-white">
-                {isTied ? "Tied" : "Leading"}
+                Leading
               </div>
             )}
             <div className="rounded-top-md flex items-center gap-2 overflow-hidden bg-gray-500 bg-opacity-10">

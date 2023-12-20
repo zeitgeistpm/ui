@@ -1,10 +1,10 @@
 import { Menu, Transition } from "@headlessui/react";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import {
   CourtCaseReadyForReveal,
   CourtCaseReadyForVote,
+  CourtCaseReadyToSettle,
   ReadyToReportMarketAlertData,
   RedeemableMarketsAlertData,
   RelevantMarketDisputeAlertData,
@@ -13,11 +13,10 @@ import {
 import { useWallet } from "lib/state/wallet";
 import { useRouter } from "next/router";
 import { Fragment, PropsWithChildren, useEffect, useState } from "react";
-import { Users } from "react-feather";
 import { AiOutlineEye, AiOutlineFileAdd } from "react-icons/ai";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";
-import { LuVote } from "react-icons/lu";
+import { LuClipboardCheck, LuVote } from "react-icons/lu";
 
 export const Alerts = () => {
   const wallet = useWallet();
@@ -119,6 +118,8 @@ export const Alerts = () => {
                         <CourtCaseReadyForVoteAlertItem alert={alert} />
                       ) : alert.type === "court-case-ready-for-reveal" ? (
                         <CourtCaseReadyForRevealAlertItem alert={alert} />
+                      ) : alert.type === "court-case-ready-to-settle" ? (
+                        <CourtCaseReadyToSettleItem alert={alert} />
                       ) : (
                         // Including this prevents us from not exhausting the switch on alert type.
                         // Should never be reached but caught by the type system.
@@ -153,6 +154,47 @@ const AlertCard: React.FC<PropsWithChildren & { onClick?: () => void }> = ({
     </div>
   </div>
 );
+
+const CourtCaseReadyToSettleItem = ({
+  alert,
+}: {
+  alert: CourtCaseReadyToSettle;
+}) => {
+  const router = useRouter();
+  const { data: marketId } = useCaseMarketId(alert.caseId);
+  const { data: market } = useMarket({ marketId: marketId! });
+
+  useEffect(() => {
+    router.prefetch(`/court/${alert.caseId}`);
+  }, [alert]);
+
+  return (
+    <AlertCard
+      onClick={() => {
+        router.push(`/court/${alert.caseId}`);
+      }}
+    >
+      <div className="mb-1">
+        <div
+          className="inline-flex items-center gap-1 rounded-full px-1.5 py-1 text-xxs"
+          style={{
+            background:
+              "linear-gradient(131.15deg, rgb(36 104 226 / 22%) 11.02%, rgb(69 83 226 / 60%) 93.27%)",
+          }}
+        >
+          <LuClipboardCheck size={12} className="text-gray-700" />
+          Ready to Settle
+        </div>
+      </div>
+      <div className="pl-1">
+        <h3 className="mb-1 text-sm font-medium">{market?.question}</h3>
+        <p className="text-xxs text-gray-500">
+          This court case can now be settled.
+        </p>
+      </div>
+    </AlertCard>
+  );
+};
 
 const CourtCaseReadyForVoteAlertItem = ({
   alert,

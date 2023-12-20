@@ -30,6 +30,7 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { ISubmittableResult } from "@polkadot/types/types";
+import { perbillToNumber } from "lib/util/perbill-to-number";
 
 const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
@@ -67,6 +68,9 @@ const SellForm = ({
   const wallet = useWallet();
   const { data: pool } = useAmm2Pool(marketId);
 
+  const swapFee = pool?.swapFee.div(ZTG);
+  const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
+
   const outcomeAssets = market?.outcomeAssets.map(
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
@@ -97,13 +101,13 @@ const SellForm = ({
 
   const { amountOut, newSpotPrice, priceImpact, minAmountOut } = useMemo(() => {
     const amountOut =
-      assetReserve && pool.liquidity
+      assetReserve && pool.liquidity && swapFee
         ? calculateSwapAmountOutForSell(
             assetReserve,
             amountIn,
             pool.liquidity,
-            new Decimal(0),
-            new Decimal(0),
+            swapFee,
+            creatorFee,
           )
         : new Decimal(0);
 
@@ -166,7 +170,13 @@ const SellForm = ({
     const subscription = watch((value, { name, type }) => {
       const changedByUser = type != null;
 
-      if (!changedByUser || !selectedAssetBalance || !maxAmountIn) return;
+      if (
+        !changedByUser ||
+        !selectedAssetBalance ||
+        selectedAssetBalance.eq(0) ||
+        !maxAmountIn
+      )
+        return;
 
       if (name === "percentage") {
         const max = selectedAssetBalance.greaterThan(maxAmountIn)
