@@ -14,7 +14,7 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { IoIosInformation, IoIosWarning } from "react-icons/io";
 
@@ -36,9 +36,15 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
   const wallet = useWallet();
-  const { data: balance } = useZtgBalance(wallet.realAddress);
+  const { data: freeZtgBalance } = useZtgBalance(wallet.realAddress);
   const connectedParticipant = useConnectedCourtParticipant();
   const queryClient = useQueryClient();
+
+  const balance = useMemo(() => {
+    return new Decimal(freeZtgBalance ?? 0).plus(
+      connectedParticipant?.stake ?? 0,
+    );
+  }, [freeZtgBalance, connectedParticipant?.stake]);
 
   const { isLoading, send, fee } = useExtrinsic(
     () => {
@@ -101,7 +107,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
           onClick={() => setIsOpen(true)}
         >
           {connectedParticipant?.type === "Juror"
-            ? "Increase Personal Stake"
+            ? "Set Personal Stake"
             : "Become a Juror"}
         </button>
         {connectedParticipant?.type === "Delegator" && (
@@ -125,9 +131,11 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
           <h3 className="mb-4">
             {connectedParticipant?.type === "Juror"
-              ? "Increase Personal Stake"
+              ? "Set Personal Stake"
               : "Become a Juror"}
           </h3>
+
+          {balance.toString()}
 
           <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
             <form
@@ -215,7 +223,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
                 disabled={formState.isValid === false || isLoading}
               >
                 {connectedParticipant?.type === "Juror"
-                  ? "Increase Stake"
+                  ? "Set Stake"
                   : "Join as Juror"}
               </FormTransactionButton>
             </form>
