@@ -1,5 +1,9 @@
 import { getCmsMarketMetadataForMarket } from "lib/cms/get-market-metadata";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse, PageConfig } from "next";
+
+export const config: PageConfig = {
+  runtime: "edge",
+};
 
 export default async function handler(
   request: NextApiRequest,

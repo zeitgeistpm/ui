@@ -55,6 +55,7 @@ import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useTradeItem } from "lib/hooks/trade";
+import { useMarketImage } from "lib/hooks/useMarketImage";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useWallet } from "lib/state/wallet";
 import {
@@ -170,7 +171,7 @@ const Market: NextPage<MarketPageProps> = ({
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
-  console.log(cmsMetadata);
+
   const referendumIndex = cmsMetadata?.referendumIndex;
 
   const tradeItem = useTradeItem();
@@ -295,6 +296,7 @@ const Market: NextPage<MarketPageProps> = ({
             promotionData={promotionData}
             rejectReason={market?.rejectReason ?? undefined}
           />
+
           {market?.rejectReason && market.rejectReason.length > 0 && (
             <div className="mt-[10px] text-ztg-14-150">
               Market rejected: {market.rejectReason}
