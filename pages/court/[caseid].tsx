@@ -341,42 +341,52 @@ const CasePage: NextPage = ({
             View Market
           </Link>
 
-          <div className="relative mb-6 flex items-center gap-3">
-            <AddressDetails title="Creator" address={market.creator} />
+          <div className="flex items-start gap-4">
+            <div>
+              <div className="relative mb-6 flex items-center gap-3">
+                <AddressDetails title="Creator" address={market.creator} />
 
-            <div className="group relative">
-              <Image
-                width={24}
-                height={24}
-                src={imagePath}
-                alt="Currency token logo"
-                className="rounded-full"
-              />
-              <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity  group-hover:opacity-100">
-                <div className="rounded-lg bg-blue-100 px-2 py-1 text-sm">
-                  <span className="text-gray-500">Currency: </span>
-                  <span className="font-semibold">{token}</span>
+                <div className="group relative">
+                  <Image
+                    width={24}
+                    height={24}
+                    src={imagePath}
+                    alt="Currency token logo"
+                    className="rounded-full"
+                  />
+                  <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity  group-hover:opacity-100">
+                    <div className="rounded-lg bg-blue-100 px-2 py-1 text-sm">
+                      <span className="text-gray-500">Currency: </span>
+                      <span className="font-semibold">{token}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="group relative">
+                  <Image
+                    width={26}
+                    height={26}
+                    src="/icons/verified-icon.svg"
+                    alt="verified checkmark"
+                  />
+                  <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+                    <div className="rounded-lg bg-green-lighter px-2 py-1 text-sm">
+                      Verified Market
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="group relative">
-              <Image
-                width={26}
-                height={26}
-                src="/icons/verified-icon.svg"
-                alt="verified checkmark"
-              />
-              <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
-                <div className="rounded-lg bg-green-lighter px-2 py-1 text-sm">
-                  Verified Market
-                </div>
+              <div className="mb-6 md:max-w-[900px]">
+                <CourtStageTimer caseId={caseId} market={market} />
               </div>
             </div>
-          </div>
-
-          <div className="mb-6 md:max-w-[900px]">
-            <CourtStageTimer caseId={caseId} market={market} />
+            {stage?.type === "reassigned" && market.resolvedOutcome && (
+              <div className="inline-block min-w-[200px] rounded-lg bg-blue-500 px-5 py-3 text-white">
+                <h3 className="mb-3 text-white">Outcome</h3>
+                {market.categories?.[market.resolvedOutcome].name}
+              </div>
+            )}
           </div>
 
           {market.description && (
