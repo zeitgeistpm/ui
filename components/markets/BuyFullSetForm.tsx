@@ -60,10 +60,14 @@ const BuyFullSetForm = ({
   } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && amount && amount !== "") {
-        return sdk.api.tx.predictionMarkets.buyCompleteSet(
-          marketId,
-          new Decimal(amount).mul(ZTG).toFixed(0),
-        );
+        try {
+          return sdk.api.tx.predictionMarkets.buyCompleteSet(
+            marketId,
+            new Decimal(amount).mul(ZTG).toFixed(0),
+          );
+        } catch (error) {
+          console.error(error);
+        }
       }
     },
     {

@@ -53,10 +53,14 @@ const SellFullSetForm = ({
   } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && amount && amount !== "") {
-        return sdk.api.tx.predictionMarkets.sellCompleteSet(
-          marketId,
-          new Decimal(amount).mul(ZTG).toFixed(0),
-        );
+        try {
+          return sdk.api.tx.predictionMarkets.sellCompleteSet(
+            marketId,
+            new Decimal(amount).mul(ZTG).toFixed(0),
+          );
+        } catch (error) {
+          console.error(error);
+        }
       }
     },
     {
