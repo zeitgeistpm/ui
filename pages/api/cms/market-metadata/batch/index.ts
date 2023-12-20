@@ -1,38 +1,41 @@
 import { getCmsMarketMetadataForMarkets } from "lib/cms/get-market-metadata";
-import { NextApiRequest, NextApiResponse } from "next";
+import { PageConfig } from "next";
+import { NextRequest } from "next/server";
 
-export default async function handler(
-  request: NextApiRequest,
-  response: NextApiResponse,
-) {
+export const config: PageConfig = {
+  runtime: "edge",
+};
+
+export default async function handler(request: NextRequest) {
   try {
-    const marketIds = JSON.parse(request.query.marketIds as string);
+    const marketIdsRaw = new URL(request.url).searchParams.get("marketIds");
+    const marketIds = marketIdsRaw ? JSON.parse(marketIdsRaw) : null;
 
     if (!marketIds) {
-      return response
-        .status(400)
-        .json({ error: `Request needs market id in params` });
+      return new Response(`Request needs market ids in params`, {
+        status: 400,
+      });
     }
 
     if (!Array.isArray(marketIds)) {
-      return response
-        .status(400)
-        .json({ error: `Request market ids needs to be an array` });
+      return new Response(`Request market ids needs to be an array`, {
+        status: 400,
+      });
     }
 
     const metadata = await getCmsMarketMetadataForMarkets(
       marketIds.map((m) => Number(m)),
     );
 
-    return response
-      .setHeader(
-        "Cache-Control",
-        "public, s-maxage=180, stale-while-revalidate=21600",
-      )
-      .status(200)
-      .json(metadata);
+    return new Response(JSON.stringify(metadata), {
+      headers: {
+        "Cache-Control": "public, s-maxage=180, stale-while-revalidate=21600",
+      },
+    });
   } catch (error) {
     console.error(error);
-    return response.status(500).json({ error: error.message });
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+    });
   }
 }

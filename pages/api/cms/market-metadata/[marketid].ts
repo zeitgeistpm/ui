@@ -1,29 +1,25 @@
 import { getCmsMarketMetadataForMarket } from "lib/cms/get-market-metadata";
-import { NextApiRequest, NextApiResponse, PageConfig } from "next";
+import { PageConfig } from "next";
+import { NextRequest } from "next/server";
 
 export const config: PageConfig = {
   runtime: "edge",
 };
 
-export default async function handler(
-  request: NextApiRequest,
-  response: NextApiResponse,
-) {
-  const { marketid } = request.query;
+export default async function handler(request: NextRequest) {
+  const marketId = new URL(request.url).searchParams.get("marketid");
 
-  if (!marketid) {
-    return response
-      .status(404)
-      .json({ error: `Request needs market id in params` });
+  if (!marketId) {
+    return new Response(`Request needs market id in params`, {
+      status: 400,
+    });
   }
 
-  const metadata = await getCmsMarketMetadataForMarket(Number(marketid));
+  const metadata = await getCmsMarketMetadataForMarket(Number(marketId));
 
-  return response
-    .setHeader(
-      "Cache-Control",
-      "public, s-maxage=180, stale-while-revalidate=21600",
-    )
-    .status(200)
-    .json(metadata);
+  return new Response(JSON.stringify(metadata), {
+    headers: {
+      "Cache-Control": "public, s-maxage=180, stale-while-revalidate=21600",
+    },
+  });
 }
