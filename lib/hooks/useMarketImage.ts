@@ -8,10 +8,11 @@ export const useMarketImage = (
     fallback?: string;
   },
 ) => {
-  const firstTag = market.tags?.[0];
+  const tagIndex = market.tags ? market.marketId % market.tags.length : 0;
+  const pickedTag = market.tags?.[tagIndex];
 
   const tag = (
-    firstTag && firstTag in CATEGORY_IMAGES ? firstTag : "untagged"
+    pickedTag && pickedTag in CATEGORY_IMAGES ? pickedTag : "untagged"
   ) as keyof typeof CATEGORY_IMAGES;
 
   const category = CATEGORY_IMAGES[tag];
