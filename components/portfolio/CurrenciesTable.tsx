@@ -121,8 +121,8 @@ const CurrenciesTable = ({ address }: { address: string }) => {
 
   // filter WSX assets depending on client
   const balances = isNTT
-    ? allBalances?.filter((b) => b.symbol === "WSX")
-    : allBalances?.filter((b) => b.symbol !== "WSX");
+    ? allBalances?.filter((b) => b.symbol === "NTT")
+    : allBalances?.filter((b) => b.symbol !== "NTT");
 
   const tableData: TableData[] | undefined = balances
     ?.sort((a, b) => b.balance.minus(a.balance).toNumber())

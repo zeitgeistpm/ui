@@ -13,10 +13,12 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 import { isNTT } from "lib/constants";
+import { Transition } from "@headlessui/react";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
 import { useWallet } from "lib/state/wallet";
+import { Loader } from "components/ui/Loader";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -67,7 +69,8 @@ const MyApp = ({ Component, pageProps }) => {
       };
       init();
     }
-  }, []);
+    console.log("wallet", wallet);
+  }, [wallet.walletId]);
 
   return (
     <div
@@ -105,6 +108,23 @@ const MyApp = ({ Component, pageProps }) => {
             </Head>
             <DefaultLayout>
               <Layout>
+                {/* <Transition
+                  show={wallet.loading}
+                  enter="transition-opacity duration-100"
+                  enterFrom="opacity-0"
+                  enterTo="opacity-100"
+                  leave="transition-opacity duration-100"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                >
+                </Transition>
+                <div className="center w-full rounded-full">
+                  <Loader
+                    variant={"Loading"}
+                    className="z-20 h-[50px] w-[50px]"
+                    loading
+                  />
+                </div> */}
                 <Component {...pageProps} />
               </Layout>
             </DefaultLayout>

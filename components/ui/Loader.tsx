@@ -7,7 +7,7 @@ export type LoaderProps = {
   lineThrough?: boolean;
 };
 
-export type LoaderVariant = "Success" | "Info" | "Error" | "Dark";
+export type LoaderVariant = "Success" | "Info" | "Error" | "Dark" | "Loading";
 
 export const Loader = ({
   className,
@@ -55,5 +55,7 @@ const getGradient = (type: LoaderVariant): [string, string] => {
       return ["#C43131", "#FF6B00"];
     case "Dark":
       return ["rgb(10,10,10, 0.35)", "rgba(10,10,10, 0.85)"];
+    case "Loading":
+      return ["#0071bc", "white"];
   }
 };

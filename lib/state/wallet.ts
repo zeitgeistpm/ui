@@ -3,8 +3,8 @@ import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { atom, getDefaultStore, useAtom } from "jotai";
 import { u8aToHex, stringToHex } from "@polkadot/util";
-import { isString } from "lodash-es";
-import { useMemo } from "react";
+import { isString, set } from "lodash-es";
+import { useState, useMemo } from "react";
 import { persistentAtom } from "./util/persistent-atom";
 import {
   BaseDotsamaWallet,
@@ -127,6 +127,10 @@ export type WalletState = {
    * Checks if user is new via call to DB.
    */
   newUser: boolean;
+  /**
+   * Loading for web3auth wallet or transfer of funds
+   */
+  loading: boolean;
 };
 
 /**
@@ -147,6 +151,7 @@ const disconnectWalletStateTransition = (
       wallet: undefined,
       accounts: [],
       errors: [],
+      loading: false,
     },
     {
       ...userConfig,
@@ -170,6 +175,7 @@ export const walletAtom = atom<WalletState>({
   accounts: [],
   errors: [],
   newUser: false,
+  loading: false,
 });
 
 /**
@@ -340,7 +346,11 @@ const enableWallet = async (walletId: string) => {
   }
 };
 
-const enabledWeb3Wallet = (keyPair: KeyringPair, newUser?: boolean) => {
+const enabledWeb3Wallet = (
+  keyPair: KeyringPair,
+  newUser?: boolean,
+  loading?: boolean,
+) => {
   store.set(walletAtom, (state) => {
     return {
       ...state,
@@ -406,16 +416,23 @@ export const useWallet = (): UseWallet => {
       const keyPair = await getKeypair(web3auth.provider);
 
       if (keyPair.address) {
+        await store.set(walletAtom, (state) => {
+          return {
+            ...state,
+            loading: true,
+          };
+        });
         const response = await checkNewUser(keyPair.address);
-        console.log(response);
         if (response.success) {
+          await enabledWeb3Wallet(keyPair, true, false);
           await confirm.prompt({
-            title: "Welcome to The Washington Stock Exchange!",
+            title: "Welcome to the NTT Global Project Management Portal!",
             description: `In just a few moments your account will be funded with 100 NTT tokens.
-              These tokens can be used to trade on prediction markets on The NTT platform.`,
+              These tokens can be used to place votes within the NTT project management platform.`,
           });
-          enabledWeb3Wallet(keyPair, true);
-        } else enabledWeb3Wallet(keyPair);
+        } else {
+          await enabledWeb3Wallet(keyPair, undefined, false);
+        }
       }
     }
   };
