@@ -394,9 +394,9 @@ const MarketHeader: FC<{
 
   return (
     <header className="flex w-full flex-col gap-4">
-      <div className="flex items-center gap-3">
+      <div className="flex items-start gap-3 xl:items-center">
         <div className="hidden lg:block">
-          <div className="relative h-16 w-16 overflow-hidden rounded-lg">
+          <div className="relative mt-3 h-16 w-16 overflow-hidden rounded-lg xl:mt-0 ">
             <Image
               alt={"Market image"}
               src={marketImage}
