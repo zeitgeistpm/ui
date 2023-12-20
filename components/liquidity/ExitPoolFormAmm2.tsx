@@ -77,16 +77,19 @@ const ExitPoolForm = ({
       const poolSharesAmount = userPoolShares.mul(
         Number(poolSharesPercentage) / 100,
       );
-
-      return sdk.api.tx.utility.batchAll([
-        // shares can't be withdrawn without claiming fees first
-        sdk.api.tx.neoSwaps.withdrawFees(marketId),
-        sdk.api.tx.neoSwaps.exit(
-          marketId,
-          poolSharesAmount.toFixed(0),
-          minAssetsOut,
-        ),
-      ]);
+      try {
+        return sdk.api.tx.utility.batchAll([
+          // shares can't be withdrawn without claiming fees first
+          sdk.api.tx.neoSwaps.withdrawFees(marketId),
+          sdk.api.tx.neoSwaps.exit(
+            marketId,
+            poolSharesAmount.toFixed(0),
+            minAssetsOut,
+          ),
+        ]);
+      } catch (error) {
+        console.error(error);
+      }
     },
     {
       onSuccess: () => {

@@ -54,11 +54,15 @@ const JoinPoolForm = ({
                 .toFixed(0);
         });
 
-        return sdk.api.tx.neoSwaps.join(
-          marketId,
-          poolSharesToReceive.toFixed(0),
-          maxAmountsIn,
-        );
+        try {
+          return sdk.api.tx.neoSwaps.join(
+            marketId,
+            poolSharesToReceive.toFixed(0),
+            maxAmountsIn,
+          );
+        } catch (error) {
+          console.error(error);
+        }
       }
     },
     {
