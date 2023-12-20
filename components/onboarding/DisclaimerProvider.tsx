@@ -1,14 +1,15 @@
 import { Dialog } from "@headlessui/react";
 import Modal from "components/ui/Modal";
-import { useDisclaimerModal, useDisclaimerStatus } from "lib/state/disclaimer";
 import { useEffect, useRef } from "react";
 import DisclaimerTerms from "./DisclaimerTerms";
+import { useDisclaimer } from "lib/state/disclaimer";
 
 export const DisclamerProvider = () => {
-  const { showDisclaimer, setHideDisclaimer, setShowDisclaimer } =
-    useDisclaimerModal();
-
-  const { disclaimerAccepted, setDisclaimerAccepted } = useDisclaimerStatus();
+  const { modalOpen, hideDisclaimer, setDisclaimerAccepted } = useDisclaimer(
+    () => {
+      console.log("accepted here");
+    },
+  );
 
   const scrollableElementRef = useRef<HTMLDivElement | null>(null);
 
@@ -19,10 +20,10 @@ export const DisclamerProvider = () => {
         scrollableElementRef.current.scrollTop = 0;
       }
     }, 10);
-  }, [scrollableElementRef, showDisclaimer]);
+  }, [scrollableElementRef, modalOpen]);
 
   return (
-    <Modal open={showDisclaimer} onClose={() => {}}>
+    <Modal open={modalOpen} onClose={() => {}}>
       <Dialog.Panel className="flex w-full max-w-[526px] flex-col gap-5 rounded-ztg-10 bg-white p-[30px]">
         <h2 className="text-base">Terms of use</h2>
         <div
@@ -34,14 +35,14 @@ export const DisclamerProvider = () => {
         <div className="flex items-center justify-end gap-3">
           <button
             className="rounded-md px-4 py-2 text-gray-400"
-            onClick={() => setHideDisclaimer()}
+            onClick={() => hideDisclaimer()}
           >
             Decline
           </button>
           <button
             className="rounded-md bg-ztg-blue px-4 py-2 text-white"
             onClick={() => {
-              setHideDisclaimer();
+              hideDisclaimer();
               setDisclaimerAccepted();
             }}
           >

@@ -6,36 +6,38 @@ const disclaimerAcceptanceStateAtom = persistentAtom<boolean>({
   defaultValue: false,
 });
 
-const showDisclaimer = atom<boolean>(false);
+const disclaimerDisplayed = atom<boolean>(false);
 
-export const useDisclaimerStatus = () => {
-  const [state, setState] = useAtom(disclaimerAcceptanceStateAtom);
+export const useDisclaimer = (onAccept?: () => void) => {
+  console.log(onAccept);
 
-  const onDisclaimerAccepted = () => {
-    setState(true);
-  };
+  const [modalOpen, setModalOpen] = useAtom(disclaimerDisplayed);
+  const [disclaimerStatus, setDisclaimerStatus] = useAtom(
+    disclaimerAcceptanceStateAtom,
+  );
 
   const setDisclaimerAccepted = () => {
-    setState(true);
+    setDisclaimerStatus(true);
+
+    console.log(" onAccept");
+    console.log(onAccept);
+
+    onAccept?.();
+  };
+
+  const showDisclaimer = () => {
+    setModalOpen(true);
+  };
+  const hideDisclaimer = () => {
+    setModalOpen(false);
   };
 
   return {
-    disclaimerAccepted: state,
-    onDisclaimerAccepted,
+    modalOpen,
+    hideDisclaimer,
+    showDisclaimer,
+    disclaimerAccepted: disclaimerStatus,
+    // onDisclaimerAccepted,
     setDisclaimerAccepted,
   };
-};
-
-export const useDisclaimerModal = (onAccept?: () => void) => {
-  const [state, setState] = useAtom(showDisclaimer);
-
-  //add a call back for what to do after acceptance
-  const setShowDisclaimer = () => {
-    setState(true);
-  };
-  const setHideDisclaimer = () => {
-    setState(false);
-  };
-
-  return { showDisclaimer: state, setHideDisclaimer, setShowDisclaimer };
 };
