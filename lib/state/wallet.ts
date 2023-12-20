@@ -404,6 +404,13 @@ export const useWallet = (): UseWallet => {
     web3auth.status === "not_ready" && (await web3auth.initModal());
     await web3auth.connect();
 
+    await store.set(walletAtom, (state) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+
     if (web3auth.provider) {
       const getKeypair = async (provider: IProvider) => {
         await cryptoWaitReady();
@@ -417,25 +424,25 @@ export const useWallet = (): UseWallet => {
 
       const keyPair = await getKeypair(web3auth.provider);
       if (keyPair.address) {
-        await store.set(walletAtom, (state) => {
-          return {
-            ...state,
-            loading: true,
-          };
-        });
         const response = await checkNewUser(keyPair.address);
         if (response.success) {
-          await enabledWeb3Wallet(keyPair, true, false);
+          await enabledWeb3Wallet(keyPair, true);
           await confirm.prompt({
             title: "Welcome to the NTT Global Project Management Portal!",
             description: `In just a few moments your account will be funded with 100 NTT tokens.
               These tokens can be used to place votes within the NTT project management platform.`,
           });
         } else {
-          await enabledWeb3Wallet(keyPair, undefined, false);
+          await enabledWeb3Wallet(keyPair);
         }
       }
     }
+    await store.set(walletAtom, (state) => {
+      return {
+        ...state,
+        loading: false,
+      };
+    });
   };
 
   const selectWallet = (wallet: BaseDotsamaWallet | string) => {

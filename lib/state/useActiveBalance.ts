@@ -19,6 +19,7 @@ const useActiveBalance = (
   const [walletState, setWalletState] = useAtom(walletAtom);
   const [sdk, id] = useSdkv2();
   const confirm = useConfirmation();
+
   useEffect(() => {
     let unsubscribe;
 
