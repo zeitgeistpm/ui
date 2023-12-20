@@ -351,18 +351,20 @@ const enabledWeb3Wallet = (
   newUser?: boolean,
   loading?: boolean,
 ) => {
+  const accounts = [keyPair?.address].map((account) => {
+    return {
+      address: account,
+    };
+  });
   store.set(walletAtom, (state) => {
     return {
       ...state,
       wallet: { ...keyPair },
       connected: true,
+      loading: loading ?? false,
       newUser: newUser ?? false,
-      accounts:
-        [keyPair?.address].map((account) => {
-          return {
-            address: encodeAddress(account, 73),
-          };
-        }) ?? [],
+      accounts: accounts,
+      selectedAddress: keyPair.address,
       errors:
         [keyPair?.address].length === 0
           ? [
@@ -414,7 +416,6 @@ export const useWallet = (): UseWallet => {
       };
 
       const keyPair = await getKeypair(web3auth.provider);
-
       if (keyPair.address) {
         await store.set(walletAtom, (state) => {
           return {

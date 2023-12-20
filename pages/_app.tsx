@@ -19,6 +19,7 @@ import { Transition } from "@headlessui/react";
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
 import { useWallet } from "lib/state/wallet";
 import { Loader } from "components/ui/Loader";
+import { useState } from "react";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -32,6 +33,7 @@ const MyApp = ({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
   const wallet = useWallet();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isProduction) {
@@ -69,7 +71,6 @@ const MyApp = ({ Component, pageProps }) => {
       };
       init();
     }
-    console.log("wallet", wallet);
   }, [wallet.walletId]);
 
   return (
@@ -85,6 +86,15 @@ const MyApp = ({ Component, pageProps }) => {
           }
         `}
       </style>
+      {wallet.loading && (
+        <div className="center fixed top-0 z-50 h-full w-full bg-ntt-blue opacity-30">
+          <Loader
+            variant={"Loading"}
+            className="z-20 h-[50px] w-[50px]"
+            loading={wallet.loading}
+          />
+        </div>
+      )}
       <QueryClientProvider client={appQueryClient}>
         <Hydrate state={pageProps.dehydratedState}>
           <AvatarContext.Provider
@@ -108,23 +118,6 @@ const MyApp = ({ Component, pageProps }) => {
             </Head>
             <DefaultLayout>
               <Layout>
-                {/* <Transition
-                  show={wallet.loading}
-                  enter="transition-opacity duration-100"
-                  enterFrom="opacity-0"
-                  enterTo="opacity-100"
-                  leave="transition-opacity duration-100"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                >
-                </Transition>
-                <div className="center w-full rounded-full">
-                  <Loader
-                    variant={"Loading"}
-                    className="z-20 h-[50px] w-[50px]"
-                    loading
-                  />
-                </div> */}
                 <Component {...pageProps} />
               </Layout>
             </DefaultLayout>

@@ -1,18 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useWallet } from "lib/state/wallet";
+import { useEffect, useState } from "react";
 
-export const HeroBannerNTT = ({}: {}) => {
+export const HeroBannerNTT = () => {
   const { selectWallet, realAddress } = useWallet();
+  const [showButton, setShowButton] = useState(false);
+
+  useEffect(() => {
+    setShowButton(!realAddress);
+  }, [realAddress]);
 
   return (
     <div className="main-container md:mt-18 z-2 relative my-16">
       <div className="relative flex flex-col-reverse md:flex-row md:gap-8">
         <div className=" md:w-[890px] md:pt-8 lg:w-[690px]">
-          <h1 className="text-ntt-blue mb-2 text-6xl leading-none">
+          <h1 className="mb-2 text-6xl leading-none text-ntt-blue">
             NTT Global
           </h1>
-          <h2 className="text-ntt-blue mb-8 text-3xl">
+          <h2 className="mb-8 text-3xl text-ntt-blue">
             Project Management Portal
           </h2>
           <h3 className="mb-8 text-lg leading-6">
@@ -22,11 +28,11 @@ export const HeroBannerNTT = ({}: {}) => {
             <Link
               href="https://www.global.ntt/"
               target="_blank"
-              className="border-ntt-blue bg-ntt-blue flex-1 rounded-md border-2 px-6 py-3 text-white sm:flex-none"
+              className="flex-1 rounded-md border-2 border-ntt-blue bg-ntt-blue px-6 py-3 text-white sm:flex-none"
             >
               Learn More
             </Link>
-            {!realAddress && (
+            {showButton && (
               <button
                 onClick={() => selectWallet("web3auth")}
                 className="flex-1 rounded-md border-2 border-black bg-transparent px-6 py-3 text-black sm:flex-none"
