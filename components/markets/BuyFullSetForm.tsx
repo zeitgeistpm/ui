@@ -12,6 +12,7 @@ import { useGlobalKeyPress } from "lib/hooks/events/useGlobalKeyPress";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -32,10 +33,11 @@ const BuyFullSetForm = ({
   const wallet = useWallet();
   const notificationStore = useNotifications();
 
+  const { data: market } = useMarket({ marketId: marketId });
   const { data: pool } = usePool({ marketId: marketId });
 
-  const baseAssetId = pool?.baseAsset
-    ? parseAssetId(pool.baseAsset).unrightOr(undefined)
+  const baseAssetId = market?.baseAsset
+    ? parseAssetId(market.baseAsset).unrightOr(undefined)
     : undefined;
 
   const { data: metadata } = useAssetMetadata(baseAssetId);
@@ -59,11 +61,15 @@ const BuyFullSetForm = ({
     fee,
   } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk)) {
-        return sdk.api.tx.predictionMarkets.buyCompleteSet(
-          marketId,
-          new Decimal(amount).mul(ZTG).toNumber(),
-        );
+      if (isRpcSdk(sdk) && amount && amount !== "") {
+        try {
+          return sdk.api.tx.predictionMarkets.buyCompleteSet(
+            marketId,
+            new Decimal(amount).mul(ZTG).toFixed(0),
+          );
+        } catch (error) {
+          console.error(error);
+        }
       }
     },
     {
@@ -152,7 +158,7 @@ const BuyFullSetForm = ({
           </p>
           <p className="mb-7 text-center text-sm">
             <span className="text-sky-600">Price Per Set: </span>1{" "}
-            {metadata?.symbol}
+            {metadata?.name}
           </p>
         </div>
       </div>

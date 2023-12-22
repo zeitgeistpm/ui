@@ -1,16 +1,16 @@
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { isInfinity } from "@zeitgeistpm/utility/dist/infinity";
 import * as Time from "@zeitgeistpm/utility/dist/time";
+import InfoPopover from "components/ui/InfoPopover";
 import Skeleton from "components/ui/Skeleton";
-import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
-import { useMarket } from "lib/hooks/queries/useMarket";
+import { useCourtCase } from "lib/hooks/queries/court/useCourtCases";
 import { useChainTime } from "lib/state/chaintime";
-import { CourtStage, getCourtStage } from "lib/state/court/get-stage";
+import { CourtStage } from "lib/state/court/get-stage";
+import { CourtAppealRound } from "lib/state/court/types";
+import { useCourtStage } from "lib/state/court/useCourtStage";
 import moment from "moment";
 import { useMemo } from "react";
-import InfoPopover from "components/ui/InfoPopover";
-import { CourtAppealRound } from "lib/state/court/types";
 
 export const CourtStageTimer = ({
   market: initialMarket,
@@ -24,17 +24,10 @@ export const CourtStageTimer = ({
   const { data: courtCase } = useCourtCase(caseId);
   const { data: marketId } = useCaseMarketId(caseId);
 
-  let { data: dynamicMarket } = useMarket(
-    marketId != null ? { marketId } : undefined,
-  );
-
-  const market = dynamicMarket ?? initialMarket;
-
-  const stage = useMemo(() => {
-    if (time && market && courtCase) {
-      return getCourtStage(time, market, courtCase);
-    }
-  }, [time, market, courtCase]);
+  const stage = useCourtStage({
+    caseId,
+    marketId,
+  });
 
   const timeLeft = useMemo(() => {
     if (!time || !stage) return undefined;
@@ -50,9 +43,10 @@ export const CourtStageTimer = ({
     ? 100
     : ((stage.totalTime - stage.remainingBlocks) / stage.totalTime) * 100;
 
-  const round = courtCase
-    ? (courtCase.appeals.length as CourtAppealRound)
-    : undefined;
+  const round =
+    courtCase && courtCase.appeals.length
+      ? (courtCase.appeals.length as CourtAppealRound)
+      : undefined;
 
   return (
     <>
@@ -80,19 +74,21 @@ export const CourtStageTimer = ({
             )}
           </div>
         </div>
-        <div className="w-full">
-          <div className="text-right text-xs text-sky-600">
-            {percentage.toFixed(0)}%
+        {!isInfinity(stage.remainingBlocks) && (
+          <div className="w-full">
+            <div className="text-right text-xs text-sky-600">
+              {percentage.toFixed(0)}%
+            </div>
+            <div className="h-1.5 w-full rounded-lg bg-gray-100">
+              <div
+                className={`h-full rounded-lg transition-all ${
+                  courtStageCopy[stage.type].color
+                }`}
+                style={{ width: `${percentage}%` }}
+              />
+            </div>
           </div>
-          <div className="h-1.5 w-full rounded-lg bg-gray-100">
-            <div
-              className={`h-full rounded-lg transition-all ${
-                courtStageCopy[stage.type].color
-              }`}
-              style={{ width: `${percentage}%` }}
-            />
-          </div>
-        </div>
+        )}
       </div>
     </>
   );
@@ -150,7 +146,7 @@ export const courtStageCopy: Record<
   },
   closed: {
     title: "Closed",
-    description: "The case is now closed. Waiting to be reassigned.",
+    description: "The case is now closed. Waiting to be settled.",
     color: "bg-orange-400",
   },
 };
