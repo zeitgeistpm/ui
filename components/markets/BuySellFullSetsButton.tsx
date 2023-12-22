@@ -1,11 +1,11 @@
 import { Dialog, Tab } from "@headlessui/react";
+import { MarketStatus } from "@zeitgeistpm/indexer";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketIsTradingEnabled } from "lib/hooks/queries/useMarketIsTradingEnabled";
 import dynamic from "next/dynamic";
 import { useState } from "react";
-
 import BuyFullSetForm from "./BuyFullSetForm";
 import SellFullSetForm from "./SellFullSetForm";
 
@@ -24,7 +24,7 @@ const BuySellFullSetsButton = ({
   return (
     <>
       <SecondaryButton
-        disabled={!enabled}
+        disabled={market?.status !== MarketStatus.Active}
         onClick={() => setIsOpen(true)}
         className="max-w-[160px]"
       >
