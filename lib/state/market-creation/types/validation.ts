@@ -175,9 +175,7 @@ export const useMarketCreationFormValidator = (
  * -------------
  */
 const supportedSymbols = supportedCurrencies.map((currency) => currency.name);
-export const IOCurrency = z.enum<SupportedCurrencyTag, typeof supportedSymbols>(
-  supportedSymbols,
-);
+export const IOCurrency = z.enum<SupportedCurrencyTag, any>(supportedSymbols);
 
 export const IOQuestion = z
   .string()
