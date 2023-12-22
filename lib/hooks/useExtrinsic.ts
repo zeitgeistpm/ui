@@ -110,7 +110,10 @@ export const useExtrinsic = <T>(
         },
       }),
       IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
-    ).catch(() => {
+    ).catch((error) => {
+      notifications.pushNotification(error?.toString() ?? "Unknown Error", {
+        type: "Error",
+      });
       setIsBroadcasting(false);
       setIsLoading(false);
     });
