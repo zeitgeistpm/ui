@@ -30,7 +30,9 @@ const SellFullSetForm = ({
   const [sdk] = useSdkv2();
 
   const { data: pool } = usePool({ marketId: marketId });
-  const baseAssetId = parseAssetIdString(pool?.baseAsset);
+  const { data: market } = useMarket({ marketId: marketId });
+
+  const baseAssetId = parseAssetIdString(market?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const { data: baseAssetBalance } = useBalance(
