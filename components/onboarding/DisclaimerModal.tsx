@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import DisclaimerTerms from "./DisclaimerTerms";
 import { useDisclaimer } from "lib/state/disclaimer";
 
-export const DisclamerModal = () => {
+export const DisclaimerModal = () => {
   const { modalOpen, hideDisclaimer, setDisclaimerAccepted } = useDisclaimer();
 
   const scrollableElementRef = useRef<HTMLDivElement | null>(null);
