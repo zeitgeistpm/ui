@@ -89,12 +89,14 @@ const CategoricalDisputeBox = ({
   return (
     <div className="flex flex-col items-center gap-y-3 p-[30px]">
       <div className="text-[22px] font-bold">Dispute Outcome</div>
-      <div className="mb-[20px] text-center">
-        Bond cost: {disputeBond} {tokenSymbol}
-        <span className="font-bold">
+      <div className="mb-[20px] flex flex-col items-center justify-center gap-3 text-center">
+        <div>
+          Bond cost: {disputeBond} {tokenSymbol}
+        </div>
+        <div className="font-bold">
           Bonds will be slashed if the reported outcome is deemed to be
           incorrect
-        </span>
+        </div>
       </div>
 
       <div className="item-center flex flex-col text-center">
