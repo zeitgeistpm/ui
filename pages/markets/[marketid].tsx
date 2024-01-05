@@ -732,7 +732,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
                 Oracle failed to report. Reporting is now open to all.
               </p>
               <p className="mb-6 text-sm">
-                Bond cost: ${chainConstants?.markets.outsiderBond}{" "}
+                Bond cost: {chainConstants?.markets.outsiderBond}{" "}
                 {chainConstants?.tokenSymbol}
               </p>
             </>
