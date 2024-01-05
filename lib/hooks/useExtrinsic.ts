@@ -61,7 +61,7 @@ export const useExtrinsic = <T>(
 
     if (proxy?.enabled && proxy?.address) {
       console.info("Proxying transaction");
-      extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, "Any", extrinsic);
+      extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, null, extrinsic);
     }
 
     setIsLoading(true);
