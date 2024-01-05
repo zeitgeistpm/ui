@@ -3,32 +3,27 @@ import { useSquid } from "lib/hooks/squid-router/useSquid";
 import Image from "next/image";
 import { Fragment, useEffect, useMemo, useState } from "react";
 
-import { FaAngleLeft, FaLongArrowAltLeft } from "react-icons/fa";
-import { MdCheckCircleOutline, MdKeyboardArrowDown } from "react-icons/md";
+import { RouteResponse, TransactionResponse } from "@0xsquid/sdk/dist/types";
+import { ChainData, Token } from "@0xsquid/squid-types";
+import { formatFixed, parseFixed } from "@ethersproject/bignumber";
+import TransactionButton from "components/ui/TransactionButton";
+import Decimal from "decimal.js";
+import { useAtom } from "jotai";
+import { persistentAtom } from "lib/state/util/persistent-atom";
+import { shortenAddress } from "lib/util";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { FaAngleLeft } from "react-icons/fa";
+import { MdKeyboardArrowDown } from "react-icons/md";
+import { useDebounce } from "use-debounce";
 import {
   useAccount,
   useConnect,
   useDisconnect,
   useNetwork,
-  useSwitchNetwork,
   useSigner,
+  useSwitchNetwork,
 } from "wagmi";
-import { BigNumber, parseFixed, formatFixed } from "@ethersproject/bignumber";
-import { InjectedConnector } from "wagmi/connectors/injected";
-import { Connector } from "wagmi";
 import { Loader } from "../ui/Loader";
-import { ChainData, Token } from "@0xsquid/squid-types";
-import { shortenAddress } from "lib/util";
-import { formatNumberCompact } from "lib/util/format-compact";
-import { persistentAtom } from "lib/state/util/persistent-atom";
-import { useAtom } from "jotai";
-import TransactionButton from "components/ui/TransactionButton";
-import { al } from "vitest/dist/reporters-5f784f42";
-import Decimal from "decimal.js";
-import { RouteResponse, TransactionResponse } from "@0xsquid/sdk/dist/types";
-import { useDebounce } from "use-debounce";
-import Skeleton from "components/ui/Skeleton";
-import { CircularProgressbar } from "react-circular-progressbar";
 
 const userConfigAtom = persistentAtom({
   key: "squid-router-user-config",
@@ -411,13 +406,13 @@ const Select = <T,>({
             leaveTo="opacity-0"
             show={open}
           >
-            <Listbox.Options className="subtle-scroll-bar absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base  focus:outline-none sm:text-sm">
+            <Listbox.Options className="subtle-scroll-bar absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-2xl bg-gray-800 bg-opacity-60 px-1 py-1 text-base backdrop-blur-sm focus:outline-none sm:text-sm">
               {options.map((option) => (
                 <Listbox.Option
                   key={option.label}
                   className={({ active }) =>
-                    `relative mb-1 cursor-default select-none rounded-full bg-gray-800 bg-opacity-20 px-3 py-2 text-xs ${
-                      active ? " bg-opacity-90 text-white" : "text-black"
+                    `relative mb-1 cursor-default select-none rounded-full bg-gray-800 bg-opacity-50 px-2 py-2  text-xs text-white ${
+                      active ? " bg-opacity-90 " : ""
                     }`
                   }
                   value={option}
