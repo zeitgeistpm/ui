@@ -453,7 +453,7 @@ const Market: NextPage<MarketPageProps> = ({
               )}
             </div>
             {referendumIndex != null && (
-              <div className="mb-12 ">
+              <div className="mb-12 animate-pop-in opacity-0">
                 <ReferendumSummary referendumIndex={referendumIndex} />
               </div>
             )}
