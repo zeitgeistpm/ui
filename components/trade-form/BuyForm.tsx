@@ -278,9 +278,7 @@ const BuyForm = ({
               },
             })}
           />
-          <div className="absolute right-0 mr-[10px]">
-            {constants?.tokenSymbol}
-          </div>
+          <div className="absolute right-0 mr-[10px]">{baseSymbol}</div>
         </div>
         <input
           className="mb-[10px] mt-[30px] w-full"
