@@ -10,10 +10,8 @@ import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
-import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useWallet } from "lib/state/wallet";
 import { isScalarRangeType } from "lib/types";
-import { formatNumberLocalized } from "lib/util";
 import { getCurrentPrediction } from "lib/util/assets";
 import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { perbillToNumber } from "lib/util/perbill-to-number";
@@ -21,6 +19,8 @@ import { FC, PropsWithChildren, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { ScoringRule } from "@zeitgeistpm/indexer";
 import LiquidityModalAmm2 from "./LiquidityModalAmm2";
+import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 export const MarketLiquiditySection = ({
   market,
@@ -91,9 +91,9 @@ const LiquidityHeaderButtonItem: FC<
 
 const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { pool, neoPool } = market;
-  const { data: liquidity } = usePoolLiquidity(
-    pool?.poolId ? { poolId: pool.poolId } : undefined,
-  );
+
+  const { data: stats } = useMarketsStats([market.marketId]);
+  const liquidity = new Decimal(stats?.[0].liquidity ?? 0);
 
   const swapFee = new Decimal(Number(pool?.swapFee ?? neoPool?.swapFee ?? 0))
     .div(ZTG)
@@ -101,8 +101,8 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
     .toNumber();
   const creatorFee = perbillToNumber(market?.creatorFee ?? 0) * 100;
 
-  const baseAssetId = pool?.baseAsset
-    ? parseAssetId(pool.baseAsset).unrightOr(undefined)
+  const baseAssetId = market?.baseAsset
+    ? parseAssetId(market.baseAsset).unrightOr(undefined)
     : undefined;
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
@@ -129,7 +129,7 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           label="Pool Value"
           className="border-b-1 sm:border-b-0 sm:border-r-1 md:mr-6"
         >
-          {formatNumberLocalized(liquidity?.div(ZTG).abs().toNumber() ?? 0)}{" "}
+          {formatNumberCompact(liquidity?.div(ZTG).abs().toNumber() ?? 0)}{" "}
           {metadata?.symbol}
         </LiquidityHeaderTextItem>
         <LiquidityHeaderTextItem
