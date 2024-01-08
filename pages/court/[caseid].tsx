@@ -453,25 +453,29 @@ const Votes = ({
 }) => {
   const votes = market.categories
     ?.map((category, index) => {
-      const count =
-        selectedDraws?.filter(
-          (draw) =>
-            draw.vote.isRevealed &&
-            draw.vote.asRevealed.voteItem.isOutcome &&
-            draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber() ===
-              index,
-        )?.length ?? 0;
+      const draws = selectedDraws?.filter(
+        (draw) =>
+          draw.vote.isRevealed &&
+          draw.vote.asRevealed.voteItem.isOutcome &&
+          draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber() ===
+            index,
+      );
 
-      return { category, count };
+      const weight =
+        draws?.reduce((acc, draw) => {
+          return acc + draw.weight.toNumber();
+        }, 0) ?? 0;
+
+      return { category, weight };
     })
-    .sort((a, b) => b.count - a.count);
+    .sort((a, b) => b.weight - a.weight);
 
-  const sortedVotes = sortBy(votes, "count").reverse();
+  const sortedVotes = sortBy(votes, "weight").reverse();
 
   const showLeaderIndicator =
     isRevealed &&
-    votes?.some((vote) => vote.count > 0) &&
-    sortedVotes?.[0]?.count > sortedVotes?.[1]?.count;
+    votes?.some((vote) => vote.weight > 0) &&
+    sortedVotes?.[0]?.weight > sortedVotes?.[1]?.weight;
 
   return (
     <div
@@ -479,9 +483,7 @@ const Votes = ({
         showLeaderIndicator && isRevealed && "[&>*:first-child]:bg-green-200"
       }`}
     >
-      {sortedVotes?.map(({ category, count }, index) => {
-        const leader = votes?.[0];
-
+      {sortedVotes?.map(({ category, weight }, index) => {
         return (
           <div
             key={category.ticker}
@@ -496,7 +498,7 @@ const Votes = ({
             )}
             <div className="rounded-top-md flex items-center gap-2 overflow-hidden bg-gray-500 bg-opacity-10">
               <div className="flex-1 p-3 font-semibold">Outcome</div>
-              <div className="flex-1 p-3 font-semibold">Votes</div>
+              <div className="flex-1 p-3 font-semibold">Weight</div>
             </div>
 
             <div className="flex h-fit flex-1 cursor-default items-center gap-2 text-sm">
@@ -507,7 +509,7 @@ const Votes = ({
               </div>
               <div className="flex-1 p-3">
                 {isRevealed ? (
-                  count
+                  weight
                 ) : (
                   <span className="text-gray-400">secret</span>
                 )}
