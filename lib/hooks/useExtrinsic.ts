@@ -61,7 +61,7 @@ export const useExtrinsic = <T>(
 
     if (proxy?.enabled && proxy?.address) {
       console.info("Proxying transaction");
-      extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, "Any", extrinsic);
+      extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, null, extrinsic);
     }
 
     setIsLoading(true);
@@ -110,7 +110,10 @@ export const useExtrinsic = <T>(
         },
       }),
       IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
-    ).catch(() => {
+    ).catch((error) => {
+      notifications.pushNotification(error?.toString() ?? "Unknown Error", {
+        type: "Error",
+      });
       setIsBroadcasting(false);
       setIsLoading(false);
     });
