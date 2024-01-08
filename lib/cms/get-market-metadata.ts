@@ -1,78 +1,55 @@
-import { Client, isFullPage } from "@notionhq/client";
-import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
-
-const notion = new Client({ auth: process.env.NOTION_API_KEY });
-const DB_ID = "e725c0b99674440590d3d5d694960172";
+import { Client } from "@notionhq/client";
+import groq from "groq";
+import { sanity } from "./sanity";
+import type { PortableTextBlock } from "@portabletext/types";
 
 export type CmsMarketMetadata = {
   marketId?: number | null;
+  question?: string;
+  description?: PortableTextBlock[];
   imageUrl?: string | null;
-  referendumIndex?: number | null;
+  referendumRef?: {
+    chain?: "polkadot" | "kusama";
+    referendumIndex?: number;
+  };
 };
 
+const fields = groq`{
+  "marketId": market.marketId,
+  question,
+  description,
+  "imageUrl": img.asset->url,
+  referendumRef,
+}`;
+
 export const getCmsMarketMetadataForMarket = async (
-  marketIds: number,
+  marketId: number,
 ): Promise<CmsMarketMetadata | null> => {
-  return getCmsMarketMetadataForMarkets([marketIds]).then(
-    (mm) => mm?.[0] ?? null,
+  const data = await sanity.fetch<CmsMarketMetadata>(
+    groq`*[_type == "marketMetadata" && market.marketId == ${marketId}]${fields}`,
   );
+
+  return data?.[0];
 };
 
 export const getCmsMarketMetadataForMarkets = async (
   marketIds: number[],
 ): Promise<CmsMarketMetadata[]> => {
-  if (!process.env.NOTION_API_KEY) {
-    throw new Error("Missing NOTION_API_KEY");
-  }
+  const data = await sanity.fetch<CmsMarketMetadata[]>(
+    groq`*[_type == "marketMetadata" && market.marketId in ${JSON.stringify(
+      marketIds,
+    )}]${fields}`,
+  );
 
-  const { results: marketMetadata } = await notion.databases.query({
-    database_id: DB_ID,
-    filter: {
-      property: "Environment",
-      multi_select: {
-        contains: process.env.NEXT_PUBLIC_VERCEL_ENV!,
-      },
-      or: marketIds.map((marketId) => ({
-        property: "MarketId",
-        number: {
-          equals: Number(marketId),
-        },
-      })),
-    },
-  });
-
-  return marketMetadata.filter(isFullPage).map(parseMarketMetaData) ?? null;
+  return data;
 };
 
 export const getCmsMarketMetadataForAllMarkets = async (): Promise<
   CmsMarketMetadata[]
 > => {
-  if (!process.env.NOTION_API_KEY) {
-    throw new Error("Missing NOTION_API_KEY");
-  }
+  const data = await sanity.fetch<CmsMarketMetadata[]>(
+    groq`*[_type == "marketMetadata"]${fields}`,
+  );
 
-  const { results: marketMetadata } = await notion.databases.query({
-    database_id: DB_ID,
-  });
-
-  return marketMetadata?.filter(isFullPage).map(parseMarketMetaData) ?? [];
-};
-
-export const parseMarketMetaData = (data: PageObjectResponse) => {
-  const promotedMarket: CmsMarketMetadata = {};
-
-  if (data.properties.MarketId.type === "number") {
-    promotedMarket.marketId = data.properties.MarketId.number ?? null;
-  }
-
-  if (data.properties.Image.type === "url") {
-    promotedMarket.imageUrl = data.properties.Image.url ?? null;
-  }
-
-  if (data.properties.ReferendumIndex.type === "number") {
-    promotedMarket.referendumIndex =
-      data.properties.ReferendumIndex.number ?? null;
-  }
-
-  return promotedMarket;
+  return data;
 };

@@ -15,9 +15,12 @@ import { CourtVoteRevealForm } from "components/court/CourtVoteRevealForm";
 import { SelectedDrawsTable } from "components/court/SelectedDrawsTable";
 import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
 import { AddressDetails } from "components/markets/MarketAddresses";
+import { MarketDescription } from "components/markets/MarketDescription";
 import { HeaderStat } from "components/markets/MarketHeader";
+import { getCmsMarketMetadataForMarket } from "lib/cms/get-market-metadata";
 import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { useCourtCase } from "lib/hooks/queries/court/useCourtCases";
 import { useCourtVoteDrawsForCase } from "lib/hooks/queries/court/useCourtVoteDraws";
@@ -25,7 +28,6 @@ import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketImage } from "lib/hooks/useMarketImage";
-import { useChainTime } from "lib/state/chaintime";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 import { useCourtSalt } from "lib/state/court/useCourtSalt";
 import { useCourtStage } from "lib/state/court/useCourtStage";
@@ -70,6 +72,11 @@ export async function getStaticProps({
   ]);
 
   const marketId = await sdk.api.query.court.courtIdToMarketId(params.caseid);
+
+  const cmsMetadata = await getCmsMarketMetadataForMarket(
+    marketId.unwrap().toNumber(),
+  );
+
   const markets = marketId.isSome
     ? await sdk.indexer.markets({
         where: {
@@ -79,6 +86,20 @@ export async function getStaticProps({
     : undefined;
 
   const market = markets?.markets[0];
+
+  if (market) {
+    if (cmsMetadata?.imageUrl) {
+      market.img = cmsMetadata?.imageUrl;
+    }
+
+    if (cmsMetadata?.question) {
+      market.question = cmsMetadata?.question;
+    }
+
+    if (cmsMetadata?.description) {
+      (market.description as any) = cmsMetadata?.description;
+    }
+  }
 
   return {
     props: {
@@ -121,7 +142,6 @@ const CasePage: NextPage = ({
   const router = useRouter();
 
   const wallet = useWallet();
-  const time = useChainTime();
 
   const { caseid } = router.query;
   const caseId = Number(caseid);
@@ -310,6 +330,8 @@ const CasePage: NextPage = ({
         : undefined,
   });
 
+  const { data: marketCmsData } = useMarketCmsMetadata(market.marketId);
+
   return (
     <div className="relative mt-6 flex flex-auto gap-12">
       <main className="flex-1">
@@ -337,7 +359,9 @@ const CasePage: NextPage = ({
               </div>
             </div>
             <div>
-              <h1 className="text-[32px] font-extrabold">{market?.question}</h1>
+              <h1 className="text-[32px] font-extrabold">
+                {marketCmsData?.question ?? market?.question}
+              </h1>
 
               <div className="mb-2 flex flex-wrap items-center gap-2 lg:pl-1">
                 <HeaderStat label="Started">
@@ -410,11 +434,9 @@ const CasePage: NextPage = ({
             <CourtStageTimer caseId={caseId} market={market} />
           </div>
 
-          {market.description && (
-            <div className="mb-8">
-              <QuillViewer value={market.description} />
-            </div>
-          )}
+          <div className="mb-4">
+            <MarketDescription market={market} />
+          </div>
 
           {stage?.type !== "reassigned" && (
             <>

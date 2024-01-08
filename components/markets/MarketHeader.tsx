@@ -44,6 +44,8 @@ import { MarketDispute } from "lib/types/markets";
 import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
 import CourtStageTimer from "components/court/CourtStageTimer";
 import { useMarketImage } from "lib/hooks/useMarketImage";
+import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
+import { isMarketImageBase64Encoded } from "lib/types/create-market";
 
 export const UserIdentity: FC<
   PropsWithChildren<{
@@ -390,7 +392,14 @@ const MarketHeader: FC<{
 
   const { data: caseId } = useMarketCaseId(market.marketId);
 
-  const { data: marketImage } = useMarketImage(market);
+  const { data: marketImage } = useMarketImage(market, {
+    fallback:
+      market.img &&
+      isAbsoluteUrl(market.img) &&
+      !isMarketImageBase64Encoded(market.img)
+        ? market.img
+        : undefined,
+  });
 
   return (
     <header className="flex w-full flex-col gap-4">

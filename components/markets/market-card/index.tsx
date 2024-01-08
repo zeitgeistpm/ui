@@ -16,13 +16,12 @@ import {
   IOForeignAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
-import { CATEGORY_IMAGES } from "lib/constants/category-images";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
-import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
+import { useMarketImage } from "lib/hooks/useMarketImage";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import Image from "next/image";
-import { useMarketImage } from "lib/hooks/useMarketImage";
+import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -236,6 +235,8 @@ export const MarketCard = ({
     },
   );
 
+  const { data: cmsMetadata } = useMarketCmsMetadata(marketId);
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
@@ -271,7 +272,7 @@ export const MarketCard = ({
               />
             </div>
             <h5 className="line-clamp-2 h-fit w-full text-base duration-200">
-              {question}
+              {cmsMetadata?.question ?? question}
             </h5>
           </div>
 

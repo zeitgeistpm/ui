@@ -4,6 +4,7 @@ import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
 import { marketMetaFilter } from "./constants";
 import { MarketDispute } from "lib/types/markets";
+import type { PortableTextBlock } from "@portabletext/types";
 
 const marketIdsQuery = gql`
   query MarketIds($end: BigInt) {
@@ -87,7 +88,7 @@ export interface MarketPageIndexedData {
   marketId: number;
   slug: string;
   question: string;
-  description: string;
+  description: string | PortableTextBlock[];
   status: MarketStatus;
   period: {
     block: string[];
@@ -125,6 +126,7 @@ export interface MarketPageIndexedData {
   tags: [];
   baseAsset: string;
   disputeMechanism: "SimpleDisputes" | "Authorized" | "Court";
+  img?: string;
 }
 
 export const getRecentMarketIds = async (

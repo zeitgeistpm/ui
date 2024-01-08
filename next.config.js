@@ -12,6 +12,7 @@ module.exports = withPlaiceholder({
       "ipfs-gateway.zeitgeist.pm",
       "cdn.discordapp.com",
       "images.unsplash.com",
+      "cdn.sanity.io",
     ],
   },
   staticPageGenerationTimeout: 300, //5 mins

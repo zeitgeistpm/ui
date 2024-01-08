@@ -10,8 +10,6 @@ export const marketCmsDatakeyForMarket = (marketId: string | number) => [
 ];
 
 export const useMarketCmsMetadata = (marketId: string | number) => {
-  const queryClient = useQueryClient();
-
   return useQuery<CmsMarketMetadata | null>(
     marketCmsDatakeyForMarket(marketId),
     async () => {
