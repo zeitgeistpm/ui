@@ -114,7 +114,7 @@ describe("amm2", () => {
       expect(amounts[2].toNumber()).toEqual(100_0000000000);
     });
 
-    test.only("should work for uneven prices for binary markets", () => {
+    test("should work for uneven prices for binary markets", () => {
       const amounts = calculatePoolAmounts(new Decimal(100 * 10 ** 10), [
         new Decimal(0.3),
         new Decimal(0.7),
@@ -124,7 +124,7 @@ describe("amm2", () => {
       expect(amounts[1].toFixed(0)).toEqual("1000000000000");
     });
 
-    test.only("should work for uneven prices for binary markets 2", () => {
+    test("should work for uneven prices for binary markets 2", () => {
       const amounts = calculatePoolAmounts(new Decimal(100 * 10 ** 10), [
         new Decimal(0.9),
         new Decimal(0.1),
@@ -134,7 +134,7 @@ describe("amm2", () => {
       expect(amounts[1].toFixed(0)).toEqual("21854345326783");
     });
 
-    test.only("should work for uneven prices for multi markets 2", () => {
+    test("should work for uneven prices for multi markets 2", () => {
       const amounts = calculatePoolAmounts(new Decimal(100 * 10 ** 10), [
         new Decimal(0.3),
         new Decimal(0.1),
