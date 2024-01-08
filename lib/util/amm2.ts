@@ -107,7 +107,7 @@ export const calculatePoolAmounts = (
   baseAmount: Decimal,
   spotPrices: Decimal[],
 ) => {
-  const logPrices = spotPrices.map((spotPrice) => spotPrice.ln());
+  const logPrices = spotPrices.map((spotPrice) => spotPrice.ln().abs());
   const maxLogPrice = logPrices.reduce<Decimal | null>(
     (maxPrice, price) =>
       maxPrice && maxPrice.greaterThan(price) ? maxPrice : price,

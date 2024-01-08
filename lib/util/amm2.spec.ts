@@ -120,8 +120,8 @@ describe("amm2", () => {
         new Decimal(0.7),
       ]);
 
-      expect(amounts[0].toFixed(0)).toEqual("3375546347693");
-      expect(amounts[1].toFixed(0)).toEqual("1000000000000");
+      expect(amounts[0].toFixed(0)).toEqual("1000000000000");
+      expect(amounts[1].toFixed(0)).toEqual("296248339379");
     });
 
     test("should work for uneven prices for binary markets 2", () => {
@@ -130,8 +130,8 @@ describe("amm2", () => {
         new Decimal(0.1),
       ]);
 
-      expect(amounts[0].toFixed(0)).toEqual("1000000000000");
-      expect(amounts[1].toFixed(0)).toEqual("21854345326783");
+      expect(amounts[0].toFixed(0)).toEqual("45757490561");
+      expect(amounts[1].toFixed(0)).toEqual("1000000000000");
     });
 
     test("should work for uneven prices for multi markets 2", () => {
@@ -141,9 +141,9 @@ describe("amm2", () => {
         new Decimal(0.6),
       ]);
 
-      expect(amounts[0].toFixed(0)).toEqual("2356915448857");
-      expect(amounts[1].toFixed(0)).toEqual("4507575551944");
-      expect(amounts[2].toFixed(0)).toEqual("1000000000000");
+      expect(amounts[0].toFixed(0)).toEqual("522878745280");
+      expect(amounts[1].toFixed(0)).toEqual("1000000000000");
+      expect(amounts[2].toFixed(0)).toEqual("221848749616");
     });
   });
 
