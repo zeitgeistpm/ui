@@ -102,3 +102,20 @@ export const approximateMaxAmountInForSell = (
         0.538594836861739279),
   );
 };
+
+export const calculatePoolAmounts = (
+  baseAmount: Decimal,
+  spotPrices: Decimal[],
+) => {
+  const logPrices = spotPrices.map((spotPrice) => spotPrice.ln());
+  const maxLogPrice = logPrices.reduce<Decimal | null>(
+    (maxPrice, price) =>
+      maxPrice && maxPrice.greaterThan(price) ? maxPrice : price,
+    null,
+  );
+
+  const liquidityParam = baseAmount.div(maxLogPrice ?? 0);
+  const poolAmounts = logPrices.map((price) => price.mul(liquidityParam));
+
+  return poolAmounts;
+};
