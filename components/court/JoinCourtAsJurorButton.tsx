@@ -135,8 +135,6 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
               : "Become a Juror"}
           </h3>
 
-          {balance.toString()}
-
           <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
             <form
               onSubmit={handleSubmit(onSubmit)}
