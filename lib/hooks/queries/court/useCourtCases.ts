@@ -3,8 +3,9 @@ import { isRpcSdk } from "@zeitgeistpm/sdk";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { ZrmlCourtCourtInfo } from "@polkadot/types/lookup";
+import { isNumber } from "lodash-es";
 
-export const courtCasesRootKey = "court-cases";
+export const courtCaseRootKey = "court-case";
 
 export type CourtCaseInfo = {
   id: number;
@@ -17,7 +18,7 @@ export const useCourtCases = () => {
   const enabled = !!sdk && isRpcSdk(sdk);
 
   const query = useQuery<CourtCaseInfo[]>(
-    [id, courtCasesRootKey],
+    [id, courtCaseRootKey, "all"],
     async () => {
       if (!enabled) return [];
 
@@ -40,6 +41,31 @@ export const useCourtCases = () => {
     },
     {
       enabled: enabled,
+    },
+  );
+
+  return query;
+};
+
+export const useCourtCase = (caseId?: number) => {
+  const [sdk, id] = useSdkv2();
+
+  const enabled = !!sdk && isRpcSdk(sdk) && isNumber(caseId);
+
+  const query = useQuery<ZrmlCourtCourtInfo | undefined>(
+    [id, courtCaseRootKey, caseId],
+    async () => {
+      if (!enabled) return;
+
+      const res = await sdk.api.query.court.courts(caseId);
+      const courtCase = res.unwrapOr(null);
+
+      if (!courtCase) return;
+
+      return courtCase;
+    },
+    {
+      enabled: Boolean(enabled),
     },
   );
 

@@ -30,6 +30,8 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { ISubmittableResult } from "@polkadot/types/types";
+import { perbillToNumber } from "lib/util/perbill-to-number";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 
 const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
@@ -66,6 +68,12 @@ const SellForm = ({
   });
   const wallet = useWallet();
   const { data: pool } = useAmm2Pool(marketId);
+  const baseAsset = parseAssetIdString(market?.baseAsset);
+  const { data: assetMetadata } = useAssetMetadata(baseAsset);
+  const baseSymbol = assetMetadata?.symbol;
+
+  const swapFee = pool?.swapFee.div(ZTG);
+  const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
 
   const outcomeAssets = market?.outcomeAssets.map(
     (assetIdString) =>
@@ -97,13 +105,13 @@ const SellForm = ({
 
   const { amountOut, newSpotPrice, priceImpact, minAmountOut } = useMemo(() => {
     const amountOut =
-      assetReserve && pool.liquidity
+      assetReserve && pool.liquidity && swapFee
         ? calculateSwapAmountOutForSell(
             assetReserve,
             amountIn,
             pool.liquidity,
-            new Decimal(0),
-            new Decimal(0),
+            swapFee,
+            creatorFee,
           )
         : new Decimal(0);
 
@@ -255,7 +263,7 @@ const SellForm = ({
         <div className="text-sm">For</div>
         <div className="flex w-full items-center justify-center font-mono">
           <div className="mr-4">{amountOut.div(ZTG).abs().toFixed(3)}</div>
-          <div className="mr-[10px]">{constants?.tokenSymbol}</div>
+          <div className="mr-[10px]">{baseSymbol}</div>
         </div>
         <input
           className="mb-[10px] mt-[30px] w-full"

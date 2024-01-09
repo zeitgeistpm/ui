@@ -42,7 +42,6 @@ import { MarketPromotionCallout } from "./PromotionCallout";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { MarketDispute } from "lib/types/markets";
 import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
 import CourtStageTimer from "components/court/CourtStageTimer";
 
 export const UserIdentity: FC<
