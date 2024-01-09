@@ -1,7 +1,6 @@
-import { Client } from "@notionhq/client";
+import type { PortableTextBlock } from "@portabletext/types";
 import groq from "groq";
 import { sanity } from "./sanity";
-import type { PortableTextBlock } from "@portabletext/types";
 
 export type CmsMarketMetadata = {
   marketId?: number | null;

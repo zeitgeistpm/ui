@@ -1,8 +1,9 @@
 import { createClient, type ClientConfig } from "@sanity/client";
 import { environment } from "lib/constants";
 
-const PROJECT_ID = "4wbnjof1";
-const VERSION = "2022-03-07";
+const PROJECT_ID = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+const VERSION = process.env.NEXT_PUBLIC_SANITY_VERSION;
+
 const DATASET = environment === "production" ? "mainnet" : "bsr";
 
 const config: ClientConfig = {
