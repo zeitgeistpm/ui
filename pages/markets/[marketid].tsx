@@ -453,7 +453,7 @@ const Market: NextPage<MarketPageProps> = ({
               )}
             </div>
             {referendumIndex != null && (
-              <div className="mb-12 ">
+              <div className="mb-12 animate-pop-in opacity-0">
                 <ReferendumSummary referendumIndex={referendumIndex} />
               </div>
             )}
@@ -732,7 +732,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
                 Oracle failed to report. Reporting is now open to all.
               </p>
               <p className="mb-6 text-sm">
-                Bond cost: ${chainConstants?.markets.outsiderBond}{" "}
+                Bond cost: {chainConstants?.markets.outsiderBond}{" "}
                 {chainConstants?.tokenSymbol}
               </p>
             </>
