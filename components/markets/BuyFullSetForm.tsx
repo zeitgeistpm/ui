@@ -18,8 +18,8 @@ import {
 } from "lib/constants/supported-currencies";
 import Image from "next/image";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
-import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { formatNumberCompact } from "lib/util/format-compact";
+import { useMarket } from "lib/hooks/queries/useMarket";
 
 const BuyFullSetForm = ({
   marketId,
@@ -32,10 +32,11 @@ const BuyFullSetForm = ({
   const wallet = useWallet();
   const notificationStore = useNotifications();
 
+  const { data: market } = useMarket({ marketId: marketId });
   const { data: pool } = usePool({ marketId: marketId });
 
-  const baseAssetId = pool?.baseAsset
-    ? parseAssetId(pool.baseAsset).unrightOr(undefined)
+  const baseAssetId = market?.baseAsset
+    ? parseAssetId(market.baseAsset).unrightOr(undefined)
     : undefined;
 
   const { data: metadata } = useAssetMetadata(baseAssetId);

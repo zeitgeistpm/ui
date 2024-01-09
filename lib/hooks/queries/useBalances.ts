@@ -16,7 +16,7 @@ export const useBalances = (
   const queries = useQueries({
     queries: assetIds.map((assetId) => {
       return {
-        queryKey: [id, balanceRootKey, "free", address, assetId, blockNumber],
+        queryKey: [id, balanceRootKey, address, assetId, blockNumber],
         queryFn: async () => {
           if (address && assetId && isRpcSdk(sdk)) {
             const api = await getApiAtBlock(sdk.api, blockNumber);

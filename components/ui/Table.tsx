@@ -525,7 +525,7 @@ const Table = ({
 
           {!loadingMore && rows.length === 0 ? (
             <div className="flex w-full justify-center">
-              <div className="mt-14 font-bold">{noDataMessage}</div>
+              <div className="my-8 font-bold">{noDataMessage}</div>
             </div>
           ) : (
             <></>
