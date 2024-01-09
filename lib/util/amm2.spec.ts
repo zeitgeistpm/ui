@@ -5,6 +5,7 @@ import {
   approximateMaxAmountInForBuy,
   calculateSwapAmountOutForBuy,
   calculateSwapAmountOutForSell,
+  calculatePoolAmounts,
 } from "./amm2";
 
 // test cases copied from https://github.com/zeitgeistpm/zeitgeist/blob/f0586d32c692f738b04d03bec4e59a73d6899182/zrml/neo-swaps/src/math.rs
@@ -87,6 +88,62 @@ describe("amm2", () => {
       );
 
       expect(amountOut.toFixed(0)).toEqual("4867389110738");
+    });
+  });
+
+  describe("calculatePoolAmounts", () => {
+    test("should work for even prices for binary markets", () => {
+      const amounts = calculatePoolAmounts(new Decimal(100 * 10 ** 10), [
+        new Decimal(0.5),
+        new Decimal(0.5),
+      ]);
+
+      expect(amounts[0].toNumber()).toEqual(100_0000000000);
+      expect(amounts[1].toNumber()).toEqual(100_0000000000);
+    });
+
+    test("should work for even prices for multi markets", () => {
+      const amounts = calculatePoolAmounts(new Decimal(100 * 10 ** 10), [
+        new Decimal(0.33),
+        new Decimal(0.33),
+        new Decimal(0.33),
+      ]);
+
+      expect(amounts[0].toNumber()).toEqual(100_0000000000);
+      expect(amounts[1].toNumber()).toEqual(100_0000000000);
+      expect(amounts[2].toNumber()).toEqual(100_0000000000);
+    });
+
+    test("should work for uneven prices for binary markets", () => {
+      const amounts = calculatePoolAmounts(new Decimal(100 * 10 ** 10), [
+        new Decimal(0.3),
+        new Decimal(0.7),
+      ]);
+
+      expect(amounts[0].toFixed(0)).toEqual("1000000000000");
+      expect(amounts[1].toFixed(0)).toEqual("296248339379");
+    });
+
+    test("should work for uneven prices for binary markets 2", () => {
+      const amounts = calculatePoolAmounts(new Decimal(100 * 10 ** 10), [
+        new Decimal(0.9),
+        new Decimal(0.1),
+      ]);
+
+      expect(amounts[0].toFixed(0)).toEqual("45757490561");
+      expect(amounts[1].toFixed(0)).toEqual("1000000000000");
+    });
+
+    test("should work for uneven prices for multi markets 2", () => {
+      const amounts = calculatePoolAmounts(new Decimal(100 * 10 ** 10), [
+        new Decimal(0.3),
+        new Decimal(0.1),
+        new Decimal(0.6),
+      ]);
+
+      expect(amounts[0].toFixed(0)).toEqual("522878745280");
+      expect(amounts[1].toFixed(0)).toEqual("1000000000000");
+      expect(amounts[2].toFixed(0)).toEqual("221848749616");
     });
   });
 
