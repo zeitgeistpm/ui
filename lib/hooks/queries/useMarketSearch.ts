@@ -3,7 +3,11 @@ import { isIndexedSdk } from "@zeitgeistpm/sdk";
 import Fuse from "fuse.js";
 import { useDebounce } from "use-debounce";
 import { useSdkv2 } from "../useSdkv2";
-import { MarketOrderByInput } from "@zeitgeistpm/indexer";
+import {
+  MarketOrderByInput,
+  InputMaybe,
+  MarketWhereInput,
+} from "@zeitgeistpm/indexer";
 import { isWSX, wsxID } from "lib/constants";
 
 export const marketSearchKey = "market-search";
@@ -46,12 +50,13 @@ export const useMarketSearch = (searchTerm: string) => {
             //matches in the question are consisdered more important than description, slightly favour active markets
             {
               name: "question",
-              weight: 3,
+              weight: 4,
             },
             {
               name: "description",
-              weight: 1,
+              weight: 2,
             },
+            { name: "marketId", weight: 1 },
             { name: "status", weight: 0.2 },
           ],
         });
@@ -77,10 +82,19 @@ export const useMarketSearch = (searchTerm: string) => {
 };
 
 const buildSearch = (searchTerm: string) => {
-  const search = searchTerm
+  let search: InputMaybe<MarketWhereInput[]>;
+
+  const [_, marketId] = searchTerm.match(/id\:([0-9]+)/) || [];
+
+  if (marketId) {
+    search = [{ marketId_eq: Number(marketId) }];
+    return search;
+  }
+
+  search = searchTerm
     .trim()
     .split(" ")
-    .map((word) => [
+    .map((word): MarketWhereInput[] => [
       { question_containsInsensitive: word },
       { description_containsInsensitive: word },
     ])
