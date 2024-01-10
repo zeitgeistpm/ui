@@ -16,7 +16,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 const DelegateButton = ({ address }: { address: string }) => {
@@ -37,9 +37,15 @@ const DelegateButton = ({ address }: { address: string }) => {
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
   const wallet = useWallet();
-  const { data: balance } = useZtgBalance(wallet.realAddress);
+  const { data: freeZtgBalance } = useZtgBalance(wallet.realAddress);
   const connectedParticipant = useConnectedCourtParticipant();
   const queryClient = useQueryClient();
+
+  const balance = useMemo(() => {
+    return new Decimal(freeZtgBalance ?? 0).plus(
+      connectedParticipant?.stake ?? 0,
+    );
+  }, [freeZtgBalance, connectedParticipant?.stake]);
 
   const { isLoading, send, fee } = useExtrinsic(
     () => {
