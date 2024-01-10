@@ -1,4 +1,5 @@
 import { GenericChainProperties } from "@polkadot/types";
+import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
 import { BgBallGfx } from "components/front-page/BgBallFx";
 import GettingStartedSection from "components/front-page/GettingStartedSection";
@@ -13,27 +14,27 @@ import WatchHow from "components/front-page/WatchHow";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
+import { getCmsMarketMetadataForAllMarkets } from "lib/cms/get-market-metadata";
 import { getNews, News } from "lib/cms/get-news";
 import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
+import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import {
   getZTGHistory,
   ZtgPriceHistory,
 } from "lib/hooks/queries/useAssetUsdPrice";
+import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
 import { NextPage } from "next";
-
+import Link from "next/link";
 import path from "path";
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
-import { dehydrate, QueryClient } from "@tanstack/react-query";
-import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
-import Link from "next/link";
 
 const getPlaiceholders = (
   paths: string[],
@@ -61,6 +62,7 @@ export async function getStaticProps() {
     stats,
     ztgHistory,
     chainProperties,
+    marketsCmsData,
   ] = await Promise.all([
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
@@ -75,6 +77,7 @@ export async function getStaticProps() {
     getNetworkStats(sdk),
     getZTGHistory(),
     sdk.api.rpc.system.properties(),
+    getCmsMarketMetadataForAllMarkets(),
   ]);
 
   const queryClient = new QueryClient();
@@ -82,6 +85,22 @@ export async function getStaticProps() {
   await queryClient.prefetchQuery([categoryCountsKey], () =>
     getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
   );
+
+  for (const marketCmsData of marketsCmsData) {
+    if (marketCmsData.marketId) {
+      queryClient.setQueryData(
+        marketCmsDatakeyForMarket(marketCmsData.marketId),
+        marketCmsData,
+      );
+    }
+  }
+
+  for (const market of [...featuredMarkets, ...trendingMarkets]) {
+    const cmsData = marketsCmsData.find((m) => m.marketId === market.marketId);
+    if (cmsData?.imageUrl) {
+      market.img = cmsData.imageUrl;
+    }
+  }
 
   return {
     props: {
