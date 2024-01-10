@@ -15,25 +15,30 @@ import { CourtVoteRevealForm } from "components/court/CourtVoteRevealForm";
 import { SelectedDrawsTable } from "components/court/SelectedDrawsTable";
 import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
 import { AddressDetails } from "components/markets/MarketAddresses";
+import { MarketDescription } from "components/markets/MarketDescription";
 import { HeaderStat } from "components/markets/MarketHeader";
+import { getCmsMarketMetadataForMarket } from "lib/cms/get-market-metadata";
 import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { useCourtCase } from "lib/hooks/queries/court/useCourtCases";
 import { useCourtVoteDrawsForCase } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
-import { useChainTime } from "lib/state/chaintime";
+import { useMarketImage } from "lib/hooks/useMarketImage";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 import { useCourtSalt } from "lib/state/court/useCourtSalt";
 import { useCourtStage } from "lib/state/court/useCourtStage";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
 import { useWallet } from "lib/state/wallet";
 import { isMarketCategoricalOutcome } from "lib/types";
+import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { calculateSlashableStake } from "lib/util/court/calculateSlashableStake";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { sortBy } from "lodash-es";
+import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -67,6 +72,11 @@ export async function getStaticProps({
   ]);
 
   const marketId = await sdk.api.query.court.courtIdToMarketId(params.caseid);
+
+  const cmsMetadata = await getCmsMarketMetadataForMarket(
+    marketId.unwrap().toNumber(),
+  );
+
   const markets = marketId.isSome
     ? await sdk.indexer.markets({
         where: {
@@ -76,6 +86,20 @@ export async function getStaticProps({
     : undefined;
 
   const market = markets?.markets[0];
+
+  if (market) {
+    if (cmsMetadata?.imageUrl) {
+      market.img = cmsMetadata?.imageUrl;
+    }
+
+    if (cmsMetadata?.question) {
+      market.question = cmsMetadata?.question;
+    }
+
+    if (cmsMetadata?.description) {
+      (market.description as any) = cmsMetadata?.description;
+    }
+  }
 
   return {
     props: {
@@ -118,7 +142,6 @@ const CasePage: NextPage = ({
   const router = useRouter();
 
   const wallet = useWallet();
-  const time = useChainTime();
 
   const { caseid } = router.query;
   const caseId = Number(caseid);
@@ -298,6 +321,17 @@ const CasePage: NextPage = ({
     </>
   );
 
+  const { data: marketImage } = useMarketImage(market, {
+    fallback:
+      market.img &&
+      isAbsoluteUrl(market.img) &&
+      !isMarketImageBase64Encoded(market.img)
+        ? market.img
+        : undefined,
+  });
+
+  const { data: marketCmsData } = useMarketCmsMetadata(market.marketId);
+
   return (
     <div className="relative mt-6 flex flex-auto gap-12">
       <main className="flex-1">
@@ -308,30 +342,51 @@ const CasePage: NextPage = ({
             </Link>
             <h2 className="text-base font-normal">Case — #{caseId}</h2>
           </div>
-          <h1 className="text-[32px] font-extrabold">{market?.question}</h1>
+          <div className="flex items-center gap-3">
+            <div className="hidden lg:block">
+              <div className="relative h-16 w-16 overflow-hidden rounded-lg">
+                <Image
+                  alt={"Market image"}
+                  src={marketImage}
+                  fill
+                  className="overflow-hidden rounded-lg"
+                  style={{
+                    objectFit: "cover",
+                    objectPosition: "50% 50%",
+                  }}
+                  sizes={"100px"}
+                />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-[32px] font-extrabold">
+                {marketCmsData?.question ?? market?.question}
+              </h1>
 
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <HeaderStat label="Started">
-              {new Intl.DateTimeFormat("default", {
-                dateStyle: "medium",
-              }).format(market.period.start)}
-            </HeaderStat>
-            <HeaderStat label="Ended">
-              {new Intl.DateTimeFormat("default", {
-                dateStyle: "medium",
-              }).format(market.period.end)}
-            </HeaderStat>
-            <HeaderStat label="Reported Outcome">
-              {reportedOutcome !== undefined
-                ? market.categories?.[reportedOutcome].name
-                : "-"}
-            </HeaderStat>
-            <HeaderStat
-              label={`Slashable ${chainConstants?.tokenSymbol}`}
-              border={false}
-            >
-              {formatNumberCompact(totalSlashableStake)}
-            </HeaderStat>
+              <div className="mb-2 flex flex-wrap items-center gap-2 lg:pl-1">
+                <HeaderStat label="Started">
+                  {new Intl.DateTimeFormat("default", {
+                    dateStyle: "medium",
+                  }).format(market.period.start)}
+                </HeaderStat>
+                <HeaderStat label="Ended">
+                  {new Intl.DateTimeFormat("default", {
+                    dateStyle: "medium",
+                  }).format(market.period.end)}
+                </HeaderStat>
+                <HeaderStat label="Reported Outcome">
+                  {reportedOutcome !== undefined
+                    ? market.categories?.[reportedOutcome].name
+                    : "-"}
+                </HeaderStat>
+                <HeaderStat
+                  label={`Slashable ${chainConstants?.tokenSymbol}`}
+                  border={false}
+                >
+                  {formatNumberCompact(totalSlashableStake)}
+                </HeaderStat>
+              </div>
+            </div>
           </div>
 
           <Link
@@ -389,11 +444,9 @@ const CasePage: NextPage = ({
             )}
           </div>
 
-          {market.description && (
-            <div className="mb-8">
-              <QuillViewer value={market.description} />
-            </div>
-          )}
+          <div className="mb-4">
+            <MarketDescription market={market} />
+          </div>
 
           {stage?.type !== "reassigned" && (
             <>
