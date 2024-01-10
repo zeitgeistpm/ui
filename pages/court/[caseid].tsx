@@ -396,42 +396,52 @@ const CasePage: NextPage = ({
             View Market
           </Link>
 
-          <div className="relative mb-6 flex items-center gap-3">
-            <AddressDetails title="Creator" address={market.creator} />
+          <div className="flex items-start gap-4">
+            <div>
+              <div className="relative mb-6 flex items-center gap-3">
+                <AddressDetails title="Creator" address={market.creator} />
 
-            <div className="group relative">
-              <Image
-                width={24}
-                height={24}
-                src={imagePath}
-                alt="Currency token logo"
-                className="rounded-full"
-              />
-              <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity  group-hover:opacity-100">
-                <div className="rounded-lg bg-blue-100 px-2 py-1 text-sm">
-                  <span className="text-gray-500">Currency: </span>
-                  <span className="font-semibold">{token}</span>
+                <div className="group relative">
+                  <Image
+                    width={24}
+                    height={24}
+                    src={imagePath}
+                    alt="Currency token logo"
+                    className="rounded-full"
+                  />
+                  <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity  group-hover:opacity-100">
+                    <div className="rounded-lg bg-blue-100 px-2 py-1 text-sm">
+                      <span className="text-gray-500">Currency: </span>
+                      <span className="font-semibold">{token}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="group relative">
+                  <Image
+                    width={26}
+                    height={26}
+                    src="/icons/verified-icon.svg"
+                    alt="verified checkmark"
+                  />
+                  <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+                    <div className="rounded-lg bg-green-lighter px-2 py-1 text-sm">
+                      Verified Market
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="group relative">
-              <Image
-                width={26}
-                height={26}
-                src="/icons/verified-icon.svg"
-                alt="verified checkmark"
-              />
-              <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
-                <div className="rounded-lg bg-green-lighter px-2 py-1 text-sm">
-                  Verified Market
-                </div>
+              <div className="mb-6 md:max-w-[900px]">
+                <CourtStageTimer caseId={caseId} market={market} />
               </div>
             </div>
-          </div>
-
-          <div className="mb-6 md:max-w-[900px]">
-            <CourtStageTimer caseId={caseId} market={market} />
+            {stage?.type === "reassigned" && market.resolvedOutcome && (
+              <div className="inline-block min-w-[200px] rounded-lg bg-blue-500 px-5 py-3 text-white">
+                <h3 className="mb-3 text-white">Outcome</h3>
+                {market.categories?.[market.resolvedOutcome].name}
+              </div>
+            )}
           </div>
 
           <div className="mb-4">
@@ -496,25 +506,29 @@ const Votes = ({
 }) => {
   const votes = market.categories
     ?.map((category, index) => {
-      const count =
-        selectedDraws?.filter(
-          (draw) =>
-            draw.vote.isRevealed &&
-            draw.vote.asRevealed.voteItem.isOutcome &&
-            draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber() ===
-              index,
-        )?.length ?? 0;
+      const draws = selectedDraws?.filter(
+        (draw) =>
+          draw.vote.isRevealed &&
+          draw.vote.asRevealed.voteItem.isOutcome &&
+          draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber() ===
+            index,
+      );
 
-      return { category, count };
+      const weight =
+        draws?.reduce((acc, draw) => {
+          return acc + draw.weight.toNumber();
+        }, 0) ?? 0;
+
+      return { category, weight };
     })
-    .sort((a, b) => b.count - a.count);
+    .sort((a, b) => b.weight - a.weight);
 
-  const sortedVotes = sortBy(votes, "count").reverse();
+  const sortedVotes = sortBy(votes, "weight").reverse();
 
   const showLeaderIndicator =
     isRevealed &&
-    votes?.some((vote) => vote.count > 0) &&
-    sortedVotes?.[0]?.count > sortedVotes?.[1]?.count;
+    votes?.some((vote) => vote.weight > 0) &&
+    sortedVotes?.[0]?.weight > sortedVotes?.[1]?.weight;
 
   return (
     <div
@@ -522,9 +536,7 @@ const Votes = ({
         showLeaderIndicator && isRevealed && "[&>*:first-child]:bg-green-200"
       }`}
     >
-      {sortedVotes?.map(({ category, count }, index) => {
-        const leader = votes?.[0];
-
+      {sortedVotes?.map(({ category, weight }, index) => {
         return (
           <div
             key={category.ticker}
@@ -539,7 +551,7 @@ const Votes = ({
             )}
             <div className="rounded-top-md flex items-center gap-2 overflow-hidden bg-gray-500 bg-opacity-10">
               <div className="flex-1 p-3 font-semibold">Outcome</div>
-              <div className="flex-1 p-3 font-semibold">Votes</div>
+              <div className="flex-1 p-3 font-semibold">Weight</div>
             </div>
 
             <div className="flex h-fit flex-1 cursor-default items-center gap-2 text-sm">
@@ -550,7 +562,7 @@ const Votes = ({
               </div>
               <div className="flex-1 p-3">
                 {isRevealed ? (
-                  count
+                  weight
                 ) : (
                   <span className="text-gray-400">secret</span>
                 )}
