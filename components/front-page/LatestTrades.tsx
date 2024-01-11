@@ -68,7 +68,9 @@ const LatestTrades = ({
       ),
       outcome: trade.outcomeName,
       trade: trade.type === "buy" ? "Buy" : "Sell",
-      cost: formatNumberLocalized(trade.cost.div(ZTG).toNumber()),
+      cost: `${formatNumberLocalized(trade.cost.div(ZTG).toNumber())} ${
+        trade.costSymbol
+      }`,
       price: formatNumberLocalized(trade.outcomePrice.toNumber()),
       time: `${moment.duration(now.diff(trade.time)).humanize()} ago`,
     };
