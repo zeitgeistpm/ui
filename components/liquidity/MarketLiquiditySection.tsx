@@ -189,13 +189,6 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           </>
         )}
       </div>
-      {pool?.poolId && (
-        <LiquidityModal
-          poolId={pool.poolId}
-          open={manageLiquidityOpen}
-          onClose={() => setManageLiquidityOpen(false)}
-        />
-      )}
       {neoPool && (
         <LiquidityModalAmm2
           marketId={neoPool.marketId}

@@ -207,36 +207,6 @@ const Portfolio: NextPageWithLayout = () => {
                   <Tab.Panel>
                     <div className="mb-4 font-bold">AMM2 Pools</div>
                     <AccountPoolsTable address={address} />
-                    <div className="mb-4 mt-8 font-bold">Legacy Pools</div>
-                    {!subsidyPositionsByMarket || !ztgPrice ? (
-                      range(0, 8).map((i) => (
-                        <MarketPositionsSkeleton className="mb-14" key={i} />
-                      ))
-                    ) : Object.values(subsidyPositionsByMarket).length > 0 ? (
-                      Object.values(subsidyPositionsByMarket).map(
-                        (subsidyPositions) => {
-                          const market = subsidyPositions[0].market;
-                          return (
-                            <MarketPositions
-                              key={market.marketId}
-                              className="mb-14"
-                              market={market}
-                              usdZtgPrice={ztgPrice}
-                              positions={subsidyPositions.filter((position) =>
-                                position.userBalance.gt(0),
-                              )}
-                            />
-                          );
-                        },
-                      )
-                    ) : (
-                      <EmptyPortfolio
-                        headerText="You don't have any liquidity"
-                        bodyText="View liquidity pools to find places to provide liquidity"
-                        buttonText="View Pools"
-                        buttonLink="/liquidity"
-                      />
-                    )}
                   </Tab.Panel>
                   <Tab.Panel>
                     {address && <CreatorFeePayouts address={address} />}

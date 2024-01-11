@@ -439,11 +439,7 @@ const Market: NextPage<MarketPageProps> = ({
             <div className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg">
               {market?.status === MarketStatus.Active ? (
                 <>
-                  {market?.scoringRule === ScoringRule.Cpmm ? (
-                    <TradeForm outcomeAssets={outcomeAssets} />
-                  ) : (
-                    <Amm2TradeForm marketId={marketId} />
-                  )}
+                  <Amm2TradeForm marketId={marketId} />
                 </>
               ) : market?.status === MarketStatus.Closed && canReport ? (
                 <>
@@ -516,23 +512,13 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
         }`}
       >
         {market?.status === MarketStatus.Active ? (
-          <>
-            {market?.scoringRule === ScoringRule.Cpmm ? (
-              <div>
-                <TradeForm outcomeAssets={outcomeAssets} />
-              </div>
-            ) : (
-              <Amm2TradeForm
-                marketId={market.marketId}
-                showTabs={false}
-                selectedTab={
-                  tradeItem?.action === "buy"
-                    ? TradeTabType.Buy
-                    : TradeTabType.Sell
-                }
-              />
-            )}
-          </>
+          <Amm2TradeForm
+            marketId={market.marketId}
+            showTabs={false}
+            selectedTab={
+              tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell
+            }
+          />
         ) : market?.status === MarketStatus.Closed && canReport ? (
           <>
             <ReportForm market={market} />
