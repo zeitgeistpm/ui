@@ -1,12 +1,12 @@
 import { CSSProperties, FC, useMemo } from "react";
 import Link from "next/link";
-import { News } from "lib/cms/get-news";
+import { CmsNews } from "lib/cms/news";
 import { isCurrentOrigin } from "lib/util/is-current-origin";
 
 export interface HeroSlideProps {
   className?: string;
   style?: CSSProperties;
-  banner: News;
+  banner: CmsNews;
 }
 
 export const HeroSlide: FC<HeroSlideProps> = ({ banner, style, className }) => {

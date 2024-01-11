@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { HeroControls } from "./HeroControls";
 import { HeroSlide } from "./HeroSlide";
-import { News } from "lib/cms/get-news";
+import { CmsNews } from "lib/cms/news";
 import { useSliderControls } from "lib/hooks/slides";
 import { Transition } from "@headlessui/react";
 
@@ -9,7 +9,7 @@ const HeroSlider = ({
   banners,
   bannerPlaceHolders,
 }: {
-  banners: News[];
+  banners: CmsNews[];
   bannerPlaceHolders: string[];
 }) => {
   const slider = useSliderControls({

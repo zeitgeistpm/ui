@@ -14,8 +14,8 @@ import WatchHow from "components/front-page/WatchHow";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
-import { getCmsMarketMetadataForAllMarkets } from "lib/cms/get-market-metadata";
-import { getNews, News } from "lib/cms/get-news";
+import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
+import { getCmsNews, CmsNews } from "lib/cms/news";
 import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
@@ -51,7 +51,9 @@ export async function getStaticProps() {
     storage: ZeitgeistIpfs(),
   });
 
-  const news = await getNews();
+  const news = await getCmsNews();
+
+  console.log(news);
 
   const [
     featuredMarkets,
@@ -71,7 +73,7 @@ export async function getStaticProps() {
       dir: `${path.join(process.cwd())}/public/`,
     }),
     getPlaiceholders(
-      news.map((slide) => slide.imageUrl ?? ""),
+      news.map((slide) => slide.image ?? ""),
       { size: 16 },
     ),
     getNetworkStats(sdk),
@@ -123,7 +125,7 @@ export async function getStaticProps() {
 }
 
 const IndexPage: NextPage<{
-  news: News[];
+  news: CmsNews[];
   featuredMarkets: IndexedMarketCardData[];
   trendingMarkets: IndexedMarketCardData[];
   categoryPlaceholders: string[];
