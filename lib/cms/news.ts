@@ -22,7 +22,5 @@ export const getCmsNews = async (): Promise<CmsNews[]> => {
     groq`*[_type == "news"] | order(_createdAt desc) ${fields}`,
   );
 
-  console.log(data);
-
   return data;
 };

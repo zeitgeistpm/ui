@@ -170,7 +170,7 @@ const IndexPage: NextPage<{
         {featuredMarkets.length > 0 && (
           <div className="mb-12">
             <MarketScroll
-              title="Promoted Markets"
+              title="Featured Markets"
               cta="Go to Markets"
               markets={featuredMarkets}
               link="markets"
