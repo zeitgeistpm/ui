@@ -101,8 +101,10 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
                   stage?.type === "reassigned" ||
                   stage?.type === "aggregation" ? (
                   <span className="text-orange-500">Failed to vote</span>
-                ) : (
+                ) : stage?.type === "vote" ? (
                   <span className="text-blue-400">Waiting for vote</span>
+                ) : (
+                  ""
                 )
               ) : draw.vote.isSecret ? (
                 <span>

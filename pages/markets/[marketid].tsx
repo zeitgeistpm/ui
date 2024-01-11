@@ -18,8 +18,8 @@ import {
   CategoricalMarketChart,
   ScalarMarketChart,
 } from "components/markets/MarketChart";
+import { MarketDescription } from "components/markets/MarketDescription";
 import MarketHeader from "components/markets/MarketHeader";
-import PoolDeployer from "components/markets/PoolDeployer";
 import ReportResult from "components/markets/ReportResult";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
@@ -34,13 +34,12 @@ import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
-import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import {
-  ZTG,
-  environment,
-  graphQlEndpoint,
-  marketReferendumMap,
-} from "lib/constants";
+  CmsMarketMetadata,
+  getCmsMarketMetadataForMarket,
+} from "lib/cms/get-market-metadata";
+import { PromotedMarket } from "lib/cms/get-promoted-markets";
+import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
   MarketPageIndexedData,
   getMarket,
@@ -113,9 +112,11 @@ export async function getStaticProps({ params }) {
 
   const [
     market,
+    cmsMetadata,
     // promotionData
   ] = await Promise.all([
     getMarket(client, params.marketid),
+    getCmsMarketMetadataForMarket(params.marketid),
     // getMarketPromotion(Number(params.marketid)),
   ]);
 
@@ -136,12 +137,25 @@ export async function getStaticProps({ params }) {
     resolutionTimestamp = timestamp ?? undefined;
   }
 
+  if (cmsMetadata?.imageUrl) {
+    market.img = cmsMetadata?.imageUrl;
+  }
+
+  if (cmsMetadata?.question) {
+    market.question = cmsMetadata?.question;
+  }
+
+  if (cmsMetadata?.description) {
+    market.description = cmsMetadata?.description;
+  }
+
   return {
     props: {
       indexedMarket: market ?? null,
       chartSeries: chartSeries ?? null,
       resolutionTimestamp: resolutionTimestamp ?? null,
       promotionData: null,
+      cmsMetadata: cmsMetadata ?? null,
     },
     revalidate:
       environment === "production"
@@ -155,6 +169,7 @@ type MarketPageProps = {
   chartSeries: ChartSeries[];
   resolutionTimestamp: string;
   promotionData: PromotedMarket | null;
+  cmsMetadata: CmsMarketMetadata | null;
 };
 
 const Market: NextPage<MarketPageProps> = ({
@@ -162,11 +177,14 @@ const Market: NextPage<MarketPageProps> = ({
   chartSeries,
   resolutionTimestamp,
   promotionData,
+  cmsMetadata,
 }) => {
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
-  const referendumIndex = marketReferendumMap?.[marketId];
+
+  const referendumChain = cmsMetadata?.referendumRef?.chain;
+  const referendumIndex = cmsMetadata?.referendumRef?.referendumIndex;
 
   const tradeItem = useTradeItem();
 
@@ -290,6 +308,7 @@ const Market: NextPage<MarketPageProps> = ({
             promotionData={promotionData}
             rejectReason={market?.rejectReason ?? undefined}
           />
+
           {market?.rejectReason && market.rejectReason.length > 0 && (
             <div className="mt-[10px] text-ztg-14-150">
               Market rejected: {market.rejectReason}
@@ -367,18 +386,7 @@ const Market: NextPage<MarketPageProps> = ({
           </div>
 
           <div className="mb-12 max-w-[90vw]">
-            {indexedMarket.description?.length > 0 && (
-              <>
-                <h3 className="mb-5 text-2xl">About Market</h3>
-                <QuillViewer value={indexedMarket.description} />
-              </>
-            )}
-            {market && !marketHasPool && (
-              <PoolDeployer
-                marketId={Number(marketid)}
-                onPoolDeployed={handlePoolDeployed}
-              />
-            )}
+            <MarketDescription market={indexedMarket} />
           </div>
 
           <AddressDetails title="Oracle" address={indexedMarket.oracle} />
