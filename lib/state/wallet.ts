@@ -18,11 +18,13 @@ import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { isPresent } from "lib/types";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { PollingTimeout, poll } from "lib/util/poll";
-import { IProvider } from "@web3auth/base";
-
+import { IProvider, WALLET_ADAPTERS } from "@web3auth/base";
+import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 //Web3Auth
 import { web3authAtom } from "./util/web3auth-config";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -370,11 +372,34 @@ export const useWallet = (): UseWallet => {
     if (!web3auth) {
       return;
     }
+    const chainConfig = {
+      chainNamespace: CHAIN_NAMESPACES.OTHER,
+      chainId: "0x1",
+      rpcTarget: "https://rpc.polkadot.io/",
+      displayName: "Polkadot Mainnet",
+      blockExplorer: "https://explorer.polkascan.io/",
+      ticker: "DOT",
+      tickerName: "Polkadot",
+    };
+    const privateKeyProvider = new CommonPrivateKeyProvider({
+      config: { chainConfig },
+    });
 
-    web3auth.status === "not_ready" && (await web3auth.initModal());
-    await web3auth.connect();
+    const openloginAdapter = new OpenloginAdapter({
+      privateKeyProvider,
+    });
+    web3auth.configureAdapter(openloginAdapter);
 
-    if (web3auth.provider) {
+    web3auth.status === "not_ready" && (await web3auth.init());
+    const web3authProvider = await web3auth.connectTo(
+      WALLET_ADAPTERS.OPENLOGIN,
+      {
+        loginProvider: "google",
+      },
+    );
+    // await web3auth.connect();
+
+    if (web3authProvider) {
       const getKeypair = async (provider: IProvider) => {
         await cryptoWaitReady();
         const privateKey = await provider.request({
@@ -384,7 +409,7 @@ export const useWallet = (): UseWallet => {
         const keyPair = keyring.addFromUri("0x" + privateKey);
         return keyPair;
       };
-      const keyPair = await getKeypair(web3auth.provider);
+      const keyPair = await getKeypair(web3authProvider);
       keyPair && enabledWeb3Wallet(keyPair);
     }
   };

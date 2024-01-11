@@ -1,7 +1,9 @@
 import { BaseDotsamaWallet } from "@talismn/connect-wallets";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
-import { Web3Auth } from "@web3auth/modal";
+import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { atom } from "jotai";
+import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 
 export const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
 
@@ -43,10 +45,10 @@ const chainConfig = {
 };
 export const web3AuthInstance =
   clientId && clientId.length > 0
-    ? new Web3Auth({
+    ? new Web3AuthNoModal({
         clientId,
         chainConfig,
-        web3AuthNetwork: "cyan",
+        web3AuthNetwork: "sapphire_devnet",
         // Settings for whitelabel version of web3auth modal
         // uiConfig: {
         //   loginMethodsOrder: [
@@ -68,4 +70,4 @@ export const web3AuthInstance =
       })
     : null;
 
-export const web3authAtom = atom<Web3Auth | null>(web3AuthInstance);
+export const web3authAtom = atom<Web3AuthNoModal | null>(web3AuthInstance);
