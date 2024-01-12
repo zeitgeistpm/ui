@@ -53,8 +53,6 @@ export async function getStaticProps() {
 
   const news = await getCmsNews();
 
-  console.log(news);
-
   const [
     featuredMarkets,
     trendingMarkets,
