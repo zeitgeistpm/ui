@@ -20,7 +20,7 @@ export const rootKey = "markets-filtered";
 const orderByMap = {
   [MarketsOrderBy.Newest]: MarketOrderByInput.MarketIdDesc,
   [MarketsOrderBy.Oldest]: MarketOrderByInput.MarketIdAsc,
-  [MarketsOrderBy.MostVolume]: MarketOrderByInput.PoolVolumeDesc,
+  [MarketsOrderBy.MostVolume]: "volume_DESC",
   [MarketsOrderBy.LeastVolume]: MarketOrderByInput.PoolVolumeAsc,
 };
 
@@ -98,7 +98,7 @@ export const useInfiniteMarkets = (
       },
       offset: !pageParam ? 0 : limit * pageParam,
       limit: limit,
-      order: orderByMap[orderBy],
+      order: orderByMap[orderBy] as MarketOrderByInput, //todo: fix this type once sdk updated,
     });
 
     const resMarkets: Array<QueryMarketData> = markets.map((market) => {

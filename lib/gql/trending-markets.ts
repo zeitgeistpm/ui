@@ -15,6 +15,7 @@ import Decimal from "decimal.js";
 import { GraphQLClient, gql } from "graphql-request";
 import { DAY_SECONDS, ZTG } from "lib/constants";
 import { hiddenMarketIds } from "lib/constants/markets";
+import { marketMetaFilter } from "lib/hooks/queries/constants";
 import {
   ForeignAssetPrices,
   getBaseAssetPrices,
@@ -23,71 +24,60 @@ import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
 import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { marketMetaFilter } from "./constants";
 
-const poolChangesQuery = gql`
-  query PoolChanges($start: DateTime, $end: DateTime) {
-    historicalPools(
+const marketChangesQuery = gql`
+  query MarketChanges($start: DateTime, $end: DateTime) {
+    historicalMarkets(
       where: { timestamp_gt: $start, volume_gt: "0", timestamp_lt: $end }
       orderBy: id_DESC
     ) {
-      poolId
       dVolume
+      market {
+        marketId
+      }
     }
   }
 `;
 
-const marketQuery = gql`
-  query Market($poolId: Int) {
-    markets(
-      where: {
-        pool: { poolId_eq: $poolId }
-        marketId_not_in: ${hiddenMarketIds}
-        hasValidMetaCategories_eq: true
-        categories_isNull: false
-        ${marketMetaFilter}
-      }
-    ) {
-      marketId
-      outcomeAssets
-      question
-      creation
-      img
-      baseAsset
-      creator
-      marketType {
-        categorical
-        scalar
-      }
-      categories {
-        color
-        name
-      }
-      pool {
-        volume
-      }
-      outcomeAssets
-      tags
-      period {
-        end
-      }
-      status
-      scalarType
-    }
-  }
-`;
-
-const assetsQuery = gql`
-  query Assets($poolId: Int) {
-    assets(where: { pool: { poolId_eq: $poolId } }) {
-      pool {
-        poolId
-      }
-      price
-      assetId
-    }
-  }
-`;
+// const marketQuery = gql`
+//   query Market($poolId: Int) {
+//     markets(
+//       where: {
+//         pool: { poolId_eq: $poolId }
+//         marketId_not_in: ${hiddenMarketIds}
+//         hasValidMetaCategories_eq: true
+//         categories_isNull: false
+//         ${marketMetaFilter}
+//       }
+//     ) {
+//       marketId
+//       outcomeAssets
+//       question
+//       creation
+//       img
+//       baseAsset
+//       creator
+//       marketType {
+//         categorical
+//         scalar
+//       }
+//       categories {
+//         color
+//         name
+//       }
+//       pool {
+//         volume
+//       }
+//       outcomeAssets
+//       tags
+//       period {
+//         end
+//       }
+//       status
+//       scalarType
+//     }
+//   }
+// `;
 
 const getTrendingMarkets = async (
   client: GraphQLClient,
@@ -98,12 +88,14 @@ const getTrendingMarkets = async (
     new Date().getTime() - DAY_SECONDS * 7 * 1000,
   ).toISOString();
 
-  const { historicalPools } = await client.request<{
-    historicalPools: {
+  const { historicalMarkets } = await client.request<{
+    historicalMarkets: {
       dVolume: string;
-      poolId: number;
+      market: {
+        marketId: number;
+      };
     }[];
-  }>(poolChangesQuery, {
+  }>(marketChangesQuery, {
     start: dateOneWeekAgo,
     end: now,
   });
@@ -116,6 +108,7 @@ const getTrendingMarkets = async (
       where: {
         status_eq: MarketStatus.Active,
         scoringRule_eq: ScoringRule.Lmsr,
+        // ...marketMetaFilter,
       },
     });
     return markets;
@@ -124,7 +117,7 @@ const getTrendingMarkets = async (
   const basePrices = await getBaseAssetPrices(sdk);
 
   const trendingMarketIds = calcTrendingMarkets(
-    historicalPools,
+    historicalMarkets,
     basePrices,
     markets,
   );
@@ -189,7 +182,9 @@ const lookupPrice = (
 
 const calcTrendingMarkets = (
   transactions: {
-    poolId: number;
+    market: {
+      marketId: number;
+    };
     dVolume: string;
   }[],
   basePrices: ForeignAssetPrices,
@@ -200,16 +195,14 @@ const calcTrendingMarkets = (
 
   // find total volume for each market
   transactions.forEach((transaction) => {
-    //for lsmr poolId === marketId
-    const marketId = transaction.poolId;
+    const marketId = transaction.market.marketId;
 
     if (markets.some((market) => market.marketId === marketId)) {
-      const volume = marketVolumes[transaction.poolId];
+      const volume = marketVolumes[marketId];
       if (volume) {
-        // for amm2 marketId === poolId
-        marketVolumes[transaction.poolId] = volume.plus(transaction.dVolume);
+        marketVolumes[marketId] = volume.plus(transaction.dVolume);
       } else {
-        marketVolumes[transaction.poolId] = new Decimal(transaction.dVolume);
+        marketVolumes[marketId] = new Decimal(transaction.dVolume);
       }
     }
   });
