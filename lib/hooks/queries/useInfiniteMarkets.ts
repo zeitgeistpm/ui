@@ -20,8 +20,8 @@ export const rootKey = "markets-filtered";
 const orderByMap = {
   [MarketsOrderBy.Newest]: MarketOrderByInput.MarketIdDesc,
   [MarketsOrderBy.Oldest]: MarketOrderByInput.MarketIdAsc,
-  [MarketsOrderBy.MostVolume]: "volume_DESC",
-  [MarketsOrderBy.LeastVolume]: MarketOrderByInput.PoolVolumeAsc,
+  [MarketsOrderBy.MostVolume]: MarketOrderByInput.VolumeDesc,
+  [MarketsOrderBy.LeastVolume]: MarketOrderByInput.VolumeAsc,
 };
 
 const validMarketWhereInput: MarketWhereInput = {

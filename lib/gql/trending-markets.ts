@@ -151,9 +151,7 @@ const getTrendingMarkets = async (
       img: market.img ?? "",
       prediction: prediction,
       creator: market.creator,
-      volume: Number(
-        new Decimal(market.neoPool?.volume ?? 0).div(ZTG).toFixed(0),
-      ),
+      volume: Number(new Decimal(market?.volume ?? 0).div(ZTG).toFixed(0)),
       baseAsset: market.baseAsset,
       outcomes: marketCategories,
       pool: market.pool ?? null,
