@@ -39,46 +39,6 @@ const marketChangesQuery = gql`
   }
 `;
 
-// const marketQuery = gql`
-//   query Market($poolId: Int) {
-//     markets(
-//       where: {
-//         pool: { poolId_eq: $poolId }
-//         marketId_not_in: ${hiddenMarketIds}
-//         hasValidMetaCategories_eq: true
-//         categories_isNull: false
-//         ${marketMetaFilter}
-//       }
-//     ) {
-//       marketId
-//       outcomeAssets
-//       question
-//       creation
-//       img
-//       baseAsset
-//       creator
-//       marketType {
-//         categorical
-//         scalar
-//       }
-//       categories {
-//         color
-//         name
-//       }
-//       pool {
-//         volume
-//       }
-//       outcomeAssets
-//       tags
-//       period {
-//         end
-//       }
-//       status
-//       scalarType
-//     }
-//   }
-// `;
-
 const getTrendingMarkets = async (
   client: GraphQLClient,
   sdk: Sdk<FullContext>,
@@ -108,7 +68,7 @@ const getTrendingMarkets = async (
       where: {
         status_eq: MarketStatus.Active,
         scoringRule_eq: ScoringRule.Lmsr,
-        // ...marketMetaFilter,
+        ...marketMetaFilter,
       },
     });
     return markets;
