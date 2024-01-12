@@ -74,9 +74,7 @@ export const SimilarMarketsSection = ({
                   neoPool={market?.neoPool}
                   status={market.status}
                   baseAsset={market.baseAsset}
-                  volume={new Decimal(market.pool?.volume ?? 0)
-                    .div(ZTG)
-                    .toNumber()}
+                  volume={new Decimal(market.volume ?? 0).div(ZTG).toNumber()}
                   tags={
                     market.tags?.filter((tag): tag is string => tag !== null) ??
                     []

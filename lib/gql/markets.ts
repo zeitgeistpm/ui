@@ -25,16 +25,15 @@ const marketQuery = gql`
       marketId
       description
       baseAsset
+      volume
       pool {
         poolId
         createdAt
-        volume
         baseAsset
       }
       neoPool {
         createdAt
         collateral
-        volume
       }
       question
       slug
@@ -90,6 +89,7 @@ export interface MarketPageIndexedData {
   question: string;
   description: string | PortableTextBlock[];
   status: MarketStatus;
+  volume: string;
   period: {
     block: string[];
     start: string;
@@ -105,14 +105,12 @@ export interface MarketPageIndexedData {
   resolvedOutcome: string;
   pool?: {
     poolId: number;
-    volume: string;
     createdAt: string;
     baseAsset: string;
   };
   neoPool?: {
     collateral: string;
     createdAt: string;
-    volume: string;
   };
   scalarType: ScalarRangeType;
   marketType: {

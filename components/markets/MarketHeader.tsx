@@ -345,9 +345,7 @@ const MarketHeader: FC<{
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const starts = Number(period.start);
   const ends = Number(period.end);
-  const volume = new Decimal(pool?.volume ?? neoPool?.volume ?? 0)
-    .div(ZTG)
-    .toNumber();
+  const volume = new Decimal(market.volume).div(ZTG).toNumber();
 
   const { outcome, by } = getMarketStatusDetails(
     marketType,

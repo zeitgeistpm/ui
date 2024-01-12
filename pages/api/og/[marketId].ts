@@ -57,9 +57,7 @@ export default async function (
     prediction = getCurrentPrediction(market.assets as any, market);
   }
 
-  const volume = new Decimal(market.pool?.volume ?? market.neoPool?.volume ?? 0)
-    .div(ZTG)
-    .toFixed(2);
+  const volume = new Decimal(market?.volume ?? 0).div(ZTG).toFixed(2);
 
   const ends = moment(Number(market.period.end)).format("MMM Do, YYYY");
 

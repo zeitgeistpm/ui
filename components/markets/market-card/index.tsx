@@ -34,7 +34,7 @@ export interface IndexedMarketCardData {
   scalarType: ScalarRangeType | null;
   prediction: { name: string; price: number };
   volume: number;
-  pool?: { poolId?: number; volume: string } | null;
+  pool?: { poolId?: number } | null;
   neoPool?: FullMarketFragment["neoPool"] | null;
   baseAsset: string;
   tags?: string[];
