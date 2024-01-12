@@ -45,7 +45,7 @@ const getFeaturedMarkets = async (
       creator: market.creator,
       img: market.img ?? "",
       prediction: prediction,
-      volume: new Decimal(market.pool?.volume ?? 0).div(ZTG).toNumber(),
+      volume: new Decimal(market.volume ?? 0).div(ZTG).toNumber(),
       baseAsset: market.baseAsset,
       outcomes: marketCategories,
       pool: market.pool,

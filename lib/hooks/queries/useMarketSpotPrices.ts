@@ -99,11 +99,11 @@ const calcMarketPrices = (
   const outcomeWeights = market.pool.weights.filter(
     (weight) =>
       weight.assetId.toLocaleLowerCase() !==
-      market.pool?.baseAsset.toLocaleLowerCase(),
+      market.baseAsset.toLocaleLowerCase(),
   );
 
   //base weight is equal to the sum of all other assets
-  const baseWeight = new Decimal(market.pool.totalWeight).div(2);
+  const baseWeight = new Decimal(market?.pool.totalWeight ?? 0).div(2);
 
   outcomeWeights.forEach((weight, index) => {
     const spotPrice = calcSpotPrice(
