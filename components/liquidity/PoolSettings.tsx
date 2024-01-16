@@ -89,19 +89,33 @@ const PriceSetter = ({
     const newPrice = event.target.value;
     onChange({ price: newPrice, locked: true });
   };
+
+  const priceDecimal = new Decimal(price);
+  console.log(price);
+
   return (
     <div className="flex items-center">
-      <Input
-        className={`h-ztg-40 w-[100px] rounded-ztg-5 bg-gray-100 p-ztg-8 text-right focus:outline-none ${
-          disabled && "!bg-transparent"
-        }`}
-        value={price}
-        type="number"
-        disabled={disabled}
-        onChange={handlePriceChange}
-      />
+      <div className="mt-[10px] flex flex-col">
+        <Input
+          className={`h-ztg-32 w-[100px] rounded-ztg-5 bg-gray-100 p-ztg-8 text-right focus:outline-none ${
+            disabled && "!bg-transparent"
+          }`}
+          value={price}
+          type="number"
+          disabled={disabled}
+          onChange={handlePriceChange}
+        />
+        <div className="h-[10px] text-[10px] text-vermilion">
+          {priceDecimal.greaterThanOrEqualTo(1) && (
+            <>Price must be less than 1</>
+          )}
+          {priceDecimal.lessThanOrEqualTo(0) && (
+            <>Price must be greater than 1</>
+          )}
+        </div>
+      </div>
       <button
-        className="ml-[20px] flex h-[30px] w-[30px] flex-grow-0 items-center justify-center rounded-full bg-gray-100"
+        className="ml-auto flex h-[30px] w-[30px] flex-grow-0 items-center justify-center rounded-full bg-gray-100"
         onClick={handleLockClick}
         disabled={disabled}
       >
@@ -147,6 +161,8 @@ const PoolSettings: FC<{
   };
 
   const onPriceChange = (priceInfo: PriceInfo, changedIndex: number) => {
+    console.log(JSON.stringify(data));
+
     const changedPrice =
       priceInfo.price == null || priceInfo.price === ""
         ? new Decimal(0)
@@ -159,20 +175,26 @@ const PoolSettings: FC<{
     });
 
     const prices = calcPrices(priceLocks);
+    console.log(JSON.stringify(prices));
+    console.log(baseAssetAmount);
+    console.log(JSON.stringify(priceLocks.map((p) => p.price)));
 
     const amounts = calculatePoolAmounts(
       new Decimal(baseAssetAmount),
-      priceLocks.map((p) => p.price),
+      prices.map((p) => p.price),
     );
 
-    console.log(amounts);
-    ["NaN", "0", "0"];
+    const isInvalid = amounts.some((amount) => amount.isNaN());
+
+    console.log(JSON.stringify(amounts));
+
+    // console.log(amounts.);
     const newData = data.map((row, index) => ({
       ...row,
       // weight: weights[index]?.toString() ?? row.weight,
       price: prices[index] ?? row.price,
       // value: (prices[index] ?? row.price).price.mul(row.amount).toFixed(4),
-      amount: amounts[index].toString(),
+      amount: isInvalid ? "0" : amounts[index].toString(),
     }));
 
     onChange(newData, baseAssetAmount);
@@ -218,6 +240,7 @@ const PoolSettings: FC<{
       header: "Price",
       accessor: "price",
       type: "component",
+      width: "30%",
     },
     // {
     //   header: "Total Value",
