@@ -189,7 +189,7 @@ const PoolSettings: FC<{
         <PriceSetter
           price={d.price.price.toString()}
           isLocked={d.price.locked}
-          disabled={index === data.length - 1}
+          disabled={false}
           onChange={(priceInfo) => onPriceChange(priceInfo, index)}
         />
       ),

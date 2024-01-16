@@ -133,7 +133,7 @@ export const createMarketFormValidator = ({
         form.moderation === "Permissionless" &&
         form.liquidity?.deploy &&
         form.liquidity?.rows &&
-        form.liquidity?.rows?.length < 3
+        form.liquidity?.rows?.length < 2
       ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
