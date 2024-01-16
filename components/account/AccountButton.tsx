@@ -169,9 +169,7 @@ const AccountButton: FC<{
         >
           {isWSX ? (
             <HeaderActionButton
-              disabled={
-                locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)
-              }
+              disabled={locationAllowed !== true || !isRpcSdk(sdk)}
               onClick={() => connect()}
             >
               Get Started
