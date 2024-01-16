@@ -5,30 +5,24 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { getBaseAssetHistoricalPrices, lookupPrice } from "./historical-prices";
 import {
   PoolOrderByInput,
+  MarketOrderByInput,
   NeoPoolOrderByInput,
   HistoricalSwapOrderByInput,
 } from "@zeitgeistpm/indexer";
+import { MarketsOrderBy } from "lib/types/market-filter";
 
 export const getNetworkStats = async (sdk: Sdk<FullContext>) => {
-  const [marketCountBN, basePrices, pools, neoPools, historicalSwaps] =
+  const [marketCountBN, basePrices, markets, historicalSwaps] =
     await Promise.all([
       sdk.api.query.marketCommons.marketCounter(),
       getBaseAssetHistoricalPrices(),
       fetchAllPages(async (pageNumber, limit) => {
-        const { pools } = await sdk.indexer.pools({
+        const { markets } = await sdk.indexer.markets({
           limit: limit,
           offset: pageNumber * limit,
-          order: PoolOrderByInput.IdAsc,
+          order: MarketOrderByInput.IdAsc,
         });
-        return pools;
-      }),
-      fetchAllPages(async (pageNumber, limit) => {
-        const { neoPools } = await sdk.indexer.neoPools({
-          limit: limit,
-          offset: pageNumber * limit,
-          order: NeoPoolOrderByInput.IdAsc,
-        });
-        return neoPools;
+        return markets;
       }),
       fetchAllPages(async (pageNumber, limit) => {
         const { historicalSwaps } = await sdk.indexer.historicalSwaps({
@@ -40,28 +34,14 @@ export const getNetworkStats = async (sdk: Sdk<FullContext>) => {
       }),
     ]);
 
-  const totalPoolVolumeUsd = pools.reduce<Decimal>((total, pool) => {
+  const totalMarketVolumeUsd = markets.reduce<Decimal>((total, market) => {
     const poolCreationBaseAssetPrice = lookupPrice(
       basePrices,
-      parseAssetIdString(pool.baseAsset) as BaseAssetId,
-      new Date(pool.createdAt).getTime(),
+      parseAssetIdString(market.baseAsset) as BaseAssetId,
+      new Date(market.pool?.createdAt ?? market.neoPool?.createdAt).getTime(),
     );
 
-    const volumeUsd = new Decimal(pool.volume).mul(
-      poolCreationBaseAssetPrice ?? 0,
-    );
-
-    return total.plus(volumeUsd);
-  }, new Decimal(0));
-
-  const totalNeopoolVolumeUsd = pools.reduce<Decimal>((total, pool) => {
-    const poolCreationBaseAssetPrice = lookupPrice(
-      basePrices,
-      parseAssetIdString(pool.baseAsset) as BaseAssetId,
-      new Date(pool.createdAt).getTime(),
-    );
-
-    const volumeUsd = new Decimal(pool.volume).mul(
+    const volumeUsd = new Decimal(market.volume).mul(
       poolCreationBaseAssetPrice ?? 0,
     );
 
@@ -76,9 +56,6 @@ export const getNetworkStats = async (sdk: Sdk<FullContext>) => {
   return {
     marketCount: marketCountBN.toNumber(),
     tradersCount,
-    volumeUsd: totalNeopoolVolumeUsd
-      .plus(totalPoolVolumeUsd)
-      .div(ZTG)
-      .toNumber(),
+    volumeUsd: totalMarketVolumeUsd.div(ZTG).toNumber(),
   };
 };

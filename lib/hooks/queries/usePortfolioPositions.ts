@@ -295,7 +295,7 @@ export const usePortfolioPositions = (
     ): null | Decimal => {
       const poolZtgBalance = poolsZtgBalances[pool.poolId]?.toNumber();
 
-      const ztgWeight = new Decimal(pool.totalWeight).div(2);
+      const ztgWeight = new Decimal(pool.totalWeight ?? 0).div(2);
       const assetWeight = getAssetWeight(pool, assetId).unwrap();
 
       const poolAssetBalance = poolAssetBalances?.get(
