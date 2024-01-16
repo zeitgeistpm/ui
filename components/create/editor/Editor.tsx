@@ -39,10 +39,7 @@ import { Loader } from "components/ui/Loader";
 import { LiquidityInputAmm2 } from "./inputs/LiquidityAMM2";
 import FeeSelect from "./inputs/FeeSelect";
 import { useWallet } from "lib/state/wallet";
-import {
-  isAMM2Form,
-  marketFormDataToExtrinsicParams,
-} from "lib/state/market-creation/types/form";
+import { marketFormDataToExtrinsicParams } from "lib/state/market-creation/types/form";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import { CreateMarketParams, RpcContext } from "@zeitgeistpm/sdk";
 
@@ -50,16 +47,9 @@ const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
 });
 
-const createMarketStateAtom = persistentAtom<MarketDraft.MarketDraftState>({
-  key: "market-creation-form",
-  defaultValue: MarketDraft.empty(),
-  migrations: [() => MarketDraft.empty(), () => MarketDraft.empty()],
-});
-
 export const MarketEditor = () => {
   const wallet = useWallet();
-  const [state, setState] = useAtom(createMarketStateAtom);
-  const editor = useMarketDraftEditor({ draft: state, update: setState });
+  const editor = useMarketDraftEditor();
 
   const headerRef = useRef<HTMLDivElement>(null);
 
@@ -111,7 +101,6 @@ export const MarketEditor = () => {
     fieldsState.liquidity.isTouched && form.liquidity?.deploy && isWizard;
 
   const isLoaded = Boolean(chainTime && isFetched);
-  const isAMM2Market = isAMM2Form(form);
 
   const creationParams = useMemo<
     CreateMarketParams<RpcContext> | undefined
@@ -633,16 +622,6 @@ export const MarketEditor = () => {
                       Answers must be filled out correctly before adding
                       liquidity.
                     </div>
-                  ) : isAMM2Market ? (
-                    <LiquidityInputAmm2
-                      {...input("liquidity", { mode: "all" })}
-                      currency={form.currency}
-                      errorMessage={
-                        !fieldsState.answers.isValid
-                          ? "Answers must be filled out correctly before adding liquidity."
-                          : ""
-                      }
-                    />
                   ) : (
                     <LiquidityInput
                       {...input("liquidity", { mode: "all" })}

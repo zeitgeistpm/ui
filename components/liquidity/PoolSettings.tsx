@@ -14,13 +14,14 @@ import { ChangeEvent, FC, MouseEvent, ReactNode } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import PoolFeesSelect from "./PoolFeesSelect";
 import Input from "components/ui/Input";
+import { calculatePoolAmounts } from "lib/util/amm2";
 
 export interface PoolAssetRowData {
   asset: string;
-  weight: string;
+  // weight: string;
   amount: string;
   price: PriceLock;
-  value: string;
+  // value: string;
 }
 
 export const poolRowDataFromOutcomes = (
@@ -29,18 +30,18 @@ export const poolRowDataFromOutcomes = (
   initialAmount: string = "100",
 ): PoolAssetRowData[] => {
   const amountNum = +initialAmount;
-  const baseWeight = 64;
+  // const baseWeight = 64;
 
   const numOutcomes = outcomes.length;
 
   const ratio = 1 / numOutcomes;
-  const weight = ratio * baseWeight;
+  // const weight = ratio * baseWeight;
 
   return [
     ...outcomes.map((outcome) => {
       return {
         asset: outcome.name,
-        weight: weight.toFixed(0),
+        // weight: weight.toFixed(0),
         amount: "100",
         price: {
           price: new Decimal(ratio.toString()),
@@ -49,16 +50,16 @@ export const poolRowDataFromOutcomes = (
         value: `${(amountNum * ratio).toFixed(4)}`,
       };
     }),
-    {
-      asset: tokenSymbol,
-      weight: baseWeight.toString(),
-      amount: "100",
-      price: {
-        price: new Decimal(1),
-        locked: true,
-      },
-      value: "100",
-    },
+    // {
+    //   asset: tokenSymbol,
+    //   weight: baseWeight.toString(),
+    //   amount: "100",
+    //   price: {
+    //     price: new Decimal(1),
+    //     locked: true,
+    //   },
+    //   value: "100",
+    // },
   ];
 };
 
@@ -116,12 +117,22 @@ const PriceSetter = ({
 
 const PoolSettings: FC<{
   data: PoolAssetRowData[];
-  onChange: (data: PoolAssetRowData[]) => void;
+  onChange: (rows: PoolAssetRowData[], amount: string) => void;
+  baseAssetSymbol: string;
+  baseAssetAmount: string;
   onFeeChange?: (data: Decimal) => void;
   noDataMessage?: string | ReactNode;
   baseAssetPrice?: Decimal;
-}> = ({ data, onChange, onFeeChange, noDataMessage, baseAssetPrice }) => {
-  const changeOutcomeRow = (amount: string) => {
+}> = ({
+  data,
+  onChange,
+  onFeeChange,
+  baseAssetAmount,
+  baseAssetSymbol,
+  noDataMessage,
+  baseAssetPrice,
+}) => {
+  const handleBaseAmountChange = (amount: string) => {
     onChange(
       data.map((row) => {
         const handledAmount = amount && amount.length > 0 ? amount : "0";
@@ -131,6 +142,7 @@ const PoolSettings: FC<{
           value: row.price.price.mul(handledAmount).toFixed(0),
         };
       }),
+      amount,
     );
   };
 
@@ -146,32 +158,25 @@ const PoolSettings: FC<{
       };
     });
 
-    priceLocks.pop();
-
     const prices = calcPrices(priceLocks);
 
-    const ztgWeight = new Decimal(64);
-    const tokenAmount = new Decimal(data[0].amount);
-    const weights = prices.map((price) =>
-      calcWeightGivenSpotPrice(
-        tokenAmount,
-        ztgWeight,
-        tokenAmount,
-        price.price,
-      ),
+    const amounts = calculatePoolAmounts(
+      new Decimal(baseAssetAmount),
+      priceLocks.map((p) => p.price),
     );
 
+    console.log(amounts);
+    ["NaN", "0", "0"];
     const newData = data.map((row, index) => ({
       ...row,
-      weight: weights[index]?.toString() ?? row.weight,
+      // weight: weights[index]?.toString() ?? row.weight,
       price: prices[index] ?? row.price,
-      value: (prices[index] ?? row.price).price.mul(row.amount).toFixed(4),
+      // value: (prices[index] ?? row.price).price.mul(row.amount).toFixed(4),
+      amount: amounts[index].toString(),
     }));
 
-    onChange(newData);
+    onChange(newData, baseAssetAmount);
   };
-
-  const baseAssetRow = data[data.length - 1];
 
   const tableData: TableData[] = data.map((d, index) => {
     return {
@@ -179,7 +184,7 @@ const PoolSettings: FC<{
         token: true,
         label: d.asset,
       },
-      weights: d.weight,
+      // weights: d.weight,
       price: (
         <PriceSetter
           price={d.price.price.toString()}
@@ -188,10 +193,10 @@ const PoolSettings: FC<{
           onChange={(priceInfo) => onPriceChange(priceInfo, index)}
         />
       ),
-      total: {
-        value: Number(d.value),
-        usdValue: new Decimal(d.value ?? 0).mul(baseAssetPrice ?? 0).toNumber(),
-      },
+      // total: {
+      //   value: Number(d.value),
+      //   usdValue: new Decimal(d.value ?? 0).mul(baseAssetPrice ?? 0).toNumber(),
+      // },
       amount: d.amount,
     };
   });
@@ -202,23 +207,23 @@ const PoolSettings: FC<{
       accessor: "token",
       type: "token",
     },
-    {
-      header: "Weights",
-      accessor: "weights",
-      type: "number",
-      width: "10%",
-    },
+    // {
+    //   header: "Weights",
+    //   accessor: "weights",
+    //   type: "number",
+    //   width: "10%",
+    // },
     { header: "Amount", accessor: "amount", type: "number", width: "25%" },
     {
       header: "Price",
       accessor: "price",
       type: "component",
     },
-    {
-      header: "Total Value",
-      accessor: "total",
-      type: "currency",
-    },
+    // {
+    //   header: "Total Value",
+    //   accessor: "total",
+    //   type: "currency",
+    // },
   ];
 
   const handleFeeChange = (fee: Decimal) => {
@@ -226,7 +231,7 @@ const PoolSettings: FC<{
   };
 
   const currencyImage = supportedCurrencies.find(
-    (currency) => currency.name === baseAssetRow.asset,
+    (currency) => currency.name === baseAssetSymbol,
   )?.image;
 
   return (
@@ -251,8 +256,8 @@ const PoolSettings: FC<{
               </p>
               <p className="font-light">
                 <b className="font-bold">
-                  Note that this is the exact amount of {baseAssetRow?.asset}{" "}
-                  you will spend on liquidity.
+                  Note that this is the exact amount of {baseAssetSymbol} you
+                  will spend on liquidity.
                   <i className="font-normal">
                     This does not include the bond amount or the transaction
                     fees.
@@ -265,18 +270,20 @@ const PoolSettings: FC<{
             <Input
               type="number"
               className="font-base w-64 rounded-md bg-gray-100 py-4 pl-5 pr-28 text-right text-base outline-none"
-              value={`${parseFloat(baseAssetRow.amount) * 2}`}
+              value={`${parseFloat(baseAssetAmount)}`}
               onChange={(event) => {
-                const value = parseFloat(event.target.value) / 2;
+                console.log(event.target.value);
+
+                const value = parseFloat(event.target.value);
                 if (!isNaN(value)) {
-                  changeOutcomeRow(`${value}`);
+                  handleBaseAmountChange(`${value}`);
                 } else {
-                  changeOutcomeRow("");
+                  handleBaseAmountChange("");
                 }
               }}
             />
             <div className="center pointer-events-none absolute bottom-[50%] right-0 h-full translate-x-[0%] translate-y-[50%] gap-2 rounded-r-md border-2 border-l-0 border-gray-100 bg-white px-5 text-gray-600">
-              {baseAssetRow.asset}
+              {baseAssetSymbol}
               <div className="relative h-4 w-4">
                 {currencyImage && (
                   <Image

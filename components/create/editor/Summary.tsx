@@ -51,6 +51,8 @@ export const MarketSummary = ({
 
   const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
 
+  const baseAmount = form.liquidity?.amount;
+  //todo: this will be wrong
   const baseAssetLiquidityRow = form?.liquidity?.rows?.find(
     (row) => row.asset === form.currency,
   );
@@ -122,12 +124,12 @@ export const MarketSummary = ({
                       {amm2Liquidity ?? baseAssetLiquidityRow?.amount ?? "--"}
                     </div>
                   </div>
-                  {!amm2Liquidity && (
+                  {/* {!amm2Liquidity && (
                     <div className="flex items-center justify-center gap-2">
                       <Label>Weight</Label>{" "}
                       <div>{baseAssetLiquidityRow?.weight ?? "--"}</div>
                     </div>
-                  )}
+                  )} */}
                   <div className="flex items-center justify-center gap-2">
                     <Label>Swap Fee</Label>{" "}
                     {form.liquidity?.swapFee?.value ?? "--"}%
@@ -327,13 +329,12 @@ const AnswersDisplay = ({
                     <Label className="text-xs">Amount</Label>{" "}
                   </div>
                   <div className="table-cell text-left">
-                    <div>
-                      {liquidity?.amount ?? answerLiquidity?.amount ?? "--"}
-                    </div>
+                    {/* todo: format */}
+                    <div>{answerLiquidity?.amount ?? "--"}</div>
                   </div>
                 </div>
 
-                {!liquidity.amount && (
+                {/* {!liquidity.amount && (
                   <div className="mb-1 table-row">
                     <div className="table-cell pr-4 text-left">
                       <Label className="text-xs">Weight</Label>{" "}
@@ -346,7 +347,7 @@ const AnswersDisplay = ({
                       </div>
                     </div>
                   </div>
-                )}
+                )} */}
 
                 <div className="mb-1 table-row">
                   <div className="table-cell pr-4 text-left">
@@ -356,10 +357,10 @@ const AnswersDisplay = ({
                     <div className="mb-1">
                       {answerLiquidity ? (
                         <>
-                          {new Decimal(answerLiquidity?.value).toFixed(1)}{" "}
+                          {new Decimal(answerLiquidity?.value ?? 0).toFixed(1)}{" "}
                           <span className="text-gray-400">≈</span>{" "}
                           {baseAssetPrice
-                            ?.mul(answerLiquidity?.value)
+                            ?.mul(answerLiquidity?.value ?? 0)
                             .toFixed(2)}{" "}
                           USD
                         </>

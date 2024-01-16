@@ -108,7 +108,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
       editor.form.moderation === "Permissionless" &&
         editor.form.liquidity?.deploy &&
         editor.form.currency === "ZTG"
-        ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2).toNumber()
+        ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2).toNumber() //todo: mul(2) correct?
         : 0,
     )
     .plus(ztgTransactionFee ?? 0);
@@ -149,6 +149,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
           type: "Info",
           lifetime: 60,
         });
+        console.log(creationParams);
 
         const result = await sdk.model.markets.create(
           creationParams,
