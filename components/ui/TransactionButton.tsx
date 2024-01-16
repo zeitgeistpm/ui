@@ -40,7 +40,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   const wallet = useWallet();
   const [sdk] = useSdkv2();
   const accountModals = useAccountModals();
-  const { locationAllowed, isUsingVPN } = useUserLocation();
+  const { locationAllowed } = useUserLocation();
 
   const extrinsicBase = useMemo(() => {
     return extrinsic && isRpcSdk(sdk) && wallet.activeAccount?.address
@@ -67,29 +67,22 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   };
 
   const isDisabled = useMemo(() => {
-    if (
-      locationAllowed !== true ||
-      isUsingVPN ||
-      !isRpcSdk(sdk) ||
-      insufficientFeeBalance
-    ) {
+    if (locationAllowed !== true || !isRpcSdk(sdk) || insufficientFeeBalance) {
       return true;
     } else if (!wallet.connected) {
       return false;
     }
     return disabled;
-  }, [locationAllowed, isUsingVPN, sdk, wallet, insufficientFeeBalance]);
+  }, [locationAllowed, sdk, wallet, insufficientFeeBalance]);
 
   const colorClass =
-    locationAllowed !== true || isUsingVPN || insufficientFeeBalance
+    locationAllowed !== true || insufficientFeeBalance
       ? "bg-vermilion"
       : "bg-ztg-blue";
 
   const getButtonChildren = () => {
     if (locationAllowed !== true) {
       return "Location Blocked";
-    } else if (isUsingVPN) {
-      return "VPN Blocked";
     } else if (insufficientFeeBalance) {
       return `Insufficient ${fee.symbol}`;
     } else if (loading) {
