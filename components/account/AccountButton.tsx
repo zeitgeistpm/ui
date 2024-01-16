@@ -99,7 +99,7 @@ const AccountButton: FC<{
   const proxy = getProxyFor(activeAccount?.address);
 
   const accountModals = useAccountModals();
-  const { locationAllowed, isUsingVPN } = useUserLocation();
+  const { locationAllowed } = useUserLocation();
   const [hovering, setHovering] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
@@ -178,28 +178,23 @@ const AccountButton: FC<{
             </HeaderActionButton>
           ) : hasWallet === true ? (
             <HeaderActionButton
-              disabled={
-                locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)
-              }
+              disabled={locationAllowed !== true || !isRpcSdk(sdk)}
               onClick={() => connect()}
             >
               Connect Wallet
             </HeaderActionButton>
           ) : (
             <HeaderActionButton
-              disabled={locationAllowed !== true || isUsingVPN}
+              disabled={locationAllowed !== true}
               onClick={() => setShowOnboarding(true)}
             >
               Get Started
             </HeaderActionButton>
           )}
 
-          {hovering === true &&
-          (locationAllowed !== true || isUsingVPN === true) ? (
+          {hovering === true && locationAllowed !== true ? (
             <div className="absolute bottom-0 right-0 rounded bg-white text-sm font-bold text-black">
-              {locationAllowed !== true
-                ? "Your jurisdiction is not authorised to trade"
-                : "Trading over a VPN is not allowed due to legal restrictions"}
+              Your jurisdiction is not authorised to trade
             </div>
           ) : (
             <></>

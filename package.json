@@ -60,7 +60,6 @@
     "fuse.js": "^6.6.2",
     "graphql-request": "^5.0.0",
     "groq": "^3.23.4",
-    "ip-range-check": "^0.2.0",
     "jotai": "^2.0.4",
     "jotai-tanstack-query": "^0.7.0",
     "lodash.merge": "^4.6.2",
