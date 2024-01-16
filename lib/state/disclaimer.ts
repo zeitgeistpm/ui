@@ -2,16 +2,20 @@ import { atom, useAtom } from "jotai";
 import { persistentAtom } from "./util/persistent-atom";
 import { useEffect, useMemo } from "react";
 
-const disclaimerAcceptanceStateAtom = persistentAtom<boolean>({
+const disclaimerAcceptanceStateAtom = persistentAtom<{
+  disclaimerStatus: boolean;
+}>({
   key: "disclaimer-acceptance",
-  defaultValue: false,
+  defaultValue: {
+    disclaimerStatus: false,
+  },
 });
 
 const disclaimerDisplayed = atom<boolean>(false);
 
 export const useDisclaimer = (onAccept?: () => void) => {
   const [modalOpen, setModalOpen] = useAtom(disclaimerDisplayed);
-  const [disclaimerStatus, setDisclaimerStatus] = useAtom(
+  const [{ disclaimerStatus }, setDisclaimerStatus] = useAtom(
     disclaimerAcceptanceStateAtom,
   );
 
@@ -26,7 +30,7 @@ export const useDisclaimer = (onAccept?: () => void) => {
   }, [disclaimerStatus]);
 
   const setDisclaimerAccepted = () => {
-    setDisclaimerStatus(true);
+    setDisclaimerStatus({ disclaimerStatus: true });
   };
 
   const showDisclaimer = () => {
