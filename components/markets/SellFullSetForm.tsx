@@ -30,7 +30,9 @@ const SellFullSetForm = ({
   const [sdk] = useSdkv2();
 
   const { data: pool } = usePool({ marketId: marketId });
-  const baseAssetId = parseAssetIdString(pool?.baseAsset);
+  const { data: market } = useMarket({ marketId: marketId });
+
+  const baseAssetId = parseAssetIdString(market?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const { data: baseAssetBalance } = useBalance(
@@ -52,11 +54,15 @@ const SellFullSetForm = ({
     fee,
   } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk)) {
-        return sdk.api.tx.predictionMarkets.sellCompleteSet(
-          marketId,
-          new Decimal(amount).mul(ZTG).toNumber(),
-        );
+      if (isRpcSdk(sdk) && amount && amount !== "") {
+        try {
+          return sdk.api.tx.predictionMarkets.sellCompleteSet(
+            marketId,
+            new Decimal(amount).mul(ZTG).toFixed(0),
+          );
+        } catch (error) {
+          console.error(error);
+        }
       }
     },
     {

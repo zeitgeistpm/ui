@@ -10,14 +10,18 @@ import { BarChart2, Droplet, Users } from "react-feather";
 import ScalarPriceRange from "../ScalarPriceRange";
 import MarketCardContext from "./context";
 
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import {
   IOBaseAssetId,
   IOForeignAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import { useMarketImage } from "lib/hooks/useMarketImage";
+import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import Image from "next/image";
-import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -30,7 +34,7 @@ export interface IndexedMarketCardData {
   scalarType: ScalarRangeType | null;
   prediction: { name: string; price: number };
   volume: number;
-  pool?: { poolId?: number; volume: string } | null;
+  pool?: { poolId?: number } | null;
   neoPool?: FullMarketFragment["neoPool"] | null;
   baseAsset: string;
   tags?: string[];
@@ -221,6 +225,18 @@ export const MarketCard = ({
     ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
     : 0;
 
+  const { data: image } = useMarketImage(
+    { marketId, tags },
+    {
+      fallback:
+        img && isAbsoluteUrl(img) && !isMarketImageBase64Encoded(img)
+          ? img
+          : undefined,
+    },
+  );
+
+  const { data: cmsMetadata } = useMarketCmsMetadata(marketId);
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
@@ -240,12 +256,24 @@ export const MarketCard = ({
             disableLink && "cursor-default"
           }`}
         >
-          <div className="flex h-full w-full gap-4 whitespace-normal">
-            <h5 className="line-clamp-2 h-fit w-full text-base">{question}</h5>
-            {/* {disable for now until we can get image from CMS} */}
-            {/* <div className="relative min-w-[84px] min-h-[80px] rounded-xl">
-              <MarketImage tags={tags} alt={question} className="rounded-lg" />
-            </div> */}
+          <div className="flex h-[54px] w-full gap-4 whitespace-normal">
+            <div className="relative min-h-[54px] min-w-[54px] rounded-lg bg-gray-400 bg-opacity-30">
+              <Image
+                priority
+                alt={"Market image"}
+                src={image}
+                fill
+                className="overflow-hidden rounded-lg"
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "50% 50%",
+                }}
+                sizes={"54px"}
+              />
+            </div>
+            <h5 className="line-clamp-2 h-fit w-full text-base duration-200">
+              {cmsMetadata?.question ?? question}
+            </h5>
           </div>
 
           <div className="w-full">

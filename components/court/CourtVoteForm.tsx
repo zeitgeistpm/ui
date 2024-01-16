@@ -66,7 +66,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
       onSuccess: () => {
         commitVote();
         queryClient.invalidateQueries([id, voteDrawsRootKey, caseId]);
-        queryClient.invalidateQueries([id, voteDrawsRootKey, "all"]);
+        queryClient.invalidateQueries([id, voteDrawsRootKey]);
         onVote?.();
       },
     },

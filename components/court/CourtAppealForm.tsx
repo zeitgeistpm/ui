@@ -3,8 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
-import { courtCasesRootKey } from "lib/hooks/queries/court/useCourtCases";
+import {
+  courtCaseRootKey,
+  useCourtCase,
+} from "lib/hooks/queries/court/useCourtCases";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -26,7 +28,7 @@ export const CourtAppealForm = ({ caseId }: { caseId: number }) => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([id, courtCasesRootKey]);
+        queryClient.invalidateQueries([id, courtCaseRootKey]);
       },
     },
   );

@@ -1,6 +1,6 @@
 import { EMarketStatus, MarketStatus } from "lib/types/markets";
 
-const prodTags = [
+export const prodTags = [
   "Politics",
   "Crypto",
   "Dotsama",

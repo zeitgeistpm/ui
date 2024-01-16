@@ -14,7 +14,10 @@
 // import MarketScroll from "components/markets/MarketScroll";
 // import { GraphQLClient } from "graphql-request";
 // import { getNews, News } from "lib/cms/get-news";
+import { QueryClient } from "@tanstack/query-core";
+import { getCmsMarketMetadataForAllMarkets } from "lib/cms/get-market-metadata";
 import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
+import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 // import getFeaturedMarkets from "lib/gql/featured-markets";
 // import { getNetworkStats } from "lib/gql/get-network-stats";
 // import { getCategoryCounts } from "lib/gql/popular-categories";
@@ -77,11 +80,29 @@ export async function getStaticProps() {
   //   sdk.api.rpc.system.properties(),
   // ]);
 
-  // const queryClient = new QueryClient();
+  const queryClient = new QueryClient();
 
   // await queryClient.prefetchQuery([categoryCountsKey], () =>
   //   getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
   // );
+
+  const marketsCmsData = await getCmsMarketMetadataForAllMarkets();
+
+  for (const marketCmsData of marketsCmsData) {
+    if (marketCmsData.marketId) {
+      queryClient.setQueryData(
+        marketCmsDatakeyForMarket(marketCmsData.marketId),
+        marketCmsData,
+      );
+    }
+  }
+
+  // for (const market of [...featuredMarkets, ...trendingMarkets]) {
+  //   const cmsData = marketsCmsData.find((m) => m.marketId === market.marketId);
+  //   if (cmsData?.imageUrl) {
+  //     market.img = cmsData.imageUrl;
+  //   }
+  // }
 
   return {
     props: {

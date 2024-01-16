@@ -56,7 +56,7 @@ export const useCrossChainExtrinsic = <T>(
 
     if (extrinsic && proxy?.enabled && proxy?.address) {
       console.info("Proxying cross chain transaction");
-      extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, "Any", extrinsic);
+      extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, null, extrinsic);
     }
 
     if (!signer || !extrinsic || !sourceChainApi || !destinationChainApi)

@@ -124,8 +124,7 @@ const findBestFeePayingAsset = (
 ) => {
   // find first available asset to pay fee, else just return native asset
   const availableAsset = foreignAssetBalances.find((asset) => {
-    const feeFactor =
-      availableAsset && findFeeFactor(assetMetadata, availableAsset);
+    const feeFactor = findFeeFactor(assetMetadata, asset);
     if (feeFactor) {
       return asset.balance.greaterThan(
         baseFee.mul(feeFactor).mul(foreignAssetFeeBuffer),

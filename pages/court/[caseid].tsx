@@ -7,22 +7,38 @@ import {
   create,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import { CourtAppealForm } from "components/court/CourtAppealForm";
+import { CourtReassignForm } from "components/court/CourtReassignForm";
 import CourtStageTimer from "components/court/CourtStageTimer";
 import { CourtVoteForm } from "components/court/CourtVoteForm";
 import { CourtVoteRevealForm } from "components/court/CourtVoteRevealForm";
 import { SelectedDrawsTable } from "components/court/SelectedDrawsTable";
+import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
 import { AddressDetails } from "components/markets/MarketAddresses";
+import { MarketDescription } from "components/markets/MarketDescription";
 import { HeaderStat } from "components/markets/MarketHeader";
+import { getCmsMarketMetadataForMarket } from "lib/cms/get-market-metadata";
+import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
+import { useCourtCase } from "lib/hooks/queries/court/useCourtCases";
 import { useCourtVoteDrawsForCase } from "lib/hooks/queries/court/useCourtVoteDraws";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
-import { useChainTime } from "lib/state/chaintime";
-import { getCourtStage } from "lib/state/court/get-stage";
+import { useMarketImage } from "lib/hooks/useMarketImage";
+import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
+import { useCourtSalt } from "lib/state/court/useCourtSalt";
+import { useCourtStage } from "lib/state/court/useCourtStage";
+import { useCourtVote } from "lib/state/court/useVoteOutcome";
 import { useWallet } from "lib/state/wallet";
 import { isMarketCategoricalOutcome } from "lib/types";
+import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { calculateSlashableStake } from "lib/util/court/calculateSlashableStake";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { sortBy } from "lodash-es";
+import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,26 +46,11 @@ import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 import NotFoundPage from "pages/404";
 import { IGetPlaiceholderReturn, getPlaiceholder } from "plaiceholder";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
-import { LuReplace, LuVote } from "react-icons/lu";
-import { PiBooks } from "react-icons/pi";
-import {
-  DAY_SECONDS,
-  endpointOptions,
-  environment,
-  graphQlEndpoint,
-  ZTG,
-} from "lib/constants";
-import { CourtAppealForm } from "components/court/CourtAppealForm";
-import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
-import { useCourtVote } from "lib/state/court/useVoteOutcome";
-import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
-import { sortBy } from "lodash-es";
-import { FaBackwardStep } from "react-icons/fa6";
-import { IoMdArrowBack } from "react-icons/io";
-import { useCourtSalt } from "lib/state/court/useCourtSalt";
 import { BsShieldFillExclamation } from "react-icons/bs";
+import { IoMdArrowBack } from "react-icons/io";
+import { LuReplace, LuVote } from "react-icons/lu";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -71,6 +72,11 @@ export async function getStaticProps({
   ]);
 
   const marketId = await sdk.api.query.court.courtIdToMarketId(params.caseid);
+
+  const cmsMetadata = await getCmsMarketMetadataForMarket(
+    marketId.unwrap().toNumber(),
+  );
+
   const markets = marketId.isSome
     ? await sdk.indexer.markets({
         where: {
@@ -80,6 +86,20 @@ export async function getStaticProps({
     : undefined;
 
   const market = markets?.markets[0];
+
+  if (market) {
+    if (cmsMetadata?.imageUrl) {
+      market.img = cmsMetadata?.imageUrl;
+    }
+
+    if (cmsMetadata?.question) {
+      market.question = cmsMetadata?.question;
+    }
+
+    if (cmsMetadata?.description) {
+      (market.description as any) = cmsMetadata?.description;
+    }
+  }
 
   return {
     props: {
@@ -122,13 +142,13 @@ const CasePage: NextPage = ({
   const router = useRouter();
 
   const wallet = useWallet();
-  const time = useChainTime();
 
   const { caseid } = router.query;
   const caseId = Number(caseid);
 
   const { data: courtCase } = useCourtCase(caseId);
   const { data: selectedDraws } = useCourtVoteDrawsForCase(caseId);
+  const { data: chainConstants } = useChainConstants();
 
   const { data: marketId } = useCaseMarketId(caseId);
 
@@ -163,11 +183,10 @@ const CasePage: NextPage = ({
   const hasRevealedVote = connectedParticipantDraw?.vote.isRevealed;
   const hasDenouncedVote = connectedParticipantDraw?.vote.isDenounced;
 
-  const stage = useMemo(() => {
-    if (time && market && courtCase) {
-      return getCourtStage(time, market, courtCase);
-    }
-  }, [time, market, courtCase]);
+  const stage = useCourtStage({
+    caseId: caseid as string,
+    marketId,
+  });
 
   const { prompt } = useConfirmation();
   const [recastVoteEnabled, setRecastVoteEnabled] = useState(false);
@@ -181,6 +200,11 @@ const CasePage: NextPage = ({
     caseId,
     marketId: market.marketId,
   });
+
+  const totalSlashableStake = calculateSlashableStake(
+    courtCase?.appeals.length ?? 0,
+    chainConstants?.court.minJurorStake ?? 0,
+  );
 
   const onClickRecastVote = async () => {
     if (
@@ -292,8 +316,21 @@ const CasePage: NextPage = ({
       )}
 
       {stage?.type === "appeal" && <CourtAppealForm caseId={caseId} />}
+
+      {stage?.type === "closed" && <CourtReassignForm caseId={caseId} />}
     </>
   );
+
+  const { data: marketImage } = useMarketImage(market, {
+    fallback:
+      market.img &&
+      isAbsoluteUrl(market.img) &&
+      !isMarketImageBase64Encoded(market.img)
+        ? market.img
+        : undefined,
+  });
+
+  const { data: marketCmsData } = useMarketCmsMetadata(market.marketId);
 
   return (
     <div className="relative mt-6 flex flex-auto gap-12">
@@ -305,24 +342,51 @@ const CasePage: NextPage = ({
             </Link>
             <h2 className="text-base font-normal">Case — #{caseId}</h2>
           </div>
-          <h1 className="text-[32px] font-extrabold">{market?.question}</h1>
+          <div className="flex items-center gap-3">
+            <div className="hidden lg:block">
+              <div className="relative h-16 w-16 overflow-hidden rounded-lg">
+                <Image
+                  alt={"Market image"}
+                  src={marketImage}
+                  fill
+                  className="overflow-hidden rounded-lg"
+                  style={{
+                    objectFit: "cover",
+                    objectPosition: "50% 50%",
+                  }}
+                  sizes={"100px"}
+                />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-[32px] font-extrabold">
+                {marketCmsData?.question ?? market?.question}
+              </h1>
 
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <HeaderStat label="Started">
-              {new Intl.DateTimeFormat("default", {
-                dateStyle: "medium",
-              }).format(market.period.start)}
-            </HeaderStat>
-            <HeaderStat label="Ended">
-              {new Intl.DateTimeFormat("default", {
-                dateStyle: "medium",
-              }).format(market.period.end)}
-            </HeaderStat>
-            <HeaderStat label="Reported Outcome" border={false}>
-              {reportedOutcome !== undefined
-                ? market.categories?.[reportedOutcome].name
-                : "-"}
-            </HeaderStat>
+              <div className="mb-2 flex flex-wrap items-center gap-2 lg:pl-1">
+                <HeaderStat label="Started">
+                  {new Intl.DateTimeFormat("default", {
+                    dateStyle: "medium",
+                  }).format(market.period.start)}
+                </HeaderStat>
+                <HeaderStat label="Ended">
+                  {new Intl.DateTimeFormat("default", {
+                    dateStyle: "medium",
+                  }).format(market.period.end)}
+                </HeaderStat>
+                <HeaderStat label="Reported Outcome">
+                  {reportedOutcome !== undefined
+                    ? market.categories?.[reportedOutcome].name
+                    : "-"}
+                </HeaderStat>
+                <HeaderStat
+                  label={`Slashable ${chainConstants?.tokenSymbol}`}
+                  border={false}
+                >
+                  {formatNumberCompact(totalSlashableStake)}
+                </HeaderStat>
+              </div>
+            </div>
           </div>
 
           <Link
@@ -332,49 +396,57 @@ const CasePage: NextPage = ({
             View Market
           </Link>
 
-          <div className="relative mb-6 flex items-center gap-3">
-            <AddressDetails title="Creator" address={market.creator} />
+          <div className="flex items-start gap-4">
+            <div>
+              <div className="relative mb-6 flex items-center gap-3">
+                <AddressDetails title="Creator" address={market.creator} />
 
-            <div className="group relative">
-              <Image
-                width={24}
-                height={24}
-                src={imagePath}
-                alt="Currency token logo"
-                className="rounded-full"
-              />
-              <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity  group-hover:opacity-100">
-                <div className="rounded-lg bg-blue-100 px-2 py-1 text-sm">
-                  <span className="text-gray-500">Currency: </span>
-                  <span className="font-semibold">{token}</span>
+                <div className="group relative">
+                  <Image
+                    width={24}
+                    height={24}
+                    src={imagePath}
+                    alt="Currency token logo"
+                    className="rounded-full"
+                  />
+                  <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity  group-hover:opacity-100">
+                    <div className="rounded-lg bg-blue-100 px-2 py-1 text-sm">
+                      <span className="text-gray-500">Currency: </span>
+                      <span className="font-semibold">{token}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="group relative">
+                  <Image
+                    width={26}
+                    height={26}
+                    src="/icons/verified-icon.svg"
+                    alt="verified checkmark"
+                  />
+                  <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+                    <div className="rounded-lg bg-green-lighter px-2 py-1 text-sm">
+                      Verified Market
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="group relative">
-              <Image
-                width={26}
-                height={26}
-                src="/icons/verified-icon.svg"
-                alt="verified checkmark"
-              />
-              <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
-                <div className="rounded-lg bg-green-lighter px-2 py-1 text-sm">
-                  Verified Market
-                </div>
+              <div className="mb-6 md:max-w-[900px]">
+                <CourtStageTimer caseId={caseId} market={market} />
               </div>
             </div>
+            {stage?.type === "reassigned" && market.resolvedOutcome && (
+              <div className="inline-block min-w-[200px] rounded-lg bg-blue-500 px-5 py-3 text-white">
+                <h3 className="mb-3 text-white">Outcome</h3>
+                {market.categories?.[market.resolvedOutcome].name}
+              </div>
+            )}
           </div>
 
-          <div className="mb-6 md:max-w-[900px]">
-            <CourtStageTimer caseId={caseId} market={market} />
+          <div className="mb-4">
+            <MarketDescription market={market} />
           </div>
-
-          {market.description && (
-            <div className="mb-8">
-              <QuillViewer value={market.description} />
-            </div>
-          )}
 
           {stage?.type !== "reassigned" && (
             <>
@@ -434,25 +506,29 @@ const Votes = ({
 }) => {
   const votes = market.categories
     ?.map((category, index) => {
-      const count =
-        selectedDraws?.filter(
-          (draw) =>
-            draw.vote.isRevealed &&
-            draw.vote.asRevealed.voteItem.isOutcome &&
-            draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber() ===
-              index,
-        )?.length ?? 0;
+      const draws = selectedDraws?.filter(
+        (draw) =>
+          draw.vote.isRevealed &&
+          draw.vote.asRevealed.voteItem.isOutcome &&
+          draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber() ===
+            index,
+      );
 
-      return { category, count };
+      const weight =
+        draws?.reduce((acc, draw) => {
+          return acc + draw.weight.toNumber();
+        }, 0) ?? 0;
+
+      return { category, weight };
     })
-    .sort((a, b) => b.count - a.count);
+    .sort((a, b) => b.weight - a.weight);
 
-  const sortedVotes = sortBy(votes, "count").reverse();
+  const sortedVotes = sortBy(votes, "weight").reverse();
 
   const showLeaderIndicator =
     isRevealed &&
-    votes?.some((vote) => vote.count > 0) &&
-    sortedVotes?.[0]?.count > sortedVotes?.[1]?.count;
+    votes?.some((vote) => vote.weight > 0) &&
+    sortedVotes?.[0]?.weight > sortedVotes?.[1]?.weight;
 
   return (
     <div
@@ -460,9 +536,7 @@ const Votes = ({
         showLeaderIndicator && isRevealed && "[&>*:first-child]:bg-green-200"
       }`}
     >
-      {sortedVotes?.map(({ category, count }, index) => {
-        const leader = votes?.[0];
-
+      {sortedVotes?.map(({ category, weight }, index) => {
         return (
           <div
             key={category.ticker}
@@ -477,7 +551,7 @@ const Votes = ({
             )}
             <div className="rounded-top-md flex items-center gap-2 overflow-hidden bg-gray-500 bg-opacity-10">
               <div className="flex-1 p-3 font-semibold">Outcome</div>
-              <div className="flex-1 p-3 font-semibold">Votes</div>
+              <div className="flex-1 p-3 font-semibold">Weight</div>
             </div>
 
             <div className="flex h-fit flex-1 cursor-default items-center gap-2 text-sm">
@@ -488,7 +562,7 @@ const Votes = ({
               </div>
               <div className="flex-1 p-3">
                 {isRevealed ? (
-                  count
+                  weight
                 ) : (
                   <span className="text-gray-400">secret</span>
                 )}

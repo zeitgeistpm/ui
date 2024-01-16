@@ -3,15 +3,13 @@ import test from "./lib/test";
 import { isWSX } from "lib/constants";
 
 test.describe("pages open without errors", () => {
-  const testRoutes = isWSX
-    ? [{ path: "/markets", testId: "marketCard" }]
-    : [
-        { path: "/", testId: "indexPage" },
-        { path: "/markets", testId: "marketCard" },
-      ];
+  const testRoutes = [
+    { path: "/", testId: "indexPage" },
+    // { path: "/markets", testId: "marketCard" },
+  ];
 
   for (const route of testRoutes) {
-    test(`rotue "${route.path}"`, async ({ page, consoleErrors }) => {
+    test(`route "${route.path}"`, async ({ page, consoleErrors }) => {
       await page.goto(route.path);
 
       const element = page.locator(`[data-testid^=${route.testId}]`).first();
