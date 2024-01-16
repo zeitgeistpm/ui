@@ -2,6 +2,7 @@ import { BaseDotsamaWallet } from "@talismn/connect-wallets";
 import { useAccountModals } from "lib/state/account";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
+import Web3wallet from "components/web3wallet";
 
 import { useEffect } from "react";
 import { Download } from "react-feather";
@@ -31,6 +32,7 @@ const WalletSelect = () => {
       <div className="mb-3 text-ztg-16-150 font-bold text-black">
         Connect Wallet
       </div>
+      <Web3wallet />
       {supportedWallets.map((wallet, idx) => {
         const error = errors.find(
           (e) => e.extensionName === wallet.extensionName,
