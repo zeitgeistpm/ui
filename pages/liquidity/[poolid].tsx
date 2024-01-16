@@ -88,12 +88,12 @@ const PoolDetails: NextPage = () => {
   const { data: pool, isInitialLoading, isFetched } = usePool({ poolId });
   const { data: market } = useMarket({ poolId });
 
-  const baseAssetId = parseAssetIdString(pool?.baseAsset);
+  const baseAssetId = parseAssetIdString(market?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAssetId);
   const { data: liquidity } = usePoolLiquidity({ poolId });
 
   const volume = isIndexedData(pool)
-    ? new Decimal(pool.volume).div(ZTG).toFixed(2)
+    ? new Decimal(market?.volume ?? 0).div(ZTG).toFixed(2)
     : null;
 
   const swapFee = Number(pool?.swapFee);

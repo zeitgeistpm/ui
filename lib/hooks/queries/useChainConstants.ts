@@ -13,6 +13,7 @@ export type ChainConstants = {
     maxDisputes: number;
     disputeBond: number; // initial dispute amount
     oracleBond: number;
+    outsiderBond: number;
     advisoryBond: number;
     validityBond: number;
     maxCategories: number;
@@ -68,6 +69,7 @@ export const useChainConstants = () => {
           maxDisputes: consts.predictionMarkets.maxDisputes.toNumber(),
           disputeBond: consts.predictionMarkets.disputeBond.toNumber() / ZTG,
           oracleBond: consts.predictionMarkets.oracleBond.toNumber() / ZTG,
+          outsiderBond: consts.predictionMarkets.outsiderBond.toNumber() / ZTG,
           advisoryBond: consts.predictionMarkets.advisoryBond.toNumber() / ZTG,
           validityBond: consts.predictionMarkets.validityBond.toNumber() / ZTG,
           maxCategories: consts.predictionMarkets.maxCategories.toNumber(),

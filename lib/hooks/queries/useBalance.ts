@@ -14,7 +14,7 @@ export const useBalance = (
 ) => {
   const [sdk, id] = useSdkv2();
   const query = useQuery(
-    [id, balanceRootKey, "free", address, assetId, blockNumber],
+    [id, balanceRootKey, address, assetId, blockNumber],
     async () => {
       if (address && assetId && isRpcSdk(sdk)) {
         const api = await getApiAtBlock(sdk.api, blockNumber);

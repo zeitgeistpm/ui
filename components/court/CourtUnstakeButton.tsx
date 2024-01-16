@@ -13,7 +13,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useState } from "react";
 
-const PrepareExitCourtButton = ({ className }: { className?: string }) => {
+const CourtUnstakeButton = ({ className }: { className?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: constants } = useChainConstants();
   const [sdk, id] = useSdkv2();
@@ -49,11 +49,11 @@ const PrepareExitCourtButton = ({ className }: { className?: string }) => {
         className={`rounded-md bg-[#DC056C] px-4 py-2 text-white ${className}`}
         onClick={() => setIsOpen(true)}
       >
-        Prepare Exit Court
+        Unstake
       </button>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
-          <h3 className="mb-8">Prepare Exit Court</h3>
+          <h3 className="mb-8">Unstake</h3>
           <div className="flex flex-col">
             <div className="flex">
               <div className="mr-auto">Stake:</div>
@@ -95,4 +95,4 @@ const PrepareExitCourtButton = ({ className }: { className?: string }) => {
   );
 };
 
-export default PrepareExitCourtButton;
+export default CourtUnstakeButton;

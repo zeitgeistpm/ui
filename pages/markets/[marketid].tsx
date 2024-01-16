@@ -1,10 +1,15 @@
 import { Disclosure, Transition } from "@headlessui/react";
-import { FullMarketFragment, MarketStatus } from "@zeitgeistpm/indexer";
+import {
+  FullMarketFragment,
+  MarketStatus,
+  ScoringRule,
+} from "@zeitgeistpm/indexer";
 import {
   MarketOutcomeAssetId,
   ScalarRangeType,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import LatestTrades from "components/front-page/LatestTrades";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import DisputeResult from "components/markets/DisputeResult";
 import { AddressDetails } from "components/markets/MarketAddresses";
@@ -13,8 +18,8 @@ import {
   CategoricalMarketChart,
   ScalarMarketChart,
 } from "components/markets/MarketChart";
+import { MarketDescription } from "components/markets/MarketDescription";
 import MarketHeader from "components/markets/MarketHeader";
-import PoolDeployer from "components/markets/PoolDeployer";
 import ReportResult from "components/markets/ReportResult";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
@@ -23,17 +28,18 @@ import CategoricalReportBox from "components/outcomes/CategoricalReportBox";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
+import { TradeTabType } from "components/trade-form/TradeTab";
+import ReferendumSummary from "components/ui/ReferendumSummary";
 import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
-import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import {
-  ZTG,
-  environment,
-  graphQlEndpoint,
-  marketReferendumMap,
-} from "lib/constants";
+  CmsMarketMetadata,
+  getCmsMarketMetadataForMarket,
+} from "lib/cms/get-market-metadata";
+import { PromotedMarket } from "lib/cms/get-promoted-markets";
+import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
   MarketPageIndexedData,
   getMarket,
@@ -42,6 +48,7 @@ import {
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
@@ -62,6 +69,7 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
@@ -69,11 +77,6 @@ import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { isWSX } from "lib/constants";
 import { FaChevronUp } from "react-icons/fa";
-import { ScoringRule } from "@zeitgeistpm/indexer";
-import { TradeTabType } from "components/trade-form/TradeTab";
-import ReferendumSummary from "components/ui/ReferendumSummary";
-import LatestTrades from "components/front-page/LatestTrades";
-import Link from "next/link";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -110,9 +113,11 @@ export async function getStaticProps({ params }) {
 
   const [
     market,
+    cmsMetadata,
     // promotionData
   ] = await Promise.all([
     getMarket(client, params.marketid),
+    getCmsMarketMetadataForMarket(params.marketid),
     // getMarketPromotion(Number(params.marketid)),
   ]);
 
@@ -133,12 +138,25 @@ export async function getStaticProps({ params }) {
     resolutionTimestamp = timestamp ?? undefined;
   }
 
+  if (cmsMetadata?.imageUrl) {
+    market.img = cmsMetadata?.imageUrl;
+  }
+
+  if (cmsMetadata?.question) {
+    market.question = cmsMetadata?.question;
+  }
+
+  if (cmsMetadata?.description) {
+    market.description = cmsMetadata?.description;
+  }
+
   return {
     props: {
       indexedMarket: market ?? null,
       chartSeries: chartSeries ?? null,
       resolutionTimestamp: resolutionTimestamp ?? null,
       promotionData: null,
+      cmsMetadata: cmsMetadata ?? null,
     },
     revalidate:
       environment === "production"
@@ -152,6 +170,7 @@ type MarketPageProps = {
   chartSeries: ChartSeries[];
   resolutionTimestamp: string;
   promotionData: PromotedMarket | null;
+  cmsMetadata: CmsMarketMetadata | null;
 };
 
 const Market: NextPage<MarketPageProps> = ({
@@ -159,11 +178,14 @@ const Market: NextPage<MarketPageProps> = ({
   chartSeries,
   resolutionTimestamp,
   promotionData,
+  cmsMetadata,
 }) => {
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
-  const referendumIndex = marketReferendumMap?.[marketId];
+
+  const referendumChain = cmsMetadata?.referendumRef?.chain;
+  const referendumIndex = cmsMetadata?.referendumRef?.referendumIndex;
 
   const tradeItem = useTradeItem();
 
@@ -287,6 +309,7 @@ const Market: NextPage<MarketPageProps> = ({
             promotionData={promotionData}
             rejectReason={market?.rejectReason ?? undefined}
           />
+
           {market?.rejectReason && market.rejectReason.length > 0 && (
             <div className="mt-[10px] text-ztg-14-150">
               Market rejected: {market.rejectReason}
@@ -364,18 +387,7 @@ const Market: NextPage<MarketPageProps> = ({
           </div>
 
           <div className="mb-12 max-w-[90vw]">
-            {indexedMarket.description?.length > 0 && (
-              <>
-                <h3 className="mb-5 text-2xl">About Market</h3>
-                <QuillViewer value={indexedMarket.description} />
-              </>
-            )}
-            {market && !marketHasPool && (
-              <PoolDeployer
-                marketId={Number(marketid)}
-                onPoolDeployed={handlePoolDeployed}
-              />
-            )}
+            <MarketDescription market={indexedMarket} />
           </div>
 
           {!isWSX && (
@@ -453,7 +465,7 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
 
             {referendumIndex != null && (
-              <div className="mb-12 ">
+              <div className="mb-12 animate-pop-in opacity-0">
                 <ReferendumSummary referendumIndex={referendumIndex} />
               </div>
             )}
@@ -702,6 +714,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
 
   const wallet = useWallet();
   const { data: stage } = useMarketStage(market);
+  const { data: chainConstants } = useChainConstants();
 
   const connectedWalletIsOracle = market.oracle === wallet.realAddress;
 
@@ -726,9 +739,15 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
           </p>
 
           {stage?.type === "OpenReportingPeriod" && (
-            <p className="-mt-3 mb-6 text-sm italic text-gray-500">
-              Oracle failed to report. Reporting is now open to all.
-            </p>
+            <>
+              <p className="-mt-3 mb-6 text-sm italic text-gray-500">
+                Oracle failed to report. Reporting is now open to all.
+              </p>
+              <p className="mb-6 text-sm">
+                Bond cost: {chainConstants?.markets.outsiderBond}{" "}
+                {chainConstants?.tokenSymbol}
+              </p>
+            </>
           )}
 
           <div className="mb-4">
