@@ -12,8 +12,6 @@ import {
   reportingPeriodOptions,
 } from "lib/state/market-creation/constants/deadline-options";
 import { useMarketDraftEditor } from "lib/state/market-creation/editor";
-import * as MarketDraft from "lib/state/market-creation/types/draft";
-import { persistentAtom } from "lib/state/util/persistent-atom";
 import dynamic from "next/dynamic";
 import { useMemo, useRef } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";

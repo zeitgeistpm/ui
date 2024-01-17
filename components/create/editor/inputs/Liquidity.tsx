@@ -9,8 +9,6 @@ import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
 import { ReactNode } from "react";
 import { FormEvent } from "../types";
-import Input from "components/ui/Input";
-import PoolSettingsAmm2 from "components/liquidity/PoolSettingsAMM2";
 import FeeSelect, { Fee } from "./FeeSelect";
 import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 

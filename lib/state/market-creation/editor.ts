@@ -322,11 +322,8 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
     if (!draft.form.answers || !draft.form.liquidity) return;
 
     const baseAmount = minBaseLiquidity[draft.form.currency!]
-      ? `${minBaseLiquidity[draft.form.currency!] / 2}`
+      ? `${minBaseLiquidity[draft.form.currency!]}`
       : "100";
-
-    const amm2Liquidity =
-      minBaseLiquidity[draft.form.currency!]?.toString() ?? "100";
 
     const numOutcomes = draft.form.answers.answers.length;
     const ratio = 1 / numOutcomes;
@@ -367,7 +364,6 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
         ...draft.form,
         liquidity: {
           ...draft.form.liquidity,
-          amount: amm2Liquidity,
           rows,
         },
       },
