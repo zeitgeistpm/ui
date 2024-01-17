@@ -102,26 +102,20 @@ export const MarketEditor = () => {
 
   const isLoaded = Boolean(chainTime && isFetched);
 
-  const creationParams = useMemo<
-    CreateMarketParams<RpcContext> | undefined
-  >(() => {
-    let signer = wallet.getSigner();
+  const signer = wallet.getSigner();
+  const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
 
-    if (!editor.isValid || !chainTime || !signer) return;
-
-    const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
-
-    if (proxy && proxy.enabled) {
-      return marketFormDataToExtrinsicParams(
-        editor.form,
-        { address: wallet.realAddress } as KeyringPairOrExtSigner,
-        chainTime,
-        signer,
-      );
-    }
-
-    return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
-  }, [editor.form, chainTime, wallet.activeAccount]);
+  const creationParams =
+    editor.isValid && chainTime && signer
+      ? proxy && proxy.enabled
+        ? marketFormDataToExtrinsicParams(
+            editor.form,
+            { address: wallet.realAddress } as KeyringPairOrExtSigner,
+            chainTime,
+            signer,
+          )
+        : marketFormDataToExtrinsicParams(editor.form, signer, chainTime)
+      : undefined;
 
   return (
     <>
