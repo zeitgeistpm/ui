@@ -47,7 +47,6 @@ const PoolDeployer = ({
   const notificationStore = useNotifications();
   const [sdk, id] = useSdkv2();
   const [liquidity, setLiquidity] = useState<Liquidity | null>(null);
-  console.log(liquidity);
 
   const {
     send: deployAmm2Pool,

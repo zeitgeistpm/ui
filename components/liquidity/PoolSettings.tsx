@@ -91,7 +91,6 @@ const PriceSetter = ({
   };
 
   const priceDecimal = new Decimal(price);
-  console.log(price);
 
   return (
     <div className="flex items-center">
@@ -161,8 +160,6 @@ const PoolSettings: FC<{
   };
 
   const onPriceChange = (priceInfo: PriceInfo, changedIndex: number) => {
-    console.log(JSON.stringify(data));
-
     const changedPrice =
       priceInfo.price == null || priceInfo.price === ""
         ? new Decimal(0)
@@ -175,9 +172,6 @@ const PoolSettings: FC<{
     });
 
     const prices = calcPrices(priceLocks);
-    console.log(JSON.stringify(prices));
-    console.log(baseAssetAmount);
-    console.log(JSON.stringify(priceLocks.map((p) => p.price)));
 
     const amounts = calculatePoolAmounts(
       new Decimal(baseAssetAmount),
@@ -186,14 +180,9 @@ const PoolSettings: FC<{
 
     const isInvalid = amounts.some((amount) => amount.isNaN());
 
-    console.log(JSON.stringify(amounts));
-
-    // console.log(amounts.);
     const newData = data.map((row, index) => ({
       ...row,
-      // weight: weights[index]?.toString() ?? row.weight,
       price: prices[index] ?? row.price,
-      // value: (prices[index] ?? row.price).price.mul(row.amount).toFixed(4),
       amount: isInvalid ? "0" : amounts[index].toString(),
     }));
 
@@ -206,7 +195,6 @@ const PoolSettings: FC<{
         token: true,
         label: d.asset,
       },
-      // weights: d.weight,
       price: (
         <PriceSetter
           price={d.price.price.toString()}
@@ -215,10 +203,6 @@ const PoolSettings: FC<{
           onChange={(priceInfo) => onPriceChange(priceInfo, index)}
         />
       ),
-      // total: {
-      //   value: Number(d.value),
-      //   usdValue: new Decimal(d.value ?? 0).mul(baseAssetPrice ?? 0).toNumber(),
-      // },
       amount: d.amount,
     };
   });
@@ -229,12 +213,6 @@ const PoolSettings: FC<{
       accessor: "token",
       type: "token",
     },
-    // {
-    //   header: "Weights",
-    //   accessor: "weights",
-    //   type: "number",
-    //   width: "10%",
-    // },
     { header: "Amount", accessor: "amount", type: "number", width: "25%" },
     {
       header: "Price",
@@ -242,11 +220,6 @@ const PoolSettings: FC<{
       type: "component",
       width: "30%",
     },
-    // {
-    //   header: "Total Value",
-    //   accessor: "total",
-    //   type: "currency",
-    // },
   ];
 
   const handleFeeChange = (fee: Decimal) => {
@@ -294,8 +267,6 @@ const PoolSettings: FC<{
               className="font-base w-64 rounded-md bg-gray-100 py-4 pl-5 pr-28 text-right text-base outline-none"
               value={`${parseFloat(baseAssetAmount)}`}
               onChange={(event) => {
-                console.log(event.target.value);
-
                 const value = parseFloat(event.target.value);
                 if (!isNaN(value)) {
                   handleBaseAmountChange(`${value}`);
