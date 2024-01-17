@@ -1,10 +1,10 @@
-import { News } from "lib/cms/get-news";
+import { CmsNews } from "lib/cms/news";
 import { UseSliderControls } from "lib/hooks/slides";
 import { FC } from "react";
 import { ChevronLeft, ChevronRight } from "react-feather";
 
 export interface HeroControlsProps {
-  slides: News[];
+  slides: CmsNews[];
   slider: UseSliderControls;
 }
 

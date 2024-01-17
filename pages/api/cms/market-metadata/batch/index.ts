@@ -1,4 +1,4 @@
-import { getCmsMarketMetadataForMarkets } from "lib/cms/get-market-metadata";
+import { getCmsMarketMetadataForMarkets } from "lib/cms/markets";
 import { PageConfig } from "next";
 import { NextRequest } from "next/server";
 
