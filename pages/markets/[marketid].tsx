@@ -20,6 +20,7 @@ import {
 } from "components/markets/MarketChart";
 import { MarketDescription } from "components/markets/MarketDescription";
 import MarketHeader from "components/markets/MarketHeader";
+import PoolDeployer from "components/markets/PoolDeployer";
 import ReportResult from "components/markets/ReportResult";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
@@ -401,6 +402,13 @@ const Market: NextPage<MarketPageProps> = ({
                 View more
               </Link>
             </div>
+          )}
+
+          {marketHasPool === false && (
+            <PoolDeployer
+              marketId={marketId}
+              onPoolDeployed={handlePoolDeployed}
+            />
           )}
 
           {market && (marketHasPool || poolDeployed) && (

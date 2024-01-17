@@ -62,19 +62,6 @@ export const LiquidityInput = ({
     });
   };
 
-  // const handleAmountChange = (event: FormEvent<string>) => {
-  //   onChange({
-  //     type: "change",
-  //     target: {
-  //       name,
-  //       value: {
-  //         ...value!,
-  //         amount: event.target.value,
-  //       },
-  //     },
-  //   });
-  // };
-
   return (
     <div className="center">
       <div className="md:max-w-4xl">
@@ -83,7 +70,7 @@ export const LiquidityInput = ({
             <PoolSettings
               baseAssetPrice={baseAssetPrice ?? undefined}
               baseAssetSymbol={currencyMetadata?.name ?? ""}
-              baseAssetAmount={editor.form.liquidity?.amount ?? ""}
+              baseAssetAmount={value?.amount ?? ""}
               data={transformRows(value?.rows ?? [])}
               onChange={handleRowsChange}
               noDataMessage={errorMessage}
