@@ -106,11 +106,11 @@ const PriceSetter = ({
           onChange={handlePriceChange}
         />
         <div className="h-[10px] text-[10px] text-vermilion">
-          {priceDecimal.greaterThanOrEqualTo(1) && (
-            <>Price must be less than 1</>
+          {priceDecimal.greaterThanOrEqualTo(0.99) && (
+            <>Price must be less than 0.99</>
           )}
-          {priceDecimal.lessThanOrEqualTo(0) && (
-            <>Price must be greater than 1</>
+          {priceDecimal.lessThanOrEqualTo(0.01) && (
+            <>Price must be greater than 0.01</>
           )}
         </div>
       </div>
