@@ -289,7 +289,6 @@ export const IOCreatorFee = z.object({
 
 export const IOLiquidityRow = z.object({
   asset: z.string(),
-  // weight: z.string(),
   amount: z.string(),
   price: z.object({
     price: z.string(),

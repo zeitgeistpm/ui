@@ -133,12 +133,10 @@ export const marketFormDataToExtrinsicParams = (
   }
 
   const hasPool = form.moderation === "Permissionless" && form.liquidity.deploy;
-  // const isAMM2Market = isAMM2Form(form);
 
   let poolParams: WithPool | NoPool;
 
   if (hasPool) {
-    // if (isAMM2Market) {
     poolParams = {
       scoringRule: "Lmsr",
       pool: {
@@ -149,22 +147,6 @@ export const marketFormDataToExtrinsicParams = (
         ),
       },
     };
-    // } else {
-    //   poolParams = {
-    //     scoringRule: "Cpmm",
-    //     pool: {
-    //       amount: new Decimal(form.liquidity.rows[0].amount)
-    //         .mul(ZTG)
-    //         .toString(),
-    //       swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
-    //       // weights: form.liquidity.rows.slice(0, -1).map((row) => {
-    //       //   return new Decimal(row.weight)
-    //       //     .mul(ZTG)
-    //       //     .toFixed(0, Decimal.ROUND_DOWN);
-    //       // }),
-    //     },
-    //   };
-    // }
   } else {
     poolParams = {
       scoringRule: "Lmsr",
@@ -223,10 +205,6 @@ export const marketFormDataToExtrinsicParams = (
 
   return params;
 };
-
-// export const isAMM2Form = (form: Partial<MarketFormData>) => {
-//   return form.answers?.answers.length === 2;
-// };
 
 export const durationasBlocks = (duration: Partial<PeriodDurationOption>) => {
   return (

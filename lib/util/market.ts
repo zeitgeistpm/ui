@@ -24,7 +24,7 @@ export const calculateMarketCost = (
 };
 
 export const calculatePoolCost = (poolAmounts: number[]) => {
-  return poolAmounts[0] * 2; //todo: revisit
+  return poolAmounts[0] * 2;
 };
 
 export interface PricePoint {

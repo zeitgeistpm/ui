@@ -16,7 +16,6 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { calculatePoolCost } from "lib/util/market";
 
 import { ErrorMessage } from "components/create/editor/ErrorMessage";
 import { LiquidityInput } from "components/create/editor/inputs/Liquidity";

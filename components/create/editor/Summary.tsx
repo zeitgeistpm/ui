@@ -52,11 +52,6 @@ export const MarketSummary = ({
   const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
 
   const baseAmount = form.liquidity?.amount;
-  //todo: this will be wrong
-  const baseAssetLiquidityRow = form?.liquidity?.rows?.find(
-    (row) => row.asset === form.currency,
-  );
-  const amm2Liquidity = editor.form?.liquidity?.amount;
 
   return (
     <div className="flex-1 text-center">
@@ -113,23 +108,13 @@ export const MarketSummary = ({
             </div>
           </div>
           <div>
-            {baseAssetLiquidityRow &&
-            form?.liquidity?.deploy &&
+            {form?.liquidity?.deploy &&
             form?.moderation === "Permissionless" ? (
               <>
                 <div className="mb-4 flex justify-center gap-4">
                   <div className="flex items-center justify-center gap-2">
-                    <Label>Amount</Label>{" "}
-                    <div>
-                      {amm2Liquidity ?? baseAssetLiquidityRow?.amount ?? "--"}
-                    </div>
+                    <Label>Amount</Label> <div>{baseAmount ?? "--"}</div>
                   </div>
-                  {/* {!amm2Liquidity && (
-                    <div className="flex items-center justify-center gap-2">
-                      <Label>Weight</Label>{" "}
-                      <div>{baseAssetLiquidityRow?.weight ?? "--"}</div>
-                    </div>
-                  )} */}
                   <div className="flex items-center justify-center gap-2">
                     <Label>Swap Fee</Label>{" "}
                     {form.liquidity?.swapFee?.value ?? "--"}%
@@ -137,19 +122,9 @@ export const MarketSummary = ({
                 </div>
 
                 <div>
-                  <Label>Total Base Liquidity</Label>{" "}
-                  {amm2Liquidity
-                    ? amm2Liquidity
-                    : new Decimal(baseAssetLiquidityRow?.value)
-                        .mul(2)
-                        .toFixed(1)}{" "}
-                  {baseAssetLiquidityRow?.asset}{" "}
-                  <span className="text-gray-400">≈</span>{" "}
-                  {baseAssetPrice
-                    ?.mul(Number(amm2Liquidity) ?? baseAssetLiquidityRow?.value)
-                    .mul(2)
-                    .toFixed(2)}{" "}
-                  USD
+                  <Label>Total Base Liquidity</Label> {baseAmount}{" "}
+                  {form.currency} <span className="text-gray-400">≈</span>{" "}
+                  {baseAssetPrice?.mul(baseAmount || 0).toFixed(2)} USD
                 </div>
               </>
             ) : !form?.liquidity?.deploy &&
@@ -342,10 +317,10 @@ const AnswersDisplay = ({
                     <div className="mb-1">
                       {answerLiquidity ? (
                         <>
-                          {new Decimal(answerLiquidity?.amount ?? 0).toFixed(1)}{" "}
+                          {new Decimal(answerLiquidity?.amount || 0).toFixed(1)}{" "}
                           <span className="text-gray-400">≈</span>{" "}
                           {baseAssetPrice
-                            ?.mul(answerLiquidity?.amount ?? 0)
+                            ?.mul(answerLiquidity?.amount || 0)
                             .mul(answerLiquidity?.price.price ?? 0)
                             .toFixed(2)}{" "}
                           USD

@@ -1,7 +1,7 @@
 import { FormEvent } from "components/create/editor/types";
 import Decimal from "decimal.js";
 import { usePrevious } from "lib/hooks/usePrevious";
-import { last, merge } from "lodash-es";
+import { merge } from "lodash-es";
 import { useEffect, useMemo } from "react";
 import { minBaseLiquidity } from "./constants/currency";
 import * as MarketDraft from "./types/draft";
@@ -10,7 +10,6 @@ import {
   MarketFormData,
   PartialMarketFormData,
   ValidMarketFormData,
-  // isAMM2Form,
   marketCreationFormKeys,
 } from "./types/form";
 import {
@@ -346,7 +345,7 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
             : draft.form.liquidity?.rows?.[index]?.amount || baseAmount,
         );
 
-        const price = reset //todo: check what this is
+        const price = reset
           ? ratio.toString()
           : liquidity?.price?.price ?? ratio.toString();
 
@@ -360,16 +359,6 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
           value: `${amount.mul(ratio).toFixed(4)}`,
         };
       }),
-      // {
-      //   asset: draft.form.currency,
-      //   weight: baseWeight.toString(),
-      //   amount: reset ? baseAmount : baseAssetLiquidity?.amount || baseAmount,
-      //   price: {
-      //     price: "1",
-      //     locked: true,
-      //   },
-      //   value: reset ? baseAmount : baseAssetLiquidity?.value || baseAmount,
-      // },
     ];
 
     update({
