@@ -36,12 +36,10 @@ import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import Input from "components/ui/Input";
 import TimezoneSelect from "./inputs/TimezoneSelect";
 import { Loader } from "components/ui/Loader";
-import { LiquidityInputAmm2 } from "./inputs/LiquidityAMM2";
 import FeeSelect from "./inputs/FeeSelect";
 import { useWallet } from "lib/state/wallet";
 import { marketFormDataToExtrinsicParams } from "lib/state/market-creation/types/form";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
-import { CreateMarketParams, RpcContext } from "@zeitgeistpm/sdk";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
