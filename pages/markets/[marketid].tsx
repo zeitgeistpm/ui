@@ -38,7 +38,7 @@ import { GraphQLClient } from "graphql-request";
 import {
   CmsMarketMetadata,
   getCmsMarketMetadataForMarket,
-} from "lib/cms/get-market-metadata";
+} from "lib/cms/markets";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
