@@ -273,9 +273,8 @@ const PoolSettings: FC<{
             >
               <p className="mb-4 font-light">
                 This is the amount of liquidity that will be provided to the
-                market. Half of this amount will be provided to the base asset
-                token and the other half spread across the outcome tokens
-                according to weights/prices.
+                market. It will be used to facilitate trading and is subject to
+                impermanent loss, as compensation you will earn trading fees.
               </p>
               <p className="font-light">
                 <b className="font-bold">
