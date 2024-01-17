@@ -108,7 +108,7 @@ const useWeb3Wallet = () => {
     }
   };
 
-  const loginEmail = async () => {
+  const loginEmail = async (email?: string) => {
     if (!web3auth) {
       console.log("web3auth not initialized yet");
       return;
@@ -122,7 +122,7 @@ const useWeb3Wallet = () => {
           domain: "https://dev-yacn6ah0b1dc12yh.us.auth0.com",
           verifierIdField: "email",
           isVerifierIdCaseSensitive: false,
-          login_hint: "hello@web3auth.io",
+          login_hint: email,
         },
       },
     );
