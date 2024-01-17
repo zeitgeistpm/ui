@@ -7,7 +7,6 @@ const accountsAtom = atom({
 
 export const useAccountModals = () => {
   const [state, setState] = useAtom(accountsAtom);
-
   return {
     ...state,
     openAccountSelect: () => {

@@ -4,6 +4,7 @@ import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
 import Web3wallet from "components/web3wallet";
 import WalletIcon from "./WalletIcon";
+import AccountModalContent from "components/account/AccountModalContent";
 
 import { useEffect } from "react";
 
@@ -34,10 +35,10 @@ const WalletSelect = () => {
         Log in to Zeitgeist
       </h3>
       <Web3wallet />
-      <div className="py-8 text-center text-xs uppercase text-gray-400">
-        <p>Or Connect Using Your Own Wallet</p>
+      <div className="py-6 text-center text-sm text-gray-400">
+        <p>or connect using your own wallet</p>
       </div>
-      <div className="flex justify-between gap-4">
+      <div className="flex justify-between gap-6">
         {supportedWallets
           .filter((w) => w.extensionName !== "web3auth")
           .map((wallet) => {
@@ -60,6 +61,7 @@ const WalletSelect = () => {
             );
           })}
       </div>
+      {/* <AccountModalContent /> */}
     </div>
   );
 };

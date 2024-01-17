@@ -23,9 +23,9 @@ const WalletIcon = ({
   className,
 }: WalletIconProps) => {
   return (
-    <div
+    <button
       key={extensionName}
-      className="flex flex-1 cursor-pointer flex-row items-center justify-center rounded border py-1 hover:bg-gray-200"
+      className="flex flex-1 cursor-pointer flex-row items-center justify-center rounded-md border py-1 hover:bg-gray-200"
       onClick={onClick}
     >
       <Image
@@ -43,7 +43,7 @@ const WalletIcon = ({
             "Not allowed to interact with extension. Please change permission settings."}
         </div>
       )}
-    </div>
+    </button>
   );
 };
 

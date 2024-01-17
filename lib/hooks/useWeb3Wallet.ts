@@ -5,6 +5,7 @@ import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { Keyring } from "@polkadot/api";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
+import { enabledWeb3Wallet } from "lib/state/wallet";
 
 export const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG!;
 
@@ -12,7 +13,7 @@ const useWeb3Wallet = () => {
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState<boolean | null>(false);
-  const [isProviderReady, setIsProviderReady] = useState(false);
+  const [address, setAddress] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -52,6 +53,12 @@ const useWeb3Wallet = () => {
                 typeOfLogin: "jwt",
                 clientId: "4v1l8rc65YNzcbY93wxJzgCUqKNxoSMm",
               },
+              // auth0fb: {
+              //   verifier: "auth-0-all",
+              //   verifierSubIdentifier: "auth0-fb",
+              //   typeOfLogin: "jwt",
+              //   clientId: "4v1l8rc65YNzcbY93wxJzgCUqKNxoSMm",
+              // },
               auth0emailpasswordless: {
                 verifier: "auth-0-all",
                 verifierSubIdentifier: "auth0-passwordless",
@@ -69,7 +76,6 @@ const useWeb3Wallet = () => {
 
         if (web3auth.connected) {
           setLoggedIn(true);
-          setIsProviderReady(true);
         }
       } catch (error) {
         console.error(error);
@@ -80,31 +86,44 @@ const useWeb3Wallet = () => {
   }, []);
 
   useEffect(() => {
-    if (isProviderReady) {
-      getKeypair();
+    if (web3auth?.connected) {
+      const init = async () => {
+        const keypair = await getKeypair();
+        if (keypair) {
+          enabledWeb3Wallet(keypair);
+        }
+      };
+      init();
     }
-  }, [isProviderReady]);
+  }, [web3auth?.connected]);
 
   const loginGoogle = async () => {
     if (!web3auth) {
       console.log("web3auth not initialized yet");
       return;
     }
-    console.log(web3auth);
-    const web3authProvider = await web3auth.connectTo(
-      WALLET_ADAPTERS.OPENLOGIN,
-      {
-        loginProvider: "auth0google",
-        extraLoginOptions: {
-          domain: "https://dev-yacn6ah0b1dc12yh.us.auth0.com",
-          verifierIdField: "email",
-          isVerifierIdCaseSensitive: false,
-          connection: "google-oauth2",
+    if (web3auth.connected) {
+      await web3auth.logout();
+    }
+    await web3auth.init();
+    try {
+      const web3authProvider = await web3auth.connectTo(
+        WALLET_ADAPTERS.OPENLOGIN,
+        {
+          loginProvider: "auth0google",
+          extraLoginOptions: {
+            domain: "https://dev-yacn6ah0b1dc12yh.us.auth0.com",
+            verifierIdField: "email",
+            isVerifierIdCaseSensitive: false,
+            connection: "google-oauth2",
+          },
         },
-      },
-    );
-    if (web3authProvider) {
-      setProvider(web3authProvider);
+      );
+      if (web3authProvider) {
+        setProvider(web3authProvider);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -113,26 +132,32 @@ const useWeb3Wallet = () => {
       console.log("web3auth not initialized yet");
       return;
     }
-    console.log(web3auth);
-    const web3authProvider = await web3auth.connectTo(
-      WALLET_ADAPTERS.OPENLOGIN,
-      {
-        loginProvider: "auth0emailpasswordless",
-        extraLoginOptions: {
-          domain: "https://dev-yacn6ah0b1dc12yh.us.auth0.com",
-          verifierIdField: "email",
-          isVerifierIdCaseSensitive: false,
-          login_hint: email,
+    if (web3auth.connected) {
+      await web3auth.logout();
+    }
+    await web3auth.init();
+    try {
+      const web3authProvider = await web3auth.connectTo(
+        WALLET_ADAPTERS.OPENLOGIN,
+        {
+          loginProvider: "auth0emailpasswordless",
+          extraLoginOptions: {
+            domain: "https://dev-yacn6ah0b1dc12yh.us.auth0.com",
+            verifierIdField: "email",
+            isVerifierIdCaseSensitive: false,
+            login_hint: email,
+          },
         },
-      },
-    );
-    if (web3authProvider) {
-      setProvider(web3authProvider);
+      );
+      if (web3authProvider) {
+        setProvider(web3authProvider);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const getKeypair = async () => {
-    console.log(provider);
     if (!provider) return;
     await cryptoWaitReady();
     const privateKey = await provider.request({
@@ -140,7 +165,7 @@ const useWeb3Wallet = () => {
     });
     const keyring = new Keyring({ ss58Format: 73, type: "sr25519" });
     const keyPair = keyring.addFromUri("0x" + privateKey);
-    console.log(keyPair.address);
+    // setAddress(keyPair.address);
     return keyPair;
   };
 
@@ -152,9 +177,8 @@ const useWeb3Wallet = () => {
     await web3auth.logout();
     setProvider(null);
     setLoggedIn(false);
-    setIsProviderReady(false);
+    setAddress(null);
   };
-
   return { loginEmail, loginGoogle, logout, getKeypair };
 };
 

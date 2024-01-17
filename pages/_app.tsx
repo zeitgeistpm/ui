@@ -58,14 +58,14 @@ const MyApp = ({ Component, pageProps }) => {
       router.events.off("routeChangeComplete", onRouteChangeComplete);
   }, []);
 
-  useEffect(() => {
-    if (wallet.walletId === "web3auth") {
-      const init = async () => {
-        await wallet.loadWeb3AuthWallet();
-      };
-      init();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (wallet.walletId === "web3auth") {
+  //     const init = async () => {
+  //       await wallet.loadWeb3AuthWallet();
+  //     };
+  //     init();
+  //   }
+  // }, []);
 
   return (
     <div
