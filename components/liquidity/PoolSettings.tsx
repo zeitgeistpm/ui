@@ -18,10 +18,8 @@ import { calculatePoolAmounts } from "lib/util/amm2";
 
 export interface PoolAssetRowData {
   asset: string;
-  // weight: string;
   amount: string;
   price: PriceLock;
-  // value: string;
 }
 
 export const poolRowDataFromOutcomes = (
@@ -30,18 +28,13 @@ export const poolRowDataFromOutcomes = (
   initialAmount: string = "100",
 ): PoolAssetRowData[] => {
   const amountNum = +initialAmount;
-  // const baseWeight = 64;
-
   const numOutcomes = outcomes.length;
-
   const ratio = 1 / numOutcomes;
-  // const weight = ratio * baseWeight;
 
   return [
     ...outcomes.map((outcome) => {
       return {
         asset: outcome.name,
-        // weight: weight.toFixed(0),
         amount: "100",
         price: {
           price: new Decimal(ratio.toString()),
@@ -50,16 +43,6 @@ export const poolRowDataFromOutcomes = (
         value: `${(amountNum * ratio).toFixed(4)}`,
       };
     }),
-    // {
-    //   asset: tokenSymbol,
-    //   weight: baseWeight.toString(),
-    //   amount: "100",
-    //   price: {
-    //     price: new Decimal(1),
-    //     locked: true,
-    //   },
-    //   value: "100",
-    // },
   ];
 };
 

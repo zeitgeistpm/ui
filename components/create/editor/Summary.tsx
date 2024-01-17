@@ -329,26 +329,11 @@ const AnswersDisplay = ({
                     <Label className="text-xs">Amount</Label>{" "}
                   </div>
                   <div className="table-cell text-left">
-                    {/* todo: format */}
-                    <div>{answerLiquidity?.amount ?? "--"}</div>
+                    <div>
+                      {Number(answerLiquidity?.amount).toFixed(1) ?? "--"}
+                    </div>
                   </div>
                 </div>
-
-                {/* {!liquidity.amount && (
-                  <div className="mb-1 table-row">
-                    <div className="table-cell pr-4 text-left">
-                      <Label className="text-xs">Weight</Label>{" "}
-                    </div>
-                    <div className="table-cell text-left">
-                      <div>
-                        {answerLiquidity?.weight
-                          ? new Decimal(answerLiquidity.weight).toFixed(2)
-                          : "--"}
-                      </div>
-                    </div>
-                  </div>
-                )} */}
-
                 <div className="mb-1 table-row">
                   <div className="table-cell pr-4 text-left">
                     <Label className="text-xs">Value</Label>{" "}
@@ -357,10 +342,11 @@ const AnswersDisplay = ({
                     <div className="mb-1">
                       {answerLiquidity ? (
                         <>
-                          {new Decimal(answerLiquidity?.value ?? 0).toFixed(1)}{" "}
+                          {new Decimal(answerLiquidity?.amount ?? 0).toFixed(1)}{" "}
                           <span className="text-gray-400">≈</span>{" "}
                           {baseAssetPrice
-                            ?.mul(answerLiquidity?.value ?? 0)
+                            ?.mul(answerLiquidity?.amount ?? 0)
+                            .mul(answerLiquidity?.price.price ?? 0)
                             .toFixed(2)}{" "}
                           USD
                         </>

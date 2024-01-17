@@ -87,10 +87,6 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
     baseCurrency?.assetId,
   );
 
-  const baseAssetLiquidityRow = editor.form?.liquidity?.rows?.find(
-    (row) => row.asset === editor.form.currency,
-  );
-
   const bondCost =
     editor.form.moderation === "Permissionless"
       ? constants?.markets.validityBond
@@ -108,7 +104,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
       editor.form.moderation === "Permissionless" &&
         editor.form.liquidity?.deploy &&
         editor.form.currency === "ZTG"
-        ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2).toNumber() //todo: mul(2) correct?
+        ? new Decimal(editor.form.liquidity.amount ?? 0).toNumber()
         : 0,
     )
     .plus(ztgTransactionFee ?? 0);
@@ -125,7 +121,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
 
   const foreignCurrencyCost =
     editor.form.liquidity?.deploy && editor.form.currency !== "ZTG"
-      ? new Decimal(baseAssetLiquidityRow?.value ?? 0)
+      ? new Decimal(editor.form.liquidity.amount ?? 0)
           .mul(2)
           .plus(baseAssetTransactionFee ?? 0)
       : null;
@@ -305,8 +301,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
                       </div>
 
                       {editor.form.moderation === "Permissionless" &&
-                        editor.form.liquidity?.deploy &&
-                        baseAssetLiquidityRow && (
+                        editor.form.liquidity?.deploy && (
                           <div className="mb-4 mt-4 flex">
                             <div className="flex-1">
                               <h3 className="text-base font-normal text-black">
@@ -318,10 +313,10 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
                                   fees but subject to impermanent loss.
                                 </h4>
                                 <div className="">
-                                  {new Decimal(baseAssetLiquidityRow.value)
-                                    .mul(2)
-                                    .toFixed(1)}{" "}
-                                  {baseAssetLiquidityRow?.asset}
+                                  {new Decimal(
+                                    editor.form.liquidity.amount ?? 0,
+                                  ).toFixed(1)}{" "}
+                                  {editor.form.currency}
                                 </div>
                               </div>
                             </div>
@@ -367,7 +362,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
                                     className={`text-${baseCurrencyMetadata?.twColor}`}
                                   >
                                     {foreignCurrencyCost.toNumber()}{" "}
-                                    {baseAssetLiquidityRow?.asset}
+                                    {editor.form.currency}
                                   </div>
                                 </>
                               )}
@@ -399,7 +394,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
                                     className={`text-${baseCurrencyMetadata?.twColor}`}
                                   >
                                     {foreignAssetBalanceDelta.toNumber()}{" "}
-                                    {baseAssetLiquidityRow?.asset}
+                                    {editor.form.currency}
                                   </div>
                                 </>
                               )}
