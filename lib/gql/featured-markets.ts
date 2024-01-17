@@ -7,7 +7,7 @@ import {
 } from "components/markets/market-card/index";
 import { ZTG } from "lib/constants";
 import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
-import { getFeaturedMarketIds } from "lib/cms/get-featured-marketids";
+import { getCmsFeaturedMarkets } from "lib/cms/featured-markets";
 import { isPresent } from "lib/types";
 import { getCurrentPrediction } from "lib/util/assets";
 
@@ -15,15 +15,15 @@ const getFeaturedMarkets = async (
   client: GraphQLClient,
   sdk: Sdk<FullContext>,
 ): Promise<IndexedMarketCardData[]> => {
-  const ids = await getFeaturedMarketIds();
+  const cmsFeaturedMarkets = await getCmsFeaturedMarkets();
 
   const { markets } = await sdk.indexer.markets({
     where: {
-      marketId_in: ids,
+      marketId_in: cmsFeaturedMarkets.marketIds ?? [],
     },
   });
 
-  const featuredMarkets: IndexedMarketCardData[] = markets.map((market) => {
+  let featuredMarkets: IndexedMarketCardData[] = markets.map((market) => {
     const marketCategories: MarketOutcomes =
       market.categories?.map((category, index) => {
         const asset = market.assets[index];
@@ -57,6 +57,13 @@ const getFeaturedMarkets = async (
       endDate: market.period.end,
     };
     return cardMarket;
+  });
+
+  featuredMarkets.sort((a, b) => {
+    return (
+      cmsFeaturedMarkets.marketIds?.findIndex((m) => m === a.marketId) -
+      cmsFeaturedMarkets.marketIds?.findIndex((m) => m === b.marketId)
+    );
   });
 
   return featuredMarkets;

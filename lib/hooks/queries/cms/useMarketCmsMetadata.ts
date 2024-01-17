@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as batshit from "@yornaath/batshit";
-import { CmsMarketMetadata } from "lib/cms/get-market-metadata";
+import { CmsMarketMetadata } from "lib/cms/markets";
 
 export const marketCmsDataRootKey = ["cms", "market-metadata"];
 
