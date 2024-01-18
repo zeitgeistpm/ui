@@ -2,10 +2,17 @@ import { BaseDotsamaWallet } from "@talismn/connect-wallets";
 import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { atom } from "jotai";
-import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
+import { isWSX } from "lib/constants";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 
-export const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
+export const clientId = isWSX
+  ? process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_WSX
+  : process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
+
+const auth0clientID = isWSX
+  ? process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_ZTG
+  : process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_WSX;
 
 class Web3AuthWallet extends BaseDotsamaWallet {
   constructor({ extensionName, title, installUrl, logo }) {
@@ -43,32 +50,45 @@ const chainConfig = {
   ticker: "DOT",
   tickerName: "Polkadot",
 };
-export const web3AuthInstance =
+
+export const web3authNoModal =
   clientId && clientId.length > 0
     ? new Web3AuthNoModal({
         clientId,
         chainConfig,
         web3AuthNetwork: "sapphire_devnet",
-        // Settings for whitelabel version of web3auth modal
-        // uiConfig: {
-        //   loginMethodsOrder: [
-        //     "google",
-        //     "facebook",
-        //     "twitter",
-        //     "discord",
-        //     "twitch",
-        //     "email_passwordless",
-        //   ],
-        //   appName: "Zeitgeist",
-        //   mode: "dark",
-        //   logoLight: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
-        //   logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",
-        //   defaultLanguage: "en",
-        //   loginGridCol: 3,
-        //   primaryButton: "externalLogin",
-        // },
       })
     : null;
 
-export const web3authAtom = atom<Web3AuthNoModal | null>(web3AuthInstance);
-export const web3ProviderAtom = atom<IProvider | null>(null);
+const privateKeyProvider = new CommonPrivateKeyProvider({
+  config: { chainConfig },
+});
+
+export const openloginAdapter = new OpenloginAdapter({
+  privateKeyProvider,
+  adapterSettings: {
+    clientId,
+    loginConfig: {
+      auth0google: {
+        verifier: "auth-0-all",
+        verifierSubIdentifier: "auth0-google",
+        typeOfLogin: "jwt",
+        clientId: auth0clientID,
+      },
+      // auth0fb: {
+      //   verifier: "auth-0-all",
+      //   verifierSubIdentifier: "auth0-fb",
+      //   typeOfLogin: "jwt",
+      //   clientId: auth0clientID,
+      // },
+      auth0emailpasswordless: {
+        verifier: "auth-0-all",
+        verifierSubIdentifier: "auth0-passwordless",
+        typeOfLogin: "jwt",
+        clientId: auth0clientID,
+      },
+    },
+  },
+});
+
+export const web3authAtom = atom<Web3AuthNoModal | null>(web3authNoModal);

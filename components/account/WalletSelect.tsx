@@ -4,7 +4,6 @@ import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
 import Web3wallet from "components/web3wallet";
 import WalletIcon from "./WalletIcon";
-import AccountModalContent from "components/account/AccountModalContent";
 
 import { useEffect } from "react";
 

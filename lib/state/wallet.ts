@@ -18,8 +18,8 @@ import { isPresent } from "lib/types";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { PollingTimeout, poll } from "lib/util/poll";
 //Web3Auth
-import { web3authAtom } from "./util/web3auth-config";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
+
 const DAPP_NAME = "zeitgeist";
 
 export type UseWallet = WalletState & {
@@ -373,7 +373,7 @@ export const useWallet = (): UseWallet => {
       ...userConfig,
       walletId: isString(wallet) ? wallet : wallet.extensionName,
     });
-    if (wallet === "web3auth" && keyPair) {
+    if (wallet === "web3auth") {
       enableWallet(wallet, keyPair);
     } else {
       enableWallet(isString(wallet) ? wallet : wallet.extensionName);
