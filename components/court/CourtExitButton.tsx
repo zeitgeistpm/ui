@@ -1,10 +1,9 @@
 import { Dialog } from "@headlessui/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { isRpcSdk, timespanOf, ZTG } from "@zeitgeistpm/sdk";
-import { blockDate, dateBlock, toMs } from "@zeitgeistpm/utility/dist/time";
+import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
+import { toMs } from "@zeitgeistpm/utility/dist/time";
 import Modal from "components/ui/Modal";
 import TransactionButton from "components/ui/TransactionButton";
-import { BLOCK_TIME_SECONDS, DAY_SECONDS } from "lib/constants";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { courtParticipantsRootKey } from "lib/hooks/queries/court/useCourtParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
@@ -33,7 +32,7 @@ const CourtExitButton = ({ className }: { className?: string }) => {
   } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk) || !wallet.realAddress) return;
-      return sdk.api.tx.court.exitCourt(wallet.realAddress); //todo: is this correct input?
+      return sdk.api.tx.court.exitCourt(wallet.realAddress);
     },
     {
       onSuccess: () => {
@@ -44,10 +43,6 @@ const CourtExitButton = ({ className }: { className?: string }) => {
       },
     },
   );
-
-  // if (constants?.court.inflationPeriodBlocks) {
-  //   constants.court.inflationPeriodBlocks = 70;
-  // }
 
   const cooldownTime = useMemo(() => {
     if (time && participant && constants && participant?.prepareExitAt) {
