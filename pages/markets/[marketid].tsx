@@ -134,20 +134,11 @@ export async function getStaticProps({ params }) {
   let resolutionTimestamp: string | undefined;
   if (market) {
     const { timestamp } = await getResolutionTimestamp(client, market.marketId);
-
     resolutionTimestamp = timestamp ?? undefined;
-  }
 
-  if (cmsMetadata?.imageUrl) {
-    market.img = cmsMetadata?.imageUrl;
-  }
-
-  if (cmsMetadata?.question) {
-    market.question = cmsMetadata?.question;
-  }
-
-  if (cmsMetadata?.description) {
-    market.description = cmsMetadata?.description;
+    if (cmsMetadata?.imageUrl) market.img = cmsMetadata?.imageUrl;
+    if (cmsMetadata?.question) market.question = cmsMetadata?.question;
+    if (cmsMetadata?.description) market.description = cmsMetadata?.description;
   }
 
   return {
