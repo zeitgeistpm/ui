@@ -8,7 +8,7 @@ import WalletIcon from "./WalletIcon";
 import { useEffect } from "react";
 
 const WalletSelect = () => {
-  const { selectWallet, errors, accounts, connected } = useWallet();
+  const { selectWallet, errors, accounts, connected, walletId } = useWallet();
   const accountModals = useAccountModals();
 
   const wasConnected = usePrevious(connected);
@@ -23,8 +23,20 @@ const WalletSelect = () => {
   };
 
   useEffect(() => {
-    if (!wasConnected && connected && accounts.length) {
+    if (
+      !wasConnected &&
+      connected &&
+      accounts.length &&
+      walletId !== "web3auth"
+    ) {
       accountModals.openAccountSelect();
+    } else if (
+      !wasConnected &&
+      connected &&
+      accounts.length &&
+      walletId === "web3auth"
+    ) {
+      accountModals.closeWalletSelect();
     }
   }, [wasConnected, connected, accounts, errors]);
 

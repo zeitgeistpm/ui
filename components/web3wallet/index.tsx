@@ -1,6 +1,5 @@
 import WalletIcon from "components/account/WalletIcon";
 import useWeb3Wallet from "lib/hooks/useWeb3Wallet";
-import { useWallet } from "lib/state/wallet";
 import { useState } from "react";
 
 const Web3wallet = () => {
