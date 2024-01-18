@@ -16,6 +16,7 @@ import { hotjar } from "react-hotjar";
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
 import { useWallet } from "lib/state/wallet";
+import useWeb3Wallet from "lib/hooks/useWeb3Wallet";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -28,6 +29,7 @@ const MyApp = ({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
   const wallet = useWallet();
+  const { initWeb3Auth } = useWeb3Wallet();
 
   useEffect(() => {
     if (!isProduction) {
@@ -58,14 +60,12 @@ const MyApp = ({ Component, pageProps }) => {
       router.events.off("routeChangeComplete", onRouteChangeComplete);
   }, []);
 
-  // useEffect(() => {
-  //   if (wallet.walletId === "web3auth") {
-  //     const init = async () => {
-  //       await wallet.loadWeb3AuthWallet();
-  //     };
-  //     init();
-  //   }
-  // }, []);
+  useEffect(() => {
+    const init = async () => {
+      await initWeb3Auth();
+    };
+    init();
+  }, []);
 
   return (
     <div

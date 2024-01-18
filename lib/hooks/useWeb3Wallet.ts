@@ -1,101 +1,99 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { CHAIN_NAMESPACES, IProvider, WALLET_ADAPTERS } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { Keyring } from "@polkadot/api";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
-import { enabledWeb3Wallet } from "lib/state/wallet";
+import { useWallet } from "lib/state/wallet";
+import { web3authAtom, web3ProviderAtom } from "lib/state/util/web3auth-config";
+import { useAtom } from "jotai";
 
 export const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG!;
-
 const useWeb3Wallet = () => {
-  const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
-  const [provider, setProvider] = useState<IProvider | null>(null);
+  const [web3auth] = useAtom(web3authAtom);
+  const [provider, setProvider] = useAtom(web3ProviderAtom);
   const [loggedIn, setLoggedIn] = useState<boolean | null>(false);
-  const [address, setAddress] = useState<string | null>(null);
+  const { selectWallet, disconnectWallet, walletId } = useWallet();
 
-  useEffect(() => {
-    const init = async () => {
-      try {
-        if (!clientId) {
-          return;
-        }
+  const initWeb3Auth = async () => {
+    try {
+      if (!clientId) {
+        return;
+      }
 
-        const chainConfig = {
-          chainNamespace: CHAIN_NAMESPACES.OTHER,
-          chainId: "0x1",
-          rpcTarget: "https://rpc.polkadot.io/",
-          displayName: "Polkadot Mainnet",
-          blockExplorer: "https://explorer.polkascan.io/",
-          ticker: "DOT",
-          tickerName: "Polkadot",
-        };
+      const chainConfig = {
+        chainNamespace: CHAIN_NAMESPACES.OTHER,
+        chainId: "0x1",
+        rpcTarget: "https://rpc.polkadot.io/",
+        displayName: "Polkadot Mainnet",
+        blockExplorer: "https://explorer.polkascan.io/",
+        ticker: "DOT",
+        tickerName: "Polkadot",
+      };
 
-        const web3auth = new Web3AuthNoModal({
+      const web3authNoModal = new Web3AuthNoModal({
+        clientId,
+        chainConfig,
+        web3AuthNetwork: "sapphire_devnet",
+      });
+
+      const privateKeyProvider = new CommonPrivateKeyProvider({
+        config: { chainConfig },
+      });
+
+      const openloginAdapter = new OpenloginAdapter({
+        privateKeyProvider,
+        adapterSettings: {
           clientId,
-          chainConfig,
-          web3AuthNetwork: "sapphire_devnet",
-        });
-
-        const privateKeyProvider = new CommonPrivateKeyProvider({
-          config: { chainConfig },
-        });
-
-        const openloginAdapter = new OpenloginAdapter({
-          privateKeyProvider,
-          adapterSettings: {
-            clientId,
-            loginConfig: {
-              auth0google: {
-                verifier: "auth-0-all",
-                verifierSubIdentifier: "auth0-google",
-                typeOfLogin: "jwt",
-                clientId: "4v1l8rc65YNzcbY93wxJzgCUqKNxoSMm",
-              },
-              // auth0fb: {
-              //   verifier: "auth-0-all",
-              //   verifierSubIdentifier: "auth0-fb",
-              //   typeOfLogin: "jwt",
-              //   clientId: "4v1l8rc65YNzcbY93wxJzgCUqKNxoSMm",
-              // },
-              auth0emailpasswordless: {
-                verifier: "auth-0-all",
-                verifierSubIdentifier: "auth0-passwordless",
-                typeOfLogin: "jwt",
-                clientId: "4v1l8rc65YNzcbY93wxJzgCUqKNxoSMm",
-              },
+          loginConfig: {
+            auth0google: {
+              verifier: "auth-0-all",
+              verifierSubIdentifier: "auth0-google",
+              typeOfLogin: "jwt",
+              clientId: "4v1l8rc65YNzcbY93wxJzgCUqKNxoSMm",
+            },
+            // auth0fb: {
+            //   verifier: "auth-0-all",
+            //   verifierSubIdentifier: "auth0-fb",
+            //   typeOfLogin: "jwt",
+            //   clientId: "4v1l8rc65YNzcbY93wxJzgCUqKNxoSMm",
+            // },
+            auth0emailpasswordless: {
+              verifier: "auth-0-all",
+              verifierSubIdentifier: "auth0-passwordless",
+              typeOfLogin: "jwt",
+              clientId: "4v1l8rc65YNzcbY93wxJzgCUqKNxoSMm",
             },
           },
-        });
+        },
+      });
+      if (web3auth) {
         web3auth.configureAdapter(openloginAdapter);
-        setWeb3auth(web3auth);
-
         await web3auth.init();
         setProvider(web3auth.provider);
-
-        if (web3auth.connected) {
-          setLoggedIn(true);
-        }
-      } catch (error) {
-        console.error(error);
       }
-    };
+      console.log(web3auth);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    init();
-  }, []);
-
+  //get account on initial login
   useEffect(() => {
-    if (web3auth?.connected) {
+    console.log(loggedIn, walletId, provider, web3auth);
+    if (loggedIn || walletId === "web3auth") {
       const init = async () => {
-        const keypair = await getKeypair();
-        if (keypair) {
-          enabledWeb3Wallet(keypair);
+        const keyPair = await getKeypair();
+        console.log(keyPair);
+        if (keyPair) {
+          console.log(keyPair);
+          selectWallet("web3auth", keyPair);
         }
       };
       init();
     }
-  }, [web3auth?.connected]);
+  }, [loggedIn, walletId, provider]);
 
   const loginGoogle = async () => {
     if (!web3auth) {
@@ -121,6 +119,7 @@ const useWeb3Wallet = () => {
       );
       if (web3authProvider) {
         setProvider(web3authProvider);
+        setLoggedIn(true);
       }
     } catch (error) {
       console.log(error);
@@ -158,18 +157,19 @@ const useWeb3Wallet = () => {
   };
 
   const getKeypair = async () => {
-    if (!provider) return;
+    if (!provider) {
+      return;
+    }
     await cryptoWaitReady();
     const privateKey = await provider.request({
       method: "private_key",
     });
     const keyring = new Keyring({ ss58Format: 73, type: "sr25519" });
     const keyPair = keyring.addFromUri("0x" + privateKey);
-    // setAddress(keyPair.address);
     return keyPair;
   };
 
-  const logout = async () => {
+  const logoutWeb3Auth = async () => {
     if (!web3auth) {
       console.log("web3auth not initialized yet");
       return;
@@ -177,9 +177,9 @@ const useWeb3Wallet = () => {
     await web3auth.logout();
     setProvider(null);
     setLoggedIn(false);
-    setAddress(null);
+    disconnectWallet();
   };
-  return { loginEmail, loginGoogle, logout, getKeypair };
+  return { loginEmail, loginGoogle, logoutWeb3Auth, getKeypair, initWeb3Auth };
 };
 
 export default useWeb3Wallet;

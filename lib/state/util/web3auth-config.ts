@@ -1,5 +1,5 @@
 import { BaseDotsamaWallet } from "@talismn/connect-wallets";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { atom } from "jotai";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
@@ -71,3 +71,4 @@ export const web3AuthInstance =
     : null;
 
 export const web3authAtom = atom<Web3AuthNoModal | null>(web3AuthInstance);
+export const web3ProviderAtom = atom<IProvider | null>(null);

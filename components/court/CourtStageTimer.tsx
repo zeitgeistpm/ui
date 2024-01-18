@@ -58,9 +58,9 @@ export const CourtStageTimer = ({
           <div className="text-sm text-sky-600">
             {courtStageCopy[stage.type].description}
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2 ">
             {stage.type !== "closed" && stage.type !== "reassigned" && (
-              <div className=" text-right text-black">
+              <div className="pl-1 text-right text-sm text-sky-600">
                 {timeLeft?.humanize()} left
               </div>
             )}

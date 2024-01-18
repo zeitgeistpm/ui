@@ -4,9 +4,8 @@ import { useWallet } from "lib/state/wallet";
 import { useState } from "react";
 
 const Web3wallet = () => {
-  const { loginGoogle, loginEmail, logout } = useWeb3Wallet();
+  const { loginGoogle, loginEmail } = useWeb3Wallet();
   const [email, setEmail] = useState<string>("");
-  const wallet = useWallet();
 
   return (
     <div>

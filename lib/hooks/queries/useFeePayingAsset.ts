@@ -32,7 +32,6 @@ export const useFeePayingAsset = (
   const { data: constants } = useChainConstants();
   const { data: assetMetadata } = useAllAssetMetadata();
   const { assetSelection } = useFeePayingAssetSelection();
-
   const enabled =
     !!nativeBalance &&
     !!foreignAssetBalances &&
@@ -79,6 +78,7 @@ export const useFeePayingAsset = (
               sufficientBalance: true,
             };
           } else if (IOForeignAssetId.is(assetSelection.value)) {
+            console.log(IOForeignAssetId.is(assetSelection.value));
             const balance = foreignAssetBalances.find(
               (asset) =>
                 IOForeignAssetId.is(assetSelection.value) &&
@@ -110,7 +110,6 @@ export const useFeePayingAsset = (
       enabled: enabled,
     },
   );
-
   return query;
 };
 
