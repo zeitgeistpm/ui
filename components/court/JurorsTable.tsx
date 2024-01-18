@@ -5,6 +5,7 @@ import DelegateButton from "./DelegateButton";
 import { useCourtParticipants } from "lib/hooks/queries/court/useCourtParticipants";
 import Decimal from "decimal.js";
 import { ZTG } from "@zeitgeistpm/sdk";
+import { isNumber } from "lodash-es";
 
 const columns: TableColumn[] = [
   {
@@ -68,7 +69,7 @@ const JurorsTable = () => {
         ),
         personalStake: juror.stake.div(ZTG).toNumber(),
         totalStake: juror.stake.plus(delegatorStake).div(ZTG).toNumber(),
-        status: juror.prepareExit ? "Exiting" : "Active",
+        status: isNumber(juror.prepareExitAt) ? "Exiting" : "Active",
         delegators: delegators.length,
         button: <DelegateButton address={juror.address} />,
       };
