@@ -325,6 +325,9 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
       ? `${minBaseLiquidity[draft.form.currency!]}`
       : "100";
 
+    const liquidity =
+      minBaseLiquidity[draft.form.currency!]?.toString() ?? "100";
+
     const numOutcomes = draft.form.answers.answers.length;
     const ratio = 1 / numOutcomes;
     const reset =
@@ -364,6 +367,7 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
         ...draft.form,
         liquidity: {
           ...draft.form.liquidity,
+          amount: draft.form.liquidity.amount ?? liquidity,
           rows,
         },
       },
