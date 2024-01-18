@@ -34,6 +34,7 @@ export const useCourtParticipants = () => {
           delegations: delegations,
         };
       });
+      console.log(jurors);
 
       return jurors;
     },

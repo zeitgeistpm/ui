@@ -334,19 +334,24 @@ const Stats = () => {
               "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
           }}
         >
-          <label className="font text-sm text-gray-500">Yearly Inflation</label>
+          <label className="font text-sm text-gray-500">APR</label>
           <div className="flex items-center gap-2">
             <div className="text-md font-mono font-semibold">
-              {yearlyInflation?.toString()}%
+              {formatNumberLocalized(
+                yearlyInflationAmount
+                  ?.div(totalStake.all)
+                  .mul(100)
+                  .toNumber() ?? 0,
+              )}
+              %
             </div>
             <InfoPopover
               className="text-slate-500"
               overlay={false}
               position="top"
             >
-              Yearly Inflation is the yearly percentage of the total ZTG
-              issuance minted through inflation by the court system to its
-              participants (jurors and delegators).
+              The currently yearly percentage returns that jurors and delegators
+              will receive on their staked ZTG
             </InfoPopover>
           </div>
         </div>
@@ -360,7 +365,7 @@ const Stats = () => {
               "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgba(240, 206, 135, 0.048) 93.27%)",
           }}
         >
-          <label className="font text-sm text-gray-500">Amount</label>
+          <label className="font text-sm text-gray-500">Yearly Payout</label>
 
           <div className="flex items-center gap-2">
             <div className="text-md font-mono font-semibold">
