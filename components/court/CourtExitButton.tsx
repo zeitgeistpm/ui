@@ -67,7 +67,6 @@ const CourtExitButton = ({ className }: { className?: string }) => {
     ? 100 - (cooldownTime?.left / cooldownTime?.total) * 100
     : null;
 
-  console.log(cooldownTime?.left, cooldownTime?.total);
   return (
     <>
       <button
