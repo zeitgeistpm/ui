@@ -353,7 +353,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
  * Enable wallet on first load if wallet id is set.
  */
 const initialWalletId = store.get(userConfigAtom).walletId;
-if (initialWalletId && initialWalletId !== "web3auth") {
+if (initialWalletId) {
   enableWallet(initialWalletId);
 }
 
@@ -383,7 +383,6 @@ export const useWallet = (): UseWallet => {
   const disconnectWallet = async () => {
     const [newWalletState, newUserConfigState] =
       disconnectWalletStateTransition(walletState, userConfig);
-    console.log(newWalletState);
     setWalletState(newWalletState);
     setUserConfig(newUserConfigState);
   };

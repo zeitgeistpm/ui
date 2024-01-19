@@ -3,7 +3,8 @@ import useWeb3Wallet from "lib/hooks/useWeb3Wallet";
 import { useState } from "react";
 
 const Web3wallet = () => {
-  const { loginGoogle, loginEmail } = useWeb3Wallet();
+  const { loginGoogle, loginTwitter, loginDiscord, loginEmail } =
+    useWeb3Wallet();
   const [email, setEmail] = useState<string>("");
 
   return (
@@ -20,13 +21,13 @@ const Web3wallet = () => {
           logoSrc="/icons/x-logo.svg"
           extensionName="web3auth"
           className="px-1 invert"
-          // onClick={loginX}
+          onClick={loginTwitter}
         />
         <WalletIcon
-          logoAlt="facebook"
-          logoSrc="/icons/facebook-f.svg"
+          logoAlt="discord"
+          logoSrc="/icons/discord.svg"
           extensionName="web3auth"
-          // onClick={loginFacebook}
+          onClick={loginDiscord}
         />
         <input
           type="text"

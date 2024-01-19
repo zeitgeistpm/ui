@@ -1,5 +1,5 @@
 import { BaseDotsamaWallet } from "@talismn/connect-wallets";
-import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { atom } from "jotai";
 import { isWSX } from "lib/constants";
@@ -10,9 +10,13 @@ export const clientId = isWSX
   ? process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_WSX
   : process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
 
-const auth0clientID = isWSX
+const auth0ClientID = isWSX
   ? process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_ZTG
   : process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_WSX;
+
+const discordClientID = isWSX
+  ? process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID_ZTG
+  : process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID_WSX;
 
 class Web3AuthWallet extends BaseDotsamaWallet {
   constructor({ extensionName, title, installUrl, logo }) {
@@ -73,19 +77,25 @@ export const openloginAdapter = new OpenloginAdapter({
         verifier: "auth-0-all",
         verifierSubIdentifier: "auth0-google",
         typeOfLogin: "jwt",
-        clientId: auth0clientID,
+        clientId: auth0ClientID,
       },
-      // auth0fb: {
-      //   verifier: "auth-0-all",
-      //   verifierSubIdentifier: "auth0-fb",
-      //   typeOfLogin: "jwt",
-      //   clientId: auth0clientID,
-      // },
+      auth0twitter: {
+        verifier: "auth-0-all",
+        verifierSubIdentifier: "auth0-twitter",
+        typeOfLogin: "jwt",
+        clientId: auth0ClientID,
+      },
       auth0emailpasswordless: {
         verifier: "auth-0-all",
         verifierSubIdentifier: "auth0-passwordless",
         typeOfLogin: "jwt",
-        clientId: auth0clientID,
+        clientId: auth0ClientID,
+      },
+      discord: {
+        verifier: "auth-0-all",
+        verifierSubIdentifier: "discord",
+        typeOfLogin: "discord",
+        clientId: discordClientID,
       },
     },
   },

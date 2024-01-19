@@ -72,7 +72,6 @@ const WalletSelect = () => {
             );
           })}
       </div>
-      {/* <AccountModalContent /> */}
     </div>
   );
 };
