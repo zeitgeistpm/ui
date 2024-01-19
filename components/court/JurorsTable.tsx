@@ -5,6 +5,7 @@ import DelegateButton from "./DelegateButton";
 import { useCourtParticipants } from "lib/hooks/queries/court/useCourtParticipants";
 import Decimal from "decimal.js";
 import { ZTG } from "@zeitgeistpm/sdk";
+import { useIdentities } from "lib/hooks/queries/useIdentities";
 
 const columns: TableColumn[] = [
   {
@@ -42,19 +43,25 @@ const columns: TableColumn[] = [
 
 const JurorsTable = () => {
   const { data: participants } = useCourtParticipants();
+  const jurors = participants?.filter((p) => p.type === "Juror");
+  const { data: identities } = useIdentities(
+    participants?.map((j) => j.address),
+  );
 
-  const tableData: TableData[] | undefined = participants
+  const tableData: TableData[] | undefined = jurors
     ?.filter((p) => p.type === "Juror")
-    .map((juror) => {
-      const delegators = participants.filter(
+    .map((juror, index) => {
+      const delegators = participants?.filter(
         (participant) =>
           participant.delegations?.some((d) => d === juror.address),
       );
 
-      const delegatorStake = delegators.reduce<Decimal>(
+      const delegatorStake = delegators?.reduce<Decimal>(
         (total, delegator) => total.plus(delegator.stake),
         new Decimal(0),
       );
+
+      const identity = identities?.[index];
 
       return {
         address: (
@@ -63,13 +70,20 @@ const JurorsTable = () => {
             className="flex items-center gap-2 text-xs"
           >
             <Avatar address={juror.address} />
-            <span>{juror.address}</span>
+            <span>
+              {identity?.displayName && identity.displayName != ""
+                ? identity.displayName
+                : juror.address}
+            </span>
           </Link>
         ),
         personalStake: juror.stake.div(ZTG).toNumber(),
-        totalStake: juror.stake.plus(delegatorStake).div(ZTG).toNumber(),
+        totalStake: juror.stake
+          .plus(delegatorStake ?? 0)
+          .div(ZTG)
+          .toNumber(),
         status: juror.prepareExit ? "Exiting" : "Active",
-        delegators: delegators.length,
+        delegators: delegators?.length ?? 0,
         button: <DelegateButton address={juror.address} />,
       };
     });

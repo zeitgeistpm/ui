@@ -350,7 +350,7 @@ const Stats = () => {
               overlay={false}
               position="top"
             >
-              The currently yearly percentage returns that jurors and delegators
+              The current yearly percentage returns that jurors and delegators
               will receive on their staked ZTG
             </InfoPopover>
           </div>
