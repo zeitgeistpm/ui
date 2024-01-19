@@ -20,21 +20,13 @@ import {
 } from "@zeitgeistpm/sdk";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import Decimal from "decimal.js";
-import {
-  UseAccountAssetBalances,
-  useAccountAssetBalances,
-} from "lib/hooks/queries/useAccountAssetBalances";
+import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
 import { useAccountTokenPositions } from "lib/hooks/queries/useAccountTokenPositions";
 import { useMarketsByIds } from "lib/hooks/queries/useMarketsByIds";
 import { usePoolAccountIds } from "lib/hooks/queries/usePoolAccountIds";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
-import {
-  PoolZtgBalanceLookup,
-  usePoolBaseBalances,
-} from "lib/hooks/queries/usePoolBaseBalances";
 import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
-import { calcSpotPrice } from "lib/math";
 import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
 import { MarketBond, useAccountBonds } from "./useAccountBonds";
@@ -213,16 +205,8 @@ export const usePortfolioPositions = (
 
   const poolAccountIds = usePoolAccountIds(pools.data);
 
-  const poolsZtgBalances = usePoolBaseBalances(pools.data ?? []);
-
   const poolsTotalIssuance = useTotalIssuanceForPools(
     pools.data?.map((p) => p.poolId) ?? [],
-  );
-
-  const poolsZtgBalances24HoursAgo = usePoolBaseBalances(
-    pools.data ?? [],
-    block24HoursAgo,
-    { enabled: Boolean(now?.block) },
   );
 
   const poolAssetBalancesFilter =
@@ -274,10 +258,8 @@ export const usePortfolioPositions = (
       markets.isLoading ||
       !ztgPrice ||
       poolAssetBalances.isLoading ||
-      poolsZtgBalances.isLoading ||
       !poolsTotalIssuance ||
       userAssetBalances.isLoading ||
-      poolsZtgBalances24HoursAgo.isLoading ||
       poolAssetBalances24HoursAgo.isLoading ||
       isTradeHistoryLoading;
 
@@ -286,33 +268,6 @@ export const usePortfolioPositions = (
     }
 
     let positionsData: Position[] = [];
-
-    const calculatePrice = (
-      pool: IndexedPool<Context>,
-      assetId: AssetId,
-      poolsZtgBalances: PoolZtgBalanceLookup,
-      poolAssetBalances: UseAccountAssetBalances,
-    ): null | Decimal => {
-      const poolZtgBalance = poolsZtgBalances[pool.poolId]?.toNumber();
-
-      const ztgWeight = new Decimal(pool.totalWeight ?? 0).div(2);
-      const assetWeight = getAssetWeight(pool, assetId).unwrap();
-
-      const poolAssetBalance = poolAssetBalances?.get(
-        poolAccountIds?.[pool.poolId],
-        assetId,
-      )?.data?.balance;
-
-      if (!poolAssetBalance || !ztgWeight || !assetWeight) return null;
-
-      return calcSpotPrice(
-        poolZtgBalance,
-        ztgWeight,
-        poolAssetBalance.free.toNumber(),
-        assetWeight,
-        0,
-      );
-    };
 
     for (const position of rawPositions?.data ?? []) {
       const assetId = parseAssetId(position.assetId).unwrap();
@@ -363,23 +318,7 @@ export const usePortfolioPositions = (
           price = calcResolvedMarketPrices(market).get(getIndexOf(assetId));
           price24HoursAgo = price;
         } else {
-          if (market.scoringRule === ScoringRule.Cpmm && pool) {
-            price =
-              calculatePrice(
-                pool,
-                assetId,
-                poolsZtgBalances.data,
-                poolAssetBalances,
-              ) ?? undefined;
-
-            price24HoursAgo =
-              calculatePrice(
-                pool,
-                assetId,
-                poolsZtgBalances24HoursAgo.data,
-                poolAssetBalances24HoursAgo,
-              ) ?? undefined;
-          } else if (market.scoringRule === ScoringRule.Lmsr) {
+          if (market.scoringRule === ScoringRule.Lmsr) {
             price = lookupAssetPrice(assetId, amm2SpotPrices);
 
             price24HoursAgo = lookupAssetPrice(
@@ -388,63 +327,6 @@ export const usePortfolioPositions = (
             );
           }
         }
-      } else if (IOPoolShareAssetId.is(assetId) && pool) {
-        const poolAssetIds = pool.weights
-          .map((w) => parseAssetId(w.assetId).unwrap())
-          .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
-
-        const poolTotalValue = poolAssetIds.reduce(
-          (acc, assetId) => {
-            if (!pool) {
-              return acc;
-            }
-
-            const balance = poolAssetBalances.get(
-              poolAccountIds[pool.poolId],
-              assetId,
-            )?.data?.balance;
-
-            if (!balance) return;
-
-            const price = calculatePrice(
-              pool,
-              assetId,
-              poolsZtgBalances.data,
-              poolAssetBalances,
-            );
-
-            const price24HoursAgo = calculatePrice(
-              pool,
-              assetId,
-              poolsZtgBalances24HoursAgo.data,
-              poolAssetBalances24HoursAgo,
-            );
-
-            if (!price || !price24HoursAgo) {
-              return acc;
-            }
-
-            return {
-              total: acc.total.add(price.mul(balance.free.toNumber())),
-              total24HoursAgo: acc.total24HoursAgo.add(
-                price24HoursAgo.mul(balance.free.toNumber()),
-              ),
-            };
-          },
-          {
-            total: new Decimal(0),
-            total24HoursAgo: new Decimal(0),
-          },
-        );
-
-        const totalIssuance = new Decimal(
-          totalIssuanceData?.totalIssuance.toString() ?? 0,
-        );
-
-        price = new Decimal(poolTotalValue?.total.div(totalIssuance) ?? 0);
-        price24HoursAgo = new Decimal(
-          poolTotalValue?.total24HoursAgo.div(totalIssuance) ?? 0,
-        );
       }
 
       let outcome = IOCategoricalAssetId.is(assetId)
@@ -613,9 +495,7 @@ export const usePortfolioPositions = (
     ztgPrice,
     poolsTotalIssuance,
     userAssetBalances,
-    poolsZtgBalances,
     poolAssetBalances,
-    poolsZtgBalances24HoursAgo,
     poolAssetBalances24HoursAgo,
     isTradeHistoryLoading,
   ]);
