@@ -67,8 +67,7 @@ const useWeb3Wallet = () => {
       loginProvider: "auth0twitter",
       extraLoginOptions: {
         domain: auth0Domain,
-        verifierIdField: "email",
-        isVerifierIdCaseSensitive: false,
+        verifierIdField: "sub",
         connection: "twitter",
       },
     });
