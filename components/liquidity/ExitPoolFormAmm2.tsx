@@ -43,8 +43,9 @@ const ExitPoolForm = ({
   const { realAddress } = useWallet();
   const userPoolShares = pool.accounts.find(
     (account) => account.address === realAddress,
-  )?.fees;
-  const userOwnershipRatio = 1;
+  )?.shares;
+  const userOwnershipRatio = userPoolShares?.div(pool.totalShares) ?? 0;
+
   const { data: market } = useMarket({ marketId });
   const queryClient = useQueryClient();
   const reserves = Array.from(pool.reserves).map((reserve) => reserve[1]);
