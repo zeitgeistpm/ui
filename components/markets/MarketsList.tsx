@@ -14,9 +14,13 @@ import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import { filterTypes } from "lib/constants/market-filter";
 import { ZTG } from "lib/constants";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
+import { CmsTopicHeader } from "lib/cms/topics";
+import { Topics } from "components/front-page/Topics";
 
 export type MarketsListProps = {
   className?: string;
+  cmsTopics: CmsTopicHeader[];
+  cmsTopicPlaceholders: string[];
 };
 
 const useChangeQuery = (
@@ -55,7 +59,11 @@ const useChangeQuery = (
   }, [withLiquidityOnly]);
 };
 
-const MarketsList = ({ className = "" }: MarketsListProps) => {
+const MarketsList = ({
+  className = "",
+  cmsTopics,
+  cmsTopicPlaceholders,
+}: MarketsListProps) => {
   const [filters, setFilters] = useState<MarketFilter[]>();
   const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
   const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
@@ -96,11 +104,16 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
       data-testid="marketsList"
       id={"market-list"}
     >
+      <div className="flex gap-2 py-8">
+        <Topics topics={cmsTopics} imagePlaceholders={cmsTopicPlaceholders} />
+      </div>
+
       <MarketFilterSelection
         onFiltersChange={setFilters}
         onOrderingChange={setOrderBy}
         onWithLiquidityOnlyChange={setWithLiquidityOnly}
       />
+
       <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
         {markets?.map((market) => {
           const volume = market.volume;

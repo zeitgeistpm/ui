@@ -10,12 +10,14 @@ import { NewsSection } from "components/front-page/News";
 import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
+import { Topics } from "components/front-page/Topics";
 import WatchHow from "components/front-page/WatchHow";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
 import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
 import { getCmsNews, CmsNews } from "lib/cms/news";
+import { CmsTopicHeader, getCmsTopicHeaders } from "lib/cms/topics";
 import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
@@ -27,7 +29,9 @@ import {
   ZtgPriceHistory,
 } from "lib/hooks/queries/useAssetUsdPrice";
 import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
+import { getPlaiceholders } from "lib/util/getPlaiceHolders";
 import { NextPage } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import path from "path";
 import {
@@ -35,13 +39,6 @@ import {
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
-
-const getPlaiceholders = (
-  paths: string[],
-  options?: IGetPlaiceholderOptions,
-): Promise<IGetPlaiceholderReturn[]> => {
-  return Promise.all(paths.map((path) => getPlaiceholder(path, options)));
-};
 
 export async function getStaticProps() {
   const client = new GraphQLClient(graphQlEndpoint);
@@ -51,7 +48,10 @@ export async function getStaticProps() {
     storage: ZeitgeistIpfs(),
   });
 
-  const news = await getCmsNews();
+  const [news, cmsTpoics] = await Promise.all([
+    getCmsNews(),
+    getCmsTopicHeaders(),
+  ]);
 
   const [
     featuredMarkets,
@@ -59,6 +59,7 @@ export async function getStaticProps() {
     bannerPlaceholder,
     categoryPlaceholders,
     newsImagePlaceholders,
+    topicImagePlaceholders,
     stats,
     ztgHistory,
     chainProperties,
@@ -72,6 +73,10 @@ export async function getStaticProps() {
     }),
     getPlaiceholders(
       news.map((slide) => slide.image ?? ""),
+      { size: 16 },
+    ),
+    getPlaiceholders(
+      cmsTpoics.map((topic) => topic.thumbnail ?? ""),
       { size: 16 },
     ),
     getNetworkStats(sdk),
@@ -110,9 +115,11 @@ export async function getStaticProps() {
       bannerPlaceholder: bannerPlaceholder.base64 ?? "",
       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
       newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
+      topicImagePlaceholders: topicImagePlaceholders.map((c) => c.base64) ?? [],
       stats,
       ztgHistory,
       chainProperties: chainProperties.toPrimitive(),
+      cmsTpoics,
     },
     revalidate:
       environment === "production"
@@ -127,10 +134,12 @@ const IndexPage: NextPage<{
   trendingMarkets: IndexedMarketCardData[];
   categoryPlaceholders: string[];
   newsImagePlaceholders: string[];
+  topicImagePlaceholders: string[];
   bannerPlaceholder: string;
   stats: { marketCount: number; tradersCount: number; volumeUsd: number };
   ztgHistory: ZtgPriceHistory;
   chainProperties: GenericChainProperties;
+  cmsTpoics: CmsTopicHeader[];
 }> = ({
   news,
   trendingMarkets,
@@ -138,9 +147,11 @@ const IndexPage: NextPage<{
   bannerPlaceholder,
   categoryPlaceholders,
   newsImagePlaceholders,
+  topicImagePlaceholders,
   stats,
   ztgHistory,
   chainProperties,
+  cmsTpoics,
 }) => {
   return (
     <>
@@ -156,11 +167,10 @@ const IndexPage: NextPage<{
           chainProperties={chainProperties}
         />
 
-        <div className="mb-12">
-          <NetworkStats
-            marketCount={stats.marketCount}
-            tradersCount={stats.tradersCount}
-            totalVolumeUsd={stats.volumeUsd}
+        <div className="relative z-30 mb-12 flex gap-2">
+          <Topics
+            topics={cmsTpoics}
+            imagePlaceholders={topicImagePlaceholders}
           />
         </div>
 

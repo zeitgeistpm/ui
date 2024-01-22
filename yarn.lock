@@ -2447,6 +2447,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sanity/image-url@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@sanity/image-url@npm:1.0.2"
+  checksum: fbd2a6e7bd1e9b053c5a8d953c35a17f5d00dcfd792ce115fd7dfb237cbff03c7830fdf64e1ae8c6e00b58c8cabc2673f546d587454359ee02be2e2f8a39bd1e
+  languageName: node
+  linkType: hard
+
 "@scure/base@npm:1.1.1":
   version: 1.1.1
   resolution: "@scure/base@npm:1.1.1"
@@ -4390,6 +4397,7 @@ __metadata:
     next: ^13.4.19
     next-absolute-url: ^1.2.2
     next-qrcode: ^2.5.1
+    next-sanity-image: ^6.1.1
     next-transpile-modules: ^9.1.0
     object-hash: ^2.2.0
     plaiceholder: ^2.5.0
@@ -9641,6 +9649,19 @@ __metadata:
   peerDependencies:
     react: ">=17.0.0"
   checksum: d7ae364541fd9ed5893655a9066d534eaaab896a8f2940353f5cbc7e18a9a6573e92f510308d7818c3b5d88e00aef938012a56da9a56eb6e3567b9b1839be666
+  languageName: node
+  linkType: hard
+
+"next-sanity-image@npm:^6.1.1":
+  version: 6.1.1
+  resolution: "next-sanity-image@npm:6.1.1"
+  dependencies:
+    "@sanity/image-url": ^1.0.2
+  peerDependencies:
+    "@sanity/client": ^5.0.0 || ^6.0.0
+    next: ^13.0.0 || ^14.0.0
+    react: ^18.0.0
+  checksum: b0a4a3400a46bb70cef121ed6ad29bb060cf187508ffaff75a7a98a143f9cc188ea221916ab63cf730e5cd0fd24b51f37fcb833d936e57c19be006c64a6b1785
   languageName: node
   linkType: hard
 
