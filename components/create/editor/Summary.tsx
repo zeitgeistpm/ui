@@ -317,7 +317,9 @@ const AnswersDisplay = ({
                     <div className="mb-1">
                       {answerLiquidity ? (
                         <>
-                          {new Decimal(answerLiquidity?.amount || 0).toFixed(1)}{" "}
+                          {new Decimal(answerLiquidity?.amount || 0)
+                            .mul(answerLiquidity?.price.price ?? 0)
+                            .toFixed(1)}{" "}
                           <span className="text-gray-400">≈</span>{" "}
                           {baseAssetPrice
                             ?.mul(answerLiquidity?.amount || 0)
