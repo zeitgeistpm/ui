@@ -4,13 +4,16 @@ import {
   getIndexOf,
   getMarketIdOf,
   IOBaseAssetId,
+  IOForeignAssetId,
   IOMarketOutcomeAssetId,
   isIndexedSdk,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { BLOCK_TIME_SECONDS } from "lib/constants";
+import { lookupAssetSymbol } from "lib/constants/foreign-asset";
 import { getMarketHeaders, MarketHeader } from "lib/gql/market-header";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useSdkv2 } from "../useSdkv2";
 import { swapsMetaFilter } from "./constants";
 
@@ -25,6 +28,7 @@ export type TradeItem = {
   outcomePrice: Decimal;
   time: Date;
   cost: Decimal;
+  costSymbol: string;
 };
 
 export const useLatestTrades = (limit?: number, marketId?: number) => {
@@ -82,6 +86,8 @@ export const useLatestTrades = (limit?: number, marketId?: number) => {
               return;
             }
 
+            const costSymbol = findBaseAssetSymbol(swap.assetIn, swap.assetOut);
+
             const assetInId = parseAssetId(swap.assetIn).unwrap();
             const assetInIsBaseAsset = IOBaseAssetId.is(assetInId);
 
@@ -100,6 +106,7 @@ export const useLatestTrades = (limit?: number, marketId?: number) => {
                 assetInIsBaseAsset === true
                   ? new Decimal(swap.assetAmountIn).div(swap.assetAmountOut)
                   : new Decimal(swap.assetAmountOut).div(swap.assetAmountIn),
+              costSymbol,
             };
 
             return item;
@@ -129,6 +136,19 @@ const lookupOutcomeAsset = (asset: string, markets: MarketHeader[]) => {
     const index = getIndexOf(assetId);
     return market && market.categories[index].name;
   }
+};
+
+const findBaseAssetSymbol = (asset1: string, asset2: string) => {
+  const asset1Obj = parseAssetIdString(asset1);
+  const asset2Obj = parseAssetIdString(asset2);
+
+  if (IOForeignAssetId.is(asset1Obj)) {
+    return lookupAssetSymbol(asset1Obj);
+  }
+  if (IOForeignAssetId.is(asset2Obj)) {
+    return lookupAssetSymbol(asset2Obj);
+  }
+  return lookupAssetSymbol();
 };
 
 const lookupMarket = (asset: string, markets: MarketHeader[]) => {

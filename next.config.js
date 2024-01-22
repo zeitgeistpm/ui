@@ -7,10 +7,12 @@ module.exports = withPlaiceholder({
     scrollRestoration: true,
   },
   images: {
+    minimumCacheTTL: 10800,
     domains: [
       "ipfs-gateway.zeitgeist.pm",
       "cdn.discordapp.com",
       "images.unsplash.com",
+      "cdn.sanity.io",
     ],
   },
   staticPageGenerationTimeout: 300, //5 mins
