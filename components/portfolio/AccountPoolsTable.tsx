@@ -24,7 +24,7 @@ const columns: TableColumn[] = [
     type: "text",
   },
   {
-    header: "Fees collected",
+    header: "Fees available",
     accessor: "fees",
     type: "text",
   },
