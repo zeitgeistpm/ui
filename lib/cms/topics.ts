@@ -38,7 +38,7 @@ const topicHeaderFields = groq`{
 
 export const getCmsTopicHeaders = async (): Promise<CmsTopicHeader[]> => {
   const data = await sanity.fetch<CmsTopicHeader[]>(
-    groq`*[_type == "topic"] | order(_createdAt desc) ${topicHeaderFields}`,
+    groq`*[_type == "topic"] | order(orderRank) ${topicHeaderFields}`,
   );
 
   return data;
@@ -57,7 +57,7 @@ export const getCmsFullTopic = async (
   slug: string,
 ): Promise<CmsTopicFullTopic> => {
   const data = await sanity.fetch<CmsTopicFullTopic[]>(
-    groq`*[_type == "topic" && slug.current == "${slug}"] ${topicFullFields}`,
+    groq`*[_type == "topic" && slug.current == "${slug}"] | order(orderRank) ${topicFullFields}`,
   );
 
   return data[0];
