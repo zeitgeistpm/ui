@@ -1,3 +1,4 @@
+import { Disclosure } from "@headlessui/react";
 import { GenericChainProperties } from "@polkadot/types";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
@@ -12,12 +13,18 @@ import PopularCategories, {
 } from "components/front-page/PopularCategories";
 import { Topics } from "components/front-page/Topics";
 import WatchHow from "components/front-page/WatchHow";
-import { IndexedMarketCardData } from "components/markets/market-card";
+import MarketCard, {
+  IndexedMarketCardData,
+} from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
 import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
 import { getCmsNews, CmsNews } from "lib/cms/news";
-import { CmsTopicHeader, getCmsTopicHeaders } from "lib/cms/topics";
+import {
+  CmsTopicHeader,
+  getCmsTopicHeaders,
+  marketsForTopic,
+} from "lib/cms/topics";
 import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
@@ -33,12 +40,14 @@ import { getPlaiceholders } from "lib/util/getPlaiceHolders";
 import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import path from "path";
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
+import { useState } from "react";
 
 export async function getStaticProps() {
   const client = new GraphQLClient(graphQlEndpoint);
@@ -48,7 +57,7 @@ export async function getStaticProps() {
     storage: ZeitgeistIpfs(),
   });
 
-  const [news, cmsTpoics] = await Promise.all([
+  const [news, cmsTopics] = await Promise.all([
     getCmsNews(),
     getCmsTopicHeaders(),
   ]);
@@ -64,6 +73,7 @@ export async function getStaticProps() {
     ztgHistory,
     chainProperties,
     marketsCmsData,
+    topicsMarkets,
   ] = await Promise.all([
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
@@ -76,13 +86,21 @@ export async function getStaticProps() {
       { size: 16 },
     ),
     getPlaiceholders(
-      cmsTpoics.map((topic) => topic.thumbnail ?? ""),
+      cmsTopics.map((topic) => topic.thumbnail ?? ""),
       { size: 16 },
     ),
     getNetworkStats(sdk),
     getZTGHistory(),
     sdk.api.rpc.system.properties(),
     getCmsMarketMetadataForAllMarkets(),
+    Promise.all(
+      cmsTopics.map((topic) =>
+        marketsForTopic(topic, sdk.indexer, { limit: 3 }).then((markets) => ({
+          topic,
+          markets,
+        })),
+      ),
+    ),
   ]);
 
   const queryClient = new QueryClient();
@@ -119,7 +137,8 @@ export async function getStaticProps() {
       stats,
       ztgHistory,
       chainProperties: chainProperties.toPrimitive(),
-      cmsTpoics,
+      cmsTopics,
+      topicsMarkets,
     },
     revalidate:
       environment === "production"
@@ -139,7 +158,11 @@ const IndexPage: NextPage<{
   stats: { marketCount: number; tradersCount: number; volumeUsd: number };
   ztgHistory: ZtgPriceHistory;
   chainProperties: GenericChainProperties;
-  cmsTpoics: CmsTopicHeader[];
+  cmsTopics: CmsTopicHeader[];
+  topicsMarkets: {
+    topic: CmsTopicHeader;
+    markets: IndexedMarketCardData[];
+  }[];
 }> = ({
   news,
   trendingMarkets,
@@ -151,8 +174,13 @@ const IndexPage: NextPage<{
   stats,
   ztgHistory,
   chainProperties,
-  cmsTpoics,
+  cmsTopics,
+  topicsMarkets,
 }) => {
+  const router = useRouter();
+  const topicSlug = (router.query?.topic as string) ?? cmsTopics[0]?.slug;
+  const topic = topicsMarkets.find((t) => t.topic.slug === topicSlug);
+
   return (
     <>
       <div
@@ -167,11 +195,37 @@ const IndexPage: NextPage<{
           chainProperties={chainProperties}
         />
 
-        <div className="relative z-30 mb-12 flex gap-2">
-          <Topics
-            topics={cmsTpoics}
-            imagePlaceholders={topicImagePlaceholders}
-          />
+        <div className="relative z-30 mb-12">
+          <div className="mb-8 flex gap-2">
+            <Topics
+              topics={cmsTopics}
+              selectedTopic={topicSlug}
+              onClick={(topic) => {
+                router.push(
+                  { query: { ...router.query, topic: topic.slug } },
+                  undefined,
+                  { shallow: true },
+                );
+              }}
+              imagePlaceholders={topicImagePlaceholders}
+            />
+          </div>
+
+          {topic && topic.topic.marketIds && (
+            <>
+              <div className="mb-4 flex gap-3">
+                {topic.markets.map((market) => (
+                  <MarketCard key={market.marketId} {...market} />
+                ))}
+              </div>
+              <Link href={`/topics/${topic.topic.slug}`}>
+                <div className="pl-2 text-sm font-light text-blue-600">
+                  Go to <b className="font-bold">{topic.topic.title}</b> Markets
+                  ({topic.topic.marketIds?.length ?? 0})
+                </div>
+              </Link>
+            </>
+          )}
         </div>
 
         {featuredMarkets.length > 0 && (

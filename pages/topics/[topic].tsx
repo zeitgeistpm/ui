@@ -6,10 +6,13 @@ import MarketCard, {
 } from "components/markets/market-card";
 import Decimal from "decimal.js";
 import { sanity, sanityImageBuilder } from "lib/cms/sanity";
+import { ZeitgeistIndexer } from "@zeitgeistpm/indexer";
 import {
   CmsTopicFullTopic,
+  CmsTopicHeader,
   getCmsFullTopic,
   getCmsTopicHeaders,
+  marketsForTopic,
 } from "lib/cms/topics";
 import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { endpointOptions, graphQlEndpoint } from "lib/constants";
@@ -56,57 +59,7 @@ export async function getStaticProps({
     },
   });
 
-  let marketCardsData = markets
-    .map((market) => {
-      if (!market || !market.categories) return;
-
-      const marketCategories: MarketOutcomes = market.categories
-        .map((category, index) => {
-          const asset = market.assets[index];
-
-          if (!asset) return;
-
-          const marketCategory: MarketOutcome = {
-            name: category.name ?? "",
-            assetId: market.outcomeAssets[index],
-            price: asset.price,
-          };
-
-          return marketCategory;
-        })
-        .filter(isNotNull);
-
-      const prediction = getCurrentPrediction(market.assets, market);
-
-      const marketCardData: IndexedMarketCardData = {
-        marketId: market.marketId,
-        question: market.question ?? "",
-        creation: market.creation,
-        img: market.img ?? "",
-        prediction: prediction,
-        creator: market.creator,
-        volume: Number(new Decimal(market?.volume ?? 0).div(ZTG).toFixed(0)),
-        baseAsset: market.baseAsset,
-        outcomes: marketCategories,
-        pool: market.pool ?? null,
-        neoPool: market.neoPool,
-        marketType: market.marketType as any,
-        tags: market.tags?.filter(isNotNull),
-        status: market.status,
-        scalarType: (market.scalarType ?? null) as "number" | "date" | null,
-        endDate: market.period.end,
-      };
-
-      return marketCardData;
-    })
-    .filter(isNotNull);
-
-  marketCardsData.sort((a, b) => {
-    return (
-      cmsTopic.marketIds?.findIndex((m) => m === a.marketId) -
-      cmsTopic.marketIds?.findIndex((m) => m === b.marketId)
-    );
-  });
+  let marketCardsData = await marketsForTopic(cmsTopic, sdk.indexer);
 
   return {
     props: {
@@ -124,7 +77,7 @@ const TopicPage: NextPage<{
     markets;
 
   const banner = sanityImageBuilder.image(cmsTopic.banner).url() ?? "";
-
+  console.log(cmsTopic.banner);
   return (
     <div>
       {cmsTopic.banner && (
@@ -151,9 +104,11 @@ const TopicPage: NextPage<{
         </Link>
       </div>
 
-      <div className="mb-12 text-sm leading-6">
-        <PortableText value={cmsTopic.description} />
-      </div>
+      {cmsTopic.description && (
+        <div className="mb-12 text-sm leading-6">
+          <PortableText value={cmsTopic.description} />
+        </div>
+      )}
 
       {markets.length > 4 ? (
         <>

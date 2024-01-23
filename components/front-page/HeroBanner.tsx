@@ -24,7 +24,7 @@ export const HeroBanner = ({
   const prctChange = ((latestPrice - firstPrice) / firstPrice) * 100;
 
   return (
-    <div className="main-container md:mt-18 z-2 relative mb-20 mt-12">
+    <div className="main-container md:mt-18 z-2 relative mb-14 mt-12">
       <div className="relative flex flex-col-reverse md:flex-row md:gap-8">
         <div className="md:w-[890px] md:pt-8 lg:w-[690px]">
           <h1 className="mb-8 text-5xl leading-tight">

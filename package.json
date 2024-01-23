@@ -51,6 +51,8 @@
     "boring-avatars": "^1.6.1",
     "decimal.js": "^10.4.3",
     "dotenv": "^9.0.2",
+    "embla-carousel": "^8.0.0-rc19",
+    "embla-carousel-react": "^8.0.0-rc19",
     "fathom-client": "^3.2.0",
     "flexsearch": "^0.7.21",
     "font-color-contrast": "^11.1.0",
