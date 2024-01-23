@@ -16,18 +16,19 @@ export const useAccountAmm2Pool = (address?: string) => {
     async () => {
       if (!enabled) return;
 
-      const { neoPools } = await sdk.indexer.neoPools({
-        where: {
-          liquiditySharesManager: {
-            owner_eq: address,
+      const { liquiditySharesManagers } =
+        await sdk.indexer.liquiditySharesManagers({
+          where: {
+            account_eq: address,
           },
-        },
-      });
+        });
 
       const markets = await getMarketHeaders(
         sdk,
-        neoPools.map((pool) => pool.marketId),
+        liquiditySharesManagers.map((manager) => manager.neoPool.marketId),
       );
+
+      const neoPools = liquiditySharesManagers.map((l) => l.neoPool);
 
       const valuations = neoPools.map((pool) => {
         const values = pool.account.balances.map((balance) => {
@@ -47,10 +48,16 @@ export const useAccountAmm2Pool = (address?: string) => {
 
       return neoPools.map((pool, index) => {
         const market = markets.find((m) => m.marketId === pool.marketId);
+        const account = pool.liquiditySharesManager.find(
+          (l) => l.account === address,
+        );
+        const totalShares = pool.totalStake;
         return {
           ...pool,
           value: valuations[index],
           question: market?.question,
+          account,
+          totalShares,
         };
       });
     },

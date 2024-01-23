@@ -63,18 +63,13 @@ const Portfolio: NextPageWithLayout = () => {
   const [marketsTabSelection, setMarketsTabSelection] =
     useQueryParamState<MarketsTabItem>("marketsTab");
 
-  const { markets, subsidy, breakdown } = usePortfolioPositions(address);
+  const { markets, breakdown } = usePortfolioPositions(address);
 
   const { data: ztgPrice } = useZtgPrice();
 
   const marketPositionsByMarket = useMemo(
     () => markets && groupBy(markets, (position) => position.market.marketId),
     [markets],
-  );
-
-  const subsidyPositionsByMarket = useMemo(
-    () => subsidy && groupBy(subsidy, (position) => position.market.marketId),
-    [subsidy],
   );
 
   if (!address) {
