@@ -200,7 +200,6 @@ const Portfolio: NextPageWithLayout = () => {
                     {address && <BondsTable address={address} />}
                   </Tab.Panel>
                   <Tab.Panel>
-                    <div className="mb-4 font-bold">AMM2 Pools</div>
                     <AccountPoolsTable address={address} />
                   </Tab.Panel>
                   <Tab.Panel>
