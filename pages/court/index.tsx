@@ -1,10 +1,11 @@
-import { Disclosure } from "@headlessui/react";
+import { Disclosure, Tab } from "@headlessui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
 import { CourtCasesTable } from "components/court/CourtCasesTable";
-import JoinCourtAsJurorButton from "components/court/JoinCourtAsJurorButton";
-import ManageDelegationButton from "components/court/ManageDelegationButton";
 import CourtUnstakeButton from "components/court/CourtUnstakeButton";
+import JoinCourtAsJurorButton from "components/court/JoinCourtAsJurorButton";
+import JurorsTable from "components/court/JurorsTable";
+import ManageDelegationButton from "components/court/ManageDelegationButton";
 import InfoPopover from "components/ui/InfoPopover";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
@@ -14,10 +15,7 @@ import {
 } from "lib/hooks/queries/court/useCourtParticipants";
 import { useCourtStakeSharePercentage } from "lib/hooks/queries/court/useCourtStakeSharePercentage";
 import { useCourtTotalStakedAmount } from "lib/hooks/queries/court/useCourtTotalStakedAmount";
-import {
-  useCourtYearlyInflation,
-  useCourtYearlyInflationAmount,
-} from "lib/hooks/queries/court/useCourtYearlyInflation";
+import { useCourtYearlyInflationAmount } from "lib/hooks/queries/court/useCourtYearlyInflation";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -211,10 +209,33 @@ const CourtPage: NextPage = ({
       </div>
 
       <section>
-        <h3 className="mb-3 ml-2 text-base">Court Cases</h3>
-        <div className="!break-words text-sm md:text-base">
-          <CourtCasesTable />
-        </div>
+        <Tab.Group>
+          <Tab.List className="mb-4 flex">
+            {["Court Cases", "Jurors"].map((title, index) => (
+              <Tab className="text-sm sm:text-xl" key={index}>
+                {({ selected }) => (
+                  <div
+                    className={`${
+                      selected
+                        ? "font-semibold text-black transition-all"
+                        : "text-sky-600 transition-all"
+                    } ${index === 0 ? "px-0 pr-4" : "px-4"}`}
+                  >
+                    {title}
+                  </div>
+                )}
+              </Tab>
+            ))}
+          </Tab.List>
+          <Tab.Panels>
+            <Tab.Panel>
+              <CourtCasesTable />
+            </Tab.Panel>
+            <Tab.Panel>
+              <JurorsTable />
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
       </section>
     </div>
   );
@@ -223,7 +244,6 @@ const CourtPage: NextPage = ({
 const Stats = () => {
   const { data: courtCases } = useCourtCases();
   const { data: constants } = useChainConstants();
-  const { data: yearlyInflation } = useCourtYearlyInflation();
   const { data: yearlyInflationAmount } = useCourtYearlyInflationAmount();
   const { data: participants } = useCourtParticipants();
 
@@ -365,7 +385,9 @@ const Stats = () => {
               "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgba(240, 206, 135, 0.048) 93.27%)",
           }}
         >
-          <label className="font text-sm text-gray-500">Yearly Payout</label>
+          <label className="font text-sm text-gray-500">
+            Yearly Incentives
+          </label>
 
           <div className="flex items-center gap-2">
             <div className="text-md font-mono font-semibold">

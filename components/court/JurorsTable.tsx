@@ -6,6 +6,7 @@ import { useCourtParticipants } from "lib/hooks/queries/court/useCourtParticipan
 import Decimal from "decimal.js";
 import { ZTG } from "@zeitgeistpm/sdk";
 import { useIdentities } from "lib/hooks/queries/useIdentities";
+import { formatNumberLocalized } from "lib/util";
 
 const columns: TableColumn[] = [
   {
@@ -33,12 +34,12 @@ const columns: TableColumn[] = [
     accessor: "status",
     type: "text",
   },
-  {
-    header: "",
-    accessor: "button",
-    type: "component",
-    width: "150px",
-  },
+  // {
+  //   header: "",
+  //   accessor: "button",
+  //   type: "component",
+  //   width: "150px",
+  // },
 ];
 
 const JurorsTable = () => {
@@ -77,11 +78,13 @@ const JurorsTable = () => {
             </span>
           </Link>
         ),
-        personalStake: juror.stake.div(ZTG).toNumber(),
-        totalStake: juror.stake
-          .plus(delegatorStake ?? 0)
-          .div(ZTG)
-          .toNumber(),
+        personalStake: formatNumberLocalized(juror.stake.div(ZTG).toNumber()),
+        totalStake: formatNumberLocalized(
+          juror.stake
+            .plus(delegatorStake ?? 0)
+            .div(ZTG)
+            .toNumber(),
+        ),
         status: juror.prepareExit ? "Exiting" : "Active",
         delegators: delegators?.length ?? 0,
         button: <DelegateButton address={juror.address} />,
