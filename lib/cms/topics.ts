@@ -23,6 +23,7 @@ export type CmsTopicFull = {
   slug: string;
   thumbnail: string;
   banner: SanityImageObject;
+  bannerBlurData: string;
   marketIds: number[];
 };
 
@@ -47,6 +48,7 @@ const topicFullFields = groq`{
   "slug": slug.current,
   "thumbnail": thumbnail.asset->url,
   "banner": banner,
+  "bannerBlurData": banner.asset->metadata.lqip,
   "marketIds": markets[].marketId
 }`;
 

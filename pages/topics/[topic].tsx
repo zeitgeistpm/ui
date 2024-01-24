@@ -58,6 +58,15 @@ const TopicPage: NextPage<{
     ? sanityImageBuilder.image(cmsTopic.banner)
     : undefined;
 
+  let blur = {};
+
+  if (cmsTopic.banner && cmsTopic.bannerBlurData) {
+    blur = {
+      placeholder: "blur",
+      blurDataURL: cmsTopic.bannerBlurData,
+    };
+  }
+
   return (
     <div>
       {banner && (
@@ -67,12 +76,11 @@ const TopicPage: NextPage<{
             src={banner.url()}
             fill
             objectFit="cover"
-            placeholder="blur"
-            blurDataURL={banner.blur(130).url()}
             className="rounded-lg transition-all"
             objectPosition={`${(cmsTopic.banner.hotspot?.x ?? 0.5) * 100}% ${
               (cmsTopic.banner.hotspot?.y ?? 0.5) * 100
             }%`}
+            {...blur}
           />
         </div>
       )}
