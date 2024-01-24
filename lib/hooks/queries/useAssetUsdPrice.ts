@@ -139,7 +139,6 @@ export const getForeignAssetPriceServerSide = async (
   );
 
   const json = await res.json();
-  console.log(json);
   return new Decimal(json[coinGeckoId]?.usd ?? 0);
 };
 export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {

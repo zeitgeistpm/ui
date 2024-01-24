@@ -176,12 +176,6 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
               <SecondaryButton
                 onClick={() => setManageLiquidityOpen(true)}
                 className="max-w-[160px] md:ml-auto md:mr-0"
-                disabled={
-                  market.scoringRule === ScoringRule.Lmsr
-                    ? neoPool?.liquiditySharesManager.owner !==
-                      wallet.realAddress
-                    : false
-                }
               >
                 Manage Liquidity
               </SecondaryButton>
@@ -189,13 +183,6 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           </>
         )}
       </div>
-      {pool?.poolId && (
-        <LiquidityModal
-          poolId={pool.poolId}
-          open={manageLiquidityOpen}
-          onClose={() => setManageLiquidityOpen(false)}
-        />
-      )}
       {neoPool && (
         <LiquidityModalAmm2
           marketId={neoPool.marketId}
