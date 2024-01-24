@@ -198,9 +198,8 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
               <div className="flex flex-1 items-center gap-3">
                 <Avatar address={juror.address} size={18} />
                 <div className="text-sm font-medium">
-                  {identities?.[index]?.displayName != null &&
-                  identities?.[index].displayName != ""
-                    ? identities?.[index].displayName
+                  {identities?.[index]
+                    ? identities?.[index]?.displayName
                     : shortenAddress(juror.address)}
                 </div>
               </div>

@@ -12,17 +12,13 @@ export const useIdentities = (addresses?: string[]) => {
     [id, identitiesRootKey, addresses],
     async () => {
       if (addresses && isRpcSdk(sdk)) {
-        console.log(addresses);
-
-        const userIdentities: UserIdentity[] = [];
+        const userIdentities: (UserIdentity | null)[] = [];
         const res = await sdk.api.queryMulti(
           addresses.map((address) => [
             sdk.api.query.identity.identityOf as any,
             address,
           ]),
         );
-
-        console.log(res);
 
         res.forEach((identity: any) => {
           const indentityInfo =
@@ -63,11 +59,7 @@ export const useIdentities = (addresses?: string[]) => {
 
             userIdentities.push(userIdentity);
           } else {
-            const userIdentity: UserIdentity = {
-              displayName: "",
-            };
-
-            userIdentities.push(userIdentity);
+            userIdentities.push(null);
           }
         });
         return userIdentities;

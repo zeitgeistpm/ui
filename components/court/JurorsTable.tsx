@@ -71,11 +71,7 @@ const JurorsTable = () => {
             className="flex items-center gap-2 text-xs"
           >
             <Avatar address={juror.address} />
-            <span>
-              {identity?.displayName && identity.displayName != ""
-                ? identity.displayName
-                : juror.address}
-            </span>
+            <span>{identity ? identity.displayName : juror.address}</span>
           </Link>
         ),
         personalStake: formatNumberLocalized(juror.stake.div(ZTG).toNumber()),
