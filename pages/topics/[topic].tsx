@@ -1,36 +1,21 @@
 import { PortableText } from "@portabletext/react";
-import { ZTG, ZeitgeistIpfs, create } from "@zeitgeistpm/sdk";
-import { isNotNull } from "@zeitgeistpm/utility/dist/null";
+import { ZeitgeistIpfs, create } from "@zeitgeistpm/sdk";
 import MarketCard, {
   IndexedMarketCardData,
 } from "components/markets/market-card";
-import Decimal from "decimal.js";
-import { sanity, sanityImageBuilder } from "lib/cms/sanity";
-import { ZeitgeistIndexer } from "@zeitgeistpm/indexer";
+import { sanityImageBuilder } from "lib/cms/sanity";
 import {
-  CmsTopicFullTopic,
-  CmsTopicHeader,
+  CmsTopicFull,
   getCmsFullTopic,
   getCmsTopicHeaders,
   marketsForTopic,
 } from "lib/cms/topics";
-import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { endpointOptions, graphQlEndpoint } from "lib/constants";
-
-import { getCurrentPrediction } from "lib/util/assets";
 import { NextPage } from "next";
-import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
 import Link from "next/link";
 
 export async function getStaticPaths() {
-  // const client = new GraphQLClient(graphQlEndpoint);
-  // const marketIds = await getRecentMarketIds(client);
-
-  // const paths = marketIds.map((market) => ({
-  //   params: { marketid: market.toString() },
-  // }));
-
   const cmsTopics = await getCmsTopicHeaders();
 
   const paths = cmsTopics.map((topic) => ({
@@ -52,13 +37,6 @@ export async function getStaticProps({
   });
 
   const cmsTopic = await getCmsFullTopic(params.topic);
-
-  const { markets } = await sdk.indexer.markets({
-    where: {
-      marketId_in: cmsTopic.marketIds,
-    },
-  });
-
   let marketCardsData = await marketsForTopic(cmsTopic, sdk.indexer);
 
   return {
@@ -70,27 +48,31 @@ export async function getStaticProps({
 }
 
 const TopicPage: NextPage<{
-  cmsTopic: CmsTopicFullTopic;
+  cmsTopic: CmsTopicFull;
   markets: IndexedMarketCardData[];
 }> = ({ cmsTopic, markets }) => {
   const [marketOne, marketTwo, marketThree, marketFour, ...restMarkets] =
     markets;
 
-  const banner = sanityImageBuilder.image(cmsTopic.banner).url() ?? "";
-  console.log(cmsTopic.banner);
+  const banner = cmsTopic.banner
+    ? sanityImageBuilder.image(cmsTopic.banner)
+    : undefined;
+
   return (
     <div>
-      {cmsTopic.banner && (
+      {banner && (
         <div className="relative mb-10 mt-3 h-[150px] w-full md:h-[262px]">
           <Image
             alt=""
-            src={banner}
+            src={banner.url()}
             fill
-            sizes="100vw"
-            className="rounded-lg object-cover"
-            style={{
-              objectFit: "cover",
-            }}
+            objectFit="cover"
+            placeholder="blur"
+            blurDataURL={banner.blur(300).url()}
+            className="rounded-lg transition-all"
+            objectPosition={`${(cmsTopic.banner.hotspot?.x ?? 0.5) * 100}% ${
+              (cmsTopic.banner.hotspot?.y ?? 0.5) * 100
+            }%`}
           />
         </div>
       )}

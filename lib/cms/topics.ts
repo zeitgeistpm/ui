@@ -1,16 +1,13 @@
 import type { PortableTextBlock } from "@portabletext/types";
-import { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import { SanityImageObject } from "@sanity/image-url/lib/types/types";
 import { ZTG } from "@zeitgeistpm/sdk";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import Decimal from "decimal.js";
 import groq from "groq";
 import { sanity } from "./sanity";
-
 import { ZeitgeistIndexer } from "@zeitgeistpm/indexer";
-
 import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
-
 import { getCurrentPrediction } from "lib/util/assets";
 
 export type CmsTopicHeader = {
@@ -20,12 +17,12 @@ export type CmsTopicHeader = {
   marketIds: number[];
 };
 
-export type CmsTopicFullTopic = {
+export type CmsTopicFull = {
   title: string;
   description: PortableTextBlock[];
   slug: string;
   thumbnail: string;
-  banner: SanityImageSource;
+  banner: SanityImageObject;
   marketIds: number[];
 };
 
@@ -53,10 +50,8 @@ const topicFullFields = groq`{
   "marketIds": markets[].marketId
 }`;
 
-export const getCmsFullTopic = async (
-  slug: string,
-): Promise<CmsTopicFullTopic> => {
-  const data = await sanity.fetch<CmsTopicFullTopic[]>(
+export const getCmsFullTopic = async (slug: string): Promise<CmsTopicFull> => {
+  const data = await sanity.fetch<CmsTopicFull[]>(
     groq`*[_type == "topic" && slug.current == "${slug}"] | order(orderRank) ${topicFullFields}`,
   );
 
@@ -64,7 +59,7 @@ export const getCmsFullTopic = async (
 };
 
 export const marketsForTopic = async (
-  topic: CmsTopicFullTopic | CmsTopicHeader,
+  topic: CmsTopicFull | CmsTopicHeader,
   indexer: ZeitgeistIndexer,
   opts?: {
     limit?: number;
@@ -96,6 +91,10 @@ export const marketsForTopic = async (
           return marketCategory;
         })
         .filter(isNotNull);
+
+      if (market.assets.length < 2) {
+        console.log(market);
+      }
 
       const prediction = getCurrentPrediction(market.assets, market);
 

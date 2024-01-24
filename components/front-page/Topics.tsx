@@ -3,6 +3,7 @@ import { CmsTopicHeader } from "lib/cms/topics";
 import { chunk, isObject, isString } from "lodash-es";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export const Topics = ({
   topics,
@@ -15,6 +16,8 @@ export const Topics = ({
   selectedTopic?: CmsTopicHeader | string;
   onClick?: (topic: CmsTopicHeader) => void;
 }) => {
+  const router = useRouter();
+
   return (
     <>
       <div className="hidden w-full gap-3 md:flex">
@@ -30,7 +33,13 @@ export const Topics = ({
                   : "bg-white"
               }
             `}
-            onClick={() => onClick?.(topic)}
+            onClick={() => {
+              if (onClick) {
+                onClick(topic);
+              } else {
+                router.push(`/topics/${topic.slug}`);
+              }
+            }}
           >
             <div className="relative h-10 w-10">
               <Image
