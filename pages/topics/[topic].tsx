@@ -68,7 +68,7 @@ const TopicPage: NextPage<{
             fill
             objectFit="cover"
             placeholder="blur"
-            blurDataURL={banner.blur(300).url()}
+            blurDataURL={banner.blur(130).url()}
             className="rounded-lg transition-all"
             objectPosition={`${(cmsTopic.banner.hotspot?.x ?? 0.5) * 100}% ${
               (cmsTopic.banner.hotspot?.y ?? 0.5) * 100
