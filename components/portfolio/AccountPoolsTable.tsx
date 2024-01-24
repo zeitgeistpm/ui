@@ -24,7 +24,7 @@ const columns: TableColumn[] = [
     type: "text",
   },
   {
-    header: "Fees collected",
+    header: "Fees available",
     accessor: "fees",
     type: "text",
   },
@@ -91,6 +91,10 @@ const AccountPoolsTable = ({ address }: { address: string }) => {
 
   const tableData: TableData[] =
     pools?.map((pool) => {
+      const percentageOwnership = new Decimal(pool.account?.stake ?? 0).div(
+        pool.totalStake,
+      );
+
       return {
         question: (
           <Link
@@ -100,8 +104,8 @@ const AccountPoolsTable = ({ address }: { address: string }) => {
             {pool.question}
           </Link>
         ),
-        value: pool.value.div(ZTG).toFixed(3),
-        fees: new Decimal(pool.liquiditySharesManager.fees).div(ZTG).toFixed(3),
+        value: pool.value.mul(percentageOwnership).div(ZTG).toFixed(3),
+        fees: new Decimal(pool.account?.fees ?? 0).div(ZTG).toFixed(3),
         buttons: <PoolButtons marketId={pool.marketId} />,
       };
     }) ?? [];
