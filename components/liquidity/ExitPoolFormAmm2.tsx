@@ -10,6 +10,7 @@ import { lookupAssetMetadata, useMarket } from "lib/hooks/queries/useMarket";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -39,8 +40,12 @@ const ExitPoolForm = ({
   });
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
-  const userPoolShares = pool.totalShares;
-  const userOwnershipRatio = 1;
+  const { realAddress } = useWallet();
+  const userPoolShares = pool.accounts.find(
+    (account) => account.address === realAddress,
+  )?.shares;
+  const userOwnershipRatio = userPoolShares?.div(pool.totalShares) ?? 0;
+
   const { data: market } = useMarket({ marketId });
   const queryClient = useQueryClient();
   const reserves = Array.from(pool.reserves).map((reserve) => reserve[1]);
@@ -49,7 +54,13 @@ const ExitPoolForm = ({
 
   const { send: exitPool, isLoading } = useExtrinsic(
     () => {
-      if (!constants || !isRpcSdk(sdk) || !pool || !poolAssets) {
+      if (
+        !constants ||
+        !isRpcSdk(sdk) ||
+        !pool ||
+        !poolAssets ||
+        !userPoolShares
+      ) {
         return;
       }
       const formValue = getValues();
