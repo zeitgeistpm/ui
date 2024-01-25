@@ -10,6 +10,7 @@ import Decimal from "decimal.js";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
+import LimitOrderForm from "./LimitOrderForm";
 
 const Amm2TradeForm = ({
   marketId,
@@ -109,6 +110,8 @@ const Amm2TradeForm = ({
           </Tab.List>
           <Tab.Panels className="p-[30px]">
             <Tab.Panel>
+              <LimitOrderForm marketId={marketId} initialAsset={initialAsset} />
+
               <BuyForm
                 marketId={marketId}
                 initialAsset={initialAsset}
