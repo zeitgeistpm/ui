@@ -437,7 +437,13 @@ const Market: NextPage<MarketPageProps> = ({
 
         <div className="hidden md:-mr-6 md:block md:w-[320px] lg:mr-auto lg:w-[460px]">
           <div className="sticky top-28">
-            <div className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg">
+            <div
+              className="mb-12 animate-pop-in rounded-lg  opacity-0 shadow-lg"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
+              }}
+            >
               {market?.status === MarketStatus.Active ? (
                 <>
                   <Amm2TradeForm marketId={marketId} />

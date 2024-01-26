@@ -187,7 +187,7 @@ const OrderTypeSelector = ({
     <div className="relative flex w-[25%] items-center justify-center">
       <button
         onClick={() => setMenuOpen((open) => !open)}
-        className="flex w-full items-center px-5"
+        className="flex w-full items-center justify-center px-5"
       >
         <div>{value === "market" ? "Market" : "Limit"}</div>
         <ChevronDown className="ml-auto" size={16} />
@@ -199,13 +199,17 @@ const OrderTypeSelector = ({
           className="absolute top-[52px] flex w-32 flex-col gap-y-3 rounded-lg bg-white p-4 shadow-[0px_4px_20px_0px_#00000040]"
         >
           <button
-            className={`${value === "market" ? "text-ztg-blue" : ""} `}
+            className={`${
+              value === "market" ? "font-medium text-black" : "text-sky-600"
+            } `}
             onClick={() => handleTypeClick("market")}
           >
             Market
           </button>
           <button
-            className={`${value === "limit" ? "text-ztg-blue" : ""} `}
+            className={`${
+              value === "limit" ? "font-medium text-black" : "text-sky-600"
+            } `}
             onClick={() => handleTypeClick("limit")}
           >
             Limit
