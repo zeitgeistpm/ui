@@ -5,6 +5,16 @@ import { atom } from "jotai";
 import { isWSX } from "lib/constants";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
+import { TypeOfLogin } from "@web3auth/openlogin-adapter";
+
+interface LoginConfig {
+  [key: string]: {
+    verifier: string;
+    verifierSubIdentifier: string;
+    typeOfLogin: TypeOfLogin;
+    clientId: string;
+  };
+}
 
 export const clientId = isWSX
   ? process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_WSX
@@ -68,36 +78,46 @@ const privateKeyProvider = new CommonPrivateKeyProvider({
   config: { chainConfig },
 });
 
+const loginConfig: LoginConfig = {
+  ...(auth0ClientID
+    ? {
+        auth0google: {
+          verifier: "auth-0-all",
+          verifierSubIdentifier: "auth0-google",
+          typeOfLogin: "jwt",
+          clientId: auth0ClientID,
+        },
+        auth0twitter: {
+          verifier: "auth-0-all",
+          verifierSubIdentifier: "auth0-twitter",
+          typeOfLogin: "jwt",
+          clientId: auth0ClientID,
+        },
+        auth0emailpasswordless: {
+          verifier: "auth-0-all",
+          verifierSubIdentifier: "auth0-passwordless",
+          typeOfLogin: "jwt",
+          clientId: auth0ClientID,
+        },
+      }
+    : {}),
+  ...(discordClientID
+    ? {
+        discord: {
+          verifier: "auth-0-all",
+          verifierSubIdentifier: "discord",
+          typeOfLogin: "discord",
+          clientId: discordClientID,
+        },
+      }
+    : {}),
+};
+
 export const openloginAdapter = new OpenloginAdapter({
   privateKeyProvider,
   adapterSettings: {
     clientId,
-    loginConfig: {
-      auth0google: {
-        verifier: "auth-0-all",
-        verifierSubIdentifier: "auth0-google",
-        typeOfLogin: "jwt",
-        clientId: auth0ClientID,
-      },
-      auth0twitter: {
-        verifier: "auth-0-all",
-        verifierSubIdentifier: "auth0-twitter",
-        typeOfLogin: "jwt",
-        clientId: auth0ClientID,
-      },
-      auth0emailpasswordless: {
-        verifier: "auth-0-all",
-        verifierSubIdentifier: "auth0-passwordless",
-        typeOfLogin: "jwt",
-        clientId: auth0ClientID,
-      },
-      discord: {
-        verifier: "auth-0-all",
-        verifierSubIdentifier: "discord",
-        typeOfLogin: "discord",
-        clientId: discordClientID,
-      },
-    },
+    loginConfig,
   },
 });
 

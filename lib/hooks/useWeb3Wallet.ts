@@ -5,11 +5,23 @@ import { useWallet } from "lib/state/wallet";
 import { web3authAtom } from "lib/state/util/web3auth-config";
 import { useAtom } from "jotai";
 import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
+import { useNotifications } from "lib/state/notifications";
+interface loginOptions {
+  loginProvider: string;
+  extraLoginOptions: {
+    domain: string;
+    verifierIdField: "email" | "sub";
+    isVerifierIdCaseSensitive?: boolean;
+    login_hint?: string;
+    connection: string;
+  };
+}
 
 const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN_ZTG;
 
 const useWeb3Wallet = () => {
   const [web3auth] = useAtom(web3authAtom);
+  const notificationStore = useNotifications();
   const { selectWallet, disconnectWallet, walletId } = useWallet();
 
   const initWeb3Auth = async () => {
@@ -29,8 +41,16 @@ const useWeb3Wallet = () => {
     }
   };
 
-  const login = async (loginOptions) => {
-    if (!web3auth) {
+  const login = async (loginOptions: loginOptions) => {
+    if (!web3auth || !auth0Domain) {
+      notificationStore.pushNotification(
+        `Error connecting: please try another login method or check back later.`,
+        {
+          type: "Error",
+          autoRemove: true,
+          lifetime: 5,
+        },
+      );
       return;
     }
     if (web3auth.connected) {
@@ -45,12 +65,22 @@ const useWeb3Wallet = () => {
       if (web3authProvider) {
         await getKeypair(web3authProvider);
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
+      notificationStore.pushNotification(
+        `Error connecting: please try again later.`,
+        {
+          type: "Error",
+          autoRemove: true,
+          lifetime: 5,
+        },
+      );
     }
   };
 
   const loginGoogle = () => {
+    if (!auth0Domain) {
+      return;
+    }
     login({
       loginProvider: "auth0google",
       extraLoginOptions: {
@@ -63,6 +93,9 @@ const useWeb3Wallet = () => {
   };
 
   const loginTwitter = () => {
+    if (!auth0Domain) {
+      return;
+    }
     login({
       loginProvider: "auth0twitter",
       extraLoginOptions: {
@@ -74,9 +107,13 @@ const useWeb3Wallet = () => {
   };
 
   const loginDiscord = () => {
+    if (!auth0Domain) {
+      return;
+    }
     login({
       loginProvider: "discord",
       extraLoginOptions: {
+        domain: "",
         verifierIdField: "email",
         isVerifierIdCaseSensitive: false,
         connection: "discord",
@@ -85,6 +122,9 @@ const useWeb3Wallet = () => {
   };
 
   const loginEmail = (email?: string) => {
+    if (!auth0Domain) {
+      return;
+    }
     login({
       loginProvider: "auth0emailpasswordless",
       extraLoginOptions: {
