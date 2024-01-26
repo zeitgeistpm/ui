@@ -119,30 +119,34 @@ const Amm2TradeForm = ({
             />
           </div>
           <Tab.Panels className="p-[30px]">
-            <Tab.Panel>
+            {orderType === "market" ? (
+              <>
+                <Tab.Panel>
+                  <BuyForm
+                    marketId={marketId}
+                    initialAsset={initialAsset}
+                    onSuccess={(data, asset, amount) => {
+                      handleSuccess(data);
+                      setOutcomeAsset(asset);
+                      setAmountIn(amount);
+                    }}
+                  />
+                </Tab.Panel>
+                <Tab.Panel>
+                  <SellForm
+                    marketId={marketId}
+                    initialAsset={initialAsset}
+                    onSuccess={(data, asset, amount) => {
+                      handleSuccess(data);
+                      setOutcomeAsset(asset);
+                      setAmountIn(amount);
+                    }}
+                  />
+                </Tab.Panel>
+              </>
+            ) : (
               <LimitOrderForm marketId={marketId} initialAsset={initialAsset} />
-
-              <BuyForm
-                marketId={marketId}
-                initialAsset={initialAsset}
-                onSuccess={(data, asset, amount) => {
-                  handleSuccess(data);
-                  setOutcomeAsset(asset);
-                  setAmountIn(amount);
-                }}
-              />
-            </Tab.Panel>
-            <Tab.Panel>
-              <SellForm
-                marketId={marketId}
-                initialAsset={initialAsset}
-                onSuccess={(data, asset, amount) => {
-                  handleSuccess(data);
-                  setOutcomeAsset(asset);
-                  setAmountIn(amount);
-                }}
-              />
-            </Tab.Panel>
+            )}
           </Tab.Panels>
         </Tab.Group>
       )}
