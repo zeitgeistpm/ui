@@ -1,6 +1,6 @@
 import { Tab } from "@headlessui/react";
 import { MarketOutcomeAssetId, getIndexOf, ZTG } from "@zeitgeistpm/sdk";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BuyForm from "./BuyForm";
 import SellForm from "./SellForm";
 import TradeTab, { TradeTabType } from "./TradeTab";
@@ -160,11 +160,24 @@ const OrderTypeSelector = ({
   value: OrderType;
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const handleTypeClick = (type: OrderType) => {
     onTypeSelected(type);
     setMenuOpen(false);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [wrapperRef]);
 
   return (
     <div className="relative flex w-[25%] items-center justify-center">
@@ -177,7 +190,10 @@ const OrderTypeSelector = ({
       </button>
 
       {menuOpen && (
-        <div className="absolute top-[52px] flex w-32 flex-col gap-y-3 rounded-lg bg-white p-4 shadow-[0px_4px_20px_0px_#00000040]">
+        <div
+          ref={wrapperRef}
+          className="absolute top-[52px] flex w-32 flex-col gap-y-3 rounded-lg bg-white p-4 shadow-[0px_4px_20px_0px_#00000040]"
+        >
           <button
             className={`${value === "market" ? "text-ztg-blue" : ""} `}
             onClick={() => handleTypeClick("market")}
