@@ -9,9 +9,8 @@ import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
 import { ReactNode } from "react";
 import { FormEvent } from "../types";
-import Input from "components/ui/Input";
-import PoolSettingsAmm2 from "components/liquidity/PoolSettingsAMM2";
 import FeeSelect, { Fee } from "./FeeSelect";
+import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 
 export type LiquidityInputProps = {
   name: string;
@@ -30,10 +29,11 @@ export const LiquidityInput = ({
   currency,
   fieldState,
 }: LiquidityInputProps) => {
+  const editor = useMarketDraftEditor();
   const currencyMetadata = getMetadataForCurrency(currency);
   const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
 
-  const handleRowsChange = (data: PoolAssetRowData[]) => {
+  const handleRowsChange = (data: PoolAssetRowData[], amount: string) => {
     onChange({
       type: "change",
       target: {
@@ -41,6 +41,7 @@ export const LiquidityInput = ({
         value: {
           ...value!,
           rows: transformRows(data),
+          amount: amount,
         },
       },
     });
@@ -66,6 +67,8 @@ export const LiquidityInput = ({
           <div className="mb-4 ">
             <PoolSettings
               baseAssetPrice={baseAssetPrice ?? undefined}
+              baseAssetSymbol={currencyMetadata?.name ?? ""}
+              baseAssetAmount={value?.amount ?? ""}
               data={transformRows(value?.rows ?? [])}
               onChange={handleRowsChange}
               noDataMessage={errorMessage}

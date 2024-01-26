@@ -76,10 +76,9 @@ const mapMarkets = async (
 
   for (const market of markets) {
     const marketOutcomes = outcomes[market.marketId];
-    const prediction =
-      market.pool != null
-        ? getCurrentPrediction(marketOutcomes, market)
-        : { name: "None", price: 0 };
+    const prediction = market
+      ? getCurrentPrediction(marketOutcomes, market)
+      : { name: "None", price: 0 };
 
     resMarkets = [
       ...resMarkets,
