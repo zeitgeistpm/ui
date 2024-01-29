@@ -48,7 +48,7 @@ const MyOrdersTable = ({ marketId }: { marketId: number }) => {
   const tableData: TableData[] | undefined = orders?.map(
     ({ side, price, outcomeAssetId, outcomeAmount }) => {
       const index = getIndexOf(outcomeAssetId);
-      const outcomeName = market?.categories?.[index].name;
+      const outcomeName = market?.categories?.[index]?.name;
       const baseAsset = parseAssetIdString(market?.baseAsset) as BaseAssetId;
       const baseSymbol = lookupAssetSymbol(baseAsset);
 

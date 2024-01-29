@@ -10,7 +10,10 @@ import Decimal from "decimal.js";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-import LimitOrderForm from "./LimitOrderForm";
+import LimitOrderForm, {
+  LimitBuyOrderForm,
+  LimitSellOrderForm,
+} from "./LimitOrderForm";
 import { ChevronDown } from "react-feather";
 
 const Amm2TradeForm = ({
@@ -145,7 +148,20 @@ const Amm2TradeForm = ({
                 </Tab.Panel>
               </>
             ) : (
-              <LimitOrderForm marketId={marketId} initialAsset={initialAsset} />
+              <>
+                <Tab.Panel>
+                  <LimitBuyOrderForm
+                    marketId={marketId}
+                    initialAsset={initialAsset}
+                  />
+                </Tab.Panel>
+                <Tab.Panel>
+                  <LimitSellOrderForm
+                    marketId={marketId}
+                    initialAsset={initialAsset}
+                  />
+                </Tab.Panel>
+              </>
             )}
           </Tab.Panels>
         </Tab.Group>

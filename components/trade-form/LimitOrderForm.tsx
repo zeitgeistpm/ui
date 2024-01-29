@@ -5,8 +5,8 @@ import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
-import { useAmm2MarketSpotPrices } from "lib/hooks/queries/useAmm2MarketSpotPrices";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useBalance } from "lib/hooks/queries/useBalance";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -20,7 +20,7 @@ import { useForm } from "react-hook-form";
 // for sells, max sell is balance
 // default price to spot price
 
-const LimitOrderForm = ({
+export const LimitBuyOrderForm = ({
   marketId,
   initialAsset,
 }: {
@@ -28,6 +28,35 @@ const LimitOrderForm = ({
   initialAsset?: MarketOutcomeAssetId;
 }) => {
   const { data: orders } = useOrders();
+
+  return <LimitOrderForm marketId={marketId} />;
+};
+
+export const LimitSellOrderForm = ({
+  marketId,
+  initialAsset,
+}: {
+  marketId: number;
+  initialAsset?: MarketOutcomeAssetId;
+}) => {
+  const { data: orders } = useOrders();
+
+  return <LimitOrderForm marketId={marketId} />;
+};
+
+const LimitOrderForm = ({
+  marketId,
+  initialAsset,
+}: {
+  marketId: number;
+  initialAsset?: MarketOutcomeAssetId;
+  maxPrice?: Decimal;
+  minPrice?: Decimal;
+  maxAmount?: Decimal;
+  buttonText?: string;
+  onSubmit?: (price: Decimal, amount: Decimal) => void;
+  onAssetChange?: (assetId: MarketOutcomeAssetId) => void;
+}) => {
   const {
     register,
     handleSubmit,
@@ -63,7 +92,14 @@ const LimitOrderForm = ({
     MarketOutcomeAssetId | undefined
   >(initialAsset ?? outcomeAssets?.[0]);
 
-  const selectedAssetBalance = new Decimal(ZTG);
+  const { data: selectedAssetBalance } = useBalance(
+    wallet.realAddress,
+    selectedAsset,
+  );
+  const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
+
+  console.log(baseAssetBalance?.div(ZTG).toString());
+  console.log(selectedAssetBalance?.div(ZTG).toString());
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
@@ -118,7 +154,7 @@ const LimitOrderForm = ({
       >
         <div className="text-sm">Amount</div>
 
-        <div className="flex w-full items-center justify-center rounded-md bg-anti-flash-white pr-2 font-mono">
+        <div className="flex w-full items-center justify-center rounded-md bg-white pr-2 font-mono">
           <Input
             type="number"
             className="w-full bg-transparent outline-none"
@@ -158,7 +194,7 @@ const LimitOrderForm = ({
           </div>
         </div>
         <div className="text-sm">Price</div>
-        <div className="center relative h-[56px] w-full rounded-md bg-anti-flash-white text-ztg-18-150 font-normal">
+        <div className="center relative h-[56px] w-full rounded-md bg-white text-ztg-18-150 font-normal">
           <Input
             type="number"
             className="w-full bg-transparent font-mono outline-none"
