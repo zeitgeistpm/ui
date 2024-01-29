@@ -25,7 +25,7 @@ export const Topics = ({
           <div
             key={index}
             className={`
-            flex flex-1 cursor-pointer items-center gap-4 rounded-lg p-3 transition-all hover:bg-gray-200 hover:bg-opacity-30 md:max-w-sm
+            ztg-transition flex flex-1 cursor-pointer items-center gap-4 rounded-lg p-3 transition-all md:max-w-sm md:hover:scale-[1.015]
               ${
                 (isString(selectedTopic) && selectedTopic === topic.slug) ||
                 (isObject(selectedTopic) && selectedTopic.slug === topic.slug)
