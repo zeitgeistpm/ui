@@ -7,10 +7,14 @@ import {
 } from "@talismn/connect-wallets";
 import { useOnboarding } from "lib/state/onboarding";
 import { range } from "lodash-es";
+import Web3wallet from "components/web3wallet";
+import { web3AuthWalletInstance } from "../../lib/state/util/web3auth-config";
 
 import Image from "next/image";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
+import WalletIcon from "./WalletIcon";
+import { useWallet } from "lib/state/wallet";
 
 interface StepperProps {
   start: number;
@@ -59,9 +63,9 @@ const TextSection = ({
 }: TextSectionProps) => {
   return (
     <>
-      <div className="text-ztg-22-120 font-bold">{headerText}</div>
+      <div className="text-center text-xl font-bold">{headerText}</div>
       <div className="mb-auto text-center">{bodyText}</div>
-      <div className="flex h-[56px]  w-full justify-center gap-x-[20px] px-[20px] font-medium">
+      <div className="flex h-[56px] w-full justify-center gap-x-5 px-5 font-medium">
         {leftButton && (
           <button
             className={`w-full rounded-[100px] border-2 border-pastel-blue ${
@@ -107,6 +111,7 @@ const walletsConfig = [
   new TalismanWallet(),
   new PolkadotjsWallet(),
   new SubWallet(),
+  web3AuthWalletInstance,
 ];
 
 const WalletSelection = () => {
@@ -127,30 +132,47 @@ const WalletSelection = () => {
 
   return (
     <>
-      {walletsConfig.map((wallet, index) => (
-        <button
-          key={index}
-          className="flex h-[56px] w-full items-center justify-center rounded-ztg-10 border border-pastel-blue text-center"
-          onClick={() => handleWalletSelect(wallet)}
-        >
-          <Image
-            src={wallet.logo.src}
-            alt={wallet.logo.alt}
-            width={30}
-            height={30}
-            quality={100}
-          />
-          <div className="relative ml-[15px] text-ztg-18-150 font-medium">
-            <span>{wallet.title}</span>
-            {wallet.title === "Talisman" && (
-              <span className="absolute left-[90px] top-[4px] hidden rounded-md bg-green-light px-[8px] py-[4px] text-ztg-12-120 font-medium text-green sm:inline">
-                Recommended
-              </span>
-            )}
-          </div>
-        </button>
-      ))}
-
+      <h3>Broswer-Extension (Option 1)</h3>
+      <div className="flex w-full justify-between gap-6">
+        {walletsConfig
+          .filter((wallet) => wallet.extensionName !== "web3auth")
+          .map((wallet, index) => (
+            // <button
+            //   key={index}
+            //   className="flex h-[56px] w-full items-center justify-center rounded-ztg-10 border border-pastel-blue text-center"
+            //   onClick={() => handleWalletSelect(wallet)}
+            // >
+            //   <Image
+            //     src={wallet.logo.src}
+            //     alt={wallet.logo.alt}
+            //     width={30}
+            //     height={30}
+            //     quality={100}
+            //   />
+            //   <div className="relative ml-[15px] text-ztg-18-150 font-medium">
+            //     <span>{wallet.title}</span>
+            //     {wallet.title === "Talisman" && (
+            //       <span className="absolute left-[90px] top-[4px] hidden rounded-md bg-green-light px-[8px] py-[4px] text-ztg-12-120 font-medium text-green sm:inline">
+            //         Recommended
+            //       </span>
+            //     )}
+            //   </div>
+            // </button>
+            <WalletIcon
+              onClick={() => {
+                handleWalletSelect(wallet);
+              }}
+              wallet={wallet}
+              extensionName={wallet.extensionName}
+              logoAlt={wallet.logo.alt}
+              logoSrc={wallet.logo.src}
+              hasError={false}
+              error={null}
+            />
+          ))}
+      </div>
+      <h3>Social or Email (Option 2)</h3>
+      <Web3wallet />
       <button
         disabled={isReloading}
         onClick={handleWalletInstalled}
@@ -173,7 +195,7 @@ export const ExchangeTypeSelection = (props: {
     {
       name: "With Crypto or Fiat (CEX)",
       disabled: false,
-      onClick: () => props.setStep(5),
+      onClick: () => props.setStep(6),
     },
     {
       name: "With Crypto (DEX)",
@@ -218,14 +240,14 @@ export const MobileOnboardingModal = () => {
   const screens = [
     <TextSection
       headerText="Welcome to Zeitgeist"
-      bodyText="Hey, it looks like you don’t have a wallet installed. Let me be your Guide and help you get one, so you can get started making predictions."
+      bodyText="Hey, it looks like you don’t have a wallet installed. Let me be your guide and help you get one, so you can get started making predictions."
       rightButton={{
         text: "Continue",
         onClick: () => setStep(1),
       }}
     />,
     <TextSection
-      headerText="Download a wallet"
+      headerText="Download a wallet (Option 1)"
       bodyText="First thing you need to do is install a mobile wallet, we recommend Nova wallet. Once you've downloaded it you'll be able to find this site in the app and start making predictions. See you over there!"
       leftButton={{
         text: "Back",
@@ -236,21 +258,42 @@ export const MobileOnboardingModal = () => {
         onClick: () => setStep(2),
       }}
     />,
-    <a
-      href="https://novawallet.io/"
-      className="flex h-[56px] w-full items-center justify-center rounded-ztg-10 border border-pastel-blue text-center"
-    >
-      <Image
-        src="/icons/nova.png"
-        alt={"wallet.logo.alt"}
-        width={30}
-        height={30}
-        quality={100}
-      />
-      <div className="relative ml-[15px] text-ztg-18-150 font-medium">
-        <span>Nova Wallet</span>
+    <TextSection
+      headerText="Sign Up Via Social or Email (Option 2)"
+      bodyText="Alternatively, you can sign up using your email or social media account. To do that, simply login via the social icon or input your email in the next step and a wallet will be automatically generated for you."
+      leftButton={{
+        text: "Back",
+        onClick: () => setStep(1),
+      }}
+      rightButton={{
+        text: "Continue",
+        onClick: () => setStep(3),
+      }}
+    />,
+    <div>
+      <div className="mb-8">
+        <h3 className="mb-4 text-center">Nova Wallet (Option 1)</h3>
+        <a
+          href="https://novawallet.io/"
+          className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"
+        >
+          <Image
+            src="/icons/nova.png"
+            alt={"wallet.logo.alt"}
+            width={30}
+            height={30}
+            quality={100}
+          />
+          <div className="relative ml-4 font-medium">
+            <span>Nova Wallet</span>
+          </div>
+        </a>
       </div>
-    </a>,
+      <div>
+        <h3 className="mb-4 text-center">Social or Email (Option 2)</h3>
+        <Web3wallet />
+      </div>
+    </div>,
   ];
   return (
     <Dialog.Panel
@@ -276,6 +319,13 @@ export const DesktopOnboardingModal = (props: {
   notice?: string;
 }) => {
   const [step, setStep] = useState(props.step ?? 0);
+  const { walletId } = useWallet();
+
+  useEffect(() => {
+    if (walletId === "web3auth") {
+      setStep(4);
+    }
+  }, [walletId]);
 
   const screens = [
     <TextSection
@@ -287,8 +337,8 @@ export const DesktopOnboardingModal = (props: {
       }}
     />,
     <TextSection
-      headerText="Choose A Browser Extension"
-      bodyText="First thing you need to do is install a browser-based wallet (known as a “browser extension”). To do that, simply click the wallet icon to go to its official download page. Once the extension is setup you'll need to refresh the page."
+      headerText="Choose A Browser Extension (Option 1)"
+      bodyText="You can install a browser-based wallet known as a “browser extension”. To do that, simply click the wallet icon in the proceeding steps and go to its official download page. Once the extension is setup you'll need to refresh the page."
       leftButton={{
         text: "Back",
         onClick: () => setStep(0),
@@ -296,6 +346,18 @@ export const DesktopOnboardingModal = (props: {
       rightButton={{
         text: "Continue",
         onClick: () => setStep(2),
+      }}
+    />,
+    <TextSection
+      headerText="Sign Up Via Social or Email (Option 2)"
+      bodyText="Alternatively, you can sign up using your email or social media account. To do that, simply login via the social icon or input your email in the next step and a wallet will be automatically generated for you."
+      leftButton={{
+        text: "Back",
+        onClick: () => setStep(1),
+      }}
+      rightButton={{
+        text: "Continue",
+        onClick: () => setStep(3),
       }}
     />,
     <WalletSelection />,
@@ -308,7 +370,7 @@ export const DesktopOnboardingModal = (props: {
       }}
       rightButton={{
         text: "Continue",
-        onClick: () => setStep(4),
+        onClick: () => setStep(5),
       }}
     />,
     <ExchangeTypeSelection setStep={setStep} />,

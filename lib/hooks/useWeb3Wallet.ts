@@ -44,6 +44,8 @@ const useWeb3Wallet = () => {
       );
       if (web3authProvider) {
         await getKeypair(web3authProvider);
+        const user = await web3auth.getUserInfo();
+        console.log(user);
       }
     } catch (error) {
       console.error(error);

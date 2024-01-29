@@ -8,7 +8,7 @@ const Web3wallet = () => {
   const [email, setEmail] = useState<string>("");
 
   return (
-    <div>
+    <div className="w-full">
       <div className="grid grid-cols-3 gap-x-6 gap-y-4">
         <WalletIcon
           logoAlt="google"
