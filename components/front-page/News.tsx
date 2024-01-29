@@ -1,4 +1,4 @@
-import { News } from "lib/cms/get-news";
+import { CmsNews } from "lib/cms/news";
 import { isCurrentOrigin } from "lib/util/is-current-origin";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,7 +7,7 @@ export const NewsSection = ({
   news,
   imagePlaceholders,
 }: {
-  news: News[];
+  news: CmsNews[];
   imagePlaceholders: string[];
 }) => {
   return (
@@ -15,13 +15,15 @@ export const NewsSection = ({
       <h2 className="mb-6 text-center sm:col-span-2 sm:text-start">News</h2>
       <div className="flex flex-col gap-8 md:flex-row md:gap-4">
         {news.map((news, index) => {
-          const isExternalLink = news.ctaLink
-            ? !isCurrentOrigin(news.ctaLink)
-            : false;
+          const link = news.link?.isMarket
+            ? `/markets/${news.link?.market?.marketId}`
+            : news.link?.url;
+
+          const isExternalLink = link ? !isCurrentOrigin(link) : false;
 
           return (
             <Link
-              href={news.ctaLink!}
+              href={link!}
               key={index}
               className="ztg-transition flex-1 md:hover:scale-[1.035]"
               target={isExternalLink ? "_blank" : "_parent"}
@@ -30,7 +32,7 @@ export const NewsSection = ({
                 <Image
                   key={index}
                   priority
-                  src={news.imageUrl ?? ""}
+                  src={news.image ?? ""}
                   alt={`Image depicting ${news.title}`}
                   placeholder="blur"
                   fill

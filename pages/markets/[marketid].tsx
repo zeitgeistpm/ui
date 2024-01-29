@@ -20,6 +20,7 @@ import {
 } from "components/markets/MarketChart";
 import { MarketDescription } from "components/markets/MarketDescription";
 import MarketHeader from "components/markets/MarketHeader";
+import PoolDeployer from "components/markets/PoolDeployer";
 import ReportResult from "components/markets/ReportResult";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
@@ -37,7 +38,7 @@ import { GraphQLClient } from "graphql-request";
 import {
   CmsMarketMetadata,
   getCmsMarketMetadataForMarket,
-} from "lib/cms/get-market-metadata";
+} from "lib/cms/markets";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
@@ -134,20 +135,11 @@ export async function getStaticProps({ params }) {
   let resolutionTimestamp: string | undefined;
   if (market) {
     const { timestamp } = await getResolutionTimestamp(client, market.marketId);
-
     resolutionTimestamp = timestamp ?? undefined;
-  }
 
-  if (cmsMetadata?.imageUrl) {
-    market.img = cmsMetadata?.imageUrl;
-  }
-
-  if (cmsMetadata?.question) {
-    market.question = cmsMetadata?.question;
-  }
-
-  if (cmsMetadata?.description) {
-    market.description = cmsMetadata?.description;
+    if (cmsMetadata?.imageUrl) market.img = cmsMetadata?.imageUrl;
+    if (cmsMetadata?.question) market.question = cmsMetadata?.question;
+    if (cmsMetadata?.description) market.description = cmsMetadata?.description;
   }
 
   return {
@@ -406,6 +398,13 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           )}
 
+          {marketHasPool === false && (
+            <PoolDeployer
+              marketId={marketId}
+              onPoolDeployed={handlePoolDeployed}
+            />
+          )}
+
           {!isWSX && market && (marketHasPool || poolDeployed) && (
             <div className="my-12">
               <div
@@ -442,11 +441,7 @@ const Market: NextPage<MarketPageProps> = ({
             <div className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg">
               {market?.status === MarketStatus.Active ? (
                 <>
-                  {market?.scoringRule === ScoringRule.Cpmm ? (
-                    <TradeForm outcomeAssets={outcomeAssets} />
-                  ) : (
-                    <Amm2TradeForm marketId={marketId} />
-                  )}
+                  <Amm2TradeForm marketId={marketId} />
                 </>
               ) : market?.status === MarketStatus.Closed && canReport ? (
                 <>
@@ -520,23 +515,13 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
         }`}
       >
         {market?.status === MarketStatus.Active ? (
-          <>
-            {market?.scoringRule === ScoringRule.Cpmm ? (
-              <div>
-                <TradeForm outcomeAssets={outcomeAssets} />
-              </div>
-            ) : (
-              <Amm2TradeForm
-                marketId={market.marketId}
-                showTabs={false}
-                selectedTab={
-                  tradeItem?.action === "buy"
-                    ? TradeTabType.Buy
-                    : TradeTabType.Sell
-                }
-              />
-            )}
-          </>
+          <Amm2TradeForm
+            marketId={market.marketId}
+            showTabs={false}
+            selectedTab={
+              tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell
+            }
+          />
         ) : market?.status === MarketStatus.Closed && canReport ? (
           <>
             <ReportForm market={market} />

@@ -109,9 +109,7 @@ export const createMarketFormValidator = ({
       if (form?.liquidity?.amount) {
         baseLiquidity = Number(form?.liquidity?.amount);
       } else {
-        const baseLiquidityRow =
-          form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
-        baseLiquidity = Number(baseLiquidityRow?.amount) * 2;
+        baseLiquidity = Number(form.liquidity.amount);
       }
 
       if (isNaN(baseLiquidity) || !isNumber(baseLiquidity)) {
@@ -135,7 +133,7 @@ export const createMarketFormValidator = ({
         form.moderation === "Permissionless" &&
         form.liquidity?.deploy &&
         form.liquidity?.rows &&
-        form.liquidity?.rows?.length < 3
+        form.liquidity?.rows?.length < 2
       ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -292,7 +290,6 @@ export const IOCreatorFee = z.object({
 
 export const IOLiquidityRow = z.object({
   asset: z.string(),
-  weight: z.string(),
   amount: z.string(),
   price: z.object({
     price: z.string(),

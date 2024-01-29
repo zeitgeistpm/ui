@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import MarketsList from "components/markets/MarketsList";
 import { QueryClient, dehydrate } from "@tanstack/query-core";
-import { getCmsMarketMetadataForAllMarkets } from "lib/cms/get-market-metadata";
+import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { environment } from "lib/constants";
 import { HeroBannerWSX } from "components/front-page/HeroBannerWSX";

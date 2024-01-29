@@ -14,13 +14,12 @@ import { ChangeEvent, FC, MouseEvent, ReactNode } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import PoolFeesSelect from "./PoolFeesSelect";
 import Input from "components/ui/Input";
+import { calculatePoolAmounts } from "lib/util/amm2";
 
 export interface PoolAssetRowData {
   asset: string;
-  weight: string;
   amount: string;
   price: PriceLock;
-  value: string;
 }
 
 export const poolRowDataFromOutcomes = (
@@ -29,18 +28,13 @@ export const poolRowDataFromOutcomes = (
   initialAmount: string = "100",
 ): PoolAssetRowData[] => {
   const amountNum = +initialAmount;
-  const baseWeight = 64;
-
   const numOutcomes = outcomes.length;
-
   const ratio = 1 / numOutcomes;
-  const weight = ratio * baseWeight;
 
   return [
     ...outcomes.map((outcome) => {
       return {
         asset: outcome.name,
-        weight: weight.toFixed(0),
         amount: "100",
         price: {
           price: new Decimal(ratio.toString()),
@@ -49,16 +43,6 @@ export const poolRowDataFromOutcomes = (
         value: `${(amountNum * ratio).toFixed(4)}`,
       };
     }),
-    {
-      asset: tokenSymbol,
-      weight: baseWeight.toString(),
-      amount: "100",
-      price: {
-        price: new Decimal(1),
-        locked: true,
-      },
-      value: "100",
-    },
   ];
 };
 
@@ -88,19 +72,32 @@ const PriceSetter = ({
     const newPrice = event.target.value;
     onChange({ price: newPrice, locked: true });
   };
+
+  const priceDecimal = new Decimal(price);
+
   return (
     <div className="flex items-center">
-      <Input
-        className={`h-ztg-40 w-[100px] rounded-ztg-5 bg-gray-100 p-ztg-8 text-right focus:outline-none ${
-          disabled && "!bg-transparent"
-        }`}
-        value={price}
-        type="number"
-        disabled={disabled}
-        onChange={handlePriceChange}
-      />
+      <div className="mt-[10px] flex flex-col">
+        <Input
+          className={`h-ztg-32 w-[100px] rounded-ztg-5 bg-gray-100 p-ztg-8 text-right focus:outline-none ${
+            disabled && "!bg-transparent"
+          }`}
+          value={price}
+          type="number"
+          disabled={disabled}
+          onChange={handlePriceChange}
+        />
+        <div className="h-[10px] text-[10px] text-vermilion">
+          {priceDecimal.greaterThanOrEqualTo(0.99) && (
+            <>Price must be less than 0.99</>
+          )}
+          {priceDecimal.lessThanOrEqualTo(0.01) && (
+            <>Price must be greater than 0.01</>
+          )}
+        </div>
+      </div>
       <button
-        className="ml-[20px] flex h-[30px] w-[30px] flex-grow-0 items-center justify-center rounded-full bg-gray-100"
+        className="ml-auto flex h-[30px] w-[30px] flex-grow-0 items-center justify-center rounded-full bg-gray-100"
         onClick={handleLockClick}
         disabled={disabled}
       >
@@ -116,12 +113,22 @@ const PriceSetter = ({
 
 const PoolSettings: FC<{
   data: PoolAssetRowData[];
-  onChange: (data: PoolAssetRowData[]) => void;
+  onChange: (rows: PoolAssetRowData[], amount: string) => void;
+  baseAssetSymbol: string;
+  baseAssetAmount: string;
   onFeeChange?: (data: Decimal) => void;
   noDataMessage?: string | ReactNode;
   baseAssetPrice?: Decimal;
-}> = ({ data, onChange, onFeeChange, noDataMessage, baseAssetPrice }) => {
-  const changeOutcomeRow = (amount: string) => {
+}> = ({
+  data,
+  onChange,
+  onFeeChange,
+  baseAssetAmount,
+  baseAssetSymbol,
+  noDataMessage,
+  baseAssetPrice,
+}) => {
+  const handleBaseAmountChange = (amount: string) => {
     onChange(
       data.map((row) => {
         const handledAmount = amount && amount.length > 0 ? amount : "0";
@@ -131,6 +138,7 @@ const PoolSettings: FC<{
           value: row.price.price.mul(handledAmount).toFixed(0),
         };
       }),
+      amount,
     );
   };
 
@@ -146,32 +154,23 @@ const PoolSettings: FC<{
       };
     });
 
-    priceLocks.pop();
-
     const prices = calcPrices(priceLocks);
 
-    const ztgWeight = new Decimal(64);
-    const tokenAmount = new Decimal(data[0].amount);
-    const weights = prices.map((price) =>
-      calcWeightGivenSpotPrice(
-        tokenAmount,
-        ztgWeight,
-        tokenAmount,
-        price.price,
-      ),
+    const amounts = calculatePoolAmounts(
+      new Decimal(baseAssetAmount),
+      prices.map((p) => p.price),
     );
+
+    const isInvalid = amounts.some((amount) => amount.isNaN());
 
     const newData = data.map((row, index) => ({
       ...row,
-      weight: weights[index]?.toString() ?? row.weight,
       price: prices[index] ?? row.price,
-      value: (prices[index] ?? row.price).price.mul(row.amount).toFixed(4),
+      amount: isInvalid ? "0" : amounts[index].toString(),
     }));
 
-    onChange(newData);
+    onChange(newData, baseAssetAmount);
   };
-
-  const baseAssetRow = data[data.length - 1];
 
   const tableData: TableData[] = data.map((d, index) => {
     return {
@@ -179,19 +178,14 @@ const PoolSettings: FC<{
         token: true,
         label: d.asset,
       },
-      weights: d.weight,
       price: (
         <PriceSetter
           price={d.price.price.toString()}
           isLocked={d.price.locked}
-          disabled={index === data.length - 1}
+          disabled={false}
           onChange={(priceInfo) => onPriceChange(priceInfo, index)}
         />
       ),
-      total: {
-        value: Number(d.value),
-        usdValue: new Decimal(d.value ?? 0).mul(baseAssetPrice ?? 0).toNumber(),
-      },
       amount: d.amount,
     };
   });
@@ -202,22 +196,12 @@ const PoolSettings: FC<{
       accessor: "token",
       type: "token",
     },
-    {
-      header: "Weights",
-      accessor: "weights",
-      type: "number",
-      width: "10%",
-    },
     { header: "Amount", accessor: "amount", type: "number", width: "25%" },
     {
       header: "Price",
       accessor: "price",
       type: "component",
-    },
-    {
-      header: "Total Value",
-      accessor: "total",
-      type: "currency",
+      width: "30%",
     },
   ];
 
@@ -226,7 +210,7 @@ const PoolSettings: FC<{
   };
 
   const currencyImage = supportedCurrencies.find(
-    (currency) => currency.name === baseAssetRow.asset,
+    (currency) => currency.name === baseAssetSymbol,
   )?.image;
 
   return (
@@ -245,14 +229,13 @@ const PoolSettings: FC<{
             >
               <p className="mb-4 font-light">
                 This is the amount of liquidity that will be provided to the
-                market. Half of this amount will be provided to the base asset
-                token and the other half spread across the outcome tokens
-                according to weights/prices.
+                market. It will be used to facilitate trading and is subject to
+                impermanent loss, as compensation you will earn trading fees.
               </p>
               <p className="font-light">
                 <b className="font-bold">
-                  Note that this is the exact amount of {baseAssetRow?.asset}{" "}
-                  you will spend on liquidity.
+                  Note that this is the exact amount of {baseAssetSymbol} you
+                  will spend on liquidity.
                   <i className="font-normal">
                     This does not include the bond amount or the transaction
                     fees.
@@ -265,18 +248,18 @@ const PoolSettings: FC<{
             <Input
               type="number"
               className="font-base w-64 rounded-md bg-gray-100 py-4 pl-5 pr-28 text-right text-base outline-none"
-              value={`${parseFloat(baseAssetRow.amount) * 2}`}
+              value={`${parseFloat(baseAssetAmount)}`}
               onChange={(event) => {
-                const value = parseFloat(event.target.value) / 2;
+                const value = parseFloat(event.target.value);
                 if (!isNaN(value)) {
-                  changeOutcomeRow(`${value}`);
+                  handleBaseAmountChange(`${value}`);
                 } else {
-                  changeOutcomeRow("");
+                  handleBaseAmountChange("");
                 }
               }}
             />
             <div className="center pointer-events-none absolute bottom-[50%] right-0 h-full translate-x-[0%] translate-y-[50%] gap-2 rounded-r-md border-2 border-l-0 border-gray-100 bg-white px-5 text-gray-600">
-              {baseAssetRow.asset}
+              {baseAssetSymbol}
               <div className="relative h-4 w-4">
                 {currencyImage && (
                   <Image

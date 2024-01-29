@@ -48,16 +48,15 @@ const JoinPoolForm = ({
           const assetAmount = formValue[index] ?? 0;
           return assetAmount === ""
             ? "0"
-            : new Decimal(assetAmount)
-                .mul(ZTG)
-                .mul((100 + DEFAULT_SLIPPAGE_PERCENTAGE) / 100)
-                .toFixed(0);
+            : new Decimal(assetAmount).mul(ZTG).toFixed(0);
         });
 
         try {
           return sdk.api.tx.neoSwaps.join(
             marketId,
-            poolSharesToReceive.toFixed(0),
+            poolSharesToReceive
+              .mul((100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100)
+              .toFixed(0),
             maxAmountsIn,
           );
         } catch (error) {
@@ -225,7 +224,7 @@ const JoinPoolForm = ({
       />
       {market?.status !== "Active" && (
         <div className="rounded-md bg-provincial-pink p-4 text-sm">
-          Market is closed. Cannot provide liquidity for closed market
+          Liquidity cannot be provided to a closed market
         </div>
       )}
       <div className="center mb-2 flex gap-2 text-sm">
