@@ -1,6 +1,6 @@
 import { OrmlTokensAccountData } from "@polkadot/types/lookup";
 import { useQuery } from "@tanstack/react-query";
-import { FullMarketFragment, ScoringRule } from "@zeitgeistpm/indexer";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { isRpcSdk } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { calcSpotPrice } from "lib/math";
@@ -58,9 +58,7 @@ export const useMarketSpotPrices = (
       if (!enabled) return;
       const spotPrices: MarketPrices =
         market?.status !== "Resolved"
-          ? market.scoringRule === ScoringRule.Lmsr
-            ? calcMarketPricesAmm2(amm2Pool!)
-            : calcMarketPrices(market, basePoolBalance!, balances!)
+          ? calcMarketPricesAmm2(amm2Pool!)
           : calcResolvedMarketPrices(market);
 
       return spotPrices;

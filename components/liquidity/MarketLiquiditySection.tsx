@@ -1,6 +1,5 @@
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { parseAssetId } from "@zeitgeistpm/sdk";
-import LiquidityModal from "components/liquidity/LiquidityModal";
 import PoolTable from "components/liquidity/PoolTable";
 import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
 import InfoPopover from "components/ui/InfoPopover";
@@ -17,7 +16,6 @@ import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { perbillToNumber } from "lib/util/perbill-to-number";
 import { FC, PropsWithChildren, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
-import { ScoringRule } from "@zeitgeistpm/indexer";
 import LiquidityModalAmm2 from "./LiquidityModalAmm2";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 import { formatNumberCompact } from "lib/util/format-compact";
@@ -29,9 +27,7 @@ export const MarketLiquiditySection = ({
   market: FullMarketFragment;
   poll?: boolean;
 }) => {
-  const marketHasPool =
-    (market?.scoringRule === ScoringRule.Cpmm && market.pool != null) ||
-    (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
+  const marketHasPool = market.neoPool != null;
 
   return (
     <>

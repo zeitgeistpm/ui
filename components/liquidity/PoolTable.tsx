@@ -13,8 +13,6 @@ import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { usePool } from "lib/hooks/queries/usePool";
 import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
 import { calcMarketColors } from "lib/util/color-calc";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { ScoringRule } from "@zeitgeistpm/indexer";
 
 const poolTableColums: TableColumn[] = [
   {
@@ -56,10 +54,7 @@ const PoolTable = ({
     ? calcMarketColors(marketId, market.categories.length)
     : [];
 
-  const assetIds =
-    market?.scoringRule === ScoringRule.Cpmm
-      ? pool?.weights?.map((weight) => parseAssetIdString(weight?.assetId))
-      : amm2Pool?.assetIds;
+  const assetIds = amm2Pool?.assetIds;
 
   const tableData: TableData[] =
     assetIds?.map((assetId, index) => {
@@ -75,10 +70,7 @@ const PoolTable = ({
         usdValue = basePoolBalance?.mul(baseAssetUsdPrice ?? 0);
         category = { color: "#ffffff", name: metadata?.symbol };
       } else {
-        amount =
-          market?.scoringRule === ScoringRule.Cpmm
-            ? new Decimal(balances?.[index]?.free.toString() ?? 0)
-            : lookupAssetReserve(amm2Pool?.reserves, assetId);
+        amount = lookupAssetReserve(amm2Pool?.reserves, assetId);
         usdValue = amount
           ?.mul(spotPrices?.get(index) ?? 0)
           ?.mul(baseAssetUsdPrice ?? 0);

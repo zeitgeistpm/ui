@@ -1,4 +1,4 @@
-import { FullMarketFragment, ScoringRule } from "@zeitgeistpm/indexer";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import Decimal from "decimal.js";
 import { MarketPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { calcScalarResolvedPrices } from "./calc-scalar-winnings";
@@ -8,13 +8,9 @@ import { IOBaseAssetId, MarketId } from "@zeitgeistpm/sdk";
 export const calcResolvedMarketPrices = (
   market: FullMarketFragment,
 ): MarketPrices => {
-  const assetIds = (
-    market.scoringRule === ScoringRule.Lmsr
-      ? market.neoPool?.account.balances.map((b) =>
-          parseAssetIdString(b.assetId),
-        )
-      : market.pool?.assets.map((a) => parseAssetIdString(a.assetId))
-  )?.filter((assetId) => IOBaseAssetId.is(assetId) === false);
+  const assetIds = market.neoPool?.account.balances
+    .map((b) => parseAssetIdString(b.assetId))
+    ?.filter((assetId) => IOBaseAssetId.is(assetId) === false);
 
   const spotPrices: MarketPrices = new Map();
 
