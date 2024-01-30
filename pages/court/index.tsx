@@ -1,7 +1,7 @@
 import { Disclosure, Tab } from "@headlessui/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
+import { ZTG } from "@zeitgeistpm/sdk";
 import { CourtCasesTable } from "components/court/CourtCasesTable";
+import CourtExitButton from "components/court/CourtExitButton";
 import CourtUnstakeButton from "components/court/CourtUnstakeButton";
 import JoinCourtAsJurorButton from "components/court/JoinCourtAsJurorButton";
 import JurorsTable from "components/court/JurorsTable";
@@ -9,20 +9,14 @@ import ManageDelegationButton from "components/court/ManageDelegationButton";
 import InfoPopover from "components/ui/InfoPopover";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
-import {
-  courtParticipantsRootKey,
-  useCourtParticipants,
-} from "lib/hooks/queries/court/useCourtParticipants";
+import { useCourtParticipants } from "lib/hooks/queries/court/useCourtParticipants";
 import { useCourtStakeSharePercentage } from "lib/hooks/queries/court/useCourtStakeSharePercentage";
 import { useCourtTotalStakedAmount } from "lib/hooks/queries/court/useCourtTotalStakedAmount";
 import { useCourtYearlyInflationAmount } from "lib/hooks/queries/court/useCourtYearlyInflation";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
-import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useNotifications } from "lib/state/notifications";
-import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized } from "lib/util";
+import { isNumber } from "lodash-es";
 import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -53,30 +47,9 @@ const CourtPage: NextPage = ({
   }
 
   const { data: constants } = useChainConstants();
-  const [sdk, id] = useSdkv2();
-  const notificationStore = useNotifications();
-  const wallet = useWallet();
-  const queryClient = useQueryClient();
-
   const connectedParticipant = useConnectedCourtParticipant();
   const { data: ztgPrice } = useZtgPrice();
-
   const stakeShare = useCourtStakeSharePercentage();
-
-  const { isLoading: isLeaveLoading, send: leaveCourt } = useExtrinsic(
-    () => {
-      if (!isRpcSdk(sdk) || !wallet.realAddress) return;
-      return sdk.api.tx.court.exitCourt(wallet.realAddress); //todo: is this correct input?
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries([id, courtParticipantsRootKey]);
-        notificationStore.pushNotification("Successfully exited court", {
-          type: "Success",
-        });
-      },
-    },
-  );
 
   return (
     <div className="mt-4 flex flex-col gap-y-4">
@@ -173,12 +146,17 @@ const CourtPage: NextPage = ({
 
               <div>
                 <div className="mb-3 flex flex-col gap-4 md:flex-row">
-                  <JoinCourtAsJurorButton className="w-full md:w-auto" />
-                  <ManageDelegationButton className="w-full md:w-auto" />
+                  <JoinCourtAsJurorButton className="h-full w-full md:w-auto" />
+                  <ManageDelegationButton className="h-full w-full md:w-auto" />
 
                   {connectedParticipant &&
-                    !connectedParticipant?.prepareExit && (
-                      <CourtUnstakeButton className="w-full md:w-auto" />
+                    !isNumber(connectedParticipant.prepareExitAt) && (
+                      <CourtUnstakeButton className="h-full w-full md:w-auto" />
+                    )}
+
+                  {connectedParticipant &&
+                    isNumber(connectedParticipant.prepareExitAt) && (
+                      <CourtExitButton className="h-full w-full md:w-auto" />
                     )}
                 </div>
               </div>

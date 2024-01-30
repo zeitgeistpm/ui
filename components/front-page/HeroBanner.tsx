@@ -48,49 +48,54 @@ export const HeroBanner = ({
               Get Started
             </Link>
           </div>
-          <div
-            className="flex w-full gap-2 rounded-md px-4 py-3"
-            style={{ backgroundColor: "rgba(28, 100, 242, 0.2)" }}
+          <a
+            href="https://www.coingecko.com/en/coins/zeitgeist"
+            target="_blank"
           >
-            <div className="flex w-1/3 items-center justify-start gap-3">
-              <div>
-                <ZeitgeistIcon variant="blue" height={32} width={32} />
+            <div
+              className="flex w-full gap-2 rounded-md px-4 py-3"
+              style={{ backgroundColor: "rgba(28, 100, 242, 0.2)" }}
+            >
+              <div className="flex w-1/3 items-center justify-start gap-3">
+                <div>
+                  <ZeitgeistIcon variant="blue" height={32} width={32} />
+                </div>
+                <div>
+                  <div className="text-lg font-medium">Zeitgeist</div>
+                  <div className="text-sm">
+                    {chainProperties.tokenSymbol.toString()}
+                  </div>
+                </div>
               </div>
-              <div>
-                <div className="text-lg font-medium">Zeitgeist</div>
-                <div className="text-sm">
-                  {chainProperties.tokenSymbol.toString()}
+              <div className="center flex w-1/3">
+                <ResponsiveContainer width={"100%"} height="65%">
+                  <LineChart data={chartData}>
+                    <Line
+                      type="monotone"
+                      dataKey="v"
+                      dot={false}
+                      strokeWidth={2}
+                      stroke={getColour(
+                        chartData[0].v,
+                        chartData[chartData.length - 1].v,
+                      )}
+                    />
+                    <YAxis hide={true} domain={["dataMin", "dataMax"]} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex flex-1 items-center justify-end gap-2">
+                <div>
+                  <div className="text-md text-center font-semibold">
+                    ${latestPrice.toFixed(3)}
+                  </div>
+                  <div className="text-center text-sm">
+                    {!isNaN(prctChange) ? prctChange.toFixed(1) : 0}%
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="center flex w-1/3">
-              <ResponsiveContainer width={"100%"} height="65%">
-                <LineChart data={chartData}>
-                  <Line
-                    type="monotone"
-                    dataKey="v"
-                    dot={false}
-                    strokeWidth={2}
-                    stroke={getColour(
-                      chartData[0].v,
-                      chartData[chartData.length - 1].v,
-                    )}
-                  />
-                  <YAxis hide={true} domain={["dataMin", "dataMax"]} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex flex-1 items-center justify-end gap-2">
-              <div>
-                <div className="text-md text-center font-semibold">
-                  ${latestPrice.toFixed(3)}
-                </div>
-                <div className="text-center text-sm">
-                  {!isNaN(prctChange) ? prctChange.toFixed(1) : 0}%
-                </div>
-              </div>
-            </div>
-          </div>
+          </a>
         </div>
         <div className="relative mb-8 h-64 w-full overflow-hidden rounded-lg md:mb-0 md:h-auto">
           <Image

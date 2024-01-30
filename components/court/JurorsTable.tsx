@@ -7,6 +7,7 @@ import Decimal from "decimal.js";
 import { ZTG } from "@zeitgeistpm/sdk";
 import { useIdentities } from "lib/hooks/queries/useIdentities";
 import { formatNumberLocalized } from "lib/util";
+import { isNumber } from "lodash-es";
 
 const columns: TableColumn[] = [
   {
@@ -81,7 +82,7 @@ const JurorsTable = () => {
             .div(ZTG)
             .toNumber(),
         ),
-        status: juror.prepareExit ? "Exiting" : "Active",
+        status: isNumber(juror.prepareExitAt) ? "Exiting" : "Active",
         delegators: delegators?.length ?? 0,
         button: <DelegateButton address={juror.address} />,
       };

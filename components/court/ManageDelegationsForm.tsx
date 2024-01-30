@@ -187,7 +187,7 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
         {...register("percentage", { value: "0" })}
       />
 
-      <div className="subtle-scroll-bar max-h-[400px] w-full overflow-y-scroll">
+      <div className="subtle-scroll-bar max-h-[300px] w-full overflow-y-scroll lg:max-h-[400px]">
         <div className="mb-2 flex items-center text-sm">
           <h3 className="flex-1 text-base">Juror</h3>
           <h3 className="text-xs">Delegated</h3>
