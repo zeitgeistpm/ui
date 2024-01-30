@@ -13,7 +13,6 @@ import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useWallet, walletAtom } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { FaNetworkWired } from "react-icons/fa";
-import { useEffect, useMemo } from "react";
 
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -118,8 +117,6 @@ const AccountButton: FC<{
     ForeignAsset: 3,
   });
 
-  // console.log(balance?.div(ZTG).abs().toNumber());
-
   const { data: constants } = useChainConstants();
 
   const isMobileDevice =
@@ -128,10 +125,6 @@ const AccountButton: FC<{
     );
 
   const connect = async () => {
-    if (isWSX) {
-      selectWallet("web3auth");
-      return;
-    }
     if (isNovaWallet) {
       selectWallet("polkadot-js");
     } else {
@@ -393,7 +386,9 @@ const AccountButton: FC<{
                             <div
                               className="mb-3 flex items-center px-6 hover:bg-slate-100"
                               onClick={() => {
-                                accountModals.openAccountSelect();
+                                walletId === "web3auth"
+                                  ? accountModals.openWalletSelect()
+                                  : accountModals.openAccountSelect();
                               }}
                             >
                               <User />

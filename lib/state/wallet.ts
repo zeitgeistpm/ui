@@ -4,7 +4,7 @@ import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { atom, getDefaultStore, useAtom } from "jotai";
 import { u8aToHex, stringToHex } from "@polkadot/util";
 import { isString } from "lodash-es";
-import { useMemo } from "react";
+import { use, useMemo } from "react";
 import { persistentAtom } from "./util/persistent-atom";
 import {
   BaseDotsamaWallet,
@@ -12,21 +12,16 @@ import {
   SubWallet,
   TalismanWallet,
 } from "@talismn/connect-wallets";
-import { Keyring } from "@polkadot/api";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { isPresent } from "lib/types";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { PollingTimeout, poll } from "lib/util/poll";
-import { IProvider } from "@web3auth/base";
-
 //Web3Auth
-import { web3authAtom } from "./util/web3auth-config";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
 import { isWSX } from "lib/constants";
 import { checkNewUser } from "./wsx";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
-import useActiveBalance from "./useActiveBalance";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -62,7 +57,7 @@ export type UseWallet = WalletState & {
    * @param wallet the selected wallet id or instance
    * @returns void
    */
-  selectWallet: (wallet: string) => void;
+  selectWallet: (wallet: string, keyPair?: KeyringPair) => void;
   /**
    * Select an address.
    * @param account the address to select
@@ -83,10 +78,8 @@ export type UseWallet = WalletState & {
    */
   getProxyFor: (address?: string) => ProxyConfig | undefined;
   /**
-   * Sets up web3 auth wallet
+   * Sign a raw transaction.
    */
-  loadWeb3AuthWallet: () => void;
-
   signRaw: (data: string) => Promise<string | undefined>;
 };
 
@@ -179,7 +172,7 @@ export const walletAtom = atom<WalletState>({
  *
  * @warning - when adding migrations all previous migrations in the list will have to left in place.
  */
-const userConfigAtom = persistentAtom<WalletUserConfig>({
+export const userConfigAtom = persistentAtom<WalletUserConfig>({
   store,
   key: "wallet-user-config",
   defaultValue: {},
@@ -252,8 +245,39 @@ let accountsSubscriptionUnsub: VoidFunction | undefined | null;
  * @returns Promise<boolean> - whether the wallet was enabled
  */
 
-const enableWallet = async (walletId: string) => {
+const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
+
+  if (walletId === "web3auth" && !keyPair) {
+    return;
+  }
+
+  if (walletId === "web3auth" && keyPair) {
+    store.set(walletAtom, (state) => {
+      return {
+        ...state,
+        wallet: { ...keyPair },
+        connected: true,
+        walletId: "web3auth",
+        accounts:
+          [keyPair?.address].map((account) => {
+            return {
+              address: encodeAddress(account, 73),
+            };
+          }) ?? [],
+        errors:
+          [keyPair?.address].length === 0
+            ? [
+                {
+                  extensionName: "web3auth",
+                  type: "NoAccounts",
+                },
+              ]
+            : [],
+      };
+    });
+    return;
+  }
 
   const wallet = supportedWallets.find((w) => w.extensionName === walletId);
 
@@ -341,37 +365,11 @@ const enableWallet = async (walletId: string) => {
   }
 };
 
-const enabledWeb3Wallet = (keyPair: KeyringPair, newUser?: boolean) => {
-  store.set(walletAtom, (state) => {
-    return {
-      ...state,
-      wallet: { ...keyPair },
-      connected: true,
-      newUser: newUser ?? false,
-      accounts:
-        [keyPair?.address].map((account) => {
-          return {
-            address: encodeAddress(account, 73),
-          };
-        }) ?? [],
-      errors:
-        [keyPair?.address].length === 0
-          ? [
-              {
-                extensionName: "web3auth",
-                type: "NoAccounts",
-              },
-            ]
-          : [],
-    };
-  });
-};
-
 /**
  * Enable wallet on first load if wallet id is set.
  */
 const initialWalletId = store.get(userConfigAtom).walletId;
-if (initialWalletId && initialWalletId !== "web3auth") {
+if (initialWalletId) {
   enableWallet(initialWalletId);
 }
 
@@ -382,53 +380,20 @@ if (initialWalletId && initialWalletId !== "web3auth") {
 export const useWallet = (): UseWallet => {
   const [userConfig, setUserConfig] = useAtom(userConfigAtom);
   const [walletState, setWalletState] = useAtom(walletAtom);
-  const [web3auth] = useAtom(web3authAtom);
-  const confirm = useConfirmation();
 
-  const loadWeb3AuthWallet = async () => {
-    if (!web3auth) {
-      return;
-    }
-
-    web3auth.status === "not_ready" && (await web3auth.initModal());
-    await web3auth.connect();
-
-    if (web3auth.provider) {
-      const getKeypair = async (provider: IProvider) => {
-        await cryptoWaitReady();
-        const privateKey = await provider.request({
-          method: "private_key",
-        });
-        const keyring = new Keyring({ ss58Format: 73, type: "sr25519" });
-        const keyPair = keyring.addFromUri("0x" + privateKey);
-        return keyPair;
-      };
-
-      const keyPair = await getKeypair(web3auth.provider);
-
-      if (keyPair.address) {
-        const response = await checkNewUser(keyPair.address);
-        console.log(response);
-        if (response.success) {
-          await confirm.prompt({
-            title: "Welcome to The Washington Stock Exchange!",
-            description: `In just a few moments your account will be funded with 100 WSX tokens.
-              These tokens can be used to trade on prediction markets on The WSX platform.`,
-          });
-          enabledWeb3Wallet(keyPair, true);
-        } else enabledWeb3Wallet(keyPair);
-      }
-    }
-  };
-
-  const selectWallet = (wallet: BaseDotsamaWallet | string) => {
+  const selectWallet = (
+    wallet: BaseDotsamaWallet | string,
+    keyPair?: KeyringPair,
+  ) => {
     setUserConfig({
       ...userConfig,
       walletId: isString(wallet) ? wallet : wallet.extensionName,
     });
-    wallet === "web3auth"
-      ? loadWeb3AuthWallet()
-      : enableWallet(isString(wallet) ? wallet : wallet.extensionName);
+    if (wallet === "web3auth") {
+      enableWallet(wallet, keyPair);
+    } else {
+      enableWallet(isString(wallet) ? wallet : wallet.extensionName);
+    }
   };
 
   const disconnectWallet = async () => {
@@ -436,23 +401,18 @@ export const useWallet = (): UseWallet => {
       disconnectWalletStateTransition(walletState, userConfig);
     setWalletState(newWalletState);
     setUserConfig(newUserConfigState);
-    if (web3auth?.status === "connected") {
-      await web3auth.logout();
-    }
   };
 
   const getSigner = (): KeyringPairOrExtSigner | undefined => {
     if (!walletState.wallet) {
       return;
     }
-
     if (walletState.wallet instanceof BaseDotsamaWallet) {
       return {
         address: activeAccount?.address,
         signer: walletState.wallet.signer,
       };
     }
-
     return walletState.wallet;
   };
 
@@ -531,7 +491,6 @@ export const useWallet = (): UseWallet => {
     realAddress,
     selectAccount,
     activeAccount: activeAccount,
-    loadWeb3AuthWallet,
     getSigner,
     selectWallet,
     selectedAddress: userConfig.selectedAddress,
