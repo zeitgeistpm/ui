@@ -10,6 +10,7 @@ import {
   useCourtParticipants,
 } from "lib/hooks/queries/court/useCourtParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useIdentities } from "lib/hooks/queries/useIdentities";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -29,6 +30,10 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
 
   const { data: participants } = useCourtParticipants();
   const connectedParticipant = useConnectedCourtParticipant();
+  const jurors = participants?.filter(
+    (p) => p.type === "Juror" && p.address !== connectedParticipant?.address,
+  );
+  const { data: identities } = useIdentities(jurors?.map((j) => j.address));
 
   const {
     register,
@@ -123,10 +128,6 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
     send();
   };
 
-  const jurors = participants?.filter(
-    (p) => p.type === "Juror" && p.address !== connectedParticipant?.address,
-  );
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -192,12 +193,14 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
           <h3 className="text-xs">Delegated</h3>
         </div>
         {jurors &&
-          jurors.map((juror) => (
+          jurors.map((juror, index) => (
             <div key={juror.address} className="mb-2 flex text-left">
               <div className="flex flex-1 items-center gap-3">
                 <Avatar address={juror.address} size={18} />
                 <div className="text-sm font-medium">
-                  {shortenAddress(juror.address)}
+                  {identities?.[index]
+                    ? identities?.[index]?.displayName
+                    : shortenAddress(juror.address)}
                 </div>
               </div>
               <input
