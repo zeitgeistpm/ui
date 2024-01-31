@@ -74,7 +74,7 @@ export const marketsForTopic = async (
     limit: opts?.limit,
   });
 
-  let marketCardsData = markets
+  const marketCardsData = markets
     .map((market) => {
       if (!market || !market.categories) return;
 
