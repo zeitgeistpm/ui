@@ -35,6 +35,8 @@ export const LimitBuyOrderForm = ({
   marketId: number;
   initialAsset?: MarketOutcomeAssetId;
 }) => {
+  const [sdk] = useSdkv2();
+  const notificationStore = useNotifications();
   const wallet = useWallet();
   const { data: orders } = useOrders();
   const { data: market } = useMarket({
@@ -60,6 +62,7 @@ export const LimitBuyOrderForm = ({
     <LimitOrderForm
       marketId={marketId}
       selectedAsset={selectedAsset}
+      buttonText="Place Buy Order"
       onSubmit={() => {
         // place buy order
       }}
@@ -67,7 +70,7 @@ export const LimitBuyOrderForm = ({
         setSelectedAsset(asset);
       }}
       onPriceChange={(price) => {
-        setPrice;
+        setPrice(price);
       }}
       maxAmount={maxAmount}
     />
@@ -83,20 +86,23 @@ export const LimitSellOrderForm = ({
 }) => {
   const { data: orders } = useOrders();
 
-  return <LimitOrderForm marketId={marketId} />;
+  return <LimitOrderForm marketId={marketId} buttonText="Place Buy Order" />;
 };
 
 const LimitOrderForm = ({
   marketId,
   selectedAsset,
   onAssetChange,
+  onPriceChange,
+  maxAmount,
+  buttonText,
 }: {
   marketId: number;
   selectedAsset?: MarketOutcomeAssetId; // todo: this can just be "asset" driven from parent
   maxPrice?: Decimal;
   minPrice?: Decimal;
   maxAmount?: Decimal;
-  buttonText?: string;
+  buttonText: string;
   onSubmit?: (price: Decimal, amount: Decimal) => void;
   onAssetChange?: (assetId: MarketOutcomeAssetId) => void;
   onPriceChange?: (price: Decimal) => void;
@@ -113,8 +119,7 @@ const LimitOrderForm = ({
     reValidateMode: "onChange",
     mode: "onChange",
   });
-  const [sdk] = useSdkv2();
-  const notificationStore = useNotifications();
+
   const { data: market } = useMarket({
     marketId,
   });
@@ -123,7 +128,7 @@ const LimitOrderForm = ({
   const { data: pool } = useAmm2Pool(marketId);
 
   const { data: spotPrices } = useMarketSpotPrices();
-  console.log(spotPrices);
+  // console.log(spotPrices);
 
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
@@ -136,14 +141,14 @@ const LimitOrderForm = ({
   //   MarketOutcomeAssetId | undefined
   // >(initialAsset ?? outcomeAssets?.[0]);
 
-  const { data: selectedAssetBalance } = useBalance(
-    wallet.realAddress,
-    selectedAsset,
-  );
+  // const { data: selectedAssetBalance } = useBalance(
+  //   wallet.realAddress,
+  //   selectedAsset,
+  // );
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
 
-  console.log(baseAssetBalance?.div(ZTG).toString());
-  console.log(selectedAssetBalance?.div(ZTG).toString());
+  // console.log(baseAssetBalance?.div(ZTG).toString());
+  // console.log(selectedAssetBalance?.div(ZTG).toString());
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
@@ -152,13 +157,13 @@ const LimitOrderForm = ({
 
       if (name === "price") {
         console.log("price", value.price);
+        onPriceChange?.(new Decimal(value.price ?? 0));
       }
       if (
         !changedByUser ||
-        !selectedAssetBalance ||
-        selectedAssetBalance.eq(0)
-        // ||
-        // !maxAmountIn
+        // !selectedAssetBalance ||
+        // selectedAssetBalance.eq(0) ||
+        !maxAmount
       )
         return;
 
@@ -166,7 +171,18 @@ const LimitOrderForm = ({
         // const max = selectedAssetBalance.greaterThan(maxAmountIn)
         //   ? maxAmountIn
         //   : selectedAssetBalance;
-        const max = selectedAssetBalance;
+        const max = maxAmount;
+        console.log(
+          Number(
+            max
+              .mul(value.percentage)
+              .abs()
+              .div(100)
+              .div(ZTG)
+              .toFixed(3, Decimal.ROUND_DOWN),
+          ),
+        );
+
         setValue(
           "amount",
           Number(
@@ -181,17 +197,13 @@ const LimitOrderForm = ({
       } else if (name === "amount" && value.amount !== "") {
         setValue(
           "percentage",
-          new Decimal(value.amount)
-            .mul(ZTG)
-            .div(selectedAssetBalance)
-            .mul(100)
-            .toString(),
+          new Decimal(value.amount).mul(ZTG).div(maxAmount).mul(100).toString(),
         );
       }
       trigger("amount");
     });
     return () => subscription.unsubscribe();
-  }, [watch, selectedAssetBalance]);
+  }, [watch, maxAmount]);
 
   const onSubmit = () => {};
   return (
@@ -301,7 +313,7 @@ const LimitOrderForm = ({
           disableFeeCheck={true}
         >
           <div>
-            <div className="center h-[20px] font-normal">Place Order</div>
+            <div className="center h-[20px] font-normal">{buttonText}</div>
             {/* <div className="center h-[20px] text-ztg-12-120 font-normal">
               Network fee:{" "}
               {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
