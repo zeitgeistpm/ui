@@ -4,6 +4,7 @@ import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
 import Web3wallet from "components/web3wallet";
 import WalletIcon from "./WalletIcon";
+import Image from "next/image";
 
 import { useEffect } from "react";
 
@@ -40,8 +41,13 @@ const WalletSelect = () => {
     }
   }, [wasConnected, connected, accounts, errors]);
 
+  const isMobileDevice =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
+
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex w-full flex-col p-4">
       <h3 className="mb-6 text-center text-lg font-bold">
         Log in to Zeitgeist
       </h3>
@@ -50,27 +56,45 @@ const WalletSelect = () => {
         <p>or connect using your own wallet</p>
       </div>
       <div className="flex justify-between gap-6">
-        {supportedWallets
-          .filter((w) => w.extensionName !== "web3auth")
-          .map((wallet) => {
-            const error = errors.find(
-              (e) => e.extensionName === wallet.extensionName,
-            );
-            const hasError = error != null;
-            return (
-              <WalletIcon
-                onClick={() => {
-                  handleSelectWallet(wallet);
-                }}
-                wallet={wallet}
-                extensionName={wallet.extensionName}
-                logoAlt={wallet.logo?.alt}
-                logoSrc={wallet.logo?.src}
-                hasError={hasError}
-                error={error}
-              />
-            );
-          })}
+        {isMobileDevice ? (
+          <a
+            href="https://novawallet.io/"
+            className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"
+          >
+            <Image
+              src="/icons/nova.png"
+              alt={"wallet.logo.alt"}
+              width={30}
+              height={30}
+              quality={100}
+            />
+            <div className="relative ml-4 font-medium">
+              <span>Nova Wallet</span>
+            </div>
+          </a>
+        ) : (
+          supportedWallets
+            .filter((w) => w.extensionName !== "web3auth")
+            .map((wallet) => {
+              const error = errors.find(
+                (e) => e.extensionName === wallet.extensionName,
+              );
+              const hasError = error != null;
+              return (
+                <WalletIcon
+                  onClick={() => {
+                    handleSelectWallet(wallet);
+                  }}
+                  wallet={wallet}
+                  extensionName={wallet.extensionName}
+                  logoAlt={wallet.logo?.alt}
+                  logoSrc={wallet.logo?.src}
+                  hasError={hasError}
+                  error={error}
+                />
+              );
+            })
+        )}
       </div>
     </div>
   );

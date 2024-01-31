@@ -125,7 +125,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
           .mul(2)
           .plus(baseAssetTransactionFee ?? 0)
       : null;
-
+  console.log(foreignCurrencyCost);
   const ztgBalanceDelta = ztgBalance?.div(ZTG).minus(ztgCost);
   const foreignAssetBalanceDelta =
     foreignCurrencyCost &&
