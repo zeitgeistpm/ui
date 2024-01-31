@@ -10,9 +10,10 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useAccountModals } from "lib/state/account";
 import { useUserLocation } from "lib/hooks/useUserLocation";
-import { useWallet, walletAtom } from "lib/state/wallet";
+import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { FaNetworkWired } from "react-icons/fa";
+import { wsxID } from "lib/constants";
 
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -103,18 +104,14 @@ const AccountButton: FC<{
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const confirm = useConfirmation();
 
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: polkadotBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 0,
   });
-  const { data: wsxBalance } = useBalance(activeAccount?.address, {
-    ForeignAsset: 3,
-  });
 
   const balance = useActiveBalance(activeAccount?.address, {
-    ForeignAsset: 3,
+    ForeignAsset: isWSX ? wsxID : 0,
   });
 
   const { data: constants } = useChainConstants();

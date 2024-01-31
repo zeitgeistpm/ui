@@ -50,7 +50,6 @@ export const MarketEditor = () => {
   const headerRef = useRef<HTMLDivElement>(null);
 
   const { activeAccount, selectWallet, isNovaWallet } = useWallet();
-
   const {
     form,
     steps,
@@ -62,6 +61,7 @@ export const MarketEditor = () => {
     fieldsState,
     mergeFormData,
   } = editor;
+  console.log(form);
 
   const chainTime = useChainTime();
   const { isFetched } = useMarketDeadlineConstants();

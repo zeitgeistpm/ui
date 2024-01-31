@@ -53,7 +53,7 @@ const WalletSelect = () => {
         </p>
       )}
       <Web3wallet />
-      {!isWSX && (
+      {isWSX && (
         <>
           <div className="py-6 text-center text-sm text-gray-400">
             <p>or connect using your own wallet</p>
