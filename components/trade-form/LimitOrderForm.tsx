@@ -20,6 +20,14 @@ import { useForm } from "react-hook-form";
 // for sells, max sell is balance
 // default price to spot price
 
+// BUY
+// max buy amount is price * base amount balance
+// price needs to be worse than the best order
+
+// SELL
+// for sells, max sell amount is balance
+// price needs to be worse than the best order
+
 export const LimitBuyOrderForm = ({
   marketId,
   initialAsset,
@@ -27,9 +35,43 @@ export const LimitBuyOrderForm = ({
   marketId: number;
   initialAsset?: MarketOutcomeAssetId;
 }) => {
+  const wallet = useWallet();
   const { data: orders } = useOrders();
+  const { data: market } = useMarket({
+    marketId,
+  });
+  const outcomeAssets = market?.outcomeAssets.map(
+    (assetIdString) =>
+      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+  );
+  const [selectedAsset, setSelectedAsset] = useState<
+    MarketOutcomeAssetId | undefined
+  >(initialAsset ?? outcomeAssets?.[0]);
+  const [price, setPrice] = useState<Decimal>();
+  const baseAsset = parseAssetIdString(market?.baseAsset);
 
-  return <LimitOrderForm marketId={marketId} />;
+  const { data: assetMetadata } = useAssetMetadata(baseAsset);
+
+  const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
+
+  const maxAmount = baseAssetBalance?.div(price ?? 0) ?? new Decimal(0);
+
+  return (
+    <LimitOrderForm
+      marketId={marketId}
+      selectedAsset={selectedAsset}
+      onSubmit={() => {
+        // place buy order
+      }}
+      onAssetChange={(asset) => {
+        setSelectedAsset(asset);
+      }}
+      onPriceChange={(price) => {
+        setPrice;
+      }}
+      maxAmount={maxAmount}
+    />
+  );
 };
 
 export const LimitSellOrderForm = ({
@@ -46,16 +88,18 @@ export const LimitSellOrderForm = ({
 
 const LimitOrderForm = ({
   marketId,
-  initialAsset,
+  selectedAsset,
+  onAssetChange,
 }: {
   marketId: number;
-  initialAsset?: MarketOutcomeAssetId;
+  selectedAsset?: MarketOutcomeAssetId; // todo: this can just be "asset" driven from parent
   maxPrice?: Decimal;
   minPrice?: Decimal;
   maxAmount?: Decimal;
   buttonText?: string;
   onSubmit?: (price: Decimal, amount: Decimal) => void;
   onAssetChange?: (assetId: MarketOutcomeAssetId) => void;
+  onPriceChange?: (price: Decimal) => void;
 }) => {
   const {
     register,
@@ -88,9 +132,9 @@ const LimitOrderForm = ({
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
   );
-  const [selectedAsset, setSelectedAsset] = useState<
-    MarketOutcomeAssetId | undefined
-  >(initialAsset ?? outcomeAssets?.[0]);
+  // const [selectedAsset, setSelectedAsset] = useState<
+  //   MarketOutcomeAssetId | undefined
+  // >(initialAsset ?? outcomeAssets?.[0]);
 
   const { data: selectedAssetBalance } = useBalance(
     wallet.realAddress,
@@ -104,7 +148,11 @@ const LimitOrderForm = ({
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       const changedByUser = type != null;
+      console.log(value, name);
 
+      if (name === "price") {
+        console.log("price", value.price);
+      }
       if (
         !changedByUser ||
         !selectedAssetBalance ||
@@ -187,7 +235,7 @@ const LimitOrderForm = ({
                 selected={selectedAsset}
                 options={outcomeAssets}
                 onChange={(assetId) => {
-                  setSelectedAsset(assetId);
+                  onAssetChange?.(assetId);
                 }}
               />
             )}
