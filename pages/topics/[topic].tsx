@@ -37,7 +37,7 @@ export async function getStaticProps({
   });
 
   const cmsTopic = await getCmsFullTopic(params.topic);
-  let marketCardsData = await marketsForTopic(cmsTopic, sdk.indexer);
+  const marketCardsData = await marketsForTopic(cmsTopic, sdk.indexer);
 
   return {
     props: {
