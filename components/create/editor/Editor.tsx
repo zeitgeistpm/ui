@@ -61,7 +61,6 @@ export const MarketEditor = () => {
     fieldsState,
     mergeFormData,
   } = editor;
-  console.log(form);
 
   const chainTime = useChainTime();
   const { isFetched } = useMarketDeadlineConstants();
