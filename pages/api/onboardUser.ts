@@ -6,79 +6,64 @@ export default function onboardUser(
   response: NextApiResponse,
 ) {
   let apiInstance = new SibApiV3Sdk.ContactsApi();
+  let createContact = new SibApiV3Sdk.CreateContact();
+  let userEmail = request.body.email;
+  const listId = 37;
 
   let apiKey = apiInstance.authentications["apiKey"];
   apiKey.apiKey = process.env.NEXT_PUBLIC_BREVO_API;
 
-  let createContact = new SibApiV3Sdk.CreateContact();
-
   createContact.email = request.body.email;
-  createContact.listIds = [37];
-
-  apiInstance.createContact(createContact).then(
-    function (data) {
-      console.log(
-        "API called successfully. Returned data: " + JSON.stringify(data),
-      );
-    },
-    function (error) {
-      console.error(error);
-    },
-  );
+  //change this value to match onboarding list id
+  createContact.listIds = [listId];
 
   let contactEmails = new SibApiV3Sdk.AddContactToList();
-
   contactEmails.emails = [request.body.email];
-  let listId = 37;
 
-  apiInstance.addContactToList(listId, contactEmails).then(
+  //check if contact exists
+  apiInstance.getContactInfo(userEmail).then(
     function (data) {
-      console.log(
-        "API called successfully. Returned data: " + JSON.stringify(data),
-      );
+      //if contact exists, add to list
+      console.log(data);
+      if (data.body.email) {
+        apiInstance.addContactToList(listId, contactEmails).then(
+          function () {
+            response
+              .status(200)
+              .json({ success: true, message: "Contact added" });
+          },
+          function (error) {
+            //if already exists then ignore
+            console.log(error);
+            if (error.statusCode === 400) {
+              response
+                .status(400)
+                .json({ success: false, message: "Contact exists" });
+            }
+          },
+        );
+      }
     },
+    //if contact doesnt exists then create one and add to list
     function (error) {
-      console.error(error);
+      if (error.statusCode === 404) {
+        apiInstance.createContact(createContact).then(
+          function (data) {
+            response.status(200).json({
+              success: true,
+              message: "Contact created and added to list",
+            });
+          },
+          function (error) {
+            response
+              .status(400)
+              .json({ success: true, message: "Error creating contact" });
+          },
+        );
+      }
+      response
+        .status(400)
+        .json({ success: true, message: "Error creating contact" });
     },
   );
-
-  // let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-
-  // let apiKey = apiInstance.authentications["apiKey"];
-  // apiKey.apiKey = process.env.NEXT_PUBLIC_BREVO_API;
-
-  // let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-
-  // console.log("EMAIL: " + request.body);
-  // sendSmtpEmail = {
-  //   to: [
-  //     {
-  //       email: "rob@zeitgeist.pm",
-  //       name: "Rob H",
-  //     },
-  //   ],
-  //   templateId: 47,
-  //   params: {
-  //     name: "Rob",
-  //     surname: "H",
-  //   },
-  //   headers: {
-  //     "X-Mailin-custom":
-  //       "custom_header_1:custom_value_1|custom_header_2:custom_value_2",
-  //   },
-  // };
-
-  // apiInstance.sendTransacEmail(sendSmtpEmail).then(
-  //   function (data) {
-  //     console.log("API called successfully. Returned data: " + data);
-  //     response.status(200).json({
-  //       body: {
-  //         data: data,
-  //       },
-  //     });
-  //   },
-  //   function (error) {
-  //     console.error(error);
-  //   },
-  // );
 }

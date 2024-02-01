@@ -46,18 +46,15 @@ const useWeb3Wallet = () => {
       if (web3authProvider) {
         await getKeypair(web3authProvider);
         const user = await web3auth.getUserInfo();
-        console.log(user);
         try {
-          const response = await fetch("/api/onboardUser", {
+          const res = await fetch("/api/onboardUser", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email: user.email }),
+            body: JSON.stringify({ email: user.email, name: user.name }),
           });
-
-          const data = await response.json();
-          console.log(data);
+          console.log(res);
         } catch (e) {
           console.log(e);
         }
