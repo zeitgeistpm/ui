@@ -103,11 +103,6 @@ const AccountButton: FC<{
 
   const { data: constants } = useChainConstants();
 
-  const isMobileDevice =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    );
-
   const connect = async () => {
     if (isNovaWallet) {
       selectWallet("polkadot-js");

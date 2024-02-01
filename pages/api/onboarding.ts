@@ -1,31 +1,48 @@
-var SibApiV3Sdk = require("sib-api-v3-sdk");
-var defaultClient = SibApiV3Sdk.ApiClient.instance;
+import { NextApiRequest, NextApiResponse } from "next";
 
-var apiKey = defaultClient.authentications[""];
-apiKey.apiKey = "";
-var apiInstance = new SibApiV3Sdk.EmailCampaignsApi();
-var emailCampaigns = new SibApiV3Sdk.CreateEmailCampaign();
+export default function onboardEmail(
+  request: NextApiRequest,
+  response: NextApiResponse,
+) {
+  const SibApiV3Sdk = require("sib-api-v3-sdk");
+  const defaultClient = SibApiV3Sdk.ApiClient.instance;
 
-emailCampaigns.name = "Campaign sent via the API";
-emailCampaigns.subject = "My subject";
-emailCampaigns.sender = {
-  name: "From name",
-  email: "myfromemail@mycompany.com",
-};
-emailCampaigns.type = "classic";
+  let apiKey = defaultClient.authentications["api-key"];
+  apiKey.apiKey = process.env.NEXT_PUBLIC_BREVO_API;
 
-const htmlContent =
-  "Congratulations! You successfully sent this example campaign via the Brevo API.";
+  const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
-const recipients = { listIds: [2, 7] };
+  let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-const scheduledAt = "2018-01-01 00:00:01";
+  sendSmtpEmail = {
+    to: [
+      {
+        email: "rob@zeitgeist.pm",
+        name: "Rob H",
+      },
+    ],
+    templateId: 47,
+    params: {
+      name: "Rob",
+      surname: "H",
+    },
+    headers: {
+      "X-Mailin-custom":
+        "custom_header_1:custom_value_1|custom_header_2:custom_value_2",
+    },
+  };
 
-apiInstance.createEmailCampaign(emailCampaigns).then(
-  function (data) {
-    console.log(data);
-  },
-  function (error) {
-    console.error(error);
-  },
-);
+  apiInstance.sendTransacEmail(sendSmtpEmail).then(
+    function (data) {
+      console.log("API called successfully. Returned data: " + data);
+      response.status(200).json({
+        body: {
+          data: data,
+        },
+      });
+    },
+    function (error) {
+      console.error(error);
+    },
+  );
+}
