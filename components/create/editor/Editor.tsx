@@ -2,7 +2,6 @@ import { Transition } from "@headlessui/react";
 import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
-import { useAtom } from "jotai";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "lib/state/chaintime";
@@ -12,10 +11,8 @@ import {
   reportingPeriodOptions,
 } from "lib/state/market-creation/constants/deadline-options";
 import { useMarketDraftEditor } from "lib/state/market-creation/editor";
-import * as MarketDraft from "lib/state/market-creation/types/draft";
-import { persistentAtom } from "lib/state/util/persistent-atom";
 import dynamic from "next/dynamic";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
@@ -39,30 +36,18 @@ import {
 import Input from "components/ui/Input";
 import TimezoneSelect from "./inputs/TimezoneSelect";
 import { Loader } from "components/ui/Loader";
-import { LiquidityInputAmm2 } from "./inputs/LiquidityAMM2";
 import FeeSelect from "./inputs/FeeSelect";
 import { useWallet } from "lib/state/wallet";
-import {
-  isAMM2Form,
-  marketFormDataToExtrinsicParams,
-} from "lib/state/market-creation/types/form";
+import { marketFormDataToExtrinsicParams } from "lib/state/market-creation/types/form";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
-import { CreateMarketParams, RpcContext } from "@zeitgeistpm/sdk";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
 });
 
-const createMarketStateAtom = persistentAtom<MarketDraft.MarketDraftState>({
-  key: "market-creation-form",
-  defaultValue: MarketDraft.empty(),
-  migrations: [() => MarketDraft.empty(), () => MarketDraft.empty()],
-});
-
 export const MarketEditor = () => {
   const wallet = useWallet();
-  const [state, setState] = useAtom(createMarketStateAtom);
-  const editor = useMarketDraftEditor({ draft: state, update: setState });
+  const editor = useMarketDraftEditor();
 
   const headerRef = useRef<HTMLDivElement>(null);
 
@@ -114,28 +99,21 @@ export const MarketEditor = () => {
     fieldsState.liquidity.isTouched && form.liquidity?.deploy && isWizard;
 
   const isLoaded = Boolean(chainTime && isFetched);
-  const isAMM2Market = isAMM2Form(form);
 
-  const creationParams = useMemo<
-    CreateMarketParams<RpcContext> | undefined
-  >(() => {
-    let signer = wallet.getSigner();
+  const signer = wallet.getSigner();
+  const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
 
-    if (!editor.isValid || !chainTime || !signer) return;
-
-    const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
-
-    if (proxy && proxy.enabled) {
-      return marketFormDataToExtrinsicParams(
-        editor.form,
-        { address: wallet.realAddress } as KeyringPairOrExtSigner,
-        chainTime,
-        signer,
-      );
-    }
-
-    return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
-  }, [editor.form, chainTime, wallet.activeAccount]);
+  const creationParams =
+    editor.isValid && chainTime && signer
+      ? proxy && proxy.enabled
+        ? marketFormDataToExtrinsicParams(
+            editor.form,
+            { address: wallet.realAddress } as KeyringPairOrExtSigner,
+            chainTime,
+            signer,
+          )
+        : marketFormDataToExtrinsicParams(editor.form, signer, chainTime)
+      : undefined;
 
   return (
     <>
@@ -557,7 +535,20 @@ export const MarketEditor = () => {
               <h2 className="mb-4 text-base md:mb-8">Market Moderation</h2>
               <div>
                 <div className="center flex min-w-full">
-                  <ModerationModeSelect {...input("moderation")} />
+                  <ModerationModeSelect
+                    {...input("moderation")}
+                    onChange={(event) => {
+                      mergeFormData({
+                        liquidity: {
+                          deploy:
+                            event.target.value == "Advised"
+                              ? false
+                              : form.liquidity?.deploy,
+                        },
+                        moderation: event.target.value,
+                      });
+                    }}
+                  />
                 </div>
                 <div className="center flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.moderation} />
@@ -639,16 +630,6 @@ export const MarketEditor = () => {
                       Answers must be filled out correctly before adding
                       liquidity.
                     </div>
-                  ) : isAMM2Market ? (
-                    <LiquidityInputAmm2
-                      {...input("liquidity", { mode: "all" })}
-                      currency={form.currency}
-                      errorMessage={
-                        !fieldsState.answers.isValid
-                          ? "Answers must be filled out correctly before adding liquidity."
-                          : ""
-                      }
-                    />
                   ) : (
                     <LiquidityInput
                       {...input("liquidity", { mode: "all" })}

@@ -53,17 +53,11 @@ export default async function (
     price: 0,
   };
 
-  if (market.pool) {
-    const { assets } = await sdk.assets({
-      where: {
-        pool: { poolId_eq: market.pool.poolId },
-      },
-    });
-
-    prediction = getCurrentPrediction(assets as any, market);
+  if (market.pool || market.neoPool) {
+    prediction = getCurrentPrediction(market.assets as any, market);
   }
 
-  const volume = new Decimal(market.pool?.volume ?? 0).div(ZTG).toFixed(2);
+  const volume = new Decimal(market?.volume ?? 0).div(ZTG).toFixed(2);
 
   const ends = moment(Number(market.period.end)).format("MMM Do, YYYY");
 

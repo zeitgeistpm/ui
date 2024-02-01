@@ -26,14 +26,12 @@ export const useRecommendedMarkets = (marketId?: number, limit = 2) => {
       if (enabled) {
         const { markets: similarMarkets } = await sdk.indexer.markets({
           limit,
-          order: [MarketOrderByInput.PoolVolumeDesc],
+          order: [MarketOrderByInput.VolumeDesc],
           where: {
             tags_containsAny: market?.tags,
             status_eq: MarketStatus.Active,
             marketId_not_eq: marketId,
-            pool: {
-              volume_gt: "0",
-            },
+            volume_gt: "0",
           },
         });
 
@@ -45,13 +43,11 @@ export const useRecommendedMarkets = (marketId?: number, limit = 2) => {
         } else {
           const { markets: popularMarkets } = await sdk.indexer.markets({
             limit,
-            order: [MarketOrderByInput.PoolVolumeDesc],
+            order: [MarketOrderByInput.VolumeDesc],
             where: {
               status_eq: MarketStatus.Active,
               marketId_not_eq: marketId,
-              pool: {
-                volume_gt: "0",
-              },
+              volume_gt: "0",
             },
           });
           return {
@@ -80,10 +76,9 @@ const mapMarkets = async (
 
   for (const market of markets) {
     const marketOutcomes = outcomes[market.marketId];
-    const prediction =
-      market.pool != null
-        ? getCurrentPrediction(marketOutcomes, market)
-        : { name: "None", price: 0 };
+    const prediction = market
+      ? getCurrentPrediction(marketOutcomes, market)
+      : { name: "None", price: 0 };
 
     resMarkets = [
       ...resMarkets,

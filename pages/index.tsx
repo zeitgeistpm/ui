@@ -1,4 +1,5 @@
 import { GenericChainProperties } from "@polkadot/types";
+import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
 import { BgBallGfx } from "components/front-page/BgBallFx";
 import GettingStartedSection from "components/front-page/GettingStartedSection";
@@ -13,27 +14,27 @@ import WatchHow from "components/front-page/WatchHow";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
-import { getNews, News } from "lib/cms/get-news";
+import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
+import { getCmsNews, CmsNews } from "lib/cms/news";
 import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
+import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import {
   getZTGHistory,
   ZtgPriceHistory,
 } from "lib/hooks/queries/useAssetUsdPrice";
+import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
 import { NextPage } from "next";
-
+import Link from "next/link";
 import path from "path";
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
-import { dehydrate, QueryClient } from "@tanstack/react-query";
-import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
-import Link from "next/link";
 
 const getPlaiceholders = (
   paths: string[],
@@ -50,7 +51,7 @@ export async function getStaticProps() {
     storage: ZeitgeistIpfs(),
   });
 
-  const news = await getNews();
+  const news = await getCmsNews();
 
   const [
     featuredMarkets,
@@ -61,6 +62,7 @@ export async function getStaticProps() {
     stats,
     ztgHistory,
     chainProperties,
+    marketsCmsData,
   ] = await Promise.all([
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
@@ -69,12 +71,13 @@ export async function getStaticProps() {
       dir: `${path.join(process.cwd())}/public/`,
     }),
     getPlaiceholders(
-      news.map((slide) => slide.imageUrl ?? ""),
+      news.map((slide) => slide.image ?? ""),
       { size: 16 },
     ),
     getNetworkStats(sdk),
     getZTGHistory(),
     sdk.api.rpc.system.properties(),
+    getCmsMarketMetadataForAllMarkets(),
   ]);
 
   const queryClient = new QueryClient();
@@ -82,6 +85,21 @@ export async function getStaticProps() {
   await queryClient.prefetchQuery([categoryCountsKey], () =>
     getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
   );
+
+  for (const marketCmsData of marketsCmsData) {
+    if (marketCmsData.marketId) {
+      queryClient.setQueryData(
+        marketCmsDatakeyForMarket(marketCmsData.marketId),
+        marketCmsData,
+      );
+    }
+  }
+
+  for (const market of [...featuredMarkets, ...trendingMarkets]) {
+    const cmsData = marketsCmsData.find((m) => m.marketId === market.marketId);
+    if (cmsData?.question) market.question = cmsData.question;
+    if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
+  }
 
   return {
     props: {
@@ -98,13 +116,13 @@ export async function getStaticProps() {
     },
     revalidate:
       environment === "production"
-        ? 1 * 60 //1min
+        ? 5 * 60 //5min
         : 60 * 60,
   };
 }
 
 const IndexPage: NextPage<{
-  news: News[];
+  news: CmsNews[];
   featuredMarkets: IndexedMarketCardData[];
   trendingMarkets: IndexedMarketCardData[];
   categoryPlaceholders: string[];
@@ -149,7 +167,7 @@ const IndexPage: NextPage<{
         {featuredMarkets.length > 0 && (
           <div className="mb-12">
             <MarketScroll
-              title="Promoted Markets"
+              title="Featured Markets"
               cta="Go to Markets"
               markets={featuredMarkets}
               link="markets"

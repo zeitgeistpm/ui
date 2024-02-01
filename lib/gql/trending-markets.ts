@@ -1,17 +1,21 @@
-import { PoolOrderByInput, PoolStatus } from "@zeitgeistpm/indexer";
+import {
+  MarketOrderByInput,
+  MarketStatus,
+  ScoringRule,
+} from "@zeitgeistpm/indexer";
 import {
   BaseAssetId,
   FullContext,
   IOForeignAssetId,
-  ScalarRangeType,
   Sdk,
 } from "@zeitgeistpm/sdk";
-import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup";
+import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { IndexedMarketCardData } from "components/markets/market-card/index";
 import Decimal from "decimal.js";
-import { gql, GraphQLClient } from "graphql-request";
+import { GraphQLClient, gql } from "graphql-request";
 import { DAY_SECONDS, ZTG } from "lib/constants";
 import { hiddenMarketIds } from "lib/constants/markets";
+import { marketMetaFilter } from "lib/hooks/queries/constants";
 import {
   ForeignAssetPrices,
   getBaseAssetPrices,
@@ -20,74 +24,17 @@ import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
 import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { marketMetaFilter } from "./constants";
-import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 
-const poolChangesQuery = gql`
-  query PoolChanges($start: DateTime, $end: DateTime) {
-    historicalPools(
-      where: {
-        timestamp_gt: $start
-        volume_gt: "0"
-        event_contains: "Swap"
-        timestamp_lt: $end
-      }
+const marketChangesQuery = gql`
+  query MarketChanges($start: DateTime, $end: DateTime) {
+    historicalMarkets(
+      where: { timestamp_gt: $start, volume_gt: "0", timestamp_lt: $end }
       orderBy: id_DESC
     ) {
-      poolId
       dVolume
-    }
-  }
-`;
-
-const marketQuery = gql`
-  query Market($poolId: Int) {
-    markets(
-      where: {
-        pool: { poolId_eq: $poolId }
-        marketId_not_in: ${hiddenMarketIds}
-        hasValidMetaCategories_eq: true
-        categories_isNull: false
-        ${marketMetaFilter}
+      market {
+        marketId
       }
-    ) {
-      marketId
-      outcomeAssets
-      question
-      creation
-      img
-      baseAsset
-      creator
-      marketType {
-        categorical
-        scalar
-      }
-      categories {
-        color
-        name
-      }
-      pool {
-        volume
-      }
-      outcomeAssets
-      tags
-      period {
-        end
-      }
-      status
-      scalarType
-    }
-  }
-`;
-
-const assetsQuery = gql`
-  query Assets($poolId: Int) {
-    assets(where: { pool: { poolId_eq: $poolId } }) {
-      pool {
-        poolId
-      }
-      price
-      assetId
     }
   }
 `;
@@ -101,117 +48,85 @@ const getTrendingMarkets = async (
     new Date().getTime() - DAY_SECONDS * 7 * 1000,
   ).toISOString();
 
-  const { historicalPools } = await client.request<{
-    historicalPools: {
+  const { historicalMarkets } = await client.request<{
+    historicalMarkets: {
       dVolume: string;
-      poolId: number;
+      market: {
+        marketId: number;
+      };
     }[];
-  }>(poolChangesQuery, {
+  }>(marketChangesQuery, {
     start: dateOneWeekAgo,
     end: now,
   });
 
-  const pools = await fetchAllPages(async (pageNumber, limit) => {
-    const { pools } = await sdk.indexer.pools({
+  const markets = await fetchAllPages(async (pageNumber, limit) => {
+    const { markets } = await sdk.indexer.markets({
       limit: limit,
       offset: pageNumber * limit,
-      where: { status_eq: PoolStatus.Active },
-      order: PoolOrderByInput.IdAsc,
+      order: MarketOrderByInput.IdDesc,
+      where: {
+        status_eq: MarketStatus.Active,
+        scoringRule_eq: ScoringRule.Lmsr,
+        ...marketMetaFilter,
+      },
     });
-    return pools;
+    return markets;
   });
 
   const basePrices = await getBaseAssetPrices(sdk);
 
-  const trendingPoolIds = calcTrendingPools(historicalPools, basePrices, pools);
-
-  const trendingMarkets = await Promise.all(
-    trendingPoolIds.map(async (poolId) => {
-      const marketsRes = await client.request<{
-        markets: {
-          marketId: number;
-          img: string;
-          question: string;
-          creation: ZeitgeistPrimitivesMarketMarketCreation["type"];
-          marketType: { [key: string]: string };
-          categories: { color: string; name: string }[];
-          outcomeAssets: string[];
-          baseAsset: string;
-          creator: string;
-          pool: {
-            volume: string;
-          };
-          tags: [];
-          status: string;
-          scalarType: ScalarRangeType;
-          period: { end: string };
-        }[];
-      }>(marketQuery, {
-        poolId: Number(poolId),
-      });
-
-      const market = marketsRes.markets[0];
-
-      if (!market) {
-        console.log("No market");
-        return null;
-      }
-
-      const assetsRes = await client.request<{
-        assets: {
-          pool: { poolId: number };
-          price: number;
-          assetId: string;
-        }[];
-      }>(assetsQuery, {
-        poolId: Number(poolId),
-      });
-
-      const assets = assetsRes.assets;
-
-      const prediction = getCurrentPrediction(assets, market);
-
-      if (!market.categories) {
-        console.log("No categories for market", market.marketId);
-        return null;
-      }
-
-      const marketCategories: MarketOutcomes = market.categories.map(
-        (category, index) => {
-          const asset = assets[index];
-          const marketCategory: MarketOutcome = {
-            ...category,
-            assetId: market.outcomeAssets[index],
-            price: asset.price,
-          };
-
-          return marketCategory;
-        },
-      );
-
-      const trendingMarket: IndexedMarketCardData = {
-        marketId: market.marketId,
-        question: market.question,
-        creation: market.creation,
-        img: market.img,
-        prediction: prediction,
-        creator: market.creator,
-        volume: Number(new Decimal(market.pool.volume).div(ZTG).toFixed(0)),
-        baseAsset: market.baseAsset,
-        outcomes: marketCategories,
-        pool: market.pool ?? null,
-        marketType: market.marketType,
-        tags: market.tags,
-        status: market.status,
-        scalarType: market.scalarType,
-        endDate: market.period.end,
-      };
-
-      return trendingMarket;
-    }),
+  const trendingMarketIds = calcTrendingMarkets(
+    historicalMarkets,
+    basePrices,
+    markets,
   );
 
-  return trendingMarkets.filter(isNotNull);
+  const tm = trendingMarketIds.map((marketId) => {
+    const market = markets.find(
+      (market) => market.marketId === Number(marketId),
+    );
+
+    if (!market || !market.categories) return;
+    const marketCategories: MarketOutcomes = market.categories.map(
+      (category, index) => {
+        const asset = market.assets[index];
+
+        const marketCategory: MarketOutcome = {
+          name: category.name ?? "",
+          assetId: market.outcomeAssets[index],
+          price: asset.price,
+        };
+
+        return marketCategory;
+      },
+    );
+
+    const prediction = getCurrentPrediction(market.assets, market);
+
+    const trendingMarket: IndexedMarketCardData = {
+      marketId: market.marketId,
+      question: market.question ?? "",
+      creation: market.creation,
+      img: market.img ?? "",
+      prediction: prediction,
+      creator: market.creator,
+      volume: Number(new Decimal(market?.volume ?? 0).div(ZTG).toFixed(0)),
+      baseAsset: market.baseAsset,
+      outcomes: marketCategories,
+      pool: market.pool ?? null,
+      neoPool: market.neoPool,
+      marketType: market.marketType as any,
+      tags: market.tags?.filter(isNotNull),
+      status: market.status,
+      scalarType: (market.scalarType ?? null) as "number" | "date" | null,
+      endDate: market.period.end,
+    };
+
+    return trendingMarket;
+  });
+
+  return tm.filter(isNotNull);
 };
 
 const lookupPrice = (
@@ -223,29 +138,35 @@ const lookupPrice = (
     : basePrices["ztg"];
 };
 
-const calcTrendingPools = (
+const calcTrendingMarkets = (
   transactions: {
-    poolId: number;
+    market: {
+      marketId: number;
+    };
     dVolume: string;
   }[],
   basePrices: ForeignAssetPrices,
-  pools: { poolId: number; baseAsset: string; status: string }[],
+  markets: { marketId: number; baseAsset: string }[],
 ) => {
-  const poolVolumes: { [key: string]: Decimal } = {};
-  const maxPools = 8;
+  const marketVolumes: { [key: string]: Decimal } = {};
+  const maxMarkets = 8;
 
-  // find total volume for each pool
+  // find total volume for each market
   transactions.forEach((transaction) => {
-    const volume = poolVolumes[transaction.poolId];
-    if (volume) {
-      poolVolumes[transaction.poolId] = volume.plus(transaction.dVolume);
-    } else {
-      poolVolumes[transaction.poolId] = new Decimal(transaction.dVolume);
+    const marketId = transaction.market.marketId;
+
+    if (markets.some((market) => market.marketId === marketId)) {
+      const volume = marketVolumes[marketId];
+      if (volume) {
+        marketVolumes[marketId] = volume.plus(transaction.dVolume);
+      } else {
+        marketVolumes[marketId] = new Decimal(transaction.dVolume);
+      }
     }
   });
 
-  for (let poolId in poolVolumes) {
-    const base = pools.find((pool) => pool.poolId === Number(poolId))
+  for (let marketId in marketVolumes) {
+    const base = markets.find((market) => market.marketId === Number(marketId))
       ?.baseAsset;
 
     const value = lookupPrice(
@@ -253,16 +174,16 @@ const calcTrendingPools = (
       parseAssetIdString(base) as BaseAssetId,
     );
 
-    poolVolumes[poolId] = poolVolumes[poolId].mul(value ?? 0);
+    marketVolumes[marketId] = marketVolumes[marketId].mul(value ?? 0);
   }
 
-  const poolIdsByVolumeDesc = Object.keys(poolVolumes).sort((a, b) => {
-    const aVol = poolVolumes[a];
-    const bVol = poolVolumes[b];
+  const marketIdsByVolumeDesc = Object.keys(marketVolumes).sort((a, b) => {
+    const aVol = marketVolumes[a];
+    const bVol = marketVolumes[b];
     return bVol.minus(aVol).toNumber();
   });
 
-  return poolIdsByVolumeDesc.splice(0, maxPools);
+  return marketIdsByVolumeDesc.splice(0, maxMarkets);
 };
 
 export default getTrendingMarkets;

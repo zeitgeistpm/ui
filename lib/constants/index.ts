@@ -36,14 +36,6 @@ export const SUPPORTED_WALLET_NAMES = [
   "polkadot-js",
 ];
 
-type MarketReferendumMap = {
-  [key: number]: number;
-};
-
-export const marketReferendumMap: MarketReferendumMap | undefined =
-  process.env["NEXT_PUBLIC_MARKET_ID_REFERENDUM_INDEX_MAP"] &&
-  JSON.parse(process.env["NEXT_PUBLIC_MARKET_ID_REFERENDUM_INDEX_MAP"]);
-
 export const endpoints: EndpointOption[] = [
   {
     value: "wss://main.rpc.zeitgeist.pm/ws",
