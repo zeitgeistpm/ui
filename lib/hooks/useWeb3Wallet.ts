@@ -5,7 +5,7 @@ import { useWallet } from "lib/state/wallet";
 import { web3authAtom } from "lib/state/util/web3auth-config";
 import { useAtom } from "jotai";
 import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
-import onboardEmail from "pages/api/onboarding";
+import onboardEmail from "pages/api/onboardUser";
 
 const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN_ZTG;
 
@@ -46,7 +46,21 @@ const useWeb3Wallet = () => {
       if (web3authProvider) {
         await getKeypair(web3authProvider);
         const user = await web3auth.getUserInfo();
-        onboardEmail(user.email);
+        console.log(user);
+        try {
+          const response = await fetch("/api/onboardUser", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: user.email }),
+          });
+
+          const data = await response.json();
+          console.log(data);
+        } catch (e) {
+          console.log(e);
+        }
       }
     } catch (error) {
       console.error(error);
