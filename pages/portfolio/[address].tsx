@@ -137,9 +137,9 @@ const Portfolio: NextPageWithLayout = () => {
                   (marketPositions) => {
                     const market = marketPositions[0].market;
 
-                    marketPositions = marketPositions.filter((position) =>
-                      position.userBalance.gt(0),
-                    );
+                    // marketPositions = marketPositions.filter((position) =>
+                    //   position.userBalance.gt(0),
+                    // );
 
                     if (
                       market.status === "Resolved" &&
@@ -160,9 +160,7 @@ const Portfolio: NextPageWithLayout = () => {
                         className="mb-8"
                         market={market}
                         usdZtgPrice={ztgPrice}
-                        positions={marketPositions.filter((position) =>
-                          position.userBalance.gt(0),
-                        )}
+                        positions={marketPositions}
                       />
                     );
                   },

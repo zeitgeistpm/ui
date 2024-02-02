@@ -142,7 +142,7 @@ export async function getStaticProps() {
     },
     revalidate:
       environment === "production"
-        ? 1 * 60 //1min
+        ? 5 * 60 //5min
         : 60 * 60,
   };
 }
