@@ -192,14 +192,12 @@ export const usePortfolioPositions = (
 
   const pools = usePoolsByIds(filter);
   const markets = useMarketsByIds(filter);
-  const amm2MarketIds = markets.data
-    ?.filter((market) => market.scoringRule === ScoringRule.Lmsr)
-    .map((m) => m.marketId);
+  const marketIds = markets.data?.map((m) => m.marketId);
 
-  const { data: amm2SpotPrices } = useAmm2MarketSpotPrices(amm2MarketIds);
+  const { data: amm2SpotPrices } = useAmm2MarketSpotPrices(marketIds);
 
   const { data: amm2SpotPrices24HoursAgo } = useAmm2MarketSpotPrices(
-    amm2MarketIds,
+    marketIds,
     block24HoursAgo,
   );
 

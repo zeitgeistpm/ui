@@ -1,9 +1,5 @@
 import { Disclosure, Transition } from "@headlessui/react";
-import {
-  FullMarketFragment,
-  MarketStatus,
-  ScoringRule,
-} from "@zeitgeistpm/indexer";
+import { FullMarketFragment, MarketStatus } from "@zeitgeistpm/indexer";
 import {
   MarketOutcomeAssetId,
   ScalarRangeType,
@@ -77,11 +73,6 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { FaChevronUp } from "react-icons/fa";
-
-const TradeForm = dynamic(() => import("../../components/trade-form"), {
-  ssr: false,
-  loading: () => <div style={{ width: "100%", height: "606px" }} />,
-});
 
 const SimilarMarketsSection = dynamic(
   () => import("../../components/markets/SimilarMarketsSection"),
@@ -275,11 +266,7 @@ const Market: NextPage<MarketPageProps> = ({
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
 
-  const marketHasPool =
-    (market?.scoringRule === ScoringRule.Cpmm &&
-      poolId != null &&
-      poolIdLoading === false) ||
-    (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
+  const marketHasPool = market?.neoPool != null;
 
   const poolCreationDate = new Date(
     indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
