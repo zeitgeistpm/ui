@@ -109,9 +109,9 @@ const NotificationCenter = () => {
   const { notifications, removeNotification } = useNotifications();
 
   return (
-    <div className="pointer-events-none fixed top-0 z-[100] h-full w-full">
+    <div className="pointer-events-none fixed top-0 z-[100] w-full md:bottom-4 md:left-4 md:top-[unset]">
       <div className="flex flex-row justify-end pt-20">
-        <div className="relative flex flex-1 flex-col items-end px-4">
+        <div className="relative flex flex-1 flex-col px-4">
           <AnimatePresence mode="sync" presenceAffectsLayout>
             {notifications.map((notification, index) => (
               <motion.div

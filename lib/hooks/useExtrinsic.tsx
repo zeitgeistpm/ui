@@ -9,7 +9,7 @@ import { useSdkv2 } from "./useSdkv2";
 import { useExtrinsicFee } from "./queries/useExtrinsicFee";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 
-export const useExtrinsic = <T>(
+export const useExtrinsic = <T,>(
   extrinsicFn: (
     params?: T,
   ) => SubmittableExtrinsic<"promise", ISubmittableResult> | undefined,
@@ -89,9 +89,17 @@ export const useExtrinsic = <T>(
           setIsBroadcasting(true);
           callbacks?.onBroadcast
             ? callbacks.onBroadcast()
-            : notifications?.pushNotification("Broadcasting transaction...", {
-                autoRemove: true,
-              });
+            : notifications?.pushNotification(
+                <div>
+                  <div className="mb-[0.5]">Broadcasting transaction...</div>
+                  <div className="text-xs text-gray-500">
+                    {extrinsic?.method.section}.{extrinsic?.method.method}
+                  </div>
+                </div>,
+                {
+                  autoRemove: true,
+                },
+              );
         },
         successCallback: (data) => {
           setIsLoading(false);

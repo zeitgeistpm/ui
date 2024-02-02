@@ -45,7 +45,7 @@ export type UseNotifications = {
    * @param options - Options for the notification.
    */
   pushNotification(
-    content: string,
+    content: string | ReactNode,
     options?: {
       type?: NotificationType;
       lifetime?: number;
