@@ -94,10 +94,6 @@ export const marketsForTopic = async (
         })
         .filter(isNotNull);
 
-      if (market.assets.length < 2) {
-        console.log(market);
-      }
-
       const prediction = getCurrentPrediction(market.assets, market);
 
       const marketCardData: IndexedMarketCardData = {
