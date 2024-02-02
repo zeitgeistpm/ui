@@ -14,6 +14,7 @@ import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import NotFoundPage from "pages/404";
 
 export async function getStaticPaths() {
   const cmsTopics = await getCmsTopicHeaders();
@@ -51,6 +52,10 @@ const TopicPage: NextPage<{
   cmsTopic: CmsTopicFull;
   markets: IndexedMarketCardData[];
 }> = ({ cmsTopic, markets }) => {
+  if (process.env.NEXT_PUBLIC_SHOW_TOPICS !== "true") {
+    return <NotFoundPage />;
+  }
+
   const [marketOne, marketTwo, marketThree, marketFour, ...restMarkets] =
     markets;
 

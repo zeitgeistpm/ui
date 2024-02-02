@@ -195,38 +195,40 @@ const IndexPage: NextPage<{
           chainProperties={chainProperties}
         />
 
-        <div className="relative z-30 mb-12">
-          <div className="mb-8 flex gap-2">
-            <Topics
-              topics={cmsTopics}
-              selectedTopic={topicSlug}
-              onClick={(topic) => {
-                router.push(
-                  { query: { ...router.query, topic: topic.slug } },
-                  undefined,
-                  { shallow: true },
-                );
-              }}
-              imagePlaceholders={topicImagePlaceholders}
-            />
-          </div>
+        {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" && (
+          <div className="relative z-30 mb-12">
+            <div className="mb-8 flex gap-2">
+              <Topics
+                topics={cmsTopics}
+                selectedTopic={topicSlug}
+                onClick={(topic) => {
+                  router.push(
+                    { query: { ...router.query, topic: topic.slug } },
+                    undefined,
+                    { shallow: true },
+                  );
+                }}
+                imagePlaceholders={topicImagePlaceholders}
+              />
+            </div>
 
-          {topic && topic.topic.marketIds && (
-            <>
-              <div className="mb-4 flex gap-3">
-                {topic.markets.map((market) => (
-                  <MarketCard key={market.marketId} {...market} />
-                ))}
-              </div>
-              <Link href={`/topics/${topic.topic.slug}`}>
-                <div className="pl-2 text-sm font-light text-blue-600">
-                  Go to <b className="font-bold">{topic.topic.title}</b> Markets
-                  ({topic.topic.marketIds?.length ?? 0})
+            {topic && topic.topic.marketIds && (
+              <>
+                <div className="mb-4 flex gap-3">
+                  {topic.markets.map((market) => (
+                    <MarketCard key={market.marketId} {...market} />
+                  ))}
                 </div>
-              </Link>
-            </>
-          )}
-        </div>
+                <Link href={`/topics/${topic.topic.slug}`}>
+                  <div className="pl-2 text-sm font-light text-blue-600">
+                    Go to <b className="font-bold">{topic.topic.title}</b>{" "}
+                    Markets ({topic.topic.marketIds?.length ?? 0})
+                  </div>
+                </Link>
+              </>
+            )}
+          </div>
+        )}
 
         {featuredMarkets.length > 0 && (
           <div className="mb-12">

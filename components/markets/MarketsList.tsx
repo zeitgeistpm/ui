@@ -104,9 +104,11 @@ const MarketsList = ({
       data-testid="marketsList"
       id={"market-list"}
     >
-      <div className="flex gap-2 py-8">
-        <Topics topics={cmsTopics} imagePlaceholders={cmsTopicPlaceholders} />
-      </div>
+      {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" && (
+        <div className="flex gap-2 py-8">
+          <Topics topics={cmsTopics} imagePlaceholders={cmsTopicPlaceholders} />
+        </div>
+      )}
 
       <MarketFilterSelection
         onFiltersChange={setFilters}
