@@ -9,6 +9,7 @@ import { sanity } from "./sanity";
 import { ZeitgeistIndexer } from "@zeitgeistpm/indexer";
 import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
+import { getMarketsStats } from "lib/gql/markets-stats";
 
 export type CmsTopicHeader = {
   title: string;
@@ -74,6 +75,11 @@ export const marketsForTopic = async (
     limit: opts?.limit,
   });
 
+  const stats = await getMarketsStats(
+    indexer.client,
+    markets.map((m) => m.marketId),
+  );
+
   const marketCardsData = markets
     .map((market) => {
       if (!market || !market.categories) return;
@@ -113,6 +119,9 @@ export const marketsForTopic = async (
         status: market.status,
         scalarType: (market.scalarType ?? null) as "number" | "date" | null,
         endDate: market.period.end,
+        numParticipants: stats.find((s) => s.marketId === market.marketId)
+          ?.participants,
+        liquidity: stats.find((s) => s.marketId === market.marketId)?.liquidity,
       };
 
       return marketCardData;
