@@ -22,8 +22,9 @@ export const Topics = ({
     <>
       <div className="hidden w-full gap-3 md:flex">
         {topics.map((topic, index) => (
-          <div
+          <Link
             key={index}
+            href={`/topics/${topic.slug}`}
             className={`
             ztg-transition flex flex-1 cursor-pointer items-center gap-4 rounded-lg p-3 transition-all md:max-w-sm md:hover:scale-[1.015]
               ${
@@ -33,8 +34,9 @@ export const Topics = ({
                   : "bg-white"
               }
             `}
-            onClick={() => {
+            onClick={(e) => {
               if (onClick) {
+                e.preventDefault();
                 onClick(topic);
               } else {
                 router.push(`/topics/${topic.slug}`);
@@ -60,7 +62,7 @@ export const Topics = ({
             <div>
               <h3 className="font-base text-sm text-gray-800">{topic.title}</h3>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
       <div className="relative block w-full md:hidden">
