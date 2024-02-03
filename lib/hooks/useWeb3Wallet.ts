@@ -54,7 +54,7 @@ const useWeb3Wallet = () => {
             },
             body: JSON.stringify({ email: user.email, name: user.name }),
           });
-          console.log(res);
+          console.log(await res.json());
         } catch (e) {
           console.log(e);
         }
