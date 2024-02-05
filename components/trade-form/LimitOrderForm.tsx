@@ -63,7 +63,6 @@ export const LimitBuyOrderForm = ({
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
 
   const maxAmount = baseAssetBalance?.div(price ?? 0) ?? new Decimal(0);
-  // console.log(maxAmount.div(ZTG).toString());
 
   return (
     <LimitOrderForm
@@ -91,9 +90,43 @@ export const LimitSellOrderForm = ({
   marketId: number;
   initialAsset?: MarketOutcomeAssetId;
 }) => {
+  const [sdk] = useSdkv2();
+  const notificationStore = useNotifications();
+  const wallet = useWallet();
   const { data: orders } = useOrders();
+  const { data: market } = useMarket({
+    marketId,
+  });
+  const outcomeAssets = market?.outcomeAssets.map(
+    (assetIdString) =>
+      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+  );
+  const [selectedAsset, setSelectedAsset] = useState<
+    MarketOutcomeAssetId | undefined
+  >(initialAsset ?? outcomeAssets?.[0]);
+  const baseAsset = parseAssetIdString(market?.baseAsset);
 
-  return <LimitOrderForm marketId={marketId} buttonText="Place Buy Order" />;
+  const { data: assetMetadata } = useAssetMetadata(baseAsset);
+
+  const { data: selectedAssetBalance } = useBalance(
+    wallet.realAddress,
+    selectedAsset,
+  );
+
+  return (
+    <LimitOrderForm
+      marketId={marketId}
+      selectedAsset={selectedAsset}
+      buttonText="Place Buy Order"
+      onSubmit={() => {
+        // place sell order
+      }}
+      onAssetChange={(asset) => {
+        setSelectedAsset(asset);
+      }}
+      maxAmount={selectedAssetBalance}
+    />
+  );
 };
 
 const LimitOrderForm = ({
@@ -160,40 +193,17 @@ const LimitOrderForm = ({
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
   );
 
-  console.log(formState.errors);
-
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       const changedByUser = type != null;
-      // console.log(value, name);
 
       if (name === "price" && value.price !== "") {
-        // console.log("price", value.price);
         onPriceChange?.(new Decimal(value.price ?? 0));
       }
-      if (
-        !changedByUser ||
-        // !selectedAssetBalance ||
-        // selectedAssetBalance.eq(0) ||
-        !maxAmount
-      )
-        return;
+      if (!changedByUser || !maxAmount) return;
 
       if (name === "percentage") {
-        // const max = selectedAssetBalance.greaterThan(maxAmountIn)
-        //   ? maxAmountIn
-        //   : selectedAssetBalance;
         const max = maxAmount;
-        // console.log(
-        //   Number(
-        //     max
-        //       .mul(value.percentage)
-        //       .abs()
-        //       .div(100)
-        //       .div(ZTG)
-        //       .toFixed(3, Decimal.ROUND_DOWN),
-        //   ),
-        // );
 
         setValue(
           "amount",
@@ -239,9 +249,9 @@ const LimitOrderForm = ({
               },
               validate: (value) => {
                 if (value > (maxAmount?.div(ZTG).toNumber() ?? 0)) {
-                  return `Insufficient balance. Current balance: ${maxAmount
+                  return `Insufficient balance. Max: ${maxAmount
                     ?.div(ZTG)
-                    .toFixed(3)}`;
+                    .toFixed(1)}`;
                 } else if (value <= 0) {
                   return "Amount must be greater than 0";
                 }
@@ -289,16 +299,11 @@ const LimitOrderForm = ({
         <input
           className="mb-[10px] mt-[30px] w-full"
           type="range"
-          //   disabled={
-          //     !maxSpendableBalance || maxSpendableBalance.lessThanOrEqualTo(0)
-          //   }
           {...register("percentage", { value: "0" })}
         />
-        <div className="mb-[10px] flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600 ">
+        <div className="flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600 ">
           <div className="h-[16px] text-xs text-vermilion">
-            {/* //todo: just show first error */}
-            <>{formState.errors["amount"]?.message}</>
-            <>{formState.errors["price"]?.message}</>
+            <>{Object.values(formState.errors)[0]?.message}</>
           </div>
           {/* <div className="flex w-full justify-between">
             <div>Max profit:</div>
@@ -313,20 +318,22 @@ const LimitOrderForm = ({
             </div>
           </div> */}
         </div>
-        <FormTransactionButton
-          className="w-full max-w-[250px]"
-          //   disabled={formState.isValid === false || isLoading}
-          disableFeeCheck={true}
-        >
-          <div>
-            <div className="center h-[20px] font-normal">{buttonText}</div>
-            {/* <div className="center h-[20px] text-ztg-12-120 font-normal">
+        <div className="flex w-full items-center justify-center">
+          <FormTransactionButton
+            className="w-full max-w-[250px]"
+            disabled={formState.isValid === false} //||isLoading
+            disableFeeCheck={true}
+          >
+            <div>
+              <div className="center h-[20px] font-normal">{buttonText}</div>
+              {/* <div className="center h-[20px] text-ztg-12-120 font-normal">
               Network fee:{" "}
               {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
               {fee?.symbol}
             </div> */}
-          </div>
-        </FormTransactionButton>
+            </div>
+          </FormTransactionButton>
+        </div>
       </form>
     </div>
   );
