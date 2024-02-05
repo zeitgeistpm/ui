@@ -1,4 +1,9 @@
-import { MarketOutcomeAssetId, ZTG, parseAssetId } from "@zeitgeistpm/sdk";
+import {
+  MarketOutcomeAssetId,
+  ZTG,
+  getIndexOf,
+  parseAssetId,
+} from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
@@ -127,8 +132,16 @@ const LimitOrderForm = ({
   const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: pool } = useAmm2Pool(marketId);
 
-  const { data: spotPrices } = useMarketSpotPrices();
-  // console.log(spotPrices);
+  const { data: spotPrices } = useMarketSpotPrices(marketId);
+  console.log(selectedAsset);
+  console.log(selectedAsset);
+  const spotPrice = selectedAsset
+    ? spotPrices?.get(getIndexOf(selectedAsset)) //todo: check this works for scalar
+    : undefined;
+
+  useEffect(() => {
+    setValue("price", spotPrice?.toFixed(3));
+  }, [spotPrice]);
 
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
