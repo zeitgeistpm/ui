@@ -22,6 +22,11 @@ import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import Image from "next/image";
 import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
+import dynamic from "next/dynamic";
+
+const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
+  ssr: false,
+});
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -311,7 +316,13 @@ export const MarketCard = ({
               </>
             )}
           </div>
-          <MarketCardDetails rows={infoRows} />
+          <div className="flex flex-1 gap-2">
+            <div className="flex-1">
+              <MarketCardDetails rows={infoRows} />
+            </div>
+
+            <MarketFavoriteToggle marketId={marketId} />
+          </div>
         </Link>
       </div>
     </MarketCardContext.Provider>

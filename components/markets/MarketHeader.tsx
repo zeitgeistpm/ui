@@ -46,6 +46,11 @@ import CourtStageTimer from "components/court/CourtStageTimer";
 import { useMarketImage } from "lib/hooks/useMarketImage";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import dynamic from "next/dynamic";
+
+const MarketFavoriteToggle = dynamic(() => import("./MarketFavoriteToggle"), {
+  ssr: false,
+});
 
 export const UserIdentity: FC<
   PropsWithChildren<{
@@ -519,6 +524,17 @@ const MarketHeader: FC<{
           <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
             <div className="rounded-lg bg-green-lighter px-2 py-1 text-sm">
               Verified Market
+            </div>
+          </div>
+        </div>
+
+        <div className="group relative flex items-center">
+          <div className="pt-1">
+            <MarketFavoriteToggle size={24} marketId={market.marketId} />
+          </div>
+          <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="rounded-lg bg-pink-300 px-2 py-1 text-sm">
+              Toggle Favorited
             </div>
           </div>
         </div>
