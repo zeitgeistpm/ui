@@ -17,6 +17,7 @@ import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { assetsAreEqual } from "lib/util/assets-are-equal";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -62,6 +63,7 @@ export const LimitBuyOrderForm = ({
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
 
   const maxAmount = baseAssetBalance?.div(price ?? 0) ?? new Decimal(0);
+  // console.log(maxAmount.div(ZTG).toString());
 
   return (
     <LimitOrderForm
@@ -133,15 +135,22 @@ const LimitOrderForm = ({
   const { data: pool } = useAmm2Pool(marketId);
 
   const { data: spotPrices } = useMarketSpotPrices(marketId);
-  console.log(selectedAsset);
-  console.log(selectedAsset);
+  const [initialPriceSetAsset, setInitialPriceSetAsset] = useState<
+    MarketOutcomeAssetId | undefined
+  >();
   const spotPrice = selectedAsset
     ? spotPrices?.get(getIndexOf(selectedAsset)) //todo: check this works for scalar
     : undefined;
 
   useEffect(() => {
-    setValue("price", spotPrice?.toFixed(3));
-  }, [spotPrice]);
+    // default price to current spot price
+    if (!assetsAreEqual(initialPriceSetAsset, selectedAsset)) {
+      setValue("price", spotPrice?.toFixed(3));
+      setInitialPriceSetAsset(selectedAsset);
+      onPriceChange?.(spotPrice ?? new Decimal(0));
+      trigger("price"); // reset validation
+    }
+  }, [spotPrice, initialPriceSetAsset]);
 
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
@@ -150,26 +159,16 @@ const LimitOrderForm = ({
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
   );
-  // const [selectedAsset, setSelectedAsset] = useState<
-  //   MarketOutcomeAssetId | undefined
-  // >(initialAsset ?? outcomeAssets?.[0]);
 
-  // const { data: selectedAssetBalance } = useBalance(
-  //   wallet.realAddress,
-  //   selectedAsset,
-  // );
-  const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
-
-  // console.log(baseAssetBalance?.div(ZTG).toString());
-  // console.log(selectedAssetBalance?.div(ZTG).toString());
+  console.log(formState.errors);
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       const changedByUser = type != null;
-      console.log(value, name);
+      // console.log(value, name);
 
-      if (name === "price") {
-        console.log("price", value.price);
+      if (name === "price" && value.price !== "") {
+        // console.log("price", value.price);
         onPriceChange?.(new Decimal(value.price ?? 0));
       }
       if (
@@ -185,16 +184,16 @@ const LimitOrderForm = ({
         //   ? maxAmountIn
         //   : selectedAssetBalance;
         const max = maxAmount;
-        console.log(
-          Number(
-            max
-              .mul(value.percentage)
-              .abs()
-              .div(100)
-              .div(ZTG)
-              .toFixed(3, Decimal.ROUND_DOWN),
-          ),
-        );
+        // console.log(
+        //   Number(
+        //     max
+        //       .mul(value.percentage)
+        //       .abs()
+        //       .div(100)
+        //       .div(ZTG)
+        //       .toFixed(3, Decimal.ROUND_DOWN),
+        //   ),
+        // );
 
         setValue(
           "amount",
@@ -238,19 +237,15 @@ const LimitOrderForm = ({
                 value: true,
                 message: "Value is required",
               },
-              //   validate: (value) => {
-              //     if (value > (selectedAssetBalance?.div(ZTG).toNumber() ?? 0)) {
-              //       return `Insufficient balance. Current balance: ${selectedAssetBalance
-              //         ?.div(ZTG)
-              //         .toFixed(3)}`;
-              //     } else if (value <= 0) {
-              //       return "Value cannot be zero or less";
-              //     } else if (maxAmountIn?.div(ZTG)?.lessThanOrEqualTo(value)) {
-              //       return `Maximum amount that can be traded is ${maxAmountIn
-              //         .div(ZTG)
-              //         .toFixed(3)}`;
-              //     }
-              //   },
+              validate: (value) => {
+                if (value > (maxAmount?.div(ZTG).toNumber() ?? 0)) {
+                  return `Insufficient balance. Current balance: ${maxAmount
+                    ?.div(ZTG)
+                    .toFixed(3)}`;
+                } else if (value <= 0) {
+                  return "Amount must be greater than 0";
+                }
+              },
             })}
           />
           <div>
@@ -278,19 +273,15 @@ const LimitOrderForm = ({
                 value: true,
                 message: "Value is required",
               },
-              //   validate: (value) => {
-              //     if (value > (maxSpendableBalance?.div(ZTG).toNumber() ?? 0)) {
-              //       return `Insufficient balance (${maxSpendableBalance
-              //         ?.div(ZTG)
-              //         .toFixed(3)}${baseSymbol})`;
-              //     } else if (value <= 0) {
-              //       return "Value cannot be zero or less";
-              //     } else if (maxAmountIn?.div(ZTG)?.lessThanOrEqualTo(value)) {
-              //       return `Maximum amount of ${baseSymbol} that can be traded is ${maxAmountIn
-              //         .div(ZTG)
-              //         .toFixed(3)}`;
-              //     }
-              //   },
+              validate: (value) => {
+                console.log("price", value);
+
+                if (Number(value) >= 1) {
+                  return `Price must be less than 1`;
+                } else if (Number(value) <= 0) {
+                  return `Price must be greater than 0`;
+                }
+              },
             })}
           />
           <div className="absolute right-0 mr-[10px]">{baseSymbol}</div>
@@ -304,10 +295,12 @@ const LimitOrderForm = ({
           {...register("percentage", { value: "0" })}
         />
         <div className="mb-[10px] flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600 ">
-          {/* <div className="h-[16px] text-xs text-vermilion">
+          <div className="h-[16px] text-xs text-vermilion">
+            {/* //todo: just show first error */}
             <>{formState.errors["amount"]?.message}</>
+            <>{formState.errors["price"]?.message}</>
           </div>
-          <div className="flex w-full justify-between">
+          {/* <div className="flex w-full justify-between">
             <div>Max profit:</div>
             <div className="text-black">
               {maxProfit.div(ZTG).toFixed(2)} {baseSymbol}
