@@ -117,7 +117,7 @@ export const LimitSellOrderForm = ({
     <LimitOrderForm
       marketId={marketId}
       selectedAsset={selectedAsset}
-      buttonText="Place Buy Order"
+      buttonText="Place Sell Order"
       onSubmit={() => {
         // place sell order
       }}
