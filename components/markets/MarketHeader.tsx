@@ -1,3 +1,5 @@
+import { Dialog } from "@headlessui/react";
+import { OutcomeReport } from "@zeitgeistpm/indexer";
 import {
   IOBaseAssetId,
   IOForeignAssetId,
@@ -6,47 +8,40 @@ import {
   ScalarRangeType,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import CourtStageTimer from "components/court/CourtStageTimer";
 import Avatar from "components/ui/Avatar";
+import Modal from "components/ui/Modal";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
+import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { BLOCK_TIME_SECONDS, ZTG } from "lib/constants";
-import { X } from "react-feather";
+import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { MarketPageIndexedData } from "lib/gql/markets";
+import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
-import { shortenAddress } from "lib/util";
-import { formatNumberCompact } from "lib/util/format-compact";
-import { hasDatePassed } from "lib/util/hasDatePassed";
-import { FC, PropsWithChildren, useState } from "react";
-import { MarketTimer } from "./MarketTimer";
-import { MarketTimerSkeleton } from "./MarketTimer";
-import { OutcomeReport } from "@zeitgeistpm/indexer";
 import {
   MarketEventHistory,
   useMarketEventHistory,
 } from "lib/hooks/queries/useMarketEventHistory";
-import Modal from "components/ui/Modal";
-import { getMarketStatusDetails } from "lib/util/market-status-details";
-import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
-import { Dialog } from "@headlessui/react";
-import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
-import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolution";
-import { MarketReport } from "lib/types";
-import { AddressDetails } from "./MarketAddresses";
-import Image from "next/image";
-import {
-  FOREIGN_ASSET_METADATA,
-  lookupAssetImagePath,
-} from "lib/constants/foreign-asset";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
-import { MarketPromotionCallout } from "./PromotionCallout";
-import { PromotedMarket } from "lib/cms/get-promoted-markets";
-import { MarketDispute } from "lib/types/markets";
-import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
-import CourtStageTimer from "components/court/CourtStageTimer";
 import { useMarketImage } from "lib/hooks/useMarketImage";
-import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
+import { MarketReport } from "lib/types";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { MarketDispute } from "lib/types/markets";
+import { shortenAddress } from "lib/util";
+import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolution";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
+import { hasDatePassed } from "lib/util/hasDatePassed";
+import { getMarketStatusDetails } from "lib/util/market-status-details";
+import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import dynamic from "next/dynamic";
+import Image from "next/image";
+import { FC, PropsWithChildren, useState } from "react";
+import { X } from "react-feather";
+import { AddressDetails } from "./MarketAddresses";
+import { MarketTimer, MarketTimerSkeleton } from "./MarketTimer";
+import { MarketPromotionCallout } from "./PromotionCallout";
 
 const MarketFavoriteToggle = dynamic(() => import("./MarketFavoriteToggle"), {
   ssr: false,

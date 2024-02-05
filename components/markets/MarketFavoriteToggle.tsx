@@ -1,9 +1,5 @@
-import { useAnimate } from "framer-motion";
-import { usePrevious } from "lib/hooks/usePrevious";
 import { useFavoriteMarketsStorage } from "lib/state/favorites";
-import { useEffect } from "react";
-import { MdFavoriteBorder } from "react-icons/md";
-import { MdFavorite } from "react-icons/md";
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 
 export const MarketFavoriteToggle = ({
   marketId,

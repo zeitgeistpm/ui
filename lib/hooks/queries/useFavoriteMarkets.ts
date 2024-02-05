@@ -3,7 +3,6 @@ import { IndexerContext, Market, isIndexedSdk } from "@zeitgeistpm/sdk";
 import { MarketOutcomes } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
 import { useSdkv2 } from "../useSdkv2";
-
 import { CmsMarketMetadata } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 import { useFavoriteMarketsStorage } from "lib/state/favorites";
