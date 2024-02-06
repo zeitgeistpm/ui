@@ -120,7 +120,7 @@ const TextSection = ({
 }: TextSectionProps) => {
   return (
     <>
-      <div className="text-center text-xl font-bold">{headerText}</div>
+      <div className="text-center text-2xl font-bold">{headerText}</div>
       <div className="mb-auto text-center">{bodyText}</div>
       {children && children}
       {(leftButton || rightButton) && (
@@ -156,12 +156,12 @@ const TextSection = ({
 };
 
 const TopPic = () => (
-  <div className="mb-auto h-[120px] w-[120px] overflow-hidden rounded-full">
+  <div className="mb-6">
     <Image
       alt="Portal Gate"
-      src={"/misc/portal_gate.png"}
+      src={"/wsx/wsx-logo-header.svg"}
       objectFit="cover"
-      width={120}
+      width={200}
       height={120}
     />
   </div>
@@ -213,7 +213,7 @@ export const DesktopOnboardingModal = (props: {
     <TextSection
       children={<WalletSelect />}
       headerText="Create an Account"
-      bodyText="Use one of the following options to create a wallet and start trading Prediction Markets."
+      bodyText="Use one of the following options to create a wallet and start trading."
     />,
     <TextSection
       children={<ButtonList setStep={setStep} buttonList={exchangeList} />}
@@ -244,7 +244,7 @@ export const DesktopOnboardingModal = (props: {
       className="flex w-full max-w-[450px] flex-col items-center justify-center 
     gap-y-[20px] rounded-ztg-10 bg-white p-8"
     >
-      <TopPic />
+      {/* <TopPic /> */}
 
       {screens[step]}
 

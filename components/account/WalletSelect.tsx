@@ -49,18 +49,17 @@ const WalletSelect = () => {
 
   return (
     <div className="flex w-full flex-col p-4">
-      <h3 className="mb-6 text-center text-lg font-bold">
-        Log in to {isWSX ? "The Washington Stock Exchange" : "Zeitgeist"}
+      <h3 className="mb-4 text-center text-lg font-bold">
+        Log in to {isWSX ? "WSX" : "Zeitgeist"}
       </h3>
       {isWSX && (
-        <p className="mx-auto mb-6 max-w-[250px] text-center text-sm">
-          To get started or to log back in, select one of the login options
-          below.
+        <p className="mx-auto mb-4 max-w-[250px] text-center text-sm">
+          connect using a social account
         </p>
       )}
       <Web3wallet />
-      <div className="py-6 text-center text-sm text-gray-400">
-        <p>or connect using your own wallet</p>
+      <div className="text-s py-4 text-center text-sm">
+        <p>or using your own wallet</p>
       </div>
       <div className="flex justify-between gap-6">
         {isMobileDevice ? (
