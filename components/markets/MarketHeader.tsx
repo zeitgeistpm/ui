@@ -109,7 +109,6 @@ const MarketOutcome: FC<
     by?: string;
   }>
 > = ({ status, outcome, by, setShowMarketHistory, marketHistory }) => {
-  console.log(status, outcome);
   return (
     <div className="flex gap-2">
       {status === "Resolved" && (
