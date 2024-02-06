@@ -5,7 +5,7 @@ import { supportedWallets, useWallet } from "lib/state/wallet";
 import Web3wallet from "components/web3wallet";
 import WalletIcon from "./WalletIcon";
 import Image from "next/image";
-
+import { isWSX } from "lib/constants";
 import { useEffect } from "react";
 
 const WalletSelect = () => {
@@ -48,12 +48,15 @@ const WalletSelect = () => {
 
   return (
     <div className="flex w-full flex-col p-4">
-      <h3 className="mb-6 text-center text-lg font-bold">
-        Log in to Zeitgeist
+      <h3 className="mb-4 text-center text-lg font-bold">
+        Log in to {isWSX ? "WSX" : "Zeitgeist"}
       </h3>
+      <p className="mx-auto mb-4 max-w-[250px] text-center text-sm">
+        connect using a social account
+      </p>
       <Web3wallet />
-      <div className="py-6 text-center text-sm text-gray-400">
-        <p>or connect using your own wallet</p>
+      <div className="text-s py-4 text-center text-sm">
+        <p>or using your own wallet</p>
       </div>
       <div className="flex justify-between gap-6">
         {isMobileDevice ? (
