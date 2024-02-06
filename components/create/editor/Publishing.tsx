@@ -134,7 +134,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
   const hasEnoughLiquidty =
     ztgBalanceDelta?.gte(0) &&
     (!foreignCurrencyCost || foreignAssetBalanceDelta?.gte(0));
-  console.log("creationParams", creationParams);
+
   const submit = async () => {
     if (creationParams && isFullSdk(sdk)) {
       setIsTransacting(true);
