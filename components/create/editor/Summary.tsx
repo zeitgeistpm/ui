@@ -203,7 +203,7 @@ export const MarketSummary = ({
           </div>
         </div>
         <div className="items-center justify-center gap-6 md:flex">
-          <div className="mb-2 flex items-center justify-center gap-2 md:mb-0">
+          {/* <div className="mb-2 flex items-center justify-center gap-2 md:mb-0">
             <Label>Grace</Label>{" "}
             <div>
               {form.gracePeriod?.type === "duration"
@@ -216,7 +216,7 @@ export const MarketSummary = ({
                     "MMM D, YYYY, h:mm:ss A",
                   )} ${form.timeZone ?? ""}`}
             </div>
-          </div>
+          </div> */}
           <div className="mb-2 flex items-center justify-center gap-2 md:mb-0">
             <Label>Reporting</Label>{" "}
             <div>
