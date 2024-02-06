@@ -46,6 +46,7 @@ import CourtStageTimer from "components/court/CourtStageTimer";
 import { useMarketImage } from "lib/hooks/useMarketImage";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { MdOutlineHistory } from "react-icons/md";
 
 export const UserIdentity: FC<
   PropsWithChildren<{
@@ -98,56 +99,58 @@ const MarketOutcome: FC<
     by?: string;
   }>
 > = ({ status, outcome, by, setShowMarketHistory, marketHistory }) => {
+  console.log(status, outcome);
   return (
-    <div
-      className={`center flex w-full items-center gap-4 rounded-lg py-3 ${
-        status === "Resolved"
-          ? "bg-green-light"
-          : status === "Reported"
-            ? "bg-powderblue"
-            : "bg-yellow-light"
-      }`}
-    >
-      <div className="center gap-1">
-        {status === "Reported" && (
-          <div className="flex gap-1">
-            <span>{status} Outcome </span>
-            {outcome ? (
-              <span className="font-bold">{outcome}</span>
-            ) : status === "Reported" ? (
-              <Skeleton width={100} height={24} />
-            ) : (
-              ""
-            )}
-          </div>
-        )}
+    <div className="flex gap-2">
+      {status === "Resolved" && (
+        <div className="flex-1 rounded-lg bg-green-light px-5 py-3">
+          <span className="text-gray-500">Outcome:</span>{" "}
+          <span className="font-bold">{outcome}</span>
+        </div>
+      )}
 
-        {status === "Disputed" && (
-          <div className="flex gap-1">
-            <span>{status} Outcome </span>
-          </div>
-        )}
+      {status === "Reported" && (
+        <div className="flex-1 rounded-lg bg-powderblue px-5 py-3">
+          <span>{status} Outcome </span>
+          {outcome ? (
+            <span className="font-bold">{outcome}</span>
+          ) : status === "Reported" ? (
+            <Skeleton width={100} height={24} />
+          ) : (
+            ""
+          )}
+        </div>
+      )}
 
-        {status !== "Resolved" && by && (
-          <div className="flex items-center gap-4">
-            <span>by: </span>
-            <div className="flex items-center">
-              <UserIdentity user={by} />
-            </div>
+      {status === "Disputed" && (
+        <div className="flex-1 rounded-lg bg-yellow-light px-5 py-3">
+          <span>{status} Outcome </span>
+        </div>
+      )}
+
+      {status !== "Resolved" && by && (
+        <div className="flex flex-1 gap-2 rounded-lg bg-gray-200 px-5 py-3">
+          <span className="text-gray-400">By: </span>
+          <div className="flex items-center">
+            <UserIdentity user={by} />
           </div>
+        </div>
+      )}
+
+      <div
+        className={`center flex w-40  items-center gap-4 rounded-lg bg-powderblue py-3`}
+      >
+        {marketHistory ? (
+          <button
+            className="center gap-3 font-medium text-ztg-blue"
+            onClick={() => setShowMarketHistory(true)}
+          >
+            History <MdOutlineHistory size={20} />
+          </button>
+        ) : (
+          <Skeleton width={100} height={24} />
         )}
       </div>
-
-      {marketHistory ? (
-        <button
-          className="font-medium text-ztg-blue"
-          onClick={() => setShowMarketHistory(true)}
-        >
-          See History
-        </button>
-      ) : (
-        <Skeleton width={100} height={24} />
-      )}
     </div>
   );
 };
