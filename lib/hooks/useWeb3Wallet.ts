@@ -36,8 +36,8 @@ const useWeb3Wallet = () => {
           await getKeypair(web3auth.provider);
         }
       }
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      return;
     }
   };
 
@@ -64,6 +64,18 @@ const useWeb3Wallet = () => {
       );
       if (web3authProvider) {
         await getKeypair(web3authProvider);
+        const user = await web3auth.getUserInfo();
+        try {
+          const res = await fetch("/api/onboardUser", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: user.email, name: user.name }),
+          });
+        } catch (e) {
+          return;
+        }
       }
     } catch {
       notificationStore.pushNotification(

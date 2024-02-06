@@ -28,10 +28,7 @@ import {
   User,
 } from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
-import {
-  DesktopOnboardingModal,
-  MobileOnboardingModal,
-} from "./OnboardingModal";
+import { DesktopOnboardingModal } from "./OnboardingModal";
 import SettingsModal from "components/settings/SettingsModal";
 import CopyIcon from "../ui/CopyIcon";
 import { formatNumberCompact } from "lib/util/format-compact";
@@ -116,11 +113,6 @@ const AccountButton: FC<{
 
   const { data: constants } = useChainConstants();
 
-  const isMobileDevice =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    );
-
   const connect = async () => {
     if (isNovaWallet) {
       selectWallet("polkadot-js");
@@ -157,14 +149,7 @@ const AccountButton: FC<{
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {isWSX ? (
-            <HeaderActionButton
-              disabled={locationAllowed !== true || !isRpcSdk(sdk)}
-              onClick={() => connect()}
-            >
-              Get Started
-            </HeaderActionButton>
-          ) : hasWallet === true ? (
+          {hasWallet !== true ? (
             <HeaderActionButton
               disabled={locationAllowed !== true || !isRpcSdk(sdk)}
               onClick={() => connect()}
@@ -460,23 +445,14 @@ const AccountButton: FC<{
           setShowSettingsModal(false);
         }}
       />
-      {isMobileDevice ? (
+      <>
         <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
-          <MobileOnboardingModal />
+          <DesktopOnboardingModal />
         </Modal>
-      ) : (
-        <>
-          <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
-            <DesktopOnboardingModal />
-          </Modal>
-          <Modal
-            open={showGetZtgModal}
-            onClose={() => setShowGetZtgModal(false)}
-          >
-            <DesktopOnboardingModal step={4} />
-          </Modal>
-        </>
-      )}
+        <Modal open={showGetZtgModal} onClose={() => setShowGetZtgModal(false)}>
+          <DesktopOnboardingModal step={4} />
+        </Modal>
+      </>
     </>
   );
 };
