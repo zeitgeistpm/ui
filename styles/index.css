@@ -360,7 +360,7 @@ tr td:first-child {
 }
 
 .ztg-transition {
-  @apply transition duration-200 ease-in-out;
+  @apply transition duration-300 ease-[cubic-bezier(.35,.29,0,1.31)];
 }
 
 @keyframes rotation {
@@ -800,4 +800,25 @@ tr td:first-child {
 
 input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 30px theme("colors.nyanza-base") inset !important;
+}
+
+.embla {
+  --slide-spacing: 1rem;
+  --slide-size: 100%;
+  --slide-height: 19rem;
+}
+.embla__viewport {
+  overflow: hidden;
+}
+.embla__container {
+  backface-visibility: hidden;
+  display: flex;
+  touch-action: pan-y;
+  margin-left: calc(var(--slide-spacing) * -1);
+}
+.embla__slide {
+  flex: 0 0 var(--slide-size);
+  min-width: 0;
+  padding-left: var(--slide-spacing);
+  position: relative;
 }
