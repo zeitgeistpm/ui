@@ -46,7 +46,17 @@ import CourtStageTimer from "components/court/CourtStageTimer";
 import { useMarketImage } from "lib/hooks/useMarketImage";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
-import { MdOutlineHistory } from "react-icons/md";
+import { MdModeEdit, MdOutlineHistory } from "react-icons/md";
+import InfoPopover from "components/ui/InfoPopover";
+import { FaRegEdit } from "react-icons/fa";
+import dynamic from "next/dynamic";
+
+export const QuillViewer = dynamic(
+  () => import("../../components/ui/QuillViewer"),
+  {
+    ssr: false,
+  },
+);
 
 export const UserIdentity: FC<
   PropsWithChildren<{
@@ -402,6 +412,8 @@ const MarketHeader: FC<{
         : undefined,
   });
 
+  console.log(market);
+
   return (
     <header className="flex w-full flex-col gap-4">
       <div className="flex items-start gap-3 xl:items-center">
@@ -525,6 +537,54 @@ const MarketHeader: FC<{
             </div>
           </div>
         </div>
+
+        {market.hasEdits && (
+          <div className="group relative">
+            <InfoPopover
+              icon={
+                <div className="center h-[22px] w-[22px] rounded-full bg-yellow-200">
+                  <MdModeEdit size={12} />
+                </div>
+              }
+            >
+              <div className="text-left">
+                <h4 className="mb-1 text-lg font-bold">Market edits</h4>
+                <p className="mb-3 text-sm text-gray-500">
+                  This market has been edited in the zeitgeist cms. The
+                  following is the immutable original metadata that was set when
+                  the market was created.
+                </p>
+
+                {market.originalMetadata?.question && (
+                  <div className="mb-3">
+                    <label className="mb-1 text-xs text-gray-500">
+                      Question:
+                    </label>
+                    <div>{market.originalMetadata.question}</div>
+                  </div>
+                )}
+
+                {market.originalMetadata?.description && (
+                  <div className="mb-3">
+                    <label className="mb-1 text-xs text-gray-500">
+                      Description:
+                    </label>
+                    <div>
+                      <QuillViewer
+                        value={market.originalMetadata.description}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </InfoPopover>
+            <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="rounded-lg bg-yellow-200 px-2 py-1 text-sm">
+                Has been edited.
+              </div>
+            </div>
+          </div>
+        )}
 
         {promotionData && (
           <MarketPromotionCallout market={market} promotion={promotionData} />
