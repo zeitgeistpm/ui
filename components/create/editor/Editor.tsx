@@ -2,7 +2,6 @@ import { Transition } from "@headlessui/react";
 import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
-import { useAtom } from "jotai";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "lib/state/chaintime";
@@ -13,7 +12,7 @@ import {
 } from "lib/state/market-creation/constants/deadline-options";
 import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 import dynamic from "next/dynamic";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
@@ -522,7 +521,20 @@ export const MarketEditor = () => {
               <h2 className="mb-4 text-base md:mb-8">Market Moderation</h2>
               <div>
                 <div className="center flex min-w-full">
-                  <ModerationModeSelect {...input("moderation")} />
+                  <ModerationModeSelect
+                    {...input("moderation")}
+                    onChange={(event) => {
+                      mergeFormData({
+                        liquidity: {
+                          deploy:
+                            event.target.value == "Advised"
+                              ? false
+                              : form.liquidity?.deploy,
+                        },
+                        moderation: event.target.value,
+                      });
+                    }}
+                  />
                 </div>
                 <div className="center flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.moderation} />

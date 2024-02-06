@@ -26,7 +26,9 @@ export const useCourtParticipants = () => {
         return {
           address: (address.toHuman() as [string])[0],
           stake: new Decimal(unwrappedDetails?.stake.toString() ?? 0),
-          prepareExit: unwrappedDetails?.prepareExitAt.isSome,
+          prepareExitAt: unwrappedDetails?.prepareExitAt
+            .unwrapOr(null)
+            ?.toNumber(),
           type: unwrappedDetails?.delegations.isSome
             ? ("Delegator" as const)
             : ("Juror" as const),
