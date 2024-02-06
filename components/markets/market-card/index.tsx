@@ -242,7 +242,7 @@ export const MarketCard = ({
       <div
         data-testid={`marketCard-${marketId}`}
         className={`ztg-transition group relative flex min-w-full flex-col  
-        rounded-[10px] bg-white p-5 md:min-w-[calc(50%-8px)] md:hover:scale-[1.035] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+        rounded-[10px] bg-white p-5 md:min-w-[calc(50%-8px)] md:hover:scale-[1.015] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
