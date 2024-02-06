@@ -5,11 +5,13 @@ import { useWallet } from "lib/state/wallet";
 import { web3authAtom } from "lib/state/util/web3auth-config";
 import { useAtom } from "jotai";
 import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
+import { useNotifications } from "lib/state/notifications";
 
 const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN_ZTG;
 
 const useWeb3Wallet = () => {
   const [web3auth] = useAtom(web3authAtom);
+  const notificationStore = useNotifications();
   const { selectWallet, disconnectWallet, walletId } = useWallet();
 
   const initWeb3Auth = async () => {
@@ -30,7 +32,15 @@ const useWeb3Wallet = () => {
   };
 
   const login = async (loginOptions) => {
-    if (!web3auth) {
+    if (!web3auth || !auth0Domain) {
+      notificationStore.pushNotification(
+        `Error connecting: please try another login method or check back later.`,
+        {
+          type: "Error",
+          autoRemove: true,
+          lifetime: 5,
+        },
+      );
       return;
     }
     if (web3auth.connected) {
