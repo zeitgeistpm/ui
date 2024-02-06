@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { isWSX } from "lib/constants";
 const SibApiV3Sdk = require("@getbrevo/brevo");
 
 export default async function onboardUser(
@@ -6,7 +7,7 @@ export default async function onboardUser(
   response: NextApiResponse,
 ) {
   //change this value to match corresponding list id in Brevo
-  const listId = 37;
+  const listId = isWSX ? 38 : 37;
   const userEmail = request.body.email;
   const userName = request.body.name;
 

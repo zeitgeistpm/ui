@@ -15,6 +15,7 @@ import WalletSelect from "./WalletSelect";
 
 import TwitterIcon from "components/icons/TwitterIcon";
 import { BsTelegram, BsDiscord } from "react-icons/bs";
+import { isWSX } from "lib/constants";
 
 interface StepperProps {
   start: number;
@@ -52,31 +53,52 @@ const exchangeList = [
   },
 ];
 
-const resourceList = [
-  {
-    title: "Blog",
-    disabled: false,
-    onClick: () => window.open("https://blog.zeitgeist.pm"),
-  },
-  {
-    title: "Discord",
-    icon: <BsDiscord />,
-    disabled: false,
-    onClick: () => window.open("https://discord.com/invite/xv8HuA4s8v"),
-  },
-  {
-    title: "Telegram",
-    icon: <BsTelegram />,
-    disabled: false,
-    onClick: () => window.open("https://t.me/zeitgeist_official"),
-  },
-  {
-    title: "Twitter",
-    icon: <TwitterIcon />,
-    disabled: false,
-    onClick: () => window.open("https://twitter.com/ZeitgeistPM"),
-  },
-];
+const resourceList = isWSX
+  ? [
+      {
+        title: "Discord",
+        icon: <BsDiscord />,
+        disabled: false,
+        onClick: () => window.open("https://discord.com/invite/xv8HuA4s8v"),
+      },
+      {
+        title: "Telegram",
+        icon: <BsTelegram />,
+        disabled: false,
+        onClick: () => window.open("https://t.me/zeitgeist_official"),
+      },
+      {
+        title: "Twitter",
+        icon: <TwitterIcon />,
+        disabled: false,
+        onClick: () => window.open("https://twitter.com/ZeitgeistPM"),
+      },
+    ]
+  : [
+      {
+        title: "Blog",
+        disabled: false,
+        onClick: () => window.open("https://blog.zeitgeist.pm"),
+      },
+      {
+        title: "Discord",
+        icon: <BsDiscord />,
+        disabled: false,
+        onClick: () => window.open("https://discord.com/invite/xv8HuA4s8v"),
+      },
+      {
+        title: "Telegram",
+        icon: <BsTelegram />,
+        disabled: false,
+        onClick: () => window.open("https://t.me/zeitgeist_official"),
+      },
+      {
+        title: "Twitter",
+        icon: <TwitterIcon />,
+        disabled: false,
+        onClick: () => window.open("https://twitter.com/ZeitgeistPM"),
+      },
+    ];
 
 const Stepper = ({ start, end, currentStep, onStepClick }: StepperProps) => {
   return (
@@ -209,35 +231,64 @@ export const DesktopOnboardingModal = (props: {
     }
   }, [walletId]);
 
-  const screens = [
-    <TextSection
-      children={<WalletSelect />}
-      headerText="Create an Account"
-      bodyText="Use one of the following options to create a wallet and start trading."
-    />,
-    <TextSection
-      children={<ButtonList setStep={setStep} buttonList={exchangeList} />}
-      headerText="Wallet Successfully Installed"
-      bodyText="It's time to get ZTG so that you can start trading!"
-      leftButton={{
-        text: "Back",
-        onClick: () => setStep(0),
-      }}
-      rightButton={{
-        text: "Continue",
-        onClick: () => setStep(2),
-      }}
-    />,
-    <TextSection
-      children={<ButtonList setStep={setStep} buttonList={resourceList} />}
-      headerText="You're All Set!"
-      bodyText="If you have any questions, feel free to check out our community channels."
-      leftButton={{
-        text: "Back",
-        onClick: () => setStep(1),
-      }}
-    />,
-  ];
+  const screens = isWSX
+    ? [
+        <TextSection
+          children={<WalletSelect />}
+          headerText="Create an Account"
+          bodyText="Use one of the following options to create a wallet and start trading."
+        />,
+        <TextSection
+          headerText="Account Created"
+          bodyText="Your account will soon be funded with 2 Million WSX tokens so that you can start trading! Please allow a few minutes for the tokens to appear in your wallet."
+          leftButton={{
+            text: "Back",
+            onClick: () => setStep(0),
+          }}
+          rightButton={{
+            text: "Continue",
+            onClick: () => setStep(2),
+          }}
+        />,
+        <TextSection
+          children={<ButtonList setStep={setStep} buttonList={resourceList} />}
+          headerText="You're All Set!"
+          bodyText="If you have any questions, feel free to check out our community channels."
+          leftButton={{
+            text: "Back",
+            onClick: () => setStep(1),
+          }}
+        />,
+      ]
+    : [
+        <TextSection
+          children={<WalletSelect />}
+          headerText="Create an Account"
+          bodyText="Use one of the following options to create a wallet and start trading."
+        />,
+        <TextSection
+          children={<ButtonList setStep={setStep} buttonList={exchangeList} />}
+          headerText="Wallet Successfully Installed"
+          bodyText="It's time to get ZTG so that you can start trading!"
+          leftButton={{
+            text: "Back",
+            onClick: () => setStep(0),
+          }}
+          rightButton={{
+            text: "Continue",
+            onClick: () => setStep(2),
+          }}
+        />,
+        <TextSection
+          children={<ButtonList setStep={setStep} buttonList={resourceList} />}
+          headerText="You're All Set!"
+          bodyText="If you have any questions, feel free to check out our community channels."
+          leftButton={{
+            text: "Back",
+            onClick: () => setStep(1),
+          }}
+        />,
+      ];
 
   return (
     <Dialog.Panel
