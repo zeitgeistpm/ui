@@ -14,3 +14,7 @@ const config: ClientConfig = {
 };
 
 export const sanity = createClient(config);
+
+import imageUrlBuilder from "@sanity/image-url";
+
+export const sanityImageBuilder = imageUrlBuilder(sanity);
