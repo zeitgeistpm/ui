@@ -29,7 +29,10 @@ import { LiquidityInput } from "./inputs/Liquidity";
 import ModerationModeSelect from "./inputs/Moderation";
 import OracleInput from "./inputs/Oracle";
 import { AnswersInput } from "./inputs/answers";
-import { getMetadataForCurrency } from "lib/constants/supported-currencies";
+import {
+  getMetadataForCurrency,
+  supportedCurrencies,
+} from "lib/constants/supported-currencies";
 import Input from "components/ui/Input";
 import TimezoneSelect from "./inputs/TimezoneSelect";
 import { Loader } from "components/ui/Loader";
@@ -186,7 +189,10 @@ export const MarketEditor = () => {
                 </InfoPopover>
               </h2>
             </div>
-            <CurrencySelect options={["ZTG", "DOT"]} {...input("currency")} />
+            <CurrencySelect
+              options={supportedCurrencies.map((currency) => currency.name)}
+              {...input("currency")}
+            />
             {showLiquidityWarning && (
               <div className="center mb-8 mt-4">
                 <div className="w-full text-center text-sm text-gray-400 md:max-w-lg">
