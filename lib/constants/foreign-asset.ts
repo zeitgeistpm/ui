@@ -72,14 +72,14 @@ const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     tokenSymbol: "DOT",
     subsquidId: "DOT",
   },
-  1: {
-    originChain: "Moonbeam",
-    image: "/currencies/usdc.svg",
-    withdrawSupported: false,
-    coinGeckoId: "usd",
-    tokenSymbol: "USDC",
-    subsquidId: "USDC",
-  },
+  // 1: {
+  //   originChain: "Moonbeam",
+  //   image: "/currencies/usdc.svg",
+  //   withdrawSupported: false,
+  //   coinGeckoId: "usd",
+  //   tokenSymbol: "USDC",
+  //   subsquidId: "USDC",
+  // },
 };
 
 export const FOREIGN_ASSET_METADATA: ForeignAssetMetadata =
