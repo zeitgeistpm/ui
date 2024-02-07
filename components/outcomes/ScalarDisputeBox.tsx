@@ -1,15 +1,11 @@
 import { IndexerContext, isRpcSdk, Market } from "@zeitgeistpm/sdk";
 import { MarketStatus } from "@zeitgeistpm/indexer";
 import TransactionButton from "components/ui/TransactionButton";
-import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import moment from "moment";
 
 const ScalarDisputeBox = ({
   market,
