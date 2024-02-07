@@ -66,7 +66,7 @@ const MarketCardPredictionBar = ({
     return (
       <div className={`relative h-[30px] w-full bg-gray-200 transition-all`}>
         <div className="absolute flex h-full w-full items-center justify-between px-2.5 text-sm">
-          <span className="text-blue">{name}</span>
+          <span className="line-clamp-1 text-blue">{name}</span>
           <span className="text-blue transition-all">{impliedPercentage}%</span>
         </div>
         <div
