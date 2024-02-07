@@ -175,13 +175,7 @@ const ScalarReportBox = ({
         loading={isBroadcasting}
       >
         {scalarReportValue != null && scalarReportValue != "" && (
-          <>
-            Report Outcome{" "}
-            {formatScalarOutcome(
-              new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
-              market.scalarType as ScalarRangeType,
-            )}
-          </>
+          <>Report Outcome</>
         )}
       </TransactionButton>
     </>
