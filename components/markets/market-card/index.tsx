@@ -27,27 +27,6 @@ const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
   ssr: false,
 });
 
-export interface IndexedMarketCardData {
-  marketId: number;
-  img?: string;
-  question: string;
-  creation: string;
-  creator: string;
-  outcomes: MarketOutcomes;
-  marketType: MarketType;
-  scalarType: ScalarRangeType | null;
-  prediction: { name: string; price: number };
-  volume: number;
-  pool?: { poolId?: number } | null;
-  neoPool?: FullMarketFragment["neoPool"] | null;
-  baseAsset: string;
-  tags?: string[];
-  status: string;
-  endDate: string;
-  liquidity?: string;
-  numParticipants?: number;
-}
-
 export interface MarketType {
   categorical?: string;
   scalar?: string[];
@@ -55,8 +34,8 @@ export interface MarketType {
 
 export interface MarketCardProps {
   market: FullMarketFragment;
-  liquidity: string;
-  numParticipants: number;
+  liquidity?: string;
+  numParticipants?: number;
   className?: string;
   disableLink?: boolean;
 }
@@ -104,13 +83,16 @@ export const MarketCard = ({
   console.log(marketType.scalar);
   console.log("yesno", isYesNoMarket);
 
-  const prediction = marketCategories.reduce((prev, curr) => {
-    return prev && prev.price > curr.price ? prev : curr;
-  });
+  const prediction =
+    marketCategories.length > 0
+      ? marketCategories?.reduce((prev, curr) => {
+          return prev && prev.price > curr.price ? prev : curr;
+        })
+      : undefined;
 
   //always show "Yes" prediction percentage
   const displayPrediction =
-    isYesNoMarket === true && prediction.name.toLowerCase() === "no"
+    isYesNoMarket === true && prediction?.name.toLowerCase() === "no"
       ? { price: 1 - prediction.price, name: "Yes" }
       : prediction;
 
@@ -175,19 +157,21 @@ export const MarketCard = ({
                 Resolved:{" "}
                 <span className="font-semibold">
                   {marketType?.categorical
-                    ? displayPrediction.name
-                    : formatNumberCompact(Number(displayPrediction.name))}
+                    ? displayPrediction?.name
+                    : formatNumberCompact(Number(displayPrediction?.name))}
                 </span>
               </span>
             ) : (pool || neoPool) && marketType?.categorical ? (
-              <MarketCardPredictionBar prediction={displayPrediction} />
+              displayPrediction && (
+                <MarketCardPredictionBar prediction={displayPrediction} />
+              )
             ) : (pool || neoPool) && scalarType ? (
               <ScalarPriceRange
                 scalarType={scalarType as "date" | "number"}
                 lowerBound={lower}
                 upperBound={upper}
-                shortPrice={marketCategories[1].price}
-                longPrice={marketCategories[0].price}
+                shortPrice={marketCategories[1]?.price}
+                longPrice={marketCategories[0]?.price}
                 status={status}
               />
             ) : (
