@@ -62,6 +62,8 @@ export const MarketCard = ({
     img,
   } = market;
 
+  console.log(liquidity);
+
   const marketCategories: MarketOutcomes =
     categories?.map((category, index) => {
       const asset = assets[index];
@@ -292,7 +294,9 @@ const MarketCardDetails = ({
         )}
         <div className="flex items-center gap-1">
           <BarChart2 size={12} />
-          <span>{formatNumberCompact(volume, 2)}</span>
+          <span>
+            {formatNumberCompact(new Decimal(volume).div(ZTG).toNumber(), 2)}
+          </span>
         </div>
         {liquidity != undefined && baseAsset ? (
           <div className="flex items-center gap-1">
