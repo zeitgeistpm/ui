@@ -46,6 +46,17 @@ import CourtStageTimer from "components/court/CourtStageTimer";
 import { useMarketImage } from "lib/hooks/useMarketImage";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { MdModeEdit, MdOutlineHistory } from "react-icons/md";
+import InfoPopover from "components/ui/InfoPopover";
+import { FaRegEdit } from "react-icons/fa";
+import dynamic from "next/dynamic";
+
+export const QuillViewer = dynamic(
+  () => import("../../components/ui/QuillViewer"),
+  {
+    ssr: false,
+  },
+);
 
 export const UserIdentity: FC<
   PropsWithChildren<{
@@ -99,55 +110,56 @@ const MarketOutcome: FC<
   }>
 > = ({ status, outcome, by, setShowMarketHistory, marketHistory }) => {
   return (
-    <div
-      className={`center flex w-full items-center gap-4 rounded-lg py-3 ${
-        status === "Resolved"
-          ? "bg-green-light"
-          : status === "Reported"
-            ? "bg-powderblue"
-            : "bg-yellow-light"
-      }`}
-    >
-      <div className="center gap-1">
-        {status === "Reported" && (
-          <div className="flex gap-1">
-            <span>{status} Outcome </span>
-            {outcome ? (
-              <span className="font-bold">{outcome}</span>
-            ) : status === "Reported" ? (
-              <Skeleton width={100} height={24} />
-            ) : (
-              ""
-            )}
-          </div>
-        )}
+    <div className="flex gap-2">
+      {status === "Resolved" && (
+        <div className="flex-1 rounded-lg bg-green-light px-5 py-3">
+          <span className="text-gray-500">Outcome:</span>{" "}
+          <span className="font-bold">{outcome}</span>
+        </div>
+      )}
 
-        {status === "Disputed" && (
-          <div className="flex gap-1">
-            <span>{status} Outcome </span>
-          </div>
-        )}
+      {status === "Reported" && (
+        <div className="flex-1 rounded-lg bg-powderblue px-5 py-3">
+          <span>{status} Outcome </span>
+          {outcome ? (
+            <span className="font-bold">{outcome}</span>
+          ) : status === "Reported" ? (
+            <Skeleton width={100} height={24} />
+          ) : (
+            ""
+          )}
+        </div>
+      )}
 
-        {status !== "Resolved" && by && (
-          <div className="flex items-center gap-4">
-            <span>by: </span>
-            <div className="flex items-center">
-              <UserIdentity user={by} />
-            </div>
+      {status === "Disputed" && (
+        <div className="flex-1 rounded-lg bg-yellow-light px-5 py-3">
+          <span>{status} Outcome </span>
+        </div>
+      )}
+
+      {status !== "Resolved" && by && (
+        <div className="flex flex-1 gap-2 rounded-lg bg-gray-200 px-5 py-3">
+          <span className="text-gray-400">By: </span>
+          <div className="flex items-center">
+            <UserIdentity user={by} />
           </div>
+        </div>
+      )}
+
+      <div
+        className={`center flex w-40  items-center gap-4 rounded-lg bg-powderblue py-3`}
+      >
+        {marketHistory ? (
+          <button
+            className="center gap-3 font-medium text-ztg-blue"
+            onClick={() => setShowMarketHistory(true)}
+          >
+            History <MdOutlineHistory size={20} />
+          </button>
+        ) : (
+          <Skeleton width={100} height={24} />
         )}
       </div>
-
-      {marketHistory ? (
-        <button
-          className="font-medium text-ztg-blue"
-          onClick={() => setShowMarketHistory(true)}
-        >
-          See History
-        </button>
-      ) : (
-        <Skeleton width={100} height={24} />
-      )}
     </div>
   );
 };
@@ -522,6 +534,54 @@ const MarketHeader: FC<{
             </div>
           </div>
         </div>
+
+        {market.hasEdits && (
+          <div className="group relative">
+            <InfoPopover
+              icon={
+                <div className="center h-[22px] w-[22px] rounded-full bg-yellow-200">
+                  <MdModeEdit size={12} />
+                </div>
+              }
+            >
+              <div className="text-left">
+                <h4 className="mb-1 text-lg font-bold">Market edits</h4>
+                <p className="mb-3 text-sm text-gray-500">
+                  This market has been edited in the zeitgeist cms. The
+                  following is the immutable original metadata that was set when
+                  the market was created.
+                </p>
+
+                {market.originalMetadata?.question && (
+                  <div className="mb-3">
+                    <label className="mb-1 text-xs text-gray-500">
+                      Question:
+                    </label>
+                    <div>{market.originalMetadata.question}</div>
+                  </div>
+                )}
+
+                {market.originalMetadata?.description && (
+                  <div className="mb-3">
+                    <label className="mb-1 text-xs text-gray-500">
+                      Description:
+                    </label>
+                    <div>
+                      <QuillViewer
+                        value={market.originalMetadata.description}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </InfoPopover>
+            <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="rounded-lg bg-yellow-200 px-2 py-1 text-sm">
+                Has been edited.
+              </div>
+            </div>
+          </div>
+        )}
 
         {promotionData && (
           <MarketPromotionCallout market={market} promotion={promotionData} />

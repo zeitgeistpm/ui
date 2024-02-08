@@ -52,7 +52,7 @@ const CourtUnstakeButton = ({ className }: { className?: string }) => {
         Unstake
       </button>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
+        <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white p-[30px]">
           <h3 className="mb-8">Unstake</h3>
           <div className="flex flex-col">
             <div className="flex">
