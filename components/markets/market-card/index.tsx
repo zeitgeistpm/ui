@@ -1,27 +1,31 @@
-import type { ScalarRangeType } from "@zeitgeistpm/sdk";
-import Skeleton from "components/ui/Skeleton";
-import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
-import { MarketOutcomes } from "lib/types/markets";
-import { formatNumberCompact } from "lib/util/format-compact";
-import { hasDatePassed } from "lib/util/hasDatePassed";
-import Link from "next/link";
-import { BarChart2, Droplet, Users } from "react-feather";
-import ScalarPriceRange from "../ScalarPriceRange";
-import MarketCardContext from "./context";
-
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk";
 import {
   IOBaseAssetId,
   IOForeignAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import Skeleton from "components/ui/Skeleton";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { useMarketImage } from "lib/hooks/useMarketImage";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { MarketOutcomes } from "lib/types/markets";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { hasDatePassed } from "lib/util/hasDatePassed";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
+import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
+import Link from "next/link";
+import { BarChart2, Droplet, Users } from "react-feather";
+import ScalarPriceRange from "../ScalarPriceRange";
+import MarketCardContext from "./context";
+
+const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
+  ssr: false,
+});
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -311,7 +315,13 @@ export const MarketCard = ({
               </>
             )}
           </div>
-          <MarketCardDetails rows={infoRows} />
+          <div className="flex flex-1 gap-2">
+            <div className="flex-1">
+              <MarketCardDetails rows={infoRows} />
+            </div>
+
+            <MarketFavoriteToggle marketId={marketId} />
+          </div>
         </Link>
       </div>
     </MarketCardContext.Provider>
