@@ -20,8 +20,6 @@ const FavoriteMarketsList = ({ className = "" }: FavoriteMarketsListProps) => {
 
   const count = markets?.length ?? 0;
 
-  console.log(markets);
-
   const { data: stats } = useMarketsStats(
     markets?.map((m) => m.marketId) ?? [],
   );
