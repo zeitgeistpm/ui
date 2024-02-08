@@ -352,7 +352,7 @@ export const MarketEditor = () => {
             </div>
 
             <div>
-              <div className="mb-6">
+              {/* <div className="mb-6">
                 <div className="mb-4 text-center">
                   <h2 className="flex items-center justify-center gap-2 text-base">
                     Set Grace Period
@@ -384,7 +384,7 @@ export const MarketEditor = () => {
                 <div className="center mt-4 flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.gracePeriod} />
                 </div>
-              </div>
+              </div> */}
 
               <div className="mb-6 ">
                 <div className="mb-4 text-center">
