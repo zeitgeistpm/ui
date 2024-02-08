@@ -39,6 +39,10 @@ export type QueryMarketData = Market<IndexerContext> & {
   prediction: { name: string; price: number };
 };
 
+const WHITELISTED_TRUSTED_CREATORS = [
+  "dE2cVL9QAgh3MZEK3ZhPG5S2YSqZET8V1Qa36epaU4pQG4pd8",
+];
+
 export const useInfiniteMarkets = (
   orderBy: MarketsOrderBy,
   withLiquidityOnly = false,
@@ -76,6 +80,14 @@ export const useInfiniteMarkets = (
             status_in: statuses.length === 0 ? undefined : statuses,
             tags_containsAny: tags?.length === 0 ? undefined : tags,
             baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
+          },
+          {
+            disputeMechanism_isNull: false,
+            OR: [
+              {
+                creator_in: WHITELISTED_TRUSTED_CREATORS,
+              },
+            ],
           },
           {
             OR: [
