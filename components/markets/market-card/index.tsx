@@ -1,27 +1,31 @@
-import type { ScalarRangeType } from "@zeitgeistpm/sdk";
-import Skeleton from "components/ui/Skeleton";
-import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
-import { MarketOutcomes } from "lib/types/markets";
-import { formatNumberCompact } from "lib/util/format-compact";
-import { hasDatePassed } from "lib/util/hasDatePassed";
-import Link from "next/link";
-import { BarChart2, Droplet, Users } from "react-feather";
-import ScalarPriceRange from "../ScalarPriceRange";
-import MarketCardContext from "./context";
-
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk";
 import {
   IOBaseAssetId,
   IOForeignAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import Skeleton from "components/ui/Skeleton";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { useMarketImage } from "lib/hooks/useMarketImage";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { MarketOutcomes } from "lib/types/markets";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { hasDatePassed } from "lib/util/hasDatePassed";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
+import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
+import Link from "next/link";
+import { BarChart2, Droplet, Users } from "react-feather";
+import ScalarPriceRange from "../ScalarPriceRange";
+import MarketCardContext from "./context";
+
+const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
+  ssr: false,
+});
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -66,7 +70,7 @@ const MarketCardPredictionBar = ({
     return (
       <div className={`relative h-[30px] w-full bg-gray-200 transition-all`}>
         <div className="absolute flex h-full w-full items-center justify-between px-2.5 text-sm">
-          <span className="text-blue">{name}</span>
+          <span className="line-clamp-1 text-blue">{name}</span>
           <span className="text-blue transition-all">{impliedPercentage}%</span>
         </div>
         <div
@@ -242,7 +246,7 @@ export const MarketCard = ({
       <div
         data-testid={`marketCard-${marketId}`}
         className={`ztg-transition group relative flex min-w-full flex-col  
-        rounded-[10px] bg-white p-5 md:min-w-[calc(50%-8px)] md:hover:scale-[1.035] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+        rounded-[10px] bg-white p-5 md:min-w-[calc(50%-8px)] md:hover:scale-[1.015] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
@@ -311,7 +315,13 @@ export const MarketCard = ({
               </>
             )}
           </div>
-          <MarketCardDetails rows={infoRows} />
+          <div className="flex flex-1 gap-2">
+            <div className="flex-1">
+              <MarketCardDetails rows={infoRows} />
+            </div>
+
+            <MarketFavoriteToggle marketId={marketId} />
+          </div>
         </Link>
       </div>
     </MarketCardContext.Provider>
