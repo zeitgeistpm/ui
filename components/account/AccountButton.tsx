@@ -33,8 +33,6 @@ import SettingsModal from "components/settings/SettingsModal";
 import CopyIcon from "../ui/CopyIcon";
 import { formatNumberCompact } from "lib/util/format-compact";
 import useActiveBalance from "lib/state/useActiveBalance";
-import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
-import { useRef } from "react";
 
 const BalanceRow = ({
   imgPath,
@@ -149,7 +147,7 @@ const AccountButton: FC<{
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {hasWallet !== true ? (
+          {hasWallet === true ? (
             <HeaderActionButton
               disabled={locationAllowed !== true || !isRpcSdk(sdk)}
               onClick={() => connect()}
