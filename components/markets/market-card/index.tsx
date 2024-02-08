@@ -69,7 +69,7 @@ export const MarketCard = ({
       const marketCategory: MarketOutcome = {
         name: category.name ?? "",
         assetId: outcomeAssets[index],
-        price: asset.price,
+        price: asset?.price,
       };
 
       return marketCategory;
@@ -79,9 +79,6 @@ export const MarketCard = ({
     marketCategories.length === 2 &&
     marketCategories.some((outcome) => outcome.name.toLowerCase() === "yes") &&
     marketCategories.some((outcome) => outcome.name.toLowerCase() === "no");
-  console.log("outcomes", marketCategories);
-  console.log(marketType.scalar);
-  console.log("yesno", isYesNoMarket);
 
   const prediction =
     marketCategories.length > 0
@@ -209,12 +206,9 @@ const MarketCardPredictionBar = ({
 }: {
   prediction: { name: string; price: number };
 }) => {
-  console.log(price);
-
   // check if market has liquidity
   if (price != null) {
     const impliedPercentage = Math.round(Number(price) * 100);
-    console.log(impliedPercentage);
 
     return (
       <div className={`relative h-[30px] w-full bg-gray-200 transition-all`}>

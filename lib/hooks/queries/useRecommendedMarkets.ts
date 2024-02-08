@@ -1,15 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  FullMarketFragment,
-  MarketOrderByInput,
-  MarketStatus,
-  ZeitgeistIndexer,
-} from "@zeitgeistpm/indexer";
+import { MarketOrderByInput, MarketStatus } from "@zeitgeistpm/indexer";
 import { isIndexedSdk } from "@zeitgeistpm/sdk";
-import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
-import { getCurrentPrediction } from "lib/util/assets";
 import { useSdkv2 } from "../useSdkv2";
-import { QueryMarketData } from "./useInfiniteMarkets";
 import { useMarket } from "./useMarket";
 import { searchMarketsText } from "./useMarketSearch";
 
@@ -32,7 +24,9 @@ export const useRecommendedMarkets = (marketId?: number, limit = 2) => {
 
         if (market.question && similarMarkets.length > 0) {
           return {
-            markets: similarMarkets,
+            markets: similarMarkets
+              .filter((m) => m.question !== market.question)
+              .slice(0, 2),
             type: "similar" as const,
           };
         } else {
