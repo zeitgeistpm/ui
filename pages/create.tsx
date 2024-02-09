@@ -9,7 +9,7 @@ const CreateMarketPage: NextPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (activeAccount?.address !== process.env.NEXT_PUBLIC_MW) {
+    if (activeAccount?.address !== process.env.NEXT_PUBLIC_MW_WSX) {
       router.push("/markets");
     }
   }, [router]);
