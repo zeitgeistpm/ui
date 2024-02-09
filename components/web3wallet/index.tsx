@@ -30,7 +30,7 @@ const Web3wallet = () => {
           onClick={loginDiscord}
         />
         <div className="col-span-3 grid grid-cols-3 gap-x-6 gap-y-4 text-center text-sm">
-          <span className="col-span-3">or with email</span>
+          <span className="col-span-3">with email</span>
           <input
             type="text"
             placeholder="Enter email for passwordless login"
