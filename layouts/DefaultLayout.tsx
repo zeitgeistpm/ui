@@ -28,8 +28,10 @@ const Onboarding = dynamic(
 const greyBackgroundPageRoutes = [
   "/",
   "/markets",
+  "/markets/favorites",
   "/create-account",
   "/deposit",
+  "/topics",
 ];
 
 const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
@@ -48,7 +50,8 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <div
       className={`relative min-h-screen justify-evenly ${
-        greyBackgroundPageRoutes.includes(router.pathname)
+        greyBackgroundPageRoutes.includes(router.pathname) ||
+        router.pathname.match("topics")
           ? "bg-light-gray"
           : ""
       }`}

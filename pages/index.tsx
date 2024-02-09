@@ -1,3 +1,4 @@
+import { Disclosure } from "@headlessui/react";
 import { GenericChainProperties } from "@polkadot/types";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
@@ -10,145 +11,173 @@ import { NewsSection } from "components/front-page/News";
 import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
+import { Topics } from "components/front-page/Topics";
 import WatchHow from "components/front-page/WatchHow";
-import { IndexedMarketCardData } from "components/markets/market-card";
+import MarketCard, {
+  IndexedMarketCardData,
+} from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
 import { getCmsNews, CmsNews } from "lib/cms/news";
+import {
+  CmsTopicHeader,
+  getCmsTopicHeaders,
+  marketsForTopic,
+} from "lib/cms/topics";
 import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
 import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
-import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
-
-// import getFeaturedMarkets from "lib/gql/featured-markets";
-// import { getNetworkStats } from "lib/gql/get-network-stats";
-// import { getCategoryCounts } from "lib/gql/popular-categories";
-// import getTrendingMarkets from "lib/gql/trending-markets";
-// import {
-//   getZTGHistory,
-//   ZtgPriceHistory,
-// } from "lib/hooks/queries/useAssetUsdPrice";
+import {
+  getZTGHistory,
+  ZtgPriceHistory,
+} from "lib/hooks/queries/useAssetUsdPrice";
+import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
+import { getPlaiceholders } from "lib/util/getPlaiceHolders";
 import { NextPage } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import path from "path";
+import {
+  getPlaiceholder,
+  IGetPlaiceholderOptions,
+  IGetPlaiceholderReturn,
+} from "plaiceholder";
+import { useState } from "react";
 
-// import path from "path";
-// import {
-//   getPlaiceholder,
-//   IGetPlaiceholderOptions,
-//   IGetPlaiceholderReturn,
-// } from "plaiceholder";
-// import { dehydrate, QueryClient } from "@tanstack/react-query";
-// import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
-// import Link from "next/link";
+// export async function getStaticProps() {
+//   const client = new GraphQLClient(graphQlEndpoint);
+//   const sdk = await create({
+//     provider: endpointOptions.map((e) => e.value),
+//     indexer: graphQlEndpoint,
+//     storage: ZeitgeistIpfs(),
+//   });
 
-// const getPlaiceholders = (
-//   paths: string[],
-//   options?: IGetPlaiceholderOptions,
-// ): Promise<IGetPlaiceholderReturn[]> => {
-//   return Promise.all(paths.map((path) => getPlaiceholder(path, options)));
-// };
+//   const [news, cmsTopics] = await Promise.all([
+//     getCmsNews(),
+//     getCmsTopicHeaders(),
+//   ]);
 
-export async function getStaticProps() {
-  // const client = new GraphQLClient(graphQlEndpoint);
-  // const sdk = await create({
-  //   provider: endpointOptions.map((e) => e.value),
-  //   indexer: graphQlEndpoint,
-  //   storage: ZeitgeistIpfs(),
-  // });
+//   const [
+//     featuredMarkets,
+//     trendingMarkets,
+//     bannerPlaceholder,
+//     categoryPlaceholders,
+//     newsImagePlaceholders,
+//     topicImagePlaceholders,
+//     stats,
+//     ztgHistory,
+//     chainProperties,
+//     marketsCmsData,
+//     topicsMarkets,
+//   ] = await Promise.all([
+//     getFeaturedMarkets(client, sdk),
+//     getTrendingMarkets(client, sdk),
+//     getPlaiceholder(`/banner.png`),
+//     getPlaiceholders(CATEGORIES?.map((cat) => `${cat.imagePath}`), {
+//       dir: `${path.join(process.cwd())}/public/`,
+//     }),
+//     getPlaiceholders(
+//       news.map((slide) => slide.image ?? ""),
+//       { size: 16 },
+//     ),
+//     getPlaiceholders(
+//       cmsTopics.map((topic) => topic.thumbnail ?? ""),
+//       { size: 16 },
+//     ),
+//     getNetworkStats(sdk),
+//     getZTGHistory(),
+//     sdk.api.rpc.system.properties(),
+//     getCmsMarketMetadataForAllMarkets(),
+//     Promise.all(
+//       cmsTopics.map((topic) =>
+//         marketsForTopic(topic, sdk.indexer, { limit: 3 }).then((markets) => ({
+//           topic,
+//           markets,
+//         })),
+//       ),
+//     ),
+//   ]);
 
-  // const news = await getCmsNews();
+const queryClient = new QueryClient();
 
-  // const [
-  //   featuredMarkets,
-  //   trendingMarkets,
-  //   bannerPlaceholder,
-  //   categoryPlaceholders,
-  //   newsImagePlaceholders,
-  //   stats,
-  //   ztgHistory,
-  //   chainProperties,
-  //   marketsCmsData,
-  // ] = await Promise.all([
-  //   getFeaturedMarkets(client, sdk),
-  //   getTrendingMarkets(client, sdk),
-  //   getPlaiceholder(`/banner.png`),
-  //   getPlaiceholders(CATEGORIES?.map((cat) => `${cat.imagePath}`), {
-  //     dir: `${path.join(process.cwd())}/public/`,
-  //   }),
-  //   getPlaiceholders(
-  //     news.map((slide) => slide.image ?? ""),
-  //     { size: 16 },
-  //   ),
-  //   getNetworkStats(sdk),
-  //   getZTGHistory(),
-  //   sdk.api.rpc.system.properties(),
-  //   getCmsMarketMetadataForAllMarkets(),
-  // ]);
+// await queryClient.prefetchQuery([categoryCountsKey], () =>
+//   getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
+// );
 
-  const queryClient = new QueryClient();
+// const marketsCmsData = await getCmsMarketMetadataForAllMarkets();
 
-  // await queryClient.prefetchQuery([categoryCountsKey], () =>
-  //   getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
-  // );
+// for (const marketCmsData of marketsCmsData) {
+//   if (marketCmsData.marketId) {
+//     queryClient.setQueryData(
+//       marketCmsDatakeyForMarket(marketCmsData.marketId),
+//       marketCmsData,
+//     );
+//   }
+// }
 
-  const marketsCmsData = await getCmsMarketMetadataForAllMarkets();
+// for (const market of [...featuredMarkets, ...trendingMarkets]) {
+//   const cmsData = marketsCmsData.find((m) => m.marketId === market.marketId);
+//   if (cmsData?.question) market.question = cmsData.question;
+//   if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
+// }
 
-  for (const marketCmsData of marketsCmsData) {
-    if (marketCmsData.marketId) {
-      queryClient.setQueryData(
-        marketCmsDatakeyForMarket(marketCmsData.marketId),
-        marketCmsData,
-      );
-    }
-  }
-
-  // for (const market of [...featuredMarkets, ...trendingMarkets]) {
-  //   const cmsData = marketsCmsData.find((m) => m.marketId === market.marketId);
-  //   if (cmsData?.question) market.question = cmsData.question;
-  //   if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
-  // }
-
-  return {
-    props: {
-      // dehydratedState: dehydrate(queryClient),
-      // news: news,
-      // featuredMarkets: featuredMarkets ?? [],
-      // trendingMarkets: trendingMarkets ?? [],
-      // bannerPlaceholder: bannerPlaceholder.base64 ?? "",
-      // categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
-      // newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
-      // stats,
-      // ztgHistory,
-      // chainProperties: chainProperties.toPrimitive(),
-    },
-    revalidate:
-      environment === "production"
-        ? 5 * 60 //5min
-        : 60 * 60,
-  };
-}
+//   return {
+//     props: {
+//       dehydratedState: dehydrate(queryClient),
+//       news: news,
+//       featuredMarkets: featuredMarkets ?? [],
+//       trendingMarkets: trendingMarkets ?? [],
+//       bannerPlaceholder: bannerPlaceholder.base64 ?? "",
+//       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
+//       newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
+//       topicImagePlaceholders: topicImagePlaceholders.map((c) => c.base64) ?? [],
+//       stats,
+//       ztgHistory,
+//       chainProperties: chainProperties.toPrimitive(),
+//       cmsTopics,
+//       topicsMarkets,
+//     },
+//     revalidate:
+//       environment === "production"
+//         ? 5 * 60 //5min
+//         : 60 * 60,
+//   };
+// }
 
 const IndexPage: NextPage<{
-  // news: CmsNews[];
-  // featuredMarkets: IndexedMarketCardData[];
-  // trendingMarkets: IndexedMarketCardData[];
-  // categoryPlaceholders: string[];
-  // newsImagePlaceholders: string[];
-  // bannerPlaceholder: string;
-  // stats: { marketCount: number; tradersCount: number; volumeUsd: number };
-  // ztgHistory: ZtgPriceHistory;
-  // chainProperties: GenericChainProperties;
-}> = (
-  {
-    // news,
-    // trendingMarkets,
-    // featuredMarkets,
-    // bannerPlaceholder,
-    // categoryPlaceholders,
-    // newsImagePlaceholders,
-    // stats,
-    // ztgHistory,
-    // chainProperties,
-  },
-) => {
+  news: CmsNews[];
+  featuredMarkets: IndexedMarketCardData[];
+  trendingMarkets: IndexedMarketCardData[];
+  categoryPlaceholders: string[];
+  newsImagePlaceholders: string[];
+  topicImagePlaceholders: string[];
+  bannerPlaceholder: string;
+  stats: { marketCount: number; tradersCount: number; volumeUsd: number };
+  ztgHistory: ZtgPriceHistory;
+  chainProperties: GenericChainProperties;
+  cmsTopics: CmsTopicHeader[];
+  topicsMarkets: {
+    topic: CmsTopicHeader;
+    markets: IndexedMarketCardData[];
+  }[];
+}> = ({
+  news,
+  trendingMarkets,
+  featuredMarkets,
+  bannerPlaceholder,
+  categoryPlaceholders,
+  newsImagePlaceholders,
+  topicImagePlaceholders,
+  stats,
+  ztgHistory,
+  chainProperties,
+  cmsTopics,
+  topicsMarkets,
+}) => {
+  const router = useRouter();
+  const topicSlug = (router.query?.topic as string) ?? cmsTopics[0]?.slug;
+  const topic = topicsMarkets.find((t) => t.topic.slug === topicSlug);
+
   return (
     <>
       <div
@@ -163,13 +192,40 @@ const IndexPage: NextPage<{
           chainProperties={chainProperties}
         />
 
-        <div className="mb-12">
-          <NetworkStats
-            marketCount={stats.marketCount}
-            tradersCount={stats.tradersCount}
-            totalVolumeUsd={stats.volumeUsd}
-          />
-        </div>
+        {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" && (
+          <div className="relative z-30 mb-12">
+            <div className="mb-8 flex gap-2">
+              <Topics
+                topics={cmsTopics}
+                selectedTopic={topicSlug}
+                onClick={(topic) => {
+                  router.push(
+                    { query: { ...router.query, topic: topic.slug } },
+                    undefined,
+                    { shallow: true },
+                  );
+                }}
+                imagePlaceholders={topicImagePlaceholders}
+              />
+            </div>
+
+            {topic && topic.topic.marketIds && (
+              <>
+                <div className="mb-4 flex gap-3">
+                  {topic.markets.map((market) => (
+                    <MarketCard key={market.marketId} {...market} />
+                  ))}
+                </div>
+                <Link href={`/topics/${topic.topic.slug}`}>
+                  <div className="pl-2 text-sm font-light text-blue-600">
+                    Go to <b className="font-bold">{topic.topic.title}</b>{" "}
+                    Markets ({topic.topic.marketIds?.length ?? 0})
+                  </div>
+                </Link>
+              </>
+            )}
+          </div>
+        )}
 
         {featuredMarkets.length > 0 && (
           <div className="mb-12">
