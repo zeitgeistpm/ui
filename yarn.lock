@@ -2681,6 +2681,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sanity/image-url@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@sanity/image-url@npm:1.0.2"
+  checksum: fbd2a6e7bd1e9b053c5a8d953c35a17f5d00dcfd792ce115fd7dfb237cbff03c7830fdf64e1ae8c6e00b58c8cabc2673f546d587454359ee02be2e2f8a39bd1e
+  languageName: node
+  linkType: hard
+
 "@scure/base@npm:1.1.1":
   version: 1.1.1
   resolution: "@scure/base@npm:1.1.1"
@@ -4474,6 +4481,8 @@ __metadata:
     cross-env: ^7.0.3
     decimal.js: ^10.4.3
     dotenv: ^9.0.2
+    embla-carousel: ^8.0.0-rc19
+    embla-carousel-react: ^8.0.0-rc19
     fathom-client: ^3.2.0
     flexsearch: ^0.7.21
     font-color-contrast: ^11.1.0
@@ -4490,6 +4499,7 @@ __metadata:
     next: ^13.4.19
     next-absolute-url: ^1.2.2
     next-qrcode: ^2.5.1
+    next-sanity-image: ^6.1.1
     next-transpile-modules: ^9.1.0
     object-hash: ^2.2.0
     plaiceholder: ^2.5.0
@@ -6345,6 +6355,34 @@ __metadata:
     minimalistic-assert: ^1.0.1
     minimalistic-crypto-utils: ^1.0.1
   checksum: d56d21fd04e97869f7ffcc92e18903b9f67f2d4637a23c860492fbbff5a3155fd9ca0184ce0c865dd6eb2487d234ce9551335c021c376cd2d3b7cb749c7d10f4
+  languageName: node
+  linkType: hard
+
+"embla-carousel-react@npm:^8.0.0-rc19":
+  version: 8.0.0-rc19
+  resolution: "embla-carousel-react@npm:8.0.0-rc19"
+  dependencies:
+    embla-carousel: 8.0.0-rc19
+    embla-carousel-reactive-utils: 8.0.0-rc19
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.1 || ^18.0.0
+  checksum: b870dad1180ea741d61e905d188a7c197716d7b90abcfa7adbd7072a6763051acd7511ca10e3a17c9a2c66482281e6d824a0af507c0f70eee14b9b5d600bb7ab
+  languageName: node
+  linkType: hard
+
+"embla-carousel-reactive-utils@npm:8.0.0-rc19":
+  version: 8.0.0-rc19
+  resolution: "embla-carousel-reactive-utils@npm:8.0.0-rc19"
+  peerDependencies:
+    embla-carousel: 8.0.0-rc19
+  checksum: b66c1601e75c8482af70a7b8476ac98b60995f6b759b9c76ae70a47192c0b14021aa2b4eadadb207d20485c16ef53f51f10148e8c5d8dfbf34538b62154e294a
+  languageName: node
+  linkType: hard
+
+"embla-carousel@npm:8.0.0-rc19, embla-carousel@npm:^8.0.0-rc19":
+  version: 8.0.0-rc19
+  resolution: "embla-carousel@npm:8.0.0-rc19"
+  checksum: de531482ef3fe8b71e9f114cbed9066f0c3bcf261cdfdfb3686961409c02765b65ad137ab262f690bc1f5b4837e066f6bf9e749e19ef24555769559f01bbba5f
   languageName: node
   linkType: hard
 
@@ -10006,6 +10044,19 @@ __metadata:
   peerDependencies:
     react: ">=17.0.0"
   checksum: d7ae364541fd9ed5893655a9066d534eaaab896a8f2940353f5cbc7e18a9a6573e92f510308d7818c3b5d88e00aef938012a56da9a56eb6e3567b9b1839be666
+  languageName: node
+  linkType: hard
+
+"next-sanity-image@npm:^6.1.1":
+  version: 6.1.1
+  resolution: "next-sanity-image@npm:6.1.1"
+  dependencies:
+    "@sanity/image-url": ^1.0.2
+  peerDependencies:
+    "@sanity/client": ^5.0.0 || ^6.0.0
+    next: ^13.0.0 || ^14.0.0
+    react: ^18.0.0
+  checksum: b0a4a3400a46bb70cef121ed6ad29bb060cf187508ffaff75a7a98a143f9cc188ea221916ab63cf730e5cd0fd24b51f37fcb833d936e57c19be006c64a6b1785
   languageName: node
   linkType: hard
 

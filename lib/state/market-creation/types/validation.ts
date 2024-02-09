@@ -10,7 +10,10 @@ import {
 import { useChainTime } from "lib/state/chaintime";
 import { isNaN, isNumber } from "lodash-es";
 import * as z from "zod";
-import { SupportedCurrencyTag } from "../../../constants/supported-currencies";
+import {
+  SupportedCurrencyTag,
+  supportedCurrencies,
+} from "../../../constants/supported-currencies";
 import { minBaseLiquidity } from "../constants/currency";
 import { MarketFormData } from "./form";
 import { timelineAsBlocks } from "./timeline";
@@ -169,12 +172,8 @@ export const useMarketCreationFormValidator = (
  * Zod Schemas for individual form fields.
  * -------------
  */
-
-export const IOCurrency = z.enum<SupportedCurrencyTag, ["ZTG", "DOT", "WSX"]>([
-  "ZTG",
-  "DOT",
-  "WSX",
-]);
+const supportedSymbols = supportedCurrencies.map((currency) => currency.name);
+export const IOCurrency = z.enum<SupportedCurrencyTag, any>(supportedSymbols);
 
 export const IOQuestion = z
   .string()
