@@ -18,6 +18,7 @@ import MarketCard, {
 } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
+import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
 import { getCmsNews, CmsNews } from "lib/cms/news";
 import {
   CmsTopicHeader,
@@ -25,6 +26,10 @@ import {
   marketsForTopic,
 } from "lib/cms/topics";
 import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
+import getFeaturedMarkets from "lib/gql/featured-markets";
+import { getNetworkStats } from "lib/gql/get-network-stats";
+import { getCategoryCounts } from "lib/gql/popular-categories";
+import getTrendingMarkets from "lib/gql/trending-markets";
 import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import {
   getZTGHistory,
@@ -44,105 +49,103 @@ import {
 } from "plaiceholder";
 import { useState } from "react";
 
-// export async function getStaticProps() {
-//   const client = new GraphQLClient(graphQlEndpoint);
-//   const sdk = await create({
-//     provider: endpointOptions.map((e) => e.value),
-//     indexer: graphQlEndpoint,
-//     storage: ZeitgeistIpfs(),
-//   });
+export async function getStaticProps() {
+  const client = new GraphQLClient(graphQlEndpoint);
+  const sdk = await create({
+    provider: endpointOptions.map((e) => e.value),
+    indexer: graphQlEndpoint,
+    storage: ZeitgeistIpfs(),
+  });
 
-//   const [news, cmsTopics] = await Promise.all([
-//     getCmsNews(),
-//     getCmsTopicHeaders(),
-//   ]);
+  const [news, cmsTopics] = await Promise.all([
+    getCmsNews(),
+    getCmsTopicHeaders(),
+  ]);
 
-//   const [
-//     featuredMarkets,
-//     trendingMarkets,
-//     bannerPlaceholder,
-//     categoryPlaceholders,
-//     newsImagePlaceholders,
-//     topicImagePlaceholders,
-//     stats,
-//     ztgHistory,
-//     chainProperties,
-//     marketsCmsData,
-//     topicsMarkets,
-//   ] = await Promise.all([
-//     getFeaturedMarkets(client, sdk),
-//     getTrendingMarkets(client, sdk),
-//     getPlaiceholder(`/banner.png`),
-//     getPlaiceholders(CATEGORIES?.map((cat) => `${cat.imagePath}`), {
-//       dir: `${path.join(process.cwd())}/public/`,
-//     }),
-//     getPlaiceholders(
-//       news.map((slide) => slide.image ?? ""),
-//       { size: 16 },
-//     ),
-//     getPlaiceholders(
-//       cmsTopics.map((topic) => topic.thumbnail ?? ""),
-//       { size: 16 },
-//     ),
-//     getNetworkStats(sdk),
-//     getZTGHistory(),
-//     sdk.api.rpc.system.properties(),
-//     getCmsMarketMetadataForAllMarkets(),
-//     Promise.all(
-//       cmsTopics.map((topic) =>
-//         marketsForTopic(topic, sdk.indexer, { limit: 3 }).then((markets) => ({
-//           topic,
-//           markets,
-//         })),
-//       ),
-//     ),
-//   ]);
+  const [
+    featuredMarkets,
+    trendingMarkets,
+    bannerPlaceholder,
+    categoryPlaceholders,
+    newsImagePlaceholders,
+    topicImagePlaceholders,
+    stats,
+    ztgHistory,
+    chainProperties,
+    marketsCmsData,
+    topicsMarkets,
+  ] = await Promise.all([
+    getFeaturedMarkets(client, sdk),
+    getTrendingMarkets(client, sdk),
+    getPlaiceholder(`/banner.png`),
+    getPlaiceholders(CATEGORIES?.map((cat) => `${cat.imagePath}`), {
+      dir: `${path.join(process.cwd())}/public/`,
+    }),
+    getPlaiceholders(
+      news.map((slide) => slide.image ?? ""),
+      { size: 16 },
+    ),
+    getPlaiceholders(
+      cmsTopics.map((topic) => topic.thumbnail ?? ""),
+      { size: 16 },
+    ),
+    getNetworkStats(sdk),
+    getZTGHistory(),
+    sdk.api.rpc.system.properties(),
+    getCmsMarketMetadataForAllMarkets(),
+    Promise.all(
+      cmsTopics.map((topic) =>
+        marketsForTopic(topic, sdk.indexer, { limit: 3 }).then((markets) => ({
+          topic,
+          markets,
+        })),
+      ),
+    ),
+  ]);
 
-const queryClient = new QueryClient();
+  const queryClient = new QueryClient();
 
-// await queryClient.prefetchQuery([categoryCountsKey], () =>
-//   getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
-// );
+  await queryClient.prefetchQuery([categoryCountsKey], () =>
+    getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
+  );
 
-// const marketsCmsData = await getCmsMarketMetadataForAllMarkets();
+  for (const marketCmsData of marketsCmsData) {
+    if (marketCmsData.marketId) {
+      queryClient.setQueryData(
+        marketCmsDatakeyForMarket(marketCmsData.marketId),
+        marketCmsData,
+      );
+    }
+  }
 
-// for (const marketCmsData of marketsCmsData) {
-//   if (marketCmsData.marketId) {
-//     queryClient.setQueryData(
-//       marketCmsDatakeyForMarket(marketCmsData.marketId),
-//       marketCmsData,
-//     );
-//   }
-// }
+  for (const market of [...featuredMarkets, ...trendingMarkets]) {
+    const cmsData = marketsCmsData.find((m) => m.marketId === market.marketId);
+    if (cmsData?.question) market.question = cmsData.question;
+    if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
+  }
 
-// for (const market of [...featuredMarkets, ...trendingMarkets]) {
-//   const cmsData = marketsCmsData.find((m) => m.marketId === market.marketId);
-//   if (cmsData?.question) market.question = cmsData.question;
-//   if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
-// }
-
-//   return {
-//     props: {
-//       dehydratedState: dehydrate(queryClient),
-//       news: news,
-//       featuredMarkets: featuredMarkets ?? [],
-//       trendingMarkets: trendingMarkets ?? [],
-//       bannerPlaceholder: bannerPlaceholder.base64 ?? "",
-//       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
-//       newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
-//       topicImagePlaceholders: topicImagePlaceholders.map((c) => c.base64) ?? [],
-//       stats,
-//       ztgHistory,
-//       chainProperties: chainProperties.toPrimitive(),
-//       cmsTopics,
-//       topicsMarkets,
-//     },
-//     revalidate:
-//       environment === "production"
-//         ? 5 * 60 //5min
-//         : 60 * 60,
-//   };
-// }
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+      news: news,
+      featuredMarkets: featuredMarkets ?? [],
+      trendingMarkets: trendingMarkets ?? [],
+      bannerPlaceholder: bannerPlaceholder.base64 ?? "",
+      categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
+      newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
+      topicImagePlaceholders: topicImagePlaceholders.map((c) => c.base64) ?? [],
+      stats,
+      ztgHistory,
+      chainProperties: chainProperties.toPrimitive(),
+      cmsTopics,
+      topicsMarkets,
+    },
+    revalidate:
+      environment === "production"
+        ? 5 * 60 //5min
+        : 60 * 60,
+  };
+}
 
 const IndexPage: NextPage<{
   news: CmsNews[];
@@ -184,7 +187,7 @@ const IndexPage: NextPage<{
         data-testid="indexPage"
         className="main-container z-1 relative pt-1 md:pt-1"
       >
-        {/* <BgBallGfx />
+        <BgBallGfx />
 
         <HeroBanner
           bannerPlaceholder={bannerPlaceholder}
@@ -275,7 +278,7 @@ const IndexPage: NextPage<{
 
         <div className="mb-12 flex w-full items-center justify-center">
           <GettingStartedSection />
-        </div> */}
+        </div>
       </div>
     </>
   );
