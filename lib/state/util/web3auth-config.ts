@@ -83,19 +83,19 @@ const loginConfig: LoginConfig = {
   ...(auth0ClientID
     ? {
         auth0google: {
-          verifier: "auth-0-all",
+          verifier: "auth-aggregate",
           verifierSubIdentifier: "auth0-google",
           typeOfLogin: "jwt",
           clientId: auth0ClientID,
         },
         auth0twitter: {
-          verifier: "auth-0-all",
+          verifier: "auth-aggregate",
           verifierSubIdentifier: "auth0-twitter",
           typeOfLogin: "jwt",
           clientId: auth0ClientID,
         },
         auth0emailpasswordless: {
-          verifier: "auth-0-all",
+          verifier: "auth-aggregate",
           verifierSubIdentifier: "auth0-passwordless",
           typeOfLogin: "jwt",
           clientId: auth0ClientID,
@@ -105,7 +105,7 @@ const loginConfig: LoginConfig = {
   ...(discordClientID
     ? {
         discord: {
-          verifier: "auth-0-all",
+          verifier: "auth-aggregate",
           verifierSubIdentifier: "discord",
           typeOfLogin: "discord",
           clientId: discordClientID,
