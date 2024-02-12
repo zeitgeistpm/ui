@@ -6,7 +6,6 @@ import { isWSX } from "lib/constants";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { TypeOfLogin } from "@web3auth/openlogin-adapter";
-import { environment } from "lib/constants";
 
 interface LoginConfig {
   [key: string]: {
@@ -18,16 +17,16 @@ interface LoginConfig {
 }
 
 export const clientId = isWSX
-  ? process.env["WEB3AUTH_CLIENT_ID_WSX"]
-  : process.env["WEB3AUTH_CLIENT_ID_ZTG"];
+  ? process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_WSX
+  : process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
 
 const auth0ClientID = isWSX
-  ? process.env["AUTH0_CLIENT_ID_WSX"]
-  : process.env["AUTH0_CLIENT_ID_ZTG"];
+  ? process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_WSX
+  : process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_ZTG;
 
 const discordClientID = isWSX
-  ? process.env["DISCORD_CLIENT_ID_WSX"]
-  : process.env["DISCORD_CLIENT_ID_ZTG"];
+  ? process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID_WSX
+  : process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID_ZTG;
 
 class Web3AuthWallet extends BaseDotsamaWallet {
   constructor({ extensionName, title, installUrl, logo }) {

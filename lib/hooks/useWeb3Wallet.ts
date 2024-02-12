@@ -17,7 +17,7 @@ interface loginOptions {
   };
 }
 
-const auth0Domain = process.env["AUTH0_DOMAIN_ZTG"];
+const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN_ZTG;
 
 const useWeb3Wallet = () => {
   const [web3auth] = useAtom(web3authAtom);
@@ -25,8 +25,6 @@ const useWeb3Wallet = () => {
   const { selectWallet, disconnectWallet, walletId } = useWallet();
 
   const initWeb3Auth = async () => {
-    console.log("check1");
-    console.log(clientId);
     if (!clientId) {
       return;
     }
@@ -39,7 +37,7 @@ const useWeb3Wallet = () => {
         }
       }
     } catch (error) {
-      console.error(error);
+      return;
     }
   };
 
