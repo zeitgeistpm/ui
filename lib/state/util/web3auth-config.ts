@@ -17,16 +17,16 @@ interface LoginConfig {
 }
 
 export const clientId = isWSX
-  ? process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_WSX
-  : process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
+  ? process.env["WEB3AUTH_CLIENT_ID_WSX"]
+  : process.env["WEB3AUTH_CLIENT_ID_ZTG"];
 
 const auth0ClientID = isWSX
-  ? process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_ZTG
-  : process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_WSX;
+  ? process.env.AUTH0_CLIENT_ID_ZTG
+  : process.env.AUTH0_CLIENT_ID_WSX;
 
 const discordClientID = isWSX
-  ? process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID_ZTG
-  : process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID_WSX;
+  ? process.env.DISCORD_CLIENT_ID_ZTG
+  : process.env.DISCORD_CLIENT_ID_WSX;
 
 class Web3AuthWallet extends BaseDotsamaWallet {
   constructor({ extensionName, title, installUrl, logo }) {
