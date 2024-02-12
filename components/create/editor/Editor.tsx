@@ -2,7 +2,6 @@ import { Transition } from "@headlessui/react";
 import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
-import { useAtom } from "jotai";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "lib/state/chaintime";
@@ -13,7 +12,7 @@ import {
 } from "lib/state/market-creation/constants/deadline-options";
 import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 import dynamic from "next/dynamic";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
@@ -30,7 +29,10 @@ import { LiquidityInput } from "./inputs/Liquidity";
 import ModerationModeSelect from "./inputs/Moderation";
 import OracleInput from "./inputs/Oracle";
 import { AnswersInput } from "./inputs/answers";
-import { getMetadataForCurrency } from "lib/constants/supported-currencies";
+import {
+  getMetadataForCurrency,
+  supportedCurrencies,
+} from "lib/constants/supported-currencies";
 import Input from "components/ui/Input";
 import TimezoneSelect from "./inputs/TimezoneSelect";
 import { Loader } from "components/ui/Loader";
@@ -187,7 +189,10 @@ export const MarketEditor = () => {
                 </InfoPopover>
               </h2>
             </div>
-            <CurrencySelect options={["ZTG", "DOT"]} {...input("currency")} />
+            <CurrencySelect
+              options={supportedCurrencies.map((currency) => currency.name)}
+              {...input("currency")}
+            />
             {showLiquidityWarning && (
               <div className="center mb-8 mt-4">
                 <div className="w-full text-center text-sm text-gray-400 md:max-w-lg">
@@ -347,7 +352,7 @@ export const MarketEditor = () => {
             </div>
 
             <div>
-              <div className="mb-6">
+              {/* <div className="mb-6">
                 <div className="mb-4 text-center">
                   <h2 className="flex items-center justify-center gap-2 text-base">
                     Set Grace Period
@@ -379,7 +384,7 @@ export const MarketEditor = () => {
                 <div className="center mt-4 flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.gracePeriod} />
                 </div>
-              </div>
+              </div> */}
 
               <div className="mb-6 ">
                 <div className="mb-4 text-center">
@@ -530,7 +535,20 @@ export const MarketEditor = () => {
               <h2 className="mb-4 text-base md:mb-8">Market Moderation</h2>
               <div>
                 <div className="center flex min-w-full">
-                  <ModerationModeSelect {...input("moderation")} />
+                  <ModerationModeSelect
+                    {...input("moderation")}
+                    onChange={(event) => {
+                      mergeFormData({
+                        liquidity: {
+                          deploy:
+                            event.target.value == "Advised"
+                              ? false
+                              : form.liquidity?.deploy,
+                        },
+                        moderation: event.target.value,
+                      });
+                    }}
+                  />
                 </div>
                 <div className="center flex h-5 text-xs text-red-400">
                   <ErrorMessage field={fieldsState.moderation} />

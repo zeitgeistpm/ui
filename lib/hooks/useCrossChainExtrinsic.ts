@@ -57,6 +57,12 @@ export const useCrossChainExtrinsic = <T>(
     if (extrinsic && proxy?.enabled && proxy?.address) {
       console.info("Proxying cross chain transaction");
       extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, null, extrinsic);
+      notifications.pushNotification(
+        "Proxies are not supported for cross chain transactions",
+        {
+          type: "Info",
+        },
+      );
     }
 
     if (!signer || !extrinsic || !sourceChainApi || !destinationChainApi)
@@ -116,7 +122,10 @@ export const useCrossChainExtrinsic = <T>(
         },
       }),
       IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
-    ).catch(() => {
+    ).catch((error) => {
+      notifications.pushNotification(error?.toString() ?? "Unknown Error", {
+        type: "Error",
+      });
       setIsLoading(false);
     });
   };
