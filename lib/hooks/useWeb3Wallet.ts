@@ -25,6 +25,7 @@ const useWeb3Wallet = () => {
   const { selectWallet, disconnectWallet, walletId } = useWallet();
 
   const initWeb3Auth = async () => {
+    console.log("check1");
     console.log(clientId);
     if (!clientId) {
       return;
