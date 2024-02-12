@@ -4,15 +4,12 @@ import { Keyring } from "@polkadot/keyring";
 import { wsxID } from "lib/constants";
 
 export default async function checkNewUser(req, res) {
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL_WSX ||
-    !process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY_WSX
-  ) {
+  if (!process.env.SUPABASE_URL_WSX || !process.env.SUPABASE_SERVICE_KEY_WSX) {
     return;
   }
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL_WSX,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY_WSX,
+    process.env.SUPABASE_URL_WSX,
+    process.env.SUPABASE_SERVICE_KEY_WSX,
     { auth: { persistSession: false } },
   );
 
@@ -55,7 +52,7 @@ export default async function checkNewUser(req, res) {
 }
 
 async function fundUser(wallet) {
-  if (!process.env.NEXT_PUBLIC_SEED_WSX) {
+  if (!process.env.SEED_WSX) {
     return { error: "Error connecting" };
   }
   const provider = new WsProvider("wss://bsr.zeitgeist.pm");
@@ -63,7 +60,7 @@ async function fundUser(wallet) {
 
   try {
     const keyring = new Keyring({ type: "sr25519" });
-    const masterAccount = keyring.addFromUri(process.env.NEXT_PUBLIC_SEED_WSX);
+    const masterAccount = keyring.addFromUri(process.env.SEED_WSX);
 
     // const amount = 1_000_000_000_000_0; // 1000 tokens
     const amount = 1_000_000_000_000; // 100 tokens
