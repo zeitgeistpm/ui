@@ -17,7 +17,7 @@ interface loginOptions {
   };
 }
 
-const auth0Domain = process.env.AUTH0_DOMAIN_ZTG;
+const auth0Domain = process.env["AUTH0_DOMAIN_ZTG"];
 
 const useWeb3Wallet = () => {
   const [web3auth] = useAtom(web3authAtom);
