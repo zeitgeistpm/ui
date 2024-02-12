@@ -187,6 +187,7 @@ export async function getStaticProps({ params }) {
       limit: limit,
       offset: pageNumber * limit,
       order: MarketOrderByInput.IdAsc,
+      where: { period: { start_gte: periodStart.getTime() } },
     });
     return markets;
   });
@@ -402,13 +403,6 @@ export async function getStaticProps({ params }) {
       if (market?.status === "Resolved" && !suspiciousActivity) {
         const diff = marketTotal.baseAssetOut.minus(marketTotal.baseAssetIn);
 
-        marketsSummary.push({
-          question: market.question!,
-          marketId: market.marketId,
-          baseAssetId: parseAssetIdString(market.baseAsset) as BaseAssetId,
-          profit: diff.div(ZTG).toNumber(),
-        });
-
         const endTimestamp = market.period.end;
 
         const marketEndBaseAssetPrice = lookupPrice(
@@ -418,6 +412,14 @@ export async function getStaticProps({ params }) {
         );
 
         const usdProfitLoss = diff.mul(marketEndBaseAssetPrice ?? 0);
+
+        marketsSummary.push({
+          question: market.question!,
+          marketId: market.marketId,
+          baseAssetId: parseAssetIdString(market.baseAsset) as BaseAssetId,
+          profit: usdProfitLoss.div(ZTG).toNumber(),
+        });
+
         volume = volume.plus(
           marketTotal.baseAssetIn
             .plus(marketTotal.baseAssetOut)
@@ -612,13 +614,21 @@ const MarketBreakdownModal = ({ markets }: { markets: MarketSummary[] }) => {
     <>
       <button onClick={() => setIsOpen(true)}>View Breakdown</button>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        <Dialog.Panel className="flex max-h-[250px] flex-col gap-y-6 overflow-y-auto rounded-ztg-10 bg-white p-[15px] py-5 md:max-h-[400px]">
-          {markets.map((market, index) => (
-            <div key={index}>
-              <div>{market.question}</div>
-              <div>{market.profit}</div>
-            </div>
-          ))}
+        <Dialog.Panel className="flex max-h-[250px] flex-col gap-y-6 overflow-y-auto rounded-ztg-10 bg-white p-[15px] py-5 md:max-h-[600px]">
+          <div>
+            total:{" "}
+            {markets.reduce<number>((prev, curr) => {
+              return prev + curr.profit;
+            }, 0)}
+          </div>
+          {markets
+            .sort((a, b) => b.profit - a.profit)
+            .map((market, index) => (
+              <div key={index}>
+                <div>{market.question}</div>
+                <div>${market.profit.toFixed(2)}</div>
+              </div>
+            ))}
         </Dialog.Panel>
       </Modal>
     </>
