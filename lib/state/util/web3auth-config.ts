@@ -3,7 +3,7 @@ import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { Web3Auth } from "@web3auth/modal";
 import { atom } from "jotai";
 
-export const clientId = process.env["WEB3AUTH_CLIENT_ID_ZTG"];
+export const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
 
 class Web3AuthWallet extends BaseDotsamaWallet {
   constructor({ extensionName, title, installUrl, logo }) {
