@@ -1,3 +1,4 @@
+import { Dialog } from "@headlessui/react";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import {
   FullHistoricalAccountBalanceFragment,
@@ -15,6 +16,7 @@ import {
   ZeitgeistIpfs,
 } from "@zeitgeistpm/sdk";
 import Avatar from "components/ui/Avatar";
+import Modal from "components/ui/Modal";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import {
@@ -42,7 +44,7 @@ import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getPlaiceholder } from "plaiceholder";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 // Approach: aggregate base asset movements in and out of a market
 // "In events": swaps, buy full set
@@ -510,6 +512,7 @@ const columns: TableColumn[] = [
     collapseOrder: 2,
   },
   { header: "Volume", accessor: "volume", type: "text", collapseOrder: 1 },
+  { header: "", accessor: "button", type: "component" },
 ];
 
 const UserCell = ({ address, name }: { address: string; name?: string }) => {
@@ -551,6 +554,7 @@ const Leaderboard: NextPage<{
           numMarketsWon: rankObj.markets.filter((m) => m.profit > 0).length,
           totalProfit: `$${rankObj.profitUsd.toFixed(0)}`,
           volume: `$${rankObj.volumeUsd.toFixed(0)}`,
+          button: <MarketBreakdownModal markets={rankObj.markets} />,
         },
       ];
     }
@@ -599,6 +603,25 @@ const Leaderboard: NextPage<{
         </div>
       )} */}
     </div>
+  );
+};
+
+const MarketBreakdownModal = ({ markets }: { markets: MarketSummary[] }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <>
+      <button onClick={() => setIsOpen(true)}>View Breakdown</button>
+      <Modal open={isOpen} onClose={() => setIsOpen(false)}>
+        <Dialog.Panel className="flex max-h-[250px] flex-col gap-y-6 overflow-y-auto rounded-ztg-10 bg-white p-[15px] py-5 md:max-h-[400px]">
+          {markets.map((market, index) => (
+            <div key={index}>
+              <div>{market.question}</div>
+              <div>{market.profit}</div>
+            </div>
+          ))}
+        </Dialog.Panel>
+      </Modal>
+    </>
   );
 };
 
