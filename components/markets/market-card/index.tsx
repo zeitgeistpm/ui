@@ -60,9 +60,8 @@ export const MarketCard = ({
     scalarType,
     status,
     img,
+    resolvedOutcome,
   } = market;
-
-  console.log(liquidity);
 
   const marketCategories: MarketOutcomes =
     categories?.map((category, index) => {
@@ -151,13 +150,13 @@ export const MarketCard = ({
           </div>
 
           <div className="w-full">
-            {status === "Resolved" ? (
+            {status === "Resolved" && resolvedOutcome ? (
               <span className="text-xs text-ztg-blue">
                 Resolved:{" "}
                 <span className="font-semibold">
                   {marketType?.categorical
-                    ? displayPrediction?.name
-                    : formatNumberCompact(Number(displayPrediction?.name))}
+                    ? marketCategories[resolvedOutcome].name
+                    : formatNumberCompact(Number(resolvedOutcome) / ZTG)}
                 </span>
               </span>
             ) : (pool || neoPool) && marketType?.categorical ? (
