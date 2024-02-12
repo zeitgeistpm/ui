@@ -45,7 +45,7 @@ export type UseNotifications = {
    * @param options - Options for the notification.
    */
   pushNotification(
-    content: string,
+    content: string | ReactNode,
     options?: {
       type?: NotificationType;
       lifetime?: number;
@@ -71,6 +71,49 @@ const notificationsAtom = atom<Notification[]>([]);
  */
 const store = getDefaultStore();
 
+export const pushNotification: UseNotifications["pushNotification"] = (
+  content,
+  options,
+) => {
+  const notification: Notification = {
+    id: generateGUID(),
+    content,
+    autoRemove: options?.autoRemove ?? false,
+    lifetime: options?.lifetime ?? 100,
+    type: options?.type ?? "Info",
+  };
+
+  const notifications = store.get(notificationsAtom);
+
+  let nextNotifications = [...notifications];
+
+  const latestNotification = notifications[notifications.length - 1];
+
+  if (latestNotification?.autoRemove) {
+    nextNotifications = notifications.slice(0, -1);
+  }
+
+  nextNotifications = [...nextNotifications, notification];
+
+  store.set(notificationsAtom, nextNotifications);
+
+  return notification;
+};
+
+export const removeNotification: UseNotifications["removeNotification"] = (
+  notification,
+) => {
+  const notifications = store.get(notificationsAtom);
+  store.set(
+    notificationsAtom,
+    notifications.filter((n) =>
+      typeof notification === "string"
+        ? n.id !== notification
+        : n.id !== notification.id,
+    ),
+  );
+};
+
 /**
  * Hook to use the notification state.
  *
@@ -78,49 +121,6 @@ const store = getDefaultStore();
  */
 export const useNotifications = (): UseNotifications => {
   const atom = useAtom(notificationsAtom);
-
-  const pushNotification: UseNotifications["pushNotification"] = (
-    content,
-    options,
-  ) => {
-    const notification: Notification = {
-      id: generateGUID(),
-      content,
-      autoRemove: options?.autoRemove ?? false,
-      lifetime: options?.lifetime ?? 100,
-      type: options?.type ?? "Info",
-    };
-
-    const notifications = store.get(notificationsAtom);
-
-    let nextNotifications = [...notifications];
-
-    const latestNotification = notifications[notifications.length - 1];
-
-    if (latestNotification?.autoRemove) {
-      nextNotifications = notifications.slice(0, -1);
-    }
-
-    nextNotifications = [...nextNotifications, notification];
-
-    store.set(notificationsAtom, nextNotifications);
-
-    return notification;
-  };
-
-  const removeNotification: UseNotifications["removeNotification"] = (
-    notification,
-  ) => {
-    const notifications = store.get(notificationsAtom);
-    store.set(
-      notificationsAtom,
-      notifications.filter((n) =>
-        typeof notification === "string"
-          ? n.id !== notification
-          : n.id !== notification.id,
-      ),
-    );
-  };
 
   return {
     notifications: atom[0],
