@@ -222,7 +222,7 @@ const IndexPage: NextPage<{
                 <Link href={`/topics/${topic.topic.slug}`}>
                   <div className="pl-2 text-sm font-light text-blue-600">
                     Go to <b className="font-bold">{topic.topic.title}</b>{" "}
-                    Markets ({topic.topic.marketIds?.length ?? 0})
+                    Market ({topic.topic.marketIds?.length ?? 0})
                   </div>
                 </Link>
               </>
