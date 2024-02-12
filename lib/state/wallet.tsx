@@ -1,27 +1,31 @@
-import { encodeAddress } from "@polkadot/util-crypto";
-import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
-import { tryCatch } from "@zeitgeistpm/utility/dist/option";
-import { atom, getDefaultStore, useAtom } from "jotai";
-import { u8aToHex, stringToHex } from "@polkadot/util";
-import { isString } from "lodash-es";
-import { use, useMemo } from "react";
-import { persistentAtom } from "./util/persistent-atom";
+import { InjectedAccount } from "@polkadot/extension-inject/types";
+import { KeyringPair } from "@polkadot/keyring/types";
+import { stringToHex, u8aToHex } from "@polkadot/util";
+import { cryptoWaitReady, encodeAddress } from "@polkadot/util-crypto";
 import {
   BaseDotsamaWallet,
   PolkadotjsWallet,
   SubWallet,
   TalismanWallet,
 } from "@talismn/connect-wallets";
-import { cryptoWaitReady } from "@polkadot/util-crypto";
-import { InjectedAccount } from "@polkadot/extension-inject/types";
+import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
+import { tryCatch } from "@zeitgeistpm/utility/dist/option";
+import { atom, getDefaultStore, useAtom } from "jotai";
 import { isPresent } from "lib/types";
-import { KeyringPair } from "@polkadot/keyring/types";
 import { PollingTimeout, poll } from "lib/util/poll";
+import { isString } from "lodash-es";
+import { useMemo } from "react";
+import { persistentAtom } from "./util/persistent-atom";
+
 //Web3Auth
+import { isNotNull } from "@zeitgeistpm/utility/dist/null";
+import {
+  Notification,
+  pushNotification,
+  removeNotification,
+} from "./notifications";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
 import { isWSX } from "lib/constants";
-import { checkNewUser } from "./wsx";
-import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -237,6 +241,8 @@ export const supportedWallets = !isWSX
 
 let accountsSubscriptionUnsub: VoidFunction | undefined | null;
 
+let currentErrorNotification: Readonly<Notification> | null = null;
+
 /**
  * Enable a wallet by enabling the extension and setting the wallet atom state to connected.
  * Also starts subscribing to accounts on the extension and updates the accounts in state.
@@ -284,6 +290,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
   if (!isPresent(wallet)) {
     return;
   }
+
   const enablePoll = async (): Promise<void> => {
     try {
       const extension = await poll(
@@ -324,25 +331,56 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
 
     accountsSubscriptionUnsub = await wallet?.subscribeAccounts((accounts) => {
       store.set(walletAtom, (state) => {
+        const hasConnectedEthereumAccount = accounts?.some((account) => {
+          if ((account as any).type?.toLowerCase() === "ethereum") {
+            return true;
+          }
+        });
+
+        if (hasConnectedEthereumAccount) {
+          currentErrorNotification = pushNotification(
+            <div>
+              <div className="mb-1">Ethereum accounts are unsupported.</div>
+              <div className="text-xs text-gray-500">
+                You have a ethereum account connected in your{" "}
+                {wallet.extensionName} wallet but it will be filtered out as it
+                is not supported.
+              </div>
+            </div>,
+            {
+              autoRemove: true,
+              lifetime: 20_000,
+              type: "Error",
+            },
+          );
+        } else if (currentErrorNotification) {
+          removeNotification(currentErrorNotification);
+        }
+
         return {
           ...state,
           connected: Boolean(accounts && accounts.length > 0),
           accounts:
-            accounts?.map((account) => {
-              return {
-                ...account,
-                address: encodeAddress(account.address, 73),
-              };
-            }) ?? [],
-          errors:
+            accounts
+              ?.map((account) => {
+                try {
+                  return {
+                    ...account,
+                    address: encodeAddress(account.address, 73),
+                  };
+                } catch (error) {
+                  return null;
+                }
+              })
+              .filter(isNotNull) ?? [],
+          errors: [
             accounts?.length === 0
-              ? [
-                  {
-                    extensionName: wallet.extensionName,
-                    type: "NoAccounts",
-                  },
-                ]
-              : [],
+              ? ({
+                  extensionName: wallet.extensionName,
+                  type: "NoAccounts",
+                } satisfies WalletError)
+              : null,
+          ].filter(isNotNull),
         };
       });
     });
