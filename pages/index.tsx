@@ -1,3 +1,4 @@
+import { Disclosure } from "@headlessui/react";
 import { GenericChainProperties } from "@polkadot/types";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
@@ -10,12 +11,20 @@ import { NewsSection } from "components/front-page/News";
 import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
+import { Topics } from "components/front-page/Topics";
 import WatchHow from "components/front-page/WatchHow";
-import { IndexedMarketCardData } from "components/markets/market-card";
+import MarketCard, {
+  IndexedMarketCardData,
+} from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
 import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
 import { getCmsNews, CmsNews } from "lib/cms/news";
+import {
+  CmsTopicHeader,
+  getCmsTopicHeaders,
+  marketsForTopic,
+} from "lib/cms/topics";
 import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
@@ -27,21 +36,18 @@ import {
   ZtgPriceHistory,
 } from "lib/hooks/queries/useAssetUsdPrice";
 import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
+import { getPlaiceholders } from "lib/util/getPlaiceHolders";
 import { NextPage } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import path from "path";
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
-
-const getPlaiceholders = (
-  paths: string[],
-  options?: IGetPlaiceholderOptions,
-): Promise<IGetPlaiceholderReturn[]> => {
-  return Promise.all(paths.map((path) => getPlaiceholder(path, options)));
-};
+import { useState } from "react";
 
 export async function getStaticProps() {
   const client = new GraphQLClient(graphQlEndpoint);
@@ -51,7 +57,10 @@ export async function getStaticProps() {
     storage: ZeitgeistIpfs(),
   });
 
-  const news = await getCmsNews();
+  const [news, cmsTopics] = await Promise.all([
+    getCmsNews(),
+    getCmsTopicHeaders(),
+  ]);
 
   const [
     featuredMarkets,
@@ -59,10 +68,12 @@ export async function getStaticProps() {
     bannerPlaceholder,
     categoryPlaceholders,
     newsImagePlaceholders,
+    topicImagePlaceholders,
     stats,
     ztgHistory,
     chainProperties,
     marketsCmsData,
+    topicsMarkets,
   ] = await Promise.all([
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
@@ -74,10 +85,22 @@ export async function getStaticProps() {
       news.map((slide) => slide.image ?? ""),
       { size: 16 },
     ),
+    getPlaiceholders(
+      cmsTopics.map((topic) => topic.thumbnail ?? ""),
+      { size: 16 },
+    ),
     getNetworkStats(sdk),
     getZTGHistory(),
     sdk.api.rpc.system.properties(),
     getCmsMarketMetadataForAllMarkets(),
+    Promise.all(
+      cmsTopics.map((topic) =>
+        marketsForTopic(topic, sdk.indexer, { limit: 3 }).then((markets) => ({
+          topic,
+          markets,
+        })),
+      ),
+    ),
   ]);
 
   const queryClient = new QueryClient();
@@ -110,13 +133,16 @@ export async function getStaticProps() {
       bannerPlaceholder: bannerPlaceholder.base64 ?? "",
       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
       newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
+      topicImagePlaceholders: topicImagePlaceholders.map((c) => c.base64) ?? [],
       stats,
       ztgHistory,
       chainProperties: chainProperties.toPrimitive(),
+      cmsTopics,
+      topicsMarkets,
     },
     revalidate:
       environment === "production"
-        ? 1 * 60 //1min
+        ? 5 * 60 //5min
         : 60 * 60,
   };
 }
@@ -127,10 +153,16 @@ const IndexPage: NextPage<{
   trendingMarkets: IndexedMarketCardData[];
   categoryPlaceholders: string[];
   newsImagePlaceholders: string[];
+  topicImagePlaceholders: string[];
   bannerPlaceholder: string;
   stats: { marketCount: number; tradersCount: number; volumeUsd: number };
   ztgHistory: ZtgPriceHistory;
   chainProperties: GenericChainProperties;
+  cmsTopics: CmsTopicHeader[];
+  topicsMarkets: {
+    topic: CmsTopicHeader;
+    markets: IndexedMarketCardData[];
+  }[];
 }> = ({
   news,
   trendingMarkets,
@@ -138,10 +170,17 @@ const IndexPage: NextPage<{
   bannerPlaceholder,
   categoryPlaceholders,
   newsImagePlaceholders,
+  topicImagePlaceholders,
   stats,
   ztgHistory,
   chainProperties,
+  cmsTopics,
+  topicsMarkets,
 }) => {
+  const router = useRouter();
+  const topicSlug = (router.query?.topic as string) ?? cmsTopics[0]?.slug;
+  const topic = topicsMarkets.find((t) => t.topic.slug === topicSlug);
+
   return (
     <>
       <div
@@ -156,13 +195,40 @@ const IndexPage: NextPage<{
           chainProperties={chainProperties}
         />
 
-        <div className="mb-12">
-          <NetworkStats
-            marketCount={stats.marketCount}
-            tradersCount={stats.tradersCount}
-            totalVolumeUsd={stats.volumeUsd}
-          />
-        </div>
+        {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" && (
+          <div className="relative z-30 mb-12">
+            <div className="mb-8 flex gap-2">
+              <Topics
+                topics={cmsTopics}
+                selectedTopic={topicSlug}
+                onClick={(topic) => {
+                  router.push(
+                    { query: { ...router.query, topic: topic.slug } },
+                    undefined,
+                    { shallow: true },
+                  );
+                }}
+                imagePlaceholders={topicImagePlaceholders}
+              />
+            </div>
+
+            {topic && topic.topic.marketIds && (
+              <>
+                <div className="mb-4 flex gap-3">
+                  {topic.markets.map((market) => (
+                    <MarketCard key={market.marketId} {...market} />
+                  ))}
+                </div>
+                <Link href={`/topics/${topic.topic.slug}`}>
+                  <div className="pl-2 text-sm font-light text-blue-600">
+                    Go to <b className="font-bold">{topic.topic.title}</b>{" "}
+                    Markets ({topic.topic.marketIds?.length ?? 0})
+                  </div>
+                </Link>
+              </>
+            )}
+          </div>
+        )}
 
         {featuredMarkets.length > 0 && (
           <div className="mb-12">

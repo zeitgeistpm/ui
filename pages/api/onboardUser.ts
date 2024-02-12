@@ -12,7 +12,7 @@ export default async function onboardUser(
 
   const apiInstance = new SibApiV3Sdk.ContactsApi();
   const apiKey = apiInstance.authentications["apiKey"];
-  apiKey.apiKey = process.env.NEXT_PUBLIC_BREVO_API;
+  apiKey.apiKey = process.env.BREVO_API;
 
   const createContact = new SibApiV3Sdk.CreateContact();
   createContact.attributes = { NAME: userName };
