@@ -15,6 +15,7 @@ export const useMarketCmsMetadata = (marketId: string | number) => {
     async () => {
       return batcher.fetch(Number(marketId));
     },
+    { staleTime: 100_000 },
   );
 };
 
