@@ -32,12 +32,14 @@ export const getBaseAssetHistoricalPrices = async (): Promise<BasePrices> => {
     "zeitgeist",
   ];
 
+  const generateUrl = COIN_GECKO_API_KEY
+    ? (id: string) =>
+        `https://pro-api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=10000&x_cg_pro_api_key=${COIN_GECKO_API_KEY}`
+    : (id: string) =>
+        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=10000`;
+
   const pricesRes = await Promise.all(
-    coinGeckoIds.map((id) =>
-      fetch(
-        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=10000&${COIN_GECKO_API_KEY}`,
-      ),
-    ),
+    coinGeckoIds.map((id) => fetch(generateUrl(id))),
   );
 
   const prices = await Promise.all(pricesRes.map((res) => res.json()));
