@@ -270,7 +270,7 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
 
   const topCategories = CATEGORIES.map((category, index) => ({
     ...category,
-    count: counts?.[index],
+    count: counts?.[index] ?? 0,
   }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 9);
