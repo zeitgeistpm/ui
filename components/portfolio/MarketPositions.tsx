@@ -176,6 +176,7 @@ export const MarketPositions = ({
       <MarketPositionHeader
         marketId={market.marketId}
         question={market.question ?? undefined}
+        baseAsset={market.baseAsset}
       />
       <Table
         showHighlight={false}
