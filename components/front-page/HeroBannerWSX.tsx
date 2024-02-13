@@ -24,14 +24,14 @@ export const HeroBannerWSX = ({}: {}) => {
             >
               Learn More
             </Link>
-            {!realAddress && (
+            {/* {!realAddress && (
               <button
                 onClick={() => selectWallet("web3auth")}
                 className="flex-1 rounded-md border-2 border-black bg-transparent px-6 py-3 text-black sm:flex-none"
               >
                 Get Started
               </button>
-            )}
+            )} */}
           </div>
         </div>
         <div className="relative mb-8 h-64 w-full overflow-hidden rounded-lg md:mb-0 md:h-auto">

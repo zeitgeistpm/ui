@@ -296,7 +296,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
       const extension = await poll(
         async () => {
           await cryptoWaitReady();
-          await wallet.enable(DAPP_NAME);
+          await wallet?.enable(DAPP_NAME);
           return wallet;
         },
         {
@@ -308,7 +308,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
         throw new Error("Wallet enabling timed out");
       }
     } catch (err) {
-      throw wallet.transformError(err);
+      throw wallet?.transformError(err);
     }
   };
 
@@ -454,7 +454,7 @@ export const useWallet = (): UseWallet => {
     return walletState.wallet;
   };
 
-  const selectAccount = (account: InjectedAccount | string) => {
+  const selectAccount = async (account: InjectedAccount | string) => {
     const selectedAddress = isString(account) ? account : account.address;
     try {
       encodeAddress(selectedAddress, 73);
