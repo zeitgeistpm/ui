@@ -27,6 +27,7 @@ const Onboarding = dynamic(
 const greyBackgroundPageRoutes = [
   "/",
   "/markets",
+  "/markets/favorites",
   "/create-account",
   "/deposit",
   "/topics",

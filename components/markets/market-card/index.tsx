@@ -2,14 +2,13 @@ import type { ScalarRangeType } from "@zeitgeistpm/sdk";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import { MarketOutcomes } from "lib/types/markets";
+import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import Link from "next/link";
 import { BarChart2, Droplet, Users } from "react-feather";
 import ScalarPriceRange from "../ScalarPriceRange";
 import MarketCardContext from "./context";
-
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import {
   IOBaseAssetId,
@@ -17,206 +16,83 @@ import {
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { useMarketImage } from "lib/hooks/useMarketImage";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
+import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 
-export interface IndexedMarketCardData {
-  marketId: number;
-  img?: string;
-  question: string;
-  creation: string;
-  creator: string;
-  outcomes: MarketOutcomes;
-  marketType: MarketType;
-  scalarType: ScalarRangeType | null;
-  prediction: { name: string; price: number };
-  volume: number;
-  pool?: { poolId?: number } | null;
-  neoPool?: FullMarketFragment["neoPool"] | null;
-  baseAsset: string;
-  tags?: string[];
-  status: string;
-  endDate: string;
-  liquidity?: string;
-  numParticipants?: number;
-}
+const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
+  ssr: false,
+});
 
 export interface MarketType {
   categorical?: string;
   scalar?: string[];
 }
 
-export interface MarketCardProps extends IndexedMarketCardData {
+export interface MarketCardProps {
+  market: FullMarketFragment;
+  liquidity?: string;
+  numParticipants?: number;
   className?: string;
   disableLink?: boolean;
 }
 
-const MarketCardPredictionBar = ({
-  prediction: { name, price },
-}: {
-  prediction: { name: string; price: number };
-}) => {
-  // check if market has liquidity
-  if (price != null) {
-    const impliedPercentage = Math.round(Number(price) * 100);
-
-    return (
-      <div className={`relative h-[30px] w-full bg-gray-200 transition-all`}>
-        <div className="absolute flex h-full w-full items-center justify-between px-2.5 text-sm">
-          <span className="text-blue">{name}</span>
-          <span className="text-blue transition-all">{impliedPercentage}%</span>
-        </div>
-        <div
-          className={`h-full bg-blue-lighter`}
-          style={{
-            width: `${isNaN(impliedPercentage) ? 0 : impliedPercentage}%`,
-          }}
-        />
-      </div>
-    );
-  } else {
-    return (
-      <>
-        <div className="mb-1 flex justify-between text-sm">
-          <span className="text-gray-500">No liquidity in this market</span>
-          <span className="text-gray-500">0%</span>
-        </div>
-        <div className="h-1.5 w-full rounded-lg bg-gray-100"></div>
-      </>
-    );
-  }
-};
-
-const MarketCardDetails = ({
-  rows,
-}: {
-  rows: {
-    volume: number;
-    baseAsset: string;
-    outcomes: number;
-    endDate: string;
-    hasEnded: boolean;
-    numParticipants?: number;
-    liquidity?: string;
-    marketType: { categorical?: string; scalar?: string[] };
-  };
-}) => {
-  const isEnding = () => {
-    const currentTime = new Date();
-    const endTime = Number(rows.endDate);
-    //6 hours in milliseconds
-    const sixHours = 21600000;
-    const diff = endTime - currentTime.getTime();
-    //checks if event has passed and is within 6 hours
-    return diff < sixHours && diff > 0 ? true : false;
-  };
-
-  const assetId = parseAssetId(rows.baseAsset).unwrap();
-  const imagePath = IOForeignAssetId.is(assetId)
-    ? lookupAssetImagePath(assetId.ForeignAsset)
-    : IOBaseAssetId.is(assetId)
-      ? lookupAssetImagePath(assetId.Ztg)
-      : "";
-
-  return (
-    <div className="flex items-center text-xs">
-      <div>
-        <span>
-          {rows.endDate &&
-            `${rows.hasEnded ? "Ended" : "Ends"} ${new Date(
-              Number(rows?.endDate),
-            ).toLocaleString("en-US", {
-              month: "short",
-              day: "numeric",
-            })}`}
-        </span>
-        {isEnding() && <span className="ml-1 text-red">Ends Soon</span>}
-        <span className="ml-1 border-l-1 border-l-black pl-1 font-semibold ">
-          {rows.outcomes} outcomes{" "}
-        </span>
-      </div>
-      <div className="ml-auto flex items-center justify-center gap-1.5">
-        {rows.numParticipants != undefined && rows.baseAsset ? (
-          <div className="flex items-center gap-0.5">
-            <Users size={12} />
-            <span>{formatNumberCompact(rows.numParticipants, 2)}</span>
-          </div>
-        ) : (
-          <Skeleton width={30} height={12} />
-        )}
-        <div className="flex items-center gap-1">
-          <BarChart2 size={12} />
-          <span>{formatNumberCompact(rows.volume, 2)}</span>
-        </div>
-        {rows.liquidity != undefined && rows.baseAsset ? (
-          <div className="flex items-center gap-1">
-            <Droplet size={12} />
-            <span>
-              {formatNumberCompact(
-                new Decimal(rows.liquidity).div(ZTG).toNumber(),
-                2,
-              )}
-            </span>
-          </div>
-        ) : (
-          <Skeleton width={30} height={12} />
-        )}
-        <Image
-          width={12}
-          height={12}
-          src={imagePath}
-          alt="Currency token logo"
-          className="rounded-full"
-        />
-      </div>
-    </div>
-  );
-};
-
 export const MarketCard = ({
-  marketId,
-  img,
-  question,
-  outcomes,
-  marketType,
-  prediction,
-  pool,
-  neoPool,
-  scalarType,
-  volume,
-  baseAsset,
-  endDate,
-  status,
-  className = "",
+  market,
   liquidity,
   numParticipants,
-  tags,
+  className = "",
   disableLink,
 }: MarketCardProps) => {
+  const {
+    categories,
+    assets,
+    outcomeAssets,
+    marketType,
+    baseAsset,
+    marketId,
+    question,
+    pool,
+    neoPool,
+    scalarType,
+    status,
+    img,
+    resolvedOutcome,
+  } = market;
+
+  const marketCategories: MarketOutcomes =
+    categories?.map((category, index) => {
+      const asset = assets[index];
+
+      const marketCategory: MarketOutcome = {
+        name: category.name ?? "",
+        assetId: outcomeAssets[index],
+        price: asset?.price,
+      };
+
+      return marketCategory;
+    }) ?? [];
+
   const isYesNoMarket =
-    outcomes.length === 2 &&
-    outcomes.some((outcome) => outcome.name.toLowerCase() === "yes") &&
-    outcomes.some((outcome) => outcome.name.toLowerCase() === "no");
+    marketCategories.length === 2 &&
+    marketCategories.some((outcome) => outcome.name.toLowerCase() === "yes") &&
+    marketCategories.some((outcome) => outcome.name.toLowerCase() === "no");
+
+  const prediction =
+    marketCategories.length > 0
+      ? marketCategories?.reduce((prev, curr) => {
+          return prev && prev.price > curr.price ? prev : curr;
+        })
+      : undefined;
 
   //always show "Yes" prediction percentage
-  prediction =
-    isYesNoMarket === true && prediction.name.toLowerCase() === "no"
+  const displayPrediction =
+    isYesNoMarket === true && prediction?.name.toLowerCase() === "no"
       ? { price: 1 - prediction.price, name: "Yes" }
       : prediction;
-
-  const infoRows = {
-    marketType: marketType,
-    endDate: endDate,
-    hasEnded: hasDatePassed(Number(endDate)),
-    outcomes: outcomes.length,
-    volume: volume,
-    baseAsset: baseAsset,
-    liquidity,
-    numParticipants: numParticipants,
-  };
 
   const lower = marketType?.scalar?.[0]
     ? new Decimal(marketType?.scalar?.[0]).div(ZTG).toNumber()
@@ -225,15 +101,12 @@ export const MarketCard = ({
     ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
     : 0;
 
-  const { data: image } = useMarketImage(
-    { marketId, tags },
-    {
-      fallback:
-        img && isAbsoluteUrl(img) && !isMarketImageBase64Encoded(img)
-          ? img
-          : undefined,
-    },
-  );
+  const { data: image } = useMarketImage(market, {
+    fallback:
+      img && isAbsoluteUrl(img) && !isMarketImageBase64Encoded(img)
+        ? img
+        : undefined,
+  });
 
   const { data: cmsMetadata } = useMarketCmsMetadata(marketId);
 
@@ -277,24 +150,26 @@ export const MarketCard = ({
           </div>
 
           <div className="w-full">
-            {status === "Resolved" ? (
+            {status === "Resolved" && resolvedOutcome ? (
               <span className="text-xs text-ztg-blue">
                 Resolved:{" "}
                 <span className="font-semibold">
                   {marketType?.categorical
-                    ? prediction.name
-                    : formatNumberCompact(Number(prediction.name))}
+                    ? marketCategories[resolvedOutcome].name
+                    : formatNumberCompact(Number(resolvedOutcome) / ZTG)}
                 </span>
               </span>
             ) : (pool || neoPool) && marketType?.categorical ? (
-              <MarketCardPredictionBar prediction={prediction} />
+              displayPrediction && (
+                <MarketCardPredictionBar prediction={displayPrediction} />
+              )
             ) : (pool || neoPool) && scalarType ? (
               <ScalarPriceRange
-                scalarType={scalarType}
+                scalarType={scalarType as "date" | "number"}
                 lowerBound={lower}
                 upperBound={upper}
-                shortPrice={outcomes[1].price}
-                longPrice={outcomes[0].price}
+                shortPrice={marketCategories[1]?.price}
+                longPrice={marketCategories[0]?.price}
                 status={status}
               />
             ) : (
@@ -311,10 +186,139 @@ export const MarketCard = ({
               </>
             )}
           </div>
-          <MarketCardDetails rows={infoRows} />
+          <div className="flex flex-1 gap-2">
+            <div className="flex-1">
+              <MarketCardDetails
+                market={market}
+                numParticipants={numParticipants}
+                liquidity={liquidity}
+              />
+            </div>
+            <MarketFavoriteToggle marketId={marketId} />
+          </div>
         </Link>
       </div>
     </MarketCardContext.Provider>
+  );
+};
+
+const MarketCardPredictionBar = ({
+  prediction: { name, price },
+}: {
+  prediction: { name: string; price: number };
+}) => {
+  // check if market has liquidity
+  if (price != null) {
+    const impliedPercentage = Math.round(Number(price) * 100);
+
+    return (
+      <div className={`relative h-[30px] w-full bg-gray-200 transition-all`}>
+        <div className="absolute flex h-full w-full items-center justify-between px-2.5 text-sm">
+          <span className="line-clamp-1 text-blue">{name}</span>
+          <span className="text-blue transition-all">{impliedPercentage}%</span>
+        </div>
+        <div
+          className={`h-full bg-blue-lighter`}
+          style={{
+            width: `${isNaN(impliedPercentage) ? 0 : impliedPercentage}%`,
+          }}
+        />
+      </div>
+    );
+  } else {
+    return (
+      <>
+        <div className="mb-1 flex justify-between text-sm">
+          <span className="text-gray-500">No liquidity in this market</span>
+          <span className="text-gray-500">0%</span>
+        </div>
+        <div className="h-1.5 w-full rounded-lg bg-gray-100"></div>
+      </>
+    );
+  }
+};
+
+const MarketCardDetails = ({
+  market,
+  liquidity,
+  numParticipants,
+}: {
+  market: FullMarketFragment;
+  liquidity?: string;
+  numParticipants?: number;
+}) => {
+  const { period, baseAsset, outcomeAssets, volume } = market;
+  const isEnding = () => {
+    const currentTime = new Date();
+    const endTime = Number(period.end);
+    //6 hours in milliseconds
+    const sixHours = 21600000;
+    const diff = endTime - currentTime.getTime();
+    //checks if event has passed and is within 6 hours
+    return diff < sixHours && diff > 0 ? true : false;
+  };
+  const hasEnded = hasDatePassed(period.end);
+  const assetId = parseAssetId(baseAsset).unwrap();
+  const imagePath = IOForeignAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.ForeignAsset)
+    : IOBaseAssetId.is(assetId)
+      ? lookupAssetImagePath(assetId.Ztg)
+      : "";
+
+  return (
+    <div className="flex items-center text-xs">
+      <div>
+        <span>
+          {period.end &&
+            `${hasEnded ? "Ended" : "Ends"} ${new Date(
+              Number(period.end),
+            ).toLocaleString("en-US", {
+              month: "short",
+              day: "numeric",
+            })}`}
+        </span>
+        {isEnding() && <span className="ml-1 text-red">Ends Soon</span>}
+        <span className="ml-1 border-l-1 border-l-black pl-1 font-semibold ">
+          {outcomeAssets.length} outcomes{" "}
+        </span>
+      </div>
+      <div className="ml-auto flex items-center justify-center gap-1.5">
+        {numParticipants != undefined && baseAsset ? (
+          <div className="flex items-center gap-0.5">
+            <Users size={12} />
+            <span>{formatNumberCompact(numParticipants, 2)}</span>
+          </div>
+        ) : (
+          <Skeleton width={30} height={12} />
+        )}
+        <div className="flex items-center gap-1">
+          <BarChart2 size={12} />
+          <span>
+            {formatNumberCompact(new Decimal(volume).div(ZTG).toNumber(), 2)}
+          </span>
+        </div>
+        {liquidity != undefined && baseAsset ? (
+          <div className="flex items-center gap-1">
+            <Droplet size={12} />
+            <span>
+              {formatNumberCompact(
+                new Decimal(liquidity).div(ZTG).toNumber(),
+                2,
+              )}
+            </span>
+          </div>
+        ) : (
+          <Skeleton width={30} height={12} />
+        )}
+        <Image
+          width={12}
+          height={12}
+          src={imagePath}
+          alt="Currency token logo"
+          className="rounded-full"
+        />
+      </div>
+    </div>
   );
 };
 

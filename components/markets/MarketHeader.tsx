@@ -1,3 +1,5 @@
+import { Dialog } from "@headlessui/react";
+import { OutcomeReport } from "@zeitgeistpm/indexer";
 import {
   IOBaseAssetId,
   IOForeignAssetId,
@@ -6,50 +8,42 @@ import {
   ScalarRangeType,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import CourtStageTimer from "components/court/CourtStageTimer";
 import Avatar from "components/ui/Avatar";
+import InfoPopover from "components/ui/InfoPopover";
+import Modal from "components/ui/Modal";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
+import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { BLOCK_TIME_SECONDS, ZTG } from "lib/constants";
-import { X } from "react-feather";
+import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { MarketPageIndexedData } from "lib/gql/markets";
+import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
-import { shortenAddress } from "lib/util";
-import { formatNumberCompact } from "lib/util/format-compact";
-import { hasDatePassed } from "lib/util/hasDatePassed";
-import { FC, PropsWithChildren, useState } from "react";
-import { MarketTimer } from "./MarketTimer";
-import { MarketTimerSkeleton } from "./MarketTimer";
-import { OutcomeReport } from "@zeitgeistpm/indexer";
 import {
   MarketEventHistory,
   useMarketEventHistory,
 } from "lib/hooks/queries/useMarketEventHistory";
-import Modal from "components/ui/Modal";
-import { getMarketStatusDetails } from "lib/util/market-status-details";
-import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
-import { Dialog } from "@headlessui/react";
-import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
-import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolution";
-import { MarketReport } from "lib/types";
-import { AddressDetails } from "./MarketAddresses";
-import Image from "next/image";
-import {
-  FOREIGN_ASSET_METADATA,
-  lookupAssetImagePath,
-} from "lib/constants/foreign-asset";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
-import { MarketPromotionCallout } from "./PromotionCallout";
-import { PromotedMarket } from "lib/cms/get-promoted-markets";
-import { MarketDispute } from "lib/types/markets";
-import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
-import CourtStageTimer from "components/court/CourtStageTimer";
 import { useMarketImage } from "lib/hooks/useMarketImage";
-import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
+import { MarketReport } from "lib/types";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
-import { MdModeEdit, MdOutlineHistory } from "react-icons/md";
-import InfoPopover from "components/ui/InfoPopover";
-import { FaRegEdit } from "react-icons/fa";
+import { MarketDispute } from "lib/types/markets";
+import { shortenAddress } from "lib/util";
+import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolution";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
+import { hasDatePassed } from "lib/util/hasDatePassed";
+import { getMarketStatusDetails } from "lib/util/market-status-details";
+import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import dynamic from "next/dynamic";
+import Image from "next/image";
+import { FC, PropsWithChildren, useState } from "react";
+import { X } from "react-feather";
+import { MdModeEdit, MdOutlineHistory } from "react-icons/md";
+import { AddressDetails } from "./MarketAddresses";
+import { MarketTimer, MarketTimerSkeleton } from "./MarketTimer";
+import { MarketPromotionCallout } from "./PromotionCallout";
 
 export const QuillViewer = dynamic(
   () => import("../../components/ui/QuillViewer"),
@@ -57,6 +51,10 @@ export const QuillViewer = dynamic(
     ssr: false,
   },
 );
+
+const MarketFavoriteToggle = dynamic(() => import("./MarketFavoriteToggle"), {
+  ssr: false,
+});
 
 export const UserIdentity: FC<
   PropsWithChildren<{
@@ -582,6 +580,16 @@ const MarketHeader: FC<{
             </div>
           </div>
         )}
+        <div className="group relative flex items-center">
+          <div className="pt-1">
+            <MarketFavoriteToggle size={24} marketId={market.marketId} />
+          </div>
+          <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="rounded-lg bg-pink-300 px-2 py-1 text-sm">
+              Toggle Favorited
+            </div>
+          </div>
+        </div>
 
         {promotionData && (
           <MarketPromotionCallout market={market} promotion={promotionData} />

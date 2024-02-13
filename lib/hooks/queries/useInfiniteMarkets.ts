@@ -12,13 +12,13 @@ import {
   MarketsOrderBy,
 } from "lib/types/market-filter";
 import { MarketOutcomes } from "lib/types/markets";
-import { getCurrentPrediction } from "lib/util/assets";
 import { useSdkv2 } from "../useSdkv2";
 
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import { CmsMarketMetadata } from "lib/cms/markets";
+import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 import { marketMetaFilter } from "./constants";
 import { marketsRootQuery } from "./useMarket";
-import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
-import { CmsMarketMetadata } from "lib/cms/markets";
 
 export const rootKey = "markets-filtered";
 
@@ -50,7 +50,7 @@ export const useInfiniteMarkets = (
   const limit = 12;
   const fetcher = async ({
     pageParam = 0,
-  }): Promise<{ data: QueryMarketData[]; next: number | boolean }> => {
+  }): Promise<{ data: FullMarketFragment[]; next: number | boolean }> => {
     if (
       !isIndexedSdk(sdk) ||
       filters == null ||
@@ -115,27 +115,8 @@ export const useInfiniteMarkets = (
       if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
     }
 
-    const resMarkets: Array<QueryMarketData> = markets.map((market) => {
-      const outcomes: MarketOutcomes = market.assets.map((asset, index) => {
-        return {
-          price: asset.price,
-          name: market.categories?.[index].name ?? "",
-          assetId: asset.assetId,
-          amountInPool: asset.amountInPool,
-        };
-      });
-
-      const prediction = getCurrentPrediction(outcomes, market);
-
-      return {
-        ...market,
-        outcomes,
-        prediction,
-      };
-    });
-
     return {
-      data: resMarkets,
+      data: markets,
       next: markets.length >= limit ? pageParam + 1 : false,
     };
   };
