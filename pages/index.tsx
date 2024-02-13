@@ -12,6 +12,7 @@ import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
 import { Topics } from "components/front-page/Topics";
+import TrendingMarketsCompact from "components/front-page/TrendingMarketsCompact";
 import WatchHow from "components/front-page/WatchHow";
 import MarketCard, {
   IndexedMarketCardData,
@@ -245,6 +246,10 @@ const IndexPage: NextPage<{
 
         <div className="mb-12">
           <WatchHow />
+        </div>
+
+        <div className="w-[50%]">
+          <TrendingMarketsCompact markets={trendingMarkets} />
         </div>
 
         {trendingMarkets.length > 0 && (
