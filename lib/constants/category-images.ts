@@ -4,7 +4,6 @@ import { prodTags } from "./markets";
 
 const tags = [...prodTags, "untagged"] as const;
 
-//todo: add selections for finance and entertainment
 export const CATEGORY_IMAGES = union<(typeof tags)[number]>().exhaustAsRecord({
   Sports: range(1, 6).map((i) => `/categories/sports/${i}.png`),
   Politics: range(1, 5).map((i) => `/categories/politics/${i}.png`),
@@ -14,5 +13,8 @@ export const CATEGORY_IMAGES = union<(typeof tags)[number]>().exhaustAsRecord({
   News: range(1, 6).map((i) => `/categories/news/${i}.png`),
   Dotsama: range(1, 2).map((i) => `/categories/dotsama/${i}.png`),
   Zeitgeist: range(1, 2).map((i) => `/categories/zeitgeist/${i}.png`),
+  //todo: add selections for finance and entertainment
+  Finance: range(1, 2).map((i) => `/categories/zeitgeist/${i}.png`),
+  Entertainment: range(1, 2).map((i) => `/categories/zeitgeist/${i}.png`),
   untagged: range(1, 2).map((i) => `/categories/zeitgeist/${i}.png`),
 });
