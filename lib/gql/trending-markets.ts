@@ -10,7 +10,6 @@ import {
   Sdk,
 } from "@zeitgeistpm/sdk";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
-import { IndexedMarketCardData } from "components/markets/market-card/index";
 import Decimal from "decimal.js";
 import { GraphQLClient, gql } from "graphql-request";
 import { DAY_SECONDS, ZTG } from "lib/constants";
@@ -24,6 +23,7 @@ import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
 import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 
 const marketChangesQuery = gql`
   query MarketChanges($start: DateTime, $end: DateTime) {
@@ -42,7 +42,7 @@ const marketChangesQuery = gql`
 const getTrendingMarkets = async (
   client: GraphQLClient,
   sdk: Sdk<FullContext>,
-): Promise<IndexedMarketCardData[]> => {
+): Promise<FullMarketFragment[]> => {
   const now = new Date().toISOString();
   const dateOneWeekAgo = new Date(
     new Date().getTime() - DAY_SECONDS * 7 * 1000,
@@ -87,43 +87,7 @@ const getTrendingMarkets = async (
       (market) => market.marketId === Number(marketId),
     );
 
-    if (!market || !market.categories) return;
-    const marketCategories: MarketOutcomes = market.categories.map(
-      (category, index) => {
-        const asset = market.assets[index];
-
-        const marketCategory: MarketOutcome = {
-          name: category.name ?? "",
-          assetId: market.outcomeAssets[index],
-          price: asset.price,
-        };
-
-        return marketCategory;
-      },
-    );
-
-    const prediction = getCurrentPrediction(market.assets, market);
-
-    const trendingMarket: IndexedMarketCardData = {
-      marketId: market.marketId,
-      question: market.question ?? "",
-      creation: market.creation,
-      img: market.img ?? "",
-      prediction: prediction,
-      creator: market.creator,
-      volume: Number(new Decimal(market?.volume ?? 0).div(ZTG).toFixed(0)),
-      baseAsset: market.baseAsset,
-      outcomes: marketCategories,
-      pool: market.pool ?? null,
-      neoPool: market.neoPool,
-      marketType: market.marketType as any,
-      tags: market.tags?.filter(isNotNull),
-      status: market.status,
-      scalarType: (market.scalarType ?? null) as "number" | "date" | null,
-      endDate: market.period.end,
-    };
-
-    return trendingMarket;
+    return market;
   });
 
   return tm.filter(isNotNull);
