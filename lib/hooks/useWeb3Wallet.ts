@@ -19,7 +19,7 @@ interface loginOptions {
   };
 }
 
-const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN_ZTG;
+const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
 
 const useWeb3Wallet = () => {
   const [web3auth] = useAtom(web3authAtom);
