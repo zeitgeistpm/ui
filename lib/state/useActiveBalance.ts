@@ -14,50 +14,9 @@ const useActiveBalance = (
   userAddress: string | undefined,
   foreignAssetId?: AssetId,
 ) => {
-  const assetId = foreignAssetId || nttIDObject;
   const [balance, setBalance] = useState<Decimal | undefined>(undefined);
   const [walletState, setWalletState] = useAtom(walletAtom);
-  const [sdk, id] = useSdkv2();
   const confirm = useConfirmation();
-
-  useEffect(() => {
-    let unsubscribe;
-
-    const subscribeToBalance = async () => {
-      if (
-        isRpcSdk(sdk) &&
-        userAddress &&
-        sdk.api.query.tokens &&
-        sdk.api.query.tokens.accounts &&
-        IOForeignAssetId.is(assetId)
-      ) {
-        try {
-          unsubscribe = await sdk.api.query.tokens.accounts(
-            userAddress,
-            assetId,
-            (balance) => {
-              const newBalance = new Decimal(balance.free.toString());
-              setBalance((prevBalance) => {
-                return prevBalance?.equals(newBalance)
-                  ? prevBalance
-                  : newBalance;
-              });
-            },
-          );
-        } catch (error) {
-          console.error("Error setting up balance subscription:", error);
-        }
-      }
-    };
-
-    subscribeToBalance();
-
-    return () => {
-      if (unsubscribe && typeof unsubscribe === "function") {
-        unsubscribe();
-      }
-    };
-  }, [sdk, userAddress]);
 
   useEffect(() => {
     if (
