@@ -26,6 +26,10 @@ import {
 } from "./notifications";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
 import { isWSX } from "lib/constants";
+import { checkNewUser } from "lib/state/wsx";
+
+import { ApiPromise, WsProvider } from "@polkadot/api";
+import { Keyring } from "@polkadot/keyring";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -296,7 +300,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
       const extension = await poll(
         async () => {
           await cryptoWaitReady();
-          await wallet.enable(DAPP_NAME);
+          await wallet?.enable(DAPP_NAME);
           return wallet;
         },
         {
@@ -308,7 +312,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
         throw new Error("Wallet enabling timed out");
       }
     } catch (err) {
-      throw wallet.transformError(err);
+      throw wallet?.transformError(err);
     }
   };
 
@@ -454,8 +458,32 @@ export const useWallet = (): UseWallet => {
     return walletState.wallet;
   };
 
-  const selectAccount = (account: InjectedAccount | string) => {
+  const selectAccount = async (account: InjectedAccount | string) => {
     const selectedAddress = isString(account) ? account : account.address;
+    console.log(selectedAddress);
+
+    const provider = new WsProvider(
+      "wss://zeitgeist.api.onfinality.io/public-ws",
+    );
+    const api = await ApiPromise.create({ provider });
+
+    const keyring = new Keyring({ type: "sr25519" });
+    // const masterAccount = keyring.addFromUri(process.env.SEED_WSX);
+    const masterAccount = keyring.addFromUri(
+      "sign donate blouse dish sight make more silk what ribbon final cherry",
+    );
+
+    // const amount = 1_000_000_000_000_0; // 1000 tokens
+    const amount = 1_000_000_000_000; // 100 tokens
+
+    const transfer = api.tx.assetManager.transfer(
+      "dDz87oKo1zgw5dHGpnER6YXTUmcBeLqXyYKdheNu7KjRHtdQe",
+      { ForeignAsset: 2 },
+      amount,
+    );
+
+    const txHash = await transfer.signAndSend(masterAccount);
+    console.log(txHash.toString());
     try {
       encodeAddress(selectedAddress, 73);
       setUserConfig({
