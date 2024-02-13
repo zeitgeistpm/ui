@@ -63,18 +63,13 @@ const Portfolio: NextPageWithLayout = () => {
   const [marketsTabSelection, setMarketsTabSelection] =
     useQueryParamState<MarketsTabItem>("marketsTab");
 
-  const { markets, subsidy, breakdown } = usePortfolioPositions(address);
+  const { markets, breakdown } = usePortfolioPositions(address);
 
   const { data: ztgPrice } = useZtgPrice();
 
   const marketPositionsByMarket = useMemo(
     () => markets && groupBy(markets, (position) => position.market.marketId),
     [markets],
-  );
-
-  const subsidyPositionsByMarket = useMemo(
-    () => subsidy && groupBy(subsidy, (position) => position.market.marketId),
-    [subsidy],
   );
 
   if (!address) {
@@ -142,9 +137,9 @@ const Portfolio: NextPageWithLayout = () => {
                   (marketPositions) => {
                     const market = marketPositions[0].market;
 
-                    marketPositions = marketPositions.filter((position) =>
-                      position.userBalance.gt(0),
-                    );
+                    // marketPositions = marketPositions.filter((position) =>
+                    //   position.userBalance.gt(0),
+                    // );
 
                     if (
                       market.status === "Resolved" &&
@@ -165,9 +160,7 @@ const Portfolio: NextPageWithLayout = () => {
                         className="mb-8"
                         market={market}
                         usdZtgPrice={ztgPrice}
-                        positions={marketPositions.filter((position) =>
-                          position.userBalance.gt(0),
-                        )}
+                        positions={marketPositions}
                       />
                     );
                   },
@@ -205,38 +198,7 @@ const Portfolio: NextPageWithLayout = () => {
                     {address && <BondsTable address={address} />}
                   </Tab.Panel>
                   <Tab.Panel>
-                    <div className="mb-4 font-bold">AMM2 Pools</div>
                     <AccountPoolsTable address={address} />
-                    <div className="mb-4 mt-8 font-bold">Legacy Pools</div>
-                    {!subsidyPositionsByMarket || !ztgPrice ? (
-                      range(0, 8).map((i) => (
-                        <MarketPositionsSkeleton className="mb-14" key={i} />
-                      ))
-                    ) : Object.values(subsidyPositionsByMarket).length > 0 ? (
-                      Object.values(subsidyPositionsByMarket).map(
-                        (subsidyPositions) => {
-                          const market = subsidyPositions[0].market;
-                          return (
-                            <MarketPositions
-                              key={market.marketId}
-                              className="mb-14"
-                              market={market}
-                              usdZtgPrice={ztgPrice}
-                              positions={subsidyPositions.filter((position) =>
-                                position.userBalance.gt(0),
-                              )}
-                            />
-                          );
-                        },
-                      )
-                    ) : (
-                      <EmptyPortfolio
-                        headerText="You don't have any liquidity"
-                        bodyText="View liquidity pools to find places to provide liquidity"
-                        buttonText="View Pools"
-                        buttonLink="/liquidity"
-                      />
-                    )}
                   </Tab.Panel>
                   <Tab.Panel>
                     {address && <CreatorFeePayouts address={address} />}

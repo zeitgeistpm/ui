@@ -1,9 +1,8 @@
 import { useAtom } from "jotai";
 import { persistentAtom } from "./util/persistent-atom";
 import { AssetOption } from "components/ui/AssetSelect";
-import { isNTT } from "lib/constants";
 import { useEffect } from "react";
-import { nttID } from "lib/constants";
+import { nttID, isNTT } from "lib/constants";
 
 type SelectedFeeAsset = AssetOption;
 

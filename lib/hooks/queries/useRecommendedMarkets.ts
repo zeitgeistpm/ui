@@ -11,6 +11,7 @@ import { getCurrentPrediction } from "lib/util/assets";
 import { useSdkv2 } from "../useSdkv2";
 import { QueryMarketData } from "./useInfiniteMarkets";
 import { useMarket } from "./useMarket";
+import { searchMarketsText } from "./useMarketSearch";
 
 export const recommendedMarketsRootKey = "recommended-markets";
 
@@ -24,34 +25,29 @@ export const useRecommendedMarkets = (marketId?: number, limit = 2) => {
     [id, recommendedMarketsRootKey, market?.marketId],
     async () => {
       if (enabled) {
-        const { markets: similarMarkets } = await sdk.indexer.markets({
-          limit,
-          order: [MarketOrderByInput.PoolVolumeDesc],
-          where: {
-            tags_containsAny: market?.tags,
-            status_eq: MarketStatus.Active,
-            marketId_not_eq: marketId,
-            pool: {
-              volume_gt: "0",
-            },
-          },
-        });
+        const similarMarkets = await searchMarketsText(
+          sdk.indexer,
+          market.question ?? "",
+        );
 
-        if (similarMarkets.length > 0) {
+        if (market.question && similarMarkets.length > 0) {
           return {
-            markets: await mapMarkets(sdk.indexer, similarMarkets),
+            markets: await mapMarkets(
+              sdk.indexer,
+              similarMarkets
+                .filter((m) => m.question !== market.question)
+                .slice(0, 2),
+            ),
             type: "similar" as const,
           };
         } else {
           const { markets: popularMarkets } = await sdk.indexer.markets({
             limit,
-            order: [MarketOrderByInput.PoolVolumeDesc],
+            order: [MarketOrderByInput.VolumeDesc],
             where: {
               status_eq: MarketStatus.Active,
               marketId_not_eq: marketId,
-              pool: {
-                volume_gt: "0",
-              },
+              volume_gt: "0",
             },
           });
           return {
@@ -81,8 +77,8 @@ const mapMarkets = async (
   for (const market of markets) {
     const marketOutcomes = outcomes[market.marketId];
     const prediction =
-      market.pool != null
-        ? getCurrentPrediction(marketOutcomes, market)
+      market && market.assets.length > 0
+        ? getCurrentPrediction(market.assets, market)
         : { name: "None", price: 0 };
 
     resMarkets = [

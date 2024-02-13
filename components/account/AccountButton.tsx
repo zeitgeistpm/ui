@@ -10,10 +10,9 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useAccountModals } from "lib/state/account";
 import { useUserLocation } from "lib/hooks/useUserLocation";
-import { useWallet, walletAtom } from "lib/state/wallet";
+import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { FaNetworkWired } from "react-icons/fa";
-import { useEffect, useMemo } from "react";
 
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -28,16 +27,10 @@ import {
   User,
 } from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
-import {
-  DesktopOnboardingModal,
-  MobileOnboardingModal,
-} from "./OnboardingModal";
+import { DesktopOnboardingModal } from "./OnboardingModal";
 import SettingsModal from "components/settings/SettingsModal";
 import CopyIcon from "../ui/CopyIcon";
 import { formatNumberCompact } from "lib/util/format-compact";
-import useActiveBalance from "lib/state/useActiveBalance";
-import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
-import { useRef } from "react";
 
 const BalanceRow = ({
   imgPath,
@@ -99,34 +92,24 @@ const AccountButton: FC<{
   const proxy = getProxyFor(activeAccount?.address);
 
   const accountModals = useAccountModals();
-  const { locationAllowed, isUsingVPN } = useUserLocation();
+  const { locationAllowed } = useUserLocation();
   const [hovering, setHovering] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const confirm = useConfirmation();
 
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: polkadotBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 0,
   });
 
-  const balance = useActiveBalance(activeAccount?.address, {
-    ForeignAsset: nttID,
+  const { data: nttBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: 4,
   });
 
   const { data: constants } = useChainConstants();
 
-  const isMobileDevice =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    );
-
   const connect = async () => {
-    if (isNTT) {
-      selectWallet("web3auth");
-      return;
-    }
     if (isNovaWallet) {
       selectWallet("polkadot-js");
     } else {
@@ -162,39 +145,25 @@ const AccountButton: FC<{
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {isNTT ? (
+          {hasWallet === true ? (
             <HeaderActionButton
-              disabled={
-                locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)
-              }
-              onClick={() => connect()}
-            >
-              Get Started
-            </HeaderActionButton>
-          ) : hasWallet === true ? (
-            <HeaderActionButton
-              disabled={
-                locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)
-              }
+              disabled={locationAllowed !== true || !isRpcSdk(sdk)}
               onClick={() => connect()}
             >
               Connect Wallet
             </HeaderActionButton>
           ) : (
             <HeaderActionButton
-              disabled={locationAllowed !== true || isUsingVPN}
+              disabled={locationAllowed !== true}
               onClick={() => setShowOnboarding(true)}
             >
               Get Started
             </HeaderActionButton>
           )}
 
-          {hovering === true &&
-          (locationAllowed !== true || isUsingVPN === true) ? (
+          {hovering === true && locationAllowed !== true ? (
             <div className="absolute bottom-0 right-0 rounded bg-white text-sm font-bold text-black">
-              {locationAllowed !== true
-                ? "Your jurisdiction is not authorised to trade"
-                : "Trading over a VPN is not allowed due to legal restrictions"}
+              Your jurisdiction is not authorised to trade
             </div>
           ) : (
             <></>
@@ -236,7 +205,7 @@ const AccountButton: FC<{
                           {isNTT ? (
                             <span className="hidden h-full min-w-fit pl-2 text-sm font-medium leading-[40px] transition-all md:block">
                               {formatNumberCompact(
-                                balance?.div(ZTG).abs().toNumber() ?? 0,
+                                nttBalance?.div(ZTG).abs().toNumber() ?? 0,
                               )}{" "}
                               NTT
                             </span>
@@ -336,7 +305,7 @@ const AccountButton: FC<{
                           <BalanceRow
                             imgPath="/currencies/ntt-currency.png"
                             units="NTT"
-                            balance={balance}
+                            balance={nttBalance}
                           />
                         ) : (
                           <>
@@ -395,7 +364,9 @@ const AccountButton: FC<{
                             <div
                               className="mb-3 flex items-center px-6 hover:bg-slate-100"
                               onClick={() => {
-                                accountModals.openAccountSelect();
+                                walletId === "web3auth"
+                                  ? accountModals.openWalletSelect()
+                                  : accountModals.openAccountSelect();
                               }}
                             >
                               <User />
@@ -470,23 +441,14 @@ const AccountButton: FC<{
           setShowSettingsModal(false);
         }}
       />
-      {isMobileDevice ? (
+      <>
         <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
-          <MobileOnboardingModal />
+          <DesktopOnboardingModal />
         </Modal>
-      ) : (
-        <>
-          <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
-            <DesktopOnboardingModal />
-          </Modal>
-          <Modal
-            open={showGetZtgModal}
-            onClose={() => setShowGetZtgModal(false)}
-          >
-            <DesktopOnboardingModal step={4} />
-          </Modal>
-        </>
-      )}
+        <Modal open={showGetZtgModal} onClose={() => setShowGetZtgModal(false)}>
+          <DesktopOnboardingModal step={4} />
+        </Modal>
+      </>
     </>
   );
 };

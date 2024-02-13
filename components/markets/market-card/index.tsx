@@ -1,23 +1,31 @@
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk";
-import Skeleton from "components/ui/Skeleton";
-import Decimal from "decimal.js";
-import { ZTG, isNTT } from "lib/constants";
-import { MarketOutcomes } from "lib/types/markets";
-import { formatNumberCompact } from "lib/util/format-compact";
-import { hasDatePassed } from "lib/util/hasDatePassed";
-import Link from "next/link";
-import { BarChart2, Droplet, Users } from "react-feather";
-import ScalarPriceRange from "../ScalarPriceRange";
-import MarketCardContext from "./context";
-
 import {
   IOBaseAssetId,
   IOForeignAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import Skeleton from "components/ui/Skeleton";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
+import { useMarketImage } from "lib/hooks/useMarketImage";
+import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { MarketOutcomes } from "lib/types/markets";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { hasDatePassed } from "lib/util/hasDatePassed";
+import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
+import dynamic from "next/dynamic";
 import Image from "next/image";
-import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import Link from "next/link";
+import { BarChart2, Droplet, Users } from "react-feather";
+import ScalarPriceRange from "../ScalarPriceRange";
+import MarketCardContext from "./context";
+
+const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
+  ssr: false,
+});
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -30,7 +38,7 @@ export interface IndexedMarketCardData {
   scalarType: ScalarRangeType | null;
   prediction: { name: string; price: number };
   volume: number;
-  pool?: { poolId?: number; volume: string } | null;
+  pool?: { poolId?: number } | null;
   neoPool?: FullMarketFragment["neoPool"] | null;
   baseAsset: string;
   tags?: string[];
@@ -62,7 +70,7 @@ const MarketCardPredictionBar = ({
     return (
       <div className={`relative h-[30px] w-full bg-gray-200 transition-all`}>
         <div className="absolute flex h-full w-full items-center justify-between px-2.5 text-sm">
-          <span className="text-blue">{name}</span>
+          <span className="line-clamp-1 text-blue">{name}</span>
           <span className="text-blue transition-all">{impliedPercentage}%</span>
         </div>
         <div
@@ -221,12 +229,24 @@ export const MarketCard = ({
     ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
     : 0;
 
+  const { data: image } = useMarketImage(
+    { marketId, tags },
+    {
+      fallback:
+        img && isAbsoluteUrl(img) && !isMarketImageBase64Encoded(img)
+          ? img
+          : undefined,
+    },
+  );
+
+  const { data: cmsMetadata } = useMarketCmsMetadata(marketId);
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
         className={`ztg-transition group relative flex min-w-full flex-col  
-        rounded-[10px] bg-white p-5 md:min-w-[calc(50%-8px)] md:hover:scale-[1.035] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+        rounded-[10px] bg-white p-5 md:min-w-[calc(50%-8px)] md:hover:scale-[1.015] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
@@ -240,12 +260,24 @@ export const MarketCard = ({
             disableLink && "cursor-default"
           }`}
         >
-          <div className="flex h-full w-full gap-4 whitespace-normal">
-            <h5 className="line-clamp-2 h-fit w-full text-base">{question}</h5>
-            {/* {disable for now until we can get image from CMS} */}
-            {/* <div className="relative min-w-[84px] min-h-[80px] rounded-xl">
-              <MarketImage tags={tags} alt={question} className="rounded-lg" />
-            </div> */}
+          <div className="flex h-[54px] w-full gap-4 whitespace-normal">
+            <div className="relative min-h-[54px] min-w-[54px] rounded-lg bg-gray-400 bg-opacity-30">
+              <Image
+                priority
+                alt={"Market image"}
+                src={image}
+                fill
+                className="overflow-hidden rounded-lg"
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "50% 50%",
+                }}
+                sizes={"54px"}
+              />
+            </div>
+            <h5 className="line-clamp-2 h-fit w-full text-base duration-200">
+              {cmsMetadata?.question ?? question}
+            </h5>
           </div>
 
           <div className="w-full">
@@ -283,7 +315,13 @@ export const MarketCard = ({
               </>
             )}
           </div>
-          <MarketCardDetails rows={infoRows} />
+          <div className="flex flex-1 gap-2">
+            <div className="flex-1">
+              <MarketCardDetails rows={infoRows} />
+            </div>
+
+            <MarketFavoriteToggle marketId={marketId} />
+          </div>
         </Link>
       </div>
     </MarketCardContext.Provider>

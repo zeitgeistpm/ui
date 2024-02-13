@@ -10,7 +10,10 @@ import {
 import { useChainTime } from "lib/state/chaintime";
 import { isNaN, isNumber } from "lodash-es";
 import * as z from "zod";
-import { SupportedCurrencyTag } from "../../../constants/supported-currencies";
+import {
+  SupportedCurrencyTag,
+  supportedCurrencies,
+} from "../../../constants/supported-currencies";
 import { minBaseLiquidity } from "../constants/currency";
 import { MarketFormData } from "./form";
 import { timelineAsBlocks } from "./timeline";
@@ -109,9 +112,7 @@ export const createMarketFormValidator = ({
       if (form?.liquidity?.amount) {
         baseLiquidity = Number(form?.liquidity?.amount);
       } else {
-        const baseLiquidityRow =
-          form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
-        baseLiquidity = Number(baseLiquidityRow?.amount) * 2;
+        baseLiquidity = Number(form.liquidity.amount);
       }
 
       if (isNaN(baseLiquidity) || !isNumber(baseLiquidity)) {
@@ -135,7 +136,7 @@ export const createMarketFormValidator = ({
         form.moderation === "Permissionless" &&
         form.liquidity?.deploy &&
         form.liquidity?.rows &&
-        form.liquidity?.rows?.length < 3
+        form.liquidity?.rows?.length < 2
       ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -171,12 +172,8 @@ export const useMarketCreationFormValidator = (
  * Zod Schemas for individual form fields.
  * -------------
  */
-
-export const IOCurrency = z.enum<SupportedCurrencyTag, ["ZTG", "DOT", "NTT"]>([
-  "ZTG",
-  "DOT",
-  "NTT",
-]);
+const supportedSymbols = supportedCurrencies.map((currency) => currency.name);
+export const IOCurrency = z.enum<SupportedCurrencyTag, any>(supportedSymbols);
 
 export const IOQuestion = z
   .string()
@@ -292,7 +289,6 @@ export const IOCreatorFee = z.object({
 
 export const IOLiquidityRow = z.object({
   asset: z.string(),
-  weight: z.string(),
   amount: z.string(),
   price: z.object({
     price: z.string(),

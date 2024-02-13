@@ -5,7 +5,6 @@ import { Hydrate, QueryClientProvider } from "@tanstack/react-query";
 import * as Fathom from "fathom-client";
 
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
-import Devtools from "components/devtools";
 import DefaultLayout from "layouts/DefaultLayout";
 import { appQueryClient } from "lib/query-client";
 import Head from "next/head";
@@ -13,13 +12,12 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 import { isNTT } from "lib/constants";
-import { Transition } from "@headlessui/react";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
 import { useWallet } from "lib/state/wallet";
 import { Loader } from "components/ui/Loader";
-import { useState } from "react";
+import useWeb3Wallet from "lib/hooks/useWeb3Wallet";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -33,7 +31,7 @@ const MyApp = ({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
   const wallet = useWallet();
-  const [loading, setLoading] = useState(false);
+  const { initWeb3Auth } = useWeb3Wallet();
 
   useEffect(() => {
     if (!isProduction) {
@@ -65,13 +63,11 @@ const MyApp = ({ Component, pageProps }) => {
   }, []);
 
   useEffect(() => {
-    if (wallet.walletId === "web3auth") {
-      const init = async () => {
-        await wallet.loadWeb3AuthWallet();
-      };
-      init();
-    }
-  }, [wallet.walletId]);
+    const init = async () => {
+      await initWeb3Auth();
+    };
+    init();
+  }, []);
 
   return (
     <div
@@ -87,7 +83,7 @@ const MyApp = ({ Component, pageProps }) => {
         `}
       </style>
       {wallet.loading && (
-        <div className="center fixed top-0 z-50 h-full w-full bg-ntt-blue opacity-30">
+        <div className="center bg-ntt-blue fixed top-0 z-50 h-full w-full opacity-30">
           <Loader
             variant={"Loading"}
             className="z-20 h-[50px] w-[50px]"

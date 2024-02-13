@@ -9,4 +9,5 @@ export const minBaseLiquidity: Record<SupportedCurrencyTag, number> = {
   ZTG: 200,
   DOT: 10,
   NTT: 100,
+  USDC: 50,
 };

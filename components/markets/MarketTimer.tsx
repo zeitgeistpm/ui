@@ -2,6 +2,7 @@ import { isInfinite, MarketStage } from "@zeitgeistpm/sdk";
 import { clamp } from "lodash-es";
 import Skeleton from "components/ui/Skeleton";
 import moment from "moment";
+import { isInfinity } from "@zeitgeistpm/utility/dist/infinity";
 
 export type MarketTimerProps = {
   stage: MarketStage;
@@ -32,19 +33,21 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
           </div>
         )}
       </div>
-      <div className="w-full">
-        <div className="text-right text-xs text-sky-600">
-          {percentage.toFixed(0)}%
+      {!isInfinity(stage.remainingTime) && (
+        <div className="w-full">
+          <div className="text-right text-xs text-sky-600">
+            {percentage.toFixed(0)}%
+          </div>
+          <div className="h-1.5 w-full rounded-lg bg-gray-100">
+            <div
+              className={`h-full rounded-lg transition-all ${
+                copy[stage.type].color
+              }`}
+              style={{ width: `${percentage}%` }}
+            />
+          </div>
         </div>
-        <div className="h-1.5 w-full rounded-lg bg-gray-100">
-          <div
-            className={`h-full rounded-lg transition-all ${
-              copy[stage.type].color
-            }`}
-            style={{ width: `${percentage}%` }}
-          />
-        </div>
-      </div>
+      )}
     </div>
   );
 };

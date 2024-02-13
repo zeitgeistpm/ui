@@ -4,15 +4,12 @@ import { Keyring } from "@polkadot/keyring";
 import { nttID } from "lib/constants";
 
 export default async function checkNewUser(req, res) {
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL_NTT ||
-    !process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY_NTT
-  ) {
+  if (!process.env.SUPABASE_URL_NTT || !process.env.SUPABASE_SERVICE_KEY_NTT) {
     return;
   }
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL_NTT,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY_NTT,
+    process.env.SUPABASE_URL_NTT,
+    process.env.SUPABASE_SERVICE_KEY_NTT,
     { auth: { persistSession: false } },
   );
 
@@ -55,7 +52,7 @@ export default async function checkNewUser(req, res) {
 }
 
 async function fundUser(wallet) {
-  if (!process.env.NEXT_PUBLIC_SEED_NTT) {
+  if (!process.env.SEED_NTT) {
     return { error: "Error connecting" };
   }
   const provider = new WsProvider("wss://bsr.zeitgeist.pm");
@@ -63,11 +60,11 @@ async function fundUser(wallet) {
 
   try {
     const keyring = new Keyring({ type: "sr25519" });
-    const masterAccount = keyring.addFromUri(process.env.NEXT_PUBLIC_SEED_NTT);
+    const masterAccount = keyring.addFromUri(process.env.SEED_NTT);
 
     // const amount = 1_000_000_000_000_0; // 1000 tokens
     const amount = 1_000_000_000_000; // 100 tokens
-
+    // 10000000000000 min amoount
     const transfer = api.tx.assetManager.transfer(
       wallet,
       { ForeignAsset: nttID },

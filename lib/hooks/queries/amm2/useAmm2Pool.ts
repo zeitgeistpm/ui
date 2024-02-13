@@ -22,6 +22,13 @@ export type Amm2Pool = {
   totalShares: Decimal;
   reserves: ReserveMap;
   assetIds: MarketOutcomeAssetId[];
+  accounts: PoolAccount[];
+};
+
+type PoolAccount = {
+  address: string;
+  shares: Decimal;
+  fees: Decimal;
 };
 
 export const useAmm2Pool = (marketId?: number) => {
@@ -52,16 +59,27 @@ export const useAmm2Pool = (marketId?: number) => {
           }
         });
 
+        const poolAccounts: PoolAccount[] =
+          unwrappedRes.liquiditySharesManager.nodes.map((node) => {
+            return {
+              address: node.account.toString(),
+              shares: new Decimal(node.stake.toString()),
+              fees: new Decimal(node.fees.toString()),
+            };
+          });
+
         const pool: Amm2Pool = {
           accountId: unwrappedRes.accountId.toString(),
           baseAsset: parseAssetIdString(unwrappedRes.collateral.toString())!,
           liquidity: new Decimal(unwrappedRes.liquidityParameter.toString()),
           swapFee: new Decimal(unwrappedRes.swapFee.toString()),
-          totalShares: new Decimal(
-            unwrappedRes.liquiditySharesManager.totalShares.toString(),
-          ),
+          accounts: poolAccounts,
           reserves,
           assetIds,
+          totalShares: poolAccounts.reduce<Decimal>(
+            (total, account) => total.plus(account.shares),
+            new Decimal(0),
+          ),
         };
 
         return pool;

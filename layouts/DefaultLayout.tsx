@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import { Account } from "components/account/Account";
 import { ConfirmationProvider } from "components/confirmation/ConfirmationProvider";
 import { isNTT } from "lib/constants";
+import { DisclaimerModal } from "components/onboarding/DisclaimerModal";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
@@ -27,8 +28,10 @@ const Onboarding = dynamic(
 const greyBackgroundPageRoutes = [
   "/",
   "/markets",
+  "/markets/favorites",
   "/create-account",
   "/deposit",
+  "/topics",
 ];
 
 const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
@@ -47,7 +50,8 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <div
       className={`relative min-h-screen justify-evenly ${
-        greyBackgroundPageRoutes.includes(router.pathname)
+        greyBackgroundPageRoutes.includes(router.pathname) ||
+        router.pathname.match("topics")
           ? "bg-light-gray"
           : ""
       }`}
@@ -90,6 +94,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
         </div>
         <NotificationCenter />
         <ConfirmationProvider />
+        <DisclaimerModal />
       </TradeItemContext.Provider>
       <Account />
       <Onboarding />

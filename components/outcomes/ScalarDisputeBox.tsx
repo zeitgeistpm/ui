@@ -1,15 +1,11 @@
 import { IndexerContext, isRpcSdk, Market } from "@zeitgeistpm/sdk";
 import { MarketStatus } from "@zeitgeistpm/indexer";
 import TransactionButton from "components/ui/TransactionButton";
-import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import moment from "moment";
 
 const ScalarDisputeBox = ({
   market,
@@ -59,12 +55,14 @@ const ScalarDisputeBox = ({
   return (
     <div className="flex flex-col items-center gap-y-3 p-[30px]">
       <div className="text-[22px] font-bold">Dispute Outcome</div>
-      <div className="mb-[20px] text-center">
-        Bond cost: {disputeBond} {tokenSymbol}
-        <span className="font-bold">
+      <div className="mb-[20px] flex flex-col items-center justify-center gap-3 text-center">
+        <div>
+          Bond cost: {disputeBond} {tokenSymbol}
+        </div>
+        <div className="font-bold">
           Bonds will be slashed if the reported outcome is deemed to be
           incorrect
-        </span>
+        </div>
       </div>
 
       {bondAmount !== disputeBond && bondAmount !== undefined && (

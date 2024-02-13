@@ -1,7 +1,7 @@
 import { FormEvent } from "components/create/editor/types";
 import Decimal from "decimal.js";
 import { usePrevious } from "lib/hooks/usePrevious";
-import { last, merge } from "lodash-es";
+import { merge } from "lodash-es";
 import { useEffect, useMemo } from "react";
 import { minBaseLiquidity } from "./constants/currency";
 import * as MarketDraft from "./types/draft";
@@ -10,7 +10,6 @@ import {
   MarketFormData,
   PartialMarketFormData,
   ValidMarketFormData,
-  isAMM2Form,
   marketCreationFormKeys,
 } from "./types/form";
 import {
@@ -23,6 +22,8 @@ import {
 import { useMarketCreationFormValidator } from "./types/validation";
 import { tickersForAnswers } from "./util/tickers";
 import { DeepPartial } from "lib/types/deep-partial";
+import { persistentAtom } from "../util/persistent-atom";
+import { useAtom } from "jotai";
 
 /**
  * The market draft editor.
@@ -142,10 +143,14 @@ export type MarketDraftEditorConfig = {
   update: (state: MarketDraft.MarketDraftState) => void;
 };
 
-export const useMarketDraftEditor = ({
-  draft,
-  update,
-}: MarketDraftEditorConfig): MarketDraftEditor => {
+const createMarketStateAtom = persistentAtom<MarketDraft.MarketDraftState>({
+  key: "market-creation-form",
+  defaultValue: MarketDraft.empty(),
+  migrations: [() => MarketDraft.empty(), () => MarketDraft.empty()],
+});
+
+export const useMarketDraftEditor = (): MarketDraftEditor => {
+  const [draft, update] = useAtom(createMarketStateAtom);
   const validator = useMarketCreationFormValidator(draft.form);
 
   const fieldsState = useMemo<FieldsState.FieldsState>(() => {
@@ -316,20 +321,15 @@ export const useMarketDraftEditor = ({
   useEffect(() => {
     if (!draft.form.answers || !draft.form.liquidity) return;
 
-    const isAMM2 = isAMM2Form(draft.form);
-
     const baseAmount = minBaseLiquidity[draft.form.currency!]
-      ? `${minBaseLiquidity[draft.form.currency!] / 2}`
+      ? `${minBaseLiquidity[draft.form.currency!]}`
       : "100";
 
-    const amm2Liquidity = isAMM2
-      ? minBaseLiquidity[draft.form.currency!]?.toString() ?? "100"
-      : undefined;
+    const liquidity =
+      minBaseLiquidity[draft.form.currency!]?.toString() ?? "100";
 
-    const baseWeight = 64;
     const numOutcomes = draft.form.answers.answers.length;
     const ratio = 1 / numOutcomes;
-    const baseAssetLiquidity = last(draft.form.liquidity?.rows);
     const reset =
       prevAnswersLength !== numOutcomes || prevCurrency !== draft.form.currency;
 
@@ -349,13 +349,8 @@ export const useMarketDraftEditor = ({
           ? ratio.toString()
           : liquidity?.price?.price ?? ratio.toString();
 
-        const weight = reset
-          ? ratio * baseWeight
-          : liquidity?.weight || ratio * baseWeight;
-
         return {
           asset: tickers?.[index]?.ticker ?? answer,
-          weight: weight.toString(),
           amount: amount.toString(),
           price: {
             price: price,
@@ -364,16 +359,6 @@ export const useMarketDraftEditor = ({
           value: `${amount.mul(ratio).toFixed(4)}`,
         };
       }),
-      {
-        asset: draft.form.currency,
-        weight: baseWeight.toString(),
-        amount: reset ? baseAmount : baseAssetLiquidity?.amount || baseAmount,
-        price: {
-          price: "1",
-          locked: true,
-        },
-        value: reset ? baseAmount : baseAssetLiquidity?.value || baseAmount,
-      },
     ];
 
     update({
@@ -382,7 +367,7 @@ export const useMarketDraftEditor = ({
         ...draft.form,
         liquidity: {
           ...draft.form.liquidity,
-          amount: amm2Liquidity,
+          amount: draft.form.liquidity.amount ?? liquidity,
           rows,
         },
       },
