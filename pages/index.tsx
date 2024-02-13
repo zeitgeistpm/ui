@@ -6,6 +6,7 @@ import { BgBallGfx } from "components/front-page/BgBallFx";
 import GettingStartedSection from "components/front-page/GettingStartedSection";
 import { HeroBanner } from "components/front-page/HeroBanner";
 import LatestTrades from "components/front-page/LatestTrades";
+import NetworkStats from "components/front-page/NetworkStats";
 import { NewsSection } from "components/front-page/News";
 import PopularCategories, {
   CATEGORIES,
