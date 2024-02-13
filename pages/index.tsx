@@ -1,4 +1,3 @@
-import { Disclosure } from "@headlessui/react";
 import { GenericChainProperties } from "@polkadot/types";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
@@ -6,7 +5,7 @@ import { BgBallGfx } from "components/front-page/BgBallFx";
 import GettingStartedSection from "components/front-page/GettingStartedSection";
 import { HeroBanner } from "components/front-page/HeroBanner";
 import LatestTrades from "components/front-page/LatestTrades";
-import NetworkStats from "components/front-page/NetworkStats";
+import LatestTradesCompact from "components/front-page/LatestTradesCompact";
 import { NewsSection } from "components/front-page/News";
 import PopularCategories, {
   CATEGORIES,
@@ -20,7 +19,7 @@ import MarketCard, {
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
 import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
-import { getCmsNews, CmsNews } from "lib/cms/news";
+import { CmsNews, getCmsNews } from "lib/cms/news";
 import {
   CmsTopicHeader,
   getCmsTopicHeaders,
@@ -39,16 +38,10 @@ import {
 import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
 import { getPlaiceholders } from "lib/util/getPlaiceHolders";
 import { NextPage } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import path from "path";
-import {
-  getPlaiceholder,
-  IGetPlaiceholderOptions,
-  IGetPlaiceholderReturn,
-} from "plaiceholder";
-import { useState } from "react";
+import { getPlaiceholder } from "plaiceholder";
 
 export async function getStaticProps() {
   const client = new GraphQLClient(graphQlEndpoint);
@@ -248,8 +241,13 @@ const IndexPage: NextPage<{
           <WatchHow />
         </div>
 
-        <div className="w-[50%]">
-          <TrendingMarketsCompact markets={trendingMarkets} />
+        <div className="flex gap-x-8">
+          <div className="w-full">
+            <TrendingMarketsCompact markets={trendingMarkets} />
+          </div>
+          <div className="w-full">
+            <LatestTradesCompact />
+          </div>
         </div>
 
         {trendingMarkets.length > 0 && (
