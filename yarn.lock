@@ -4379,12 +4379,15 @@ __metadata:
     fuse.js: ^6.6.2
     graphql-request: ^5.0.0
     groq: ^3.23.4
+    ipfs-http-client: ^60.0.1
+    ipfs-utils: ^9.0.14
     jotai: ^2.0.4
     jotai-tanstack-query: ^0.7.0
     lodash.merge: ^4.6.2
     median-range: ^0.0.11
     moment: ^2.29.1
     moment-timezone: ^0.5.43
+    multiformats: ^13.0.1
     next: ^13.4.19
     next-absolute-url: ^1.2.2
     next-qrcode: ^2.5.1
@@ -4430,6 +4433,7 @@ __metadata:
     validatorjs: ^3.22.1
     vitest: ^0.34.6
     zod: ^3.21.4
+    zod-validation-error: ^3.0.2
   languageName: unknown
   linkType: soft
 
@@ -7791,7 +7795,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ipfs-http-client@npm:^60.0.0":
+"ipfs-http-client@npm:^60.0.0, ipfs-http-client@npm:^60.0.1":
   version: 60.0.1
   resolution: "ipfs-http-client@npm:60.0.1"
   dependencies:
@@ -7895,7 +7899,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ipfs-utils@npm:^9.0.13":
+"ipfs-utils@npm:^9.0.13, ipfs-utils@npm:^9.0.14":
   version: 9.0.14
   resolution: "ipfs-utils@npm:9.0.14"
   dependencies:
@@ -9509,6 +9513,13 @@ __metadata:
   version: 12.1.3
   resolution: "multiformats@npm:12.1.3"
   checksum: 1060488612f8e6729c600f47a8741b91aa6e7b807ce165eca3c8cf07ab7465d2d9b212415a9c18886938b9e35b30ea7b9ae19b5ab5122589c65063440643e6bb
+  languageName: node
+  linkType: hard
+
+"multiformats@npm:^13.0.1":
+  version: 13.0.1
+  resolution: "multiformats@npm:13.0.1"
+  checksum: 63e5d6ee2c2a1d1e8fbd4b8c76fa41cf3d8204ceed1d57bc44cb30ff3d06b880ad58c3de52ae6d4397a662a6f1e3285dae74ee5d445fd1597516e1baec96d22a
   languageName: node
   linkType: hard
 
@@ -13756,6 +13767,15 @@ __metadata:
   version: 0.8.15
   resolution: "zen-observable@npm:0.8.15"
   checksum: b7289084bc1fc74a559b7259faa23d3214b14b538a8843d2b001a35e27147833f4107590b1b44bf5bc7f6dfe6f488660d3a3725f268e09b3925b3476153b7821
+  languageName: node
+  linkType: hard
+
+"zod-validation-error@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "zod-validation-error@npm:3.0.2"
+  peerDependencies:
+    zod: ^3.18.0
+  checksum: 5127ff75f50db2f195d739142d4e56b1d8f7294b82c08d1b308978bc546afc7c3b2958f677d00eca1e3254342704d48a34ba93f8e88ae5799feefda6b6dc911e
   languageName: node
   linkType: hard
 
