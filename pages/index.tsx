@@ -241,11 +241,30 @@ const IndexPage: NextPage<{
           <WatchHow />
         </div>
 
-        <div className="flex gap-x-8">
-          <div className="w-full">
+        <div className="flex w-full gap-x-8">
+          <div className="flex w-full flex-col gap-y-6">
+            <div className="items-cente flex ">
+              <div className="text-xl font-bold">Trending Markets</div>
+              <Link
+                href="/markets"
+                className="ml-auto rounded-md bg-misty-harbor p-1 text-xs"
+              >
+                More Markets
+              </Link>
+            </div>
             <TrendingMarketsCompact markets={trendingMarkets} />
           </div>
-          <div className="w-full">
+
+          <div className="flex w-full flex-col gap-y-6">
+            <div className="flex items-center ">
+              <div className="text-xl font-bold">Latest Trades</div>
+              <Link
+                href="/latest-trades"
+                className="ml-auto rounded-md bg-misty-harbor p-1 text-xs"
+              >
+                All Trades
+              </Link>
+            </div>
             <LatestTradesCompact />
           </div>
         </div>

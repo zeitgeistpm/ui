@@ -14,8 +14,8 @@ const LatestTradesCompact = () => {
           <div className="flex p-4">
             <div className="mr-4 flex h-[45px] w-[45px] rounded-md bg-blue-500"></div>
             <div className="flex flex-col">
-              <div>{trade.question}</div>
-              <div className="flex items-center gap-x-1 text-ztg-blue">
+              <div className="text-sm">{trade.question}</div>
+              <div className="flex items-center gap-x-1 text-sm text-ztg-blue">
                 <Avatar size={15} address={trade.traderAddress} />
                 {trade.type === "buy" ? "Bought" : "Sold"}
                 <span className="font-bold">{trade.outcomeName}</span>
