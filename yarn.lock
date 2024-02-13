@@ -3031,7 +3031,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/functions-js@npm:^2.1.5":
+"@supabase/functions-js@npm:2.1.5":
   version: 2.1.5
   resolution: "@supabase/functions-js@npm:2.1.5"
   dependencies:
@@ -3040,12 +3040,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/gotrue-js@npm:^2.60.0":
+"@supabase/gotrue-js@npm:2.62.2":
   version: 2.62.2
   resolution: "@supabase/gotrue-js@npm:2.62.2"
   dependencies:
     "@supabase/node-fetch": ^2.6.14
   checksum: d77f5075c56dc8529b137f8aba3e4f5ee7da30c21f519202fd63d2b71aef459b6b61daee0a7e199eaa31ab14206336efa0141baafebfe3f1fb94c0e1f15dfbf5
+  languageName: node
+  linkType: hard
+
+"@supabase/node-fetch@npm:2.6.15":
+  version: 2.6.15
+  resolution: "@supabase/node-fetch@npm:2.6.15"
+  dependencies:
+    whatwg-url: ^5.0.0
+  checksum: 9673b49236a56df49eb7ea5cb789cf4e8b1393069b84b4964ac052995e318a34872f428726d128f232139e17c3375a531e45e99edd3e96a25cce60d914b53879
   languageName: node
   linkType: hard
 
@@ -3058,7 +3067,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/postgrest-js@npm:^1.9.0":
+"@supabase/postgrest-js@npm:1.9.2":
   version: 1.9.2
   resolution: "@supabase/postgrest-js@npm:1.9.2"
   dependencies:
@@ -3067,7 +3076,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/realtime-js@npm:^2.9.3":
+"@supabase/realtime-js@npm:2.9.3":
   version: 2.9.3
   resolution: "@supabase/realtime-js@npm:2.9.3"
   dependencies:
@@ -3079,26 +3088,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/storage-js@npm:^2.5.4":
-  version: 2.5.4
-  resolution: "@supabase/storage-js@npm:2.5.4"
+"@supabase/storage-js@npm:2.5.5":
+  version: 2.5.5
+  resolution: "@supabase/storage-js@npm:2.5.5"
   dependencies:
     "@supabase/node-fetch": ^2.6.14
-  checksum: 034a918c1c5504174cc67c0335575fa647958a9c53eb7440c1f24a210177c60bde9990fde19eb8902c2bbe3bd823be01204e36ad290bcb8df2387ac5511ed2a4
+  checksum: 4470499113c15e1124d99048eef0097c7ba431d728e351519ee26948775171d6c6bb41156f8ffb3860009b82b93809af01c9d075ece6000f783f59ce9fd00ee8
   languageName: node
   linkType: hard
 
-"@supabase/supabase-js@npm:^2.39.3":
-  version: 2.39.3
-  resolution: "@supabase/supabase-js@npm:2.39.3"
+"@supabase/supabase-js@npm:^2.39.4":
+  version: 2.39.4
+  resolution: "@supabase/supabase-js@npm:2.39.4"
   dependencies:
-    "@supabase/functions-js": ^2.1.5
-    "@supabase/gotrue-js": ^2.60.0
-    "@supabase/node-fetch": ^2.6.14
-    "@supabase/postgrest-js": ^1.9.0
-    "@supabase/realtime-js": ^2.9.3
-    "@supabase/storage-js": ^2.5.4
-  checksum: df8a5fe7a06cd26069a0add024af46021b04bf3f5101259932103f7d76b45eee3b4d7f3164335844ceebb9cef83601ded9ba95dfc7da7ce9bbf2708702f90deb
+    "@supabase/functions-js": 2.1.5
+    "@supabase/gotrue-js": 2.62.2
+    "@supabase/node-fetch": 2.6.15
+    "@supabase/postgrest-js": 1.9.2
+    "@supabase/realtime-js": 2.9.3
+    "@supabase/storage-js": 2.5.5
+  checksum: 16fb9b94e3ab55fce5a61954c2574fb3125ecf18932c0a06e287ff08a38bcea9f8907f148b121fc7d36d67f1701707c030b592c5d01e898f7531cef9acaa71b3
   languageName: node
   linkType: hard
 
@@ -4446,7 +4455,7 @@ __metadata:
     "@sanity/client": ^6.10.0
     "@subsocial/grill-widget": ^0.0.5
     "@supabase/auth-helpers-nextjs": ^0.8.7
-    "@supabase/supabase-js": ^2.39.3
+    "@supabase/supabase-js": ^2.39.4
     "@tailwindcss/container-queries": ^0.1.1
     "@tailwindcss/line-clamp": ^0.4.2
     "@talismn/connect-wallets": ^1.2.3

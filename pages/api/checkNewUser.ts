@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Keyring } from "@polkadot/keyring";
+import { Database } from "lib/types/supabase";
 import { nttID } from "lib/constants";
 
 export default async function checkNewUser(req, res) {
@@ -27,6 +28,7 @@ export default async function checkNewUser(req, res) {
 
   if (data === null) {
     const response = await supabase.from("users").insert({ wallet: wallet });
+
     if (response.statusText === "Created") {
       const fundResponse = await fundUser(wallet);
 
@@ -56,15 +58,16 @@ async function fundUser(wallet) {
     return { error: "Error connecting" };
   }
   const provider = new WsProvider("wss://bsr.zeitgeist.pm");
-  const api = await ApiPromise.create({ provider });
-
   try {
+    const api = await ApiPromise.create({ provider });
+
     const keyring = new Keyring({ type: "sr25519" });
     const masterAccount = keyring.addFromUri(process.env.SEED_NTT);
 
     // const amount = 1_000_000_000_000_0; // 1000 tokens
     const amount = 1_000_000_000_000; // 100 tokens
     // 10000000000000 min amoount
+
     const transfer = api.tx.assetManager.transfer(
       wallet,
       { ForeignAsset: nttID },

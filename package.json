@@ -34,7 +34,7 @@
     "@sanity/client": "^6.10.0",
     "@subsocial/grill-widget": "^0.0.5",
     "@supabase/auth-helpers-nextjs": "^0.8.7",
-    "@supabase/supabase-js": "^2.39.3",
+    "@supabase/supabase-js": "^2.39.4",
     "@tailwindcss/container-queries": "^0.1.1",
     "@talismn/connect-wallets": "^1.2.3",
     "@tanstack/query-core": "^4.29.1",

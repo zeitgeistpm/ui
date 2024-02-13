@@ -16,7 +16,7 @@ const Web3wallet = () => {
           extensionName="web3auth"
           onClick={loginGoogle}
         />
-        <WalletIcon
+        {/* <WalletIcon
           logoAlt="twitter"
           logoSrc="/icons/x-logo.svg"
           extensionName="web3auth"
@@ -28,7 +28,7 @@ const Web3wallet = () => {
           logoSrc="/icons/discord.svg"
           extensionName="web3auth"
           onClick={loginDiscord}
-        />
+        /> */}
         <div className="col-span-3 grid grid-cols-3 gap-x-6 gap-y-4 text-center text-sm">
           <span className="col-span-3">or with email</span>
           <input

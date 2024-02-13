@@ -1,4 +1,3 @@
-import { WALLET_ADAPTERS, IProvider } from "@web3auth/base";
 import { Keyring } from "@polkadot/api";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { useWallet } from "lib/state/wallet";
@@ -6,6 +5,9 @@ import { web3authAtom } from "lib/state/util/web3auth-config";
 import { useAtom } from "jotai";
 import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
 import { useNotifications } from "lib/state/notifications";
+import { WALLET_ADAPTERS, IProvider } from "@web3auth/base";
+import { isNTT } from "lib/constants";
+import { checkNewUser } from "lib/state/check-user";
 interface loginOptions {
   loginProvider: string;
   extraLoginOptions: {
@@ -161,6 +163,12 @@ const useWeb3Wallet = () => {
     const keyPair = keyring.addFromUri("0x" + privateKey);
     if (keyPair) {
       selectWallet("web3auth", keyPair);
+      try {
+        const resp = await checkNewUser(keyPair?.address);
+        console.log(resp);
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 

@@ -18,15 +18,15 @@ interface LoginConfig {
 }
 
 export const clientId = isNTT
-  ? process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_WSX
+  ? process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_NTT
   : process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
 
 const auth0ClientID = isNTT
-  ? process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_WSX
+  ? process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_NTT
   : process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_ZTG;
 
 const discordClientID = isNTT
-  ? process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID_WSX
+  ? process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID_NTT
   : process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID_ZTG;
 
 class Web3AuthWallet extends BaseDotsamaWallet {
@@ -83,19 +83,19 @@ const loginConfig: LoginConfig = {
   ...(auth0ClientID
     ? {
         auth0google: {
-          verifier: "auth-0-all",
+          verifier: "auth-aggregate-ntt",
           verifierSubIdentifier: "auth0-google",
           typeOfLogin: "jwt",
           clientId: auth0ClientID,
         },
         auth0twitter: {
-          verifier: "auth-0-all",
+          verifier: "auth-aggregate-ntt",
           verifierSubIdentifier: "auth0-twitter",
           typeOfLogin: "jwt",
           clientId: auth0ClientID,
         },
         auth0emailpasswordless: {
-          verifier: "auth-0-all",
+          verifier: "auth-aggregate-ntt",
           verifierSubIdentifier: "auth0-passwordless",
           typeOfLogin: "jwt",
           clientId: auth0ClientID,
@@ -105,7 +105,7 @@ const loginConfig: LoginConfig = {
   ...(discordClientID
     ? {
         discord: {
-          verifier: "auth-0-all",
+          verifier: "auth-aggregate-ntt",
           verifierSubIdentifier: "discord",
           typeOfLogin: "discord",
           clientId: discordClientID,

@@ -4,7 +4,7 @@ import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
 import Avatar from "components/ui/Avatar";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
-import { SUPPORTED_WALLET_NAMES, isNTT, nttID } from "lib/constants";
+import { SUPPORTED_WALLET_NAMES, isNTT } from "lib/constants";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -16,7 +16,7 @@ import { FaNetworkWired } from "react-icons/fa";
 
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FC, Fragment, PropsWithChildren, use, useState } from "react";
+import React, { FC, Fragment, PropsWithChildren, useState } from "react";
 import {
   ArrowRight,
   BarChart,
@@ -150,14 +150,14 @@ const AccountButton: FC<{
               disabled={locationAllowed !== true || !isRpcSdk(sdk)}
               onClick={() => connect()}
             >
-              Connect Wallet
+              Log In
             </HeaderActionButton>
           ) : (
             <HeaderActionButton
               disabled={locationAllowed !== true}
-              onClick={() => setShowOnboarding(true)}
+              onClick={() => connect()}
             >
-              Get Started
+              Create Account
             </HeaderActionButton>
           )}
 
