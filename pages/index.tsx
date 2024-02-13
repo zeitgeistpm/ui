@@ -195,7 +195,7 @@ const IndexPage: NextPage<{
           chainProperties={chainProperties}
         />
 
-        {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" && (
+        {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" ? (
           <div className="relative z-30 mb-12">
             <div className="mb-8 flex gap-2">
               <Topics
@@ -227,6 +227,14 @@ const IndexPage: NextPage<{
                 </Link>
               </>
             )}
+          </div>
+        ) : (
+          <div className="mb-12">
+            <NetworkStats
+              marketCount={stats.marketCount}
+              tradersCount={stats.tradersCount}
+              totalVolumeUsd={stats.volumeUsd}
+            />
           </div>
         )}
 
