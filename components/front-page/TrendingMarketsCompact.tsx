@@ -12,7 +12,7 @@ const TrendingMarketsCompact = ({
         {markets.map((market) => (
           <div className="flex p-4">
             <div className="mr-4 flex h-[45px] w-[45px] rounded-md bg-blue-500"></div>
-            <div className="flex flex-col">
+            <div className="flex flex-col justify-center">
               <div className="text-sm">{market.question}</div>
               <div className="flex text-sm text-ztg-blue">
                 <div>Outcome</div>

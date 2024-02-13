@@ -243,7 +243,7 @@ const IndexPage: NextPage<{
 
         <div className="flex w-full gap-x-8">
           <div className="flex w-full flex-col gap-y-6">
-            <div className="items-cente flex ">
+            <div className="flex items-center">
               <div className="text-xl font-bold">Trending Markets</div>
               <Link
                 href="/markets"

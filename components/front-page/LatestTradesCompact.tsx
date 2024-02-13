@@ -11,8 +11,8 @@ const LatestTradesCompact = () => {
     <div>
       <div className="flex w-full flex-col divide-y divide-solid rounded-lg bg-white">
         {trades?.map((trade) => (
-          <div className="flex p-4">
-            <div className="mr-4 flex h-[45px] w-[45px] rounded-md bg-blue-500"></div>
+          <div className="flex items-center p-4">
+            <div className="mr-4 flex h-[30px] w-[30px] rounded-md bg-blue-500"></div>
             <div className="flex flex-col">
               <div className="text-sm">{trade.question}</div>
               <div className="flex items-center gap-x-1 text-sm text-ztg-blue">
