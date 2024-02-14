@@ -25,7 +25,7 @@ const WalletIcon = ({
   return (
     <button
       key={extensionName}
-      className="flex flex-1 cursor-pointer flex-row items-center justify-center rounded-md border py-1 hover:bg-gray-200"
+      className="flex flex-1 cursor-pointer flex-row items-center justify-center rounded-md border bg-mystic py-1 hover:bg-gray-100"
       onClick={onClick}
     >
       <Image

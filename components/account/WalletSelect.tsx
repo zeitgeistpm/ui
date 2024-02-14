@@ -42,13 +42,15 @@ const WalletSelect = () => {
 
   return (
     <div className="flex flex-col p-4">
-      <h3 className="mb-6 text-center text-lg font-bold">
-        Log in to Zeitgeist
+      <h3 className="mb-4 text-2xl font-bold">
+        {walletId ? "Log in to Zeitgeist" : "Create Account"}
       </h3>
+      <p className="mb-4">
+        Use one of the following options to create a wallet and start using
+        Prediction Markets.
+      </p>
       <Web3wallet />
-      <div className="py-6 text-center text-sm text-gray-400">
-        <p>or connect using your own wallet</p>
-      </div>
+      <h3 className="my-4 text-lg font-bold">Crypto Wallet</h3>
       <div className="flex justify-between gap-6">
         {supportedWallets
           .filter((w) => w.extensionName !== "web3auth")

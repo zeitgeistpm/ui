@@ -9,6 +9,7 @@ const Web3wallet = () => {
 
   return (
     <div>
+      <h3 className="mb-4 text-lg font-bold">Social</h3>
       <div className="grid grid-cols-3 gap-x-6 gap-y-4">
         <WalletIcon
           logoAlt="google"
@@ -29,19 +30,22 @@ const Web3wallet = () => {
           extensionName="web3auth"
           onClick={loginDiscord}
         />
-        <input
-          type="text"
-          placeholder="Enter email for passwordless login"
-          className="col-span-3 rounded-md border px-2 py-1 leading-8 placeholder:text-xs focus:outline-none focus:ring-1 focus:ring-ztg-blue sm:col-span-2"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <button
-          className="col-span-3 rounded-md bg-black py-1 leading-8 text-white hover:bg-ztg-blue sm:col-span-1"
-          onClick={() => loginEmail(email)}
-        >
-          Submit
-        </button>
+        <div className="col-span-3 grid grid-cols-3 gap-x-6">
+          <h3 className="col-span-3 mb-4 text-lg font-bold">Email</h3>
+          <input
+            type="text"
+            placeholder="Enter email for passwordless login"
+            className="col-span-2 rounded-md border px-2 py-1 leading-8 placeholder:text-xs focus:outline-none focus:ring-1 focus:ring-ztg-blue"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <button
+            className="col-span-1 rounded-md bg-ztg-blue py-1 leading-8 text-white hover:bg-black"
+            onClick={() => loginEmail(email)}
+          >
+            Submit
+          </button>
+        </div>
       </div>
     </div>
   );
