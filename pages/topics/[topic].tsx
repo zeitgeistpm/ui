@@ -1,8 +1,7 @@
 import { PortableText } from "@portabletext/react";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { ZeitgeistIpfs, create } from "@zeitgeistpm/sdk";
-import MarketCard, {
-  IndexedMarketCardData,
-} from "components/markets/market-card";
+import MarketCard from "components/markets/market-card";
 import { sanityImageBuilder } from "lib/cms/sanity";
 import {
   CmsTopicFull,
@@ -11,6 +10,7 @@ import {
   marketsForTopic,
 } from "lib/cms/topics";
 import { endpointOptions, graphQlEndpoint } from "lib/constants";
+import { MarketStats } from "lib/gql/markets-stats";
 import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -50,7 +50,7 @@ export async function getStaticProps({
 
 const TopicPage: NextPage<{
   cmsTopic: CmsTopicFull;
-  markets: IndexedMarketCardData[];
+  markets: { market: FullMarketFragment; stats: MarketStats }[];
 }> = ({ cmsTopic, markets }) => {
   if (process.env.NEXT_PUBLIC_SHOW_TOPICS !== "true") {
     return <NotFoundPage />;
