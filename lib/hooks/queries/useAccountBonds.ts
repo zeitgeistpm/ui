@@ -76,6 +76,7 @@ export const useAccountBonds = (address?: string) => {
     {
       keepPreviousData: true,
       enabled: Boolean(sdk && isIndexedSdk(sdk) && address),
+      staleTime: 100_000,
     },
   );
 
