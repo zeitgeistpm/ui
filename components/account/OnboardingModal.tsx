@@ -59,7 +59,7 @@ const TextSection = ({
 }: TextSectionProps) => {
   return (
     <>
-      <div className="text-center text-ztg-22-120 font-bold">{headerText}</div>
+      <div className="text-ztg-22-120 font-bold">{headerText}</div>
       <div className="mb-auto text-center">{bodyText}</div>
       <div className="flex h-[56px]  w-full justify-center gap-x-[20px] px-[20px] font-medium">
         {leftButton && (
@@ -218,7 +218,7 @@ export const MobileOnboardingModal = () => {
   const screens = [
     <TextSection
       headerText="Welcome to Zeitgeist"
-      bodyText="Hey, it looks like you don’t have an account with us. Let me be your Guide and help you get one, so you can get started making predictions."
+      bodyText="Hey, it looks like you don’t have a wallet installed. Let me be your Guide and help you get one, so you can get started making predictions."
       rightButton={{
         text: "Continue",
         onClick: () => setStep(1),
@@ -280,15 +280,15 @@ export const DesktopOnboardingModal = (props: {
   const screens = [
     <TextSection
       headerText="Welcome to Zeitgeist"
-      bodyText="Hey, it looks like you don’t have an account with us. Let me be your Guide and help you get one, so you can get started making predictions."
+      bodyText="Hey, it looks like you don’t have a wallet installed. Let me be your Guide and help you get one, so you can get started making predictions."
       rightButton={{
         text: "Continue",
         onClick: () => setStep(1),
       }}
     />,
     <TextSection
-      headerText="Choose A Browser Extension Wallet (Option 1)"
-      bodyText="You can choose to install a browser-based wallet (known as a “browser extension”). To do that, simply click the wallet icon to go to its official download page. Once the extension is setup you'll need to refresh the page."
+      headerText="Choose A Browser Extension"
+      bodyText="First thing you need to do is install a browser-based wallet (known as a “browser extension”). To do that, simply click the wallet icon to go to its official download page. Once the extension is setup you'll need to refresh the page."
       leftButton={{
         text: "Back",
         onClick: () => setStep(0),
@@ -296,18 +296,6 @@ export const DesktopOnboardingModal = (props: {
       rightButton={{
         text: "Continue",
         onClick: () => setStep(2),
-      }}
-    />,
-    <TextSection
-      headerText="Generate Wallet With Social Credentials or Email (Option 2)"
-      bodyText="Alternatively, you can sign up with your social credentials or email. This will create a new wallet for you on Zeitgeist that is linked to your social credentials or email."
-      leftButton={{
-        text: "Back",
-        onClick: () => setStep(1),
-      }}
-      rightButton={{
-        text: "Continue",
-        onClick: () => setStep(3),
       }}
     />,
     <WalletSelection />,

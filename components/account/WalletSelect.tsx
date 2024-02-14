@@ -4,11 +4,15 @@ import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
 import Web3wallet from "components/web3wallet";
 import WalletIcon from "./WalletIcon";
+import { userConfigAtom } from "lib/state/wallet";
+import { useAtom } from "jotai";
 
 import { useEffect } from "react";
 
 const WalletSelect = () => {
   const { selectWallet, errors, accounts, connected, walletId } = useWallet();
+  const [userConfig] = useAtom(userConfigAtom);
+
   const accountModals = useAccountModals();
 
   const wasConnected = usePrevious(connected);
@@ -43,11 +47,14 @@ const WalletSelect = () => {
   return (
     <div className="flex flex-col p-4">
       <h3 className="mb-4 text-2xl font-bold">
-        {walletId ? "Log in to Zeitgeist" : "Create Account"}
+        {userConfig?.selectedAddress
+          ? "Log back in to Zeitgeist"
+          : "Create Account"}
       </h3>
       <p className="mb-4">
-        Use one of the following options to create a wallet and start using
-        Prediction Markets.
+        {userConfig?.selectedAddress
+          ? "Use one of the following options to log in and start using Prediction Markets."
+          : "Use one of the following options to create a wallet and start using Prediction Markets."}
       </p>
       <Web3wallet />
       <h3 className="my-4 text-lg font-bold">Crypto Wallet</h3>
