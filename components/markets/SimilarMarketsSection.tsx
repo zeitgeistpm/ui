@@ -42,15 +42,6 @@ export const SimilarMarketsSection = ({
           {recommendedMarkets?.markets.map((market, index) => {
             const stat = stats?.find((s) => s.marketId === market.marketId);
 
-            let { categorical, scalar } = market.marketType ?? {};
-            if (categorical === null) {
-              categorical = "";
-            }
-            const filteredScalar =
-              scalar?.filter((item): item is string => item !== null) ?? [];
-            const marketType = { categorical, scalar: filteredScalar };
-            const scalarType = market.scalarType as ScalarRangeType;
-
             return (
               <div
                 key={`market-${market.marketId}`}
@@ -60,25 +51,8 @@ export const SimilarMarketsSection = ({
                 }}
               >
                 <MarketCard
-                  marketId={market.marketId}
-                  outcomes={market.outcomes}
-                  question={market.question ?? ""}
-                  creation={market.creation}
-                  creator={market.creator}
-                  img={market.img ?? ""}
-                  prediction={market.prediction}
-                  endDate={market.period.end}
-                  marketType={marketType}
-                  scalarType={scalarType}
-                  pool={market.pool ?? null}
-                  neoPool={market?.neoPool}
-                  status={market.status}
-                  baseAsset={market.baseAsset}
-                  volume={new Decimal(market.volume ?? 0).div(ZTG).toNumber()}
-                  tags={
-                    market.tags?.filter((tag): tag is string => tag !== null) ??
-                    []
-                  }
+                  key={market.marketId}
+                  market={market}
                   numParticipants={stat?.participants}
                   liquidity={stat?.liquidity}
                 />
