@@ -17,7 +17,6 @@ export const createMetadataStorage = (): MetadataStorage => {
     return {
       put: Te.from(
         async (data) => {
-          const content = (await codec.decode(data).unright()).unwrap();
           const response = await fetch("/api/ipfs", {
             method: "POST",
             headers: {
