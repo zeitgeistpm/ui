@@ -85,6 +85,18 @@ export default async function handler(req: NextRequest) {
       },
     );
 
+    if (!response.ok) {
+      const data = await response.json();
+      return new Response(
+        JSON.stringify({
+          message: data?.message ?? "Unknown cluster api error.",
+        }),
+        {
+          status: 500,
+        },
+      );
+    }
+
     const { cid } = await response.json();
 
     return new Response(
