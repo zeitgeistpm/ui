@@ -1,12 +1,12 @@
+import { u8aToString } from "@polkadot/util";
 import { u8aConcat } from "@polkadot/util/u8a";
+import { MetadataStorage, createStorage } from "@zeitgeistpm/sdk";
+import { Codec, JsonCodec } from "@zeitgeistpm/utility/dist/codec";
 import * as O from "@zeitgeistpm/utility/dist/option";
 import * as Te from "@zeitgeistpm/utility/dist/taskeither";
 import { Storage, StorageError } from "@zeitgeistpm/web3.storage";
 import * as IPFSHTTPClient from "ipfs-http-client";
-import { isU8a, u8aToString } from "@polkadot/util";
 import { CID } from "multiformats/cid";
-import { MetadataStorage, createStorage } from "@zeitgeistpm/sdk";
-import { Codec, JsonCodec } from "@zeitgeistpm/utility/dist/codec";
 
 const node = IPFSHTTPClient.create({ url: "https://ipfs.zeitgeist.pm" });
 
@@ -24,6 +24,11 @@ export const createMetadataStorage = (): MetadataStorage => {
             },
             body: JSON.stringify(data),
           });
+
+          if (response.status === 400) {
+            const { message } = await response.json();
+            throw new Error(message);
+          }
 
           const { cid: cidString } = await response.json();
           const cid = CID.parse(cidString);
