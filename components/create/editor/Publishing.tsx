@@ -13,7 +13,6 @@ import { StorageError } from "@zeitgeistpm/web3.storage";
 import Modal from "components/ui/Modal";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
-
 import {
   getMetadataForCurrency,
   supportedCurrencies,

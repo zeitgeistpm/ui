@@ -1,11 +1,11 @@
-import { Context, create$, Sdk, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
+import { Context, create$, Sdk } from "@zeitgeistpm/sdk";
+import { atom, useAtom } from "jotai";
 import { endpointOptions as endpoints, graphQlEndpoint } from "lib/constants";
+import { createMetadataStorage } from "lib/metadata-storage";
 import { memoize } from "lodash-es";
 import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
-import { atom, useAtom } from "jotai";
 import { usePrevious } from "./usePrevious";
-import { createMetadataStorage } from "lib/metadata-storage";
 
 export type UseSdkv2 = [
   /**
