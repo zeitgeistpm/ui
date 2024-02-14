@@ -57,9 +57,23 @@ export default async function handler(req: NextRequest) {
       ...parsed.data,
     };
 
+    const json = JSON.stringify(metadata);
+    const kbSize = Buffer.byteLength(json) / 1024;
+
+    if (kbSize > 10) {
+      return new Response(
+        JSON.stringify({
+          message: "Market metadata is too large. Please keep it under 10kb.",
+        }),
+        {
+          status: 400,
+        },
+      );
+    }
+
     const formData = new FormData();
 
-    formData.append("file", JSON.stringify(metadata));
+    formData.append("file", json);
 
     const response = await fetch(
       new URL(
