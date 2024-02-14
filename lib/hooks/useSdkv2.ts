@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
 import { atom, useAtom } from "jotai";
 import { usePrevious } from "./usePrevious";
+import { createMetadataStorage } from "lib/metadata-storage";
 
 export type UseSdkv2 = [
   /**
@@ -77,7 +78,7 @@ const init = memoize(
     return create$({
       provider: endpoints,
       indexer: graphQlEndpoint,
-      storage: ZeitgeistIpfs(),
+      storage: createMetadataStorage(),
     });
   },
   (endpoints, graphQlEndpoint) => identify(endpoints, graphQlEndpoint) ?? "--",

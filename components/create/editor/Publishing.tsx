@@ -33,9 +33,6 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import { RiSendPlaneLine } from "react-icons/ri";
-import { CID } from "multiformats/cid";
-import * as json from "multiformats/codecs/raw";
-import { sha256 } from "multiformats/hashes/sha2";
 
 export type PublishingProps = {
   editor: MarketDraftEditor;
@@ -141,106 +138,89 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
 
   const submit = async () => {
     if (creationParams && isFullSdk(sdk)) {
+      setIsTransacting(true);
+
       try {
-        const response = await fetch("/api/ipfs", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(creationParams.metadata),
+        notifications.pushNotification("Transacting...", {
+          autoRemove: true,
+          type: "Info",
+          lifetime: 60,
         });
 
-        const { cid: cidString } = await response.json();
-        const cid = CID.parse(cidString);
+        const result = await sdk.model.markets.create(
+          creationParams,
+          IOForeignAssetId.is(feeDetails?.assetId)
+            ? feeDetails?.assetId
+            : undefined,
+        );
+        const marketId = result.saturate().unwrap().market.marketId;
 
-        return console.log(cid.multihash.bytes);
+        editor.published(marketId);
+
+        notifications.pushNotification(
+          "Transaction successful! Awaiting indexer.",
+          {
+            autoRemove: true,
+            type: "Info",
+            lifetime: 60,
+          },
+        );
+
+        const indexedStatus = await poll(
+          async () => {
+            return checkMarketExists(sdk.indexer.client, marketId);
+          },
+          {
+            intervall: 1000,
+            timeout: 6 * 1000,
+          },
+        );
+
+        if (indexedStatus === PollingTimeout) {
+          router.push(`/markets/await/${marketId}`);
+        } else {
+          notifications.pushNotification(
+            "Market has been created and indexed! Redirecting to market page.",
+            {
+              autoRemove: true,
+              type: "Success",
+              lifetime: 15,
+            },
+          );
+
+          router.push(`/markets/${marketId}`);
+        }
+
+        setTimeout(() => {
+          editor.reset();
+        }, 2000);
       } catch (error) {
-        return console.error(error);
+        let type: NotificationType = "Error";
+        let errorMessage = "Unknown error occurred.";
+
+        if (StorageError.is(error)) {
+          errorMessage = "IPFS metadata upload failed.";
+        }
+
+        if (isArray(error?.docs)) {
+          errorMessage = error.docs[0];
+        }
+
+        if (error?.message === "Cancelled") {
+          type = "Info";
+          errorMessage = "Transaction cancelled";
+        }
+
+        notifications.pushNotification(errorMessage, {
+          autoRemove: true,
+          type: type,
+          lifetime: 15,
+        });
+
+        console.error(error);
       }
 
-      // setIsTransacting(true);
-
-      // try {
-      //   notifications.pushNotification("Transacting...", {
-      //     autoRemove: true,
-      //     type: "Info",
-      //     lifetime: 60,
-      //   });
-
-      //   const result = await sdk.model.markets.create(
-      //     creationParams,
-      //     IOForeignAssetId.is(feeDetails?.assetId)
-      //       ? feeDetails?.assetId
-      //       : undefined,
-      //   );
-      //   const marketId = result.saturate().unwrap().market.marketId;
-
-      //   editor.published(marketId);
-
-      //   notifications.pushNotification(
-      //     "Transaction successful! Awaiting indexer.",
-      //     {
-      //       autoRemove: true,
-      //       type: "Info",
-      //       lifetime: 60,
-      //     },
-      //   );
-
-      //   const indexedStatus = await poll(
-      //     async () => {
-      //       return checkMarketExists(sdk.indexer.client, marketId);
-      //     },
-      //     {
-      //       intervall: 1000,
-      //       timeout: 6 * 1000,
-      //     },
-      //   );
-
-      //   if (indexedStatus === PollingTimeout) {
-      //     router.push(`/markets/await/${marketId}`);
-      //   } else {
-      //     notifications.pushNotification(
-      //       "Market has been created and indexed! Redirecting to market page.",
-      //       {
-      //         autoRemove: true,
-      //         type: "Success",
-      //         lifetime: 15,
-      //       },
-      //     );
-
-      //     router.push(`/markets/${marketId}`);
-      //   }
-
-      //   setTimeout(() => {
-      //     editor.reset();
-      //   }, 2000);
-      // } catch (error) {
-      //   let type: NotificationType = "Error";
-      //   let errorMessage = "Unknown error occurred.";
-
-      //   if (StorageError.is(error)) {
-      //     errorMessage = "IPFS metadata upload failed.";
-      //   }
-
-      //   if (isArray(error?.docs)) {
-      //     errorMessage = error.docs[0];
-      //   }
-
-      //   if (error?.message === "Cancelled") {
-      //     type = "Info";
-      //     errorMessage = "Transaction cancelled";
-      //   }
-
-      //   notifications.pushNotification(errorMessage, {
-      //     autoRemove: true,
-      //     type: type,
-      //     lifetime: 15,
-      //   });
-
-      //   console.error(error);
-      // }
-
-      // setIsTransacting(false);
+      setIsTransacting(false);
     }
   };
 

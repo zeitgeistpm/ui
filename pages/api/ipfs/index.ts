@@ -61,13 +61,6 @@ export default async function handler(req: NextRequest) {
 
     formData.append("file", JSON.stringify(metadata));
 
-    console.log(
-      new URL(
-        `/add?hash=sha3-384&cid-version=1&only-hash=${onlyHash}`,
-        CLUSTER_ENDPOINT,
-      ).href,
-    );
-
     const response = await fetch(
       new URL(
         `/add?hash=sha3-384&cid-version=1&only-hash=${onlyHash}`,
@@ -84,7 +77,10 @@ export default async function handler(req: NextRequest) {
 
     return new Response(
       JSON.stringify({
-        message: "Market metadata pinned successfully.",
+        message: `Market metadata ${
+          onlyHash === "true" ? "hashed" : "pinned"
+        } successfully.`,
+        onlyHash: onlyHash === "true",
         cid: cid,
       }),
       {
