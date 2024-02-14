@@ -25,9 +25,6 @@ export const [userLocationDataAtom, userLocationStatusAtom] =
       const userCountry: string = json.body.country;
       const locationAllowed = !notAllowedCountries.includes(userCountry);
 
-      console.log("Location:", userCountry);
-      console.log("Allowed:", locationAllowed);
-
       return { locationAllowed };
     },
   }));
