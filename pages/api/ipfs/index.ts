@@ -5,7 +5,7 @@ import { fromZodError } from "zod-validation-error";
 
 const IOMarketMetadata = z.object({
   question: z.string(),
-  description: z.string(),
+  description: z.optional(z.string()),
   tags: z.optional(z.array(z.string())),
   slug: z.optional(z.string()),
   categories: z.optional(
