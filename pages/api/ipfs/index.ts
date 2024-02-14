@@ -1,24 +1,6 @@
+import { IOMarketMetadata } from "@zeitgeistpm/sdk";
 import type { PageConfig } from "next";
 import { NextRequest } from "next/server";
-import * as z from "zod";
-import { fromZodError } from "zod-validation-error";
-
-const IOMarketMetadata = z.object({
-  question: z.string(),
-  description: z.string(),
-  tags: z.optional(z.array(z.string())),
-  slug: z.optional(z.string()),
-  categories: z.optional(
-    z.array(
-      z.object({
-        name: z.string(),
-        ticker: z.optional(z.string()),
-        img: z.optional(z.string()),
-        color: z.optional(z.string()),
-      }),
-    ),
-  ),
-});
 
 const CLUSTER_ENDPOINT = process.env.IPFS_CLUSTER_URL;
 
@@ -34,28 +16,20 @@ export const config: PageConfig = {
 
 export default async function handler(req: NextRequest) {
   if (req.method === "POST") {
-    const parsed = IOMarketMetadata.safeParse(
+    const [error, parsed] = IOMarketMetadata.validate(
       JSON.parse(await extractBody(req)),
     );
+
+    if (error) {
+      return new Response(JSON.stringify({ message: error.message }), {
+        status: 400,
+      });
+    }
 
     const { searchParams } = new URL(req.url);
     const onlyHash = searchParams.get("only-hash") ?? "false";
 
-    if (!parsed.success) {
-      return new Response(
-        JSON.stringify({ message: fromZodError(parsed.error).toString() }),
-        {
-          status: 400,
-        },
-      );
-    }
-
-    const metadata = {
-      __meta: "markets",
-      ...parsed.data,
-    };
-
-    const json = JSON.stringify(metadata);
+    const json = JSON.stringify(parsed);
     const kbSize = Buffer.byteLength(json) / 1024;
 
     if (kbSize > 10) {
