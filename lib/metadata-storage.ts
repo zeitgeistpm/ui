@@ -47,6 +47,11 @@ export const createMetadataStorage = (): MetadataStorage => {
             body: JSON.stringify(data),
           });
 
+          if (response.status === 400) {
+            const { message } = await response.json();
+            throw new Error(message);
+          }
+
           const { cid: cidString } = await response.json();
           const cid = CID.parse(cidString);
 
