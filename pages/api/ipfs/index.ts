@@ -108,7 +108,7 @@ export default async function handler(req: NextRequest) {
         cid: cid,
       }),
       {
-        status: 200,
+        status: response.status,
       },
     );
   }
@@ -131,7 +131,7 @@ export default async function handler(req: NextRequest) {
           message: data?.message ?? "Unknown cluster api error.",
         }),
         {
-          status: 500,
+          status: response.status,
         },
       );
     }
