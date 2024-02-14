@@ -8,7 +8,9 @@ import { Storage, StorageError } from "@zeitgeistpm/web3.storage";
 import * as IPFSHTTPClient from "ipfs-http-client";
 import { CID } from "multiformats/cid";
 
-const node = IPFSHTTPClient.create({ url: "https://ipfs.zeitgeist.pm" });
+const node = IPFSHTTPClient.create({
+  url: process.env.NEXT_PUBLIC_IPFS_NODE_URL,
+});
 
 export const createMetadataStorage = (): MetadataStorage => {
   const createInnerStorage = (
