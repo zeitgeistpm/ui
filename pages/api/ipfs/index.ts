@@ -1,9 +1,7 @@
-import { ZeitgeistIpfs } from "@zeitgeistpm/sdk";
-import type { NextApiRequest, NextApiResponse, PageConfig } from "next";
-import * as IPFSHTTPClient from "ipfs-http-client";
+import type { PageConfig } from "next";
+import { NextRequest } from "next/server";
 import * as z from "zod";
 import { fromZodError } from "zod-validation-error";
-import { NextRequest } from "next/server";
 
 const IOMarketMetadata = z.object({
   question: z.string(),
@@ -22,12 +20,12 @@ const IOMarketMetadata = z.object({
   ),
 });
 
-const CLUSTER_ENDPOINT = "https://ipfs-cluster.zeitgeist.pm";
+const CLUSTER_ENDPOINT = process.env.IPFS_CLUSTER_URL;
 
 const headers = {
-  Authorization: `Basic ${Buffer.from(`zeitgeist:5ZpmQl*rWn%Z`).toString(
-    "base64",
-  )}`,
+  Authorization: `Basic ${Buffer.from(
+    `${process.env.IPFS_CLUSTER_USERNAME}:${process.env.IPFS_CLUSTER_PASSWORD}`,
+  ).toString("base64")}`,
 };
 
 export const config: PageConfig = {
