@@ -16,9 +16,9 @@ export const config: PageConfig = {
 
 export default async function handler(req: NextRequest) {
   if (req.method === "POST") {
-    const [error, parsed] = IOMarketMetadata.validate(
-      JSON.parse(await extractBody(req)),
-    );
+    const rawJson = JSON.parse(await extractBody(req));
+
+    const [error, parsed] = IOMarketMetadata.validate(rawJson);
 
     if (error) {
       return new Response(JSON.stringify({ message: error.message }), {

@@ -152,7 +152,9 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
             ? feeDetails?.assetId
             : undefined,
         );
-        const marketId = result.saturate().unwrap().market.marketId;
+
+        const { market } = result.saturate().unwrap();
+        const marketId = market.marketId;
 
         editor.published(marketId);
 
