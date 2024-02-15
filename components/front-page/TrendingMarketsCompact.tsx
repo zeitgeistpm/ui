@@ -20,7 +20,7 @@ const TrendingMarketsCompact = ({
 
   return (
     <div>
-      <div className="flex w-full flex-col divide-y divide-solid rounded-lg bg-white text-sm">
+      <div className="flex w-full flex-col divide-y divide-solid overflow-hidden rounded-lg bg-white text-sm">
         {markets.map((market) => (
           <TrendingMarketRow key={market.marketId} market={market} />
         ))}
@@ -30,20 +30,7 @@ const TrendingMarketsCompact = ({
 };
 
 const TrendingMarketRow = ({ market }: { market: FullMarketFragment }) => {
-  const { img, marketId, question, categories, assets, outcomeAssets } = market;
-  const marketCategories: MarketOutcomes =
-    categories?.map((category, index) => {
-      const asset = assets[index];
-
-      const marketCategory: MarketOutcome = {
-        name: category.name ?? "",
-        assetId: outcomeAssets[index],
-        price: asset?.price,
-      };
-
-      return marketCategory;
-    }) ?? [];
-
+  const { img, marketId, question } = market;
   const { data: image } = useMarketImage(market, {
     fallback:
       img && isAbsoluteUrl(img) && !isMarketImageBase64Encoded(img)
@@ -54,24 +41,11 @@ const TrendingMarketRow = ({ market }: { market: FullMarketFragment }) => {
   const { data: cmsMetadata } = useMarketCmsMetadata(marketId);
 
   const prediction = getCurrentPrediction(market.assets, market);
-  const isYesNoMarket =
-    marketCategories.length === 2 &&
-    marketCategories.some((outcome) => outcome.name.toLowerCase() === "yes") &&
-    marketCategories.some((outcome) => outcome.name.toLowerCase() === "no");
-
-  const displayPrediction =
-    isYesNoMarket === true && prediction?.name.toLowerCase() === "no"
-      ? { price: 1 - prediction.price, name: "Yes" }
-      : prediction;
-  console.log(question);
-
-  console.log(prediction);
-  console.log(displayPrediction);
 
   return (
     <Link
       href={`/markets/${marketId}`}
-      className="flex h-[70px] items-center p-4"
+      className="flex h-[70px] items-center p-4 hover:bg-[#D4E7F4]"
     >
       <div className="mr-4 flex h-[45px] w-[45px] rounded-md">
         <Image

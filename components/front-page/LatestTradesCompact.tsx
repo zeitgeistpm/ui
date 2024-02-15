@@ -5,13 +5,14 @@ import { useMarketImage } from "lib/hooks/useMarketImage";
 import { formatNumberLocalized } from "lib/util";
 import moment from "moment";
 import Image from "next/image";
+import Link from "next/link";
 
 const LatestTradesCompact = () => {
   const { data: trades } = useLatestTrades(4);
 
   return (
     <div>
-      <div className="flex w-full flex-col divide-y divide-solid rounded-lg bg-white">
+      <div className="flex w-full flex-col divide-y divide-solid overflow-hidden rounded-lg bg-white">
         {trades?.map((trade) => <LatestTradeRow trade={trade} />)}
       </div>
     </div>
@@ -26,7 +27,10 @@ const LatestTradeRow = ({ trade }: { trade: TradeItem }) => {
   const { data: cmsMetadata } = useMarketCmsMetadata(trade.marketId);
 
   return (
-    <div className="flex h-[70px] items-center p-4">
+    <Link
+      href={`/markets/${trade.marketId}`}
+      className="flex h-[70px] items-center p-4 hover:bg-[#D4E7F4]"
+    >
       <div className="mr-4 flex h-[30px] w-[30px] rounded-md">
         <Image
           priority
@@ -51,7 +55,7 @@ const LatestTradeRow = ({ trade }: { trade: TradeItem }) => {
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
