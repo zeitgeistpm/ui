@@ -1,6 +1,7 @@
 import { AssetId } from "@zeitgeistpm/sdk";
 import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 import { isEqual } from "lodash-es";
+import { nttID } from ".";
 
 export type CurrencyMetadata = {
   name: string;
@@ -25,6 +26,13 @@ export const supportedCurrencies = [
     image: "/currencies/dot_filled.png",
     twColor: "polkadot",
     assetId: { ForeignAsset: 0 } as const,
+  } satisfies CurrencyMetadata,
+  {
+    name: "NTT" as const,
+    description: "Create market with NTT as the base asset.",
+    image: "/currencies/ntt-currency.png",
+    twColor: "ntt-blue",
+    assetId: { ForeignAsset: nttID } as const,
   } satisfies CurrencyMetadata,
   {
     name: "USDC" as const,

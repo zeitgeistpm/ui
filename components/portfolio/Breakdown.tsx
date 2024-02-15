@@ -4,6 +4,7 @@ import Decimal from "decimal.js";
 import { PorfolioBreakdown } from "lib/hooks/queries/usePortfolioPositions";
 import { formatNumberLocalized } from "lib/util";
 import { useMemo } from "react";
+import { isNTT } from "lib/constants";
 
 export type PortfolioBreakdownProps =
   | {
@@ -116,7 +117,8 @@ export const BreakdownSlot = ({
       <h4 className="mb-1 text-xs font-medium text-sky-600">{title}</h4>
       <div className="mb-1 flex items-center font-mono">
         <div className="font-semibold sm:w-2/3">
-          {formatNumberLocalized(value.div(ZTG).toNumber())} ZTG
+          {formatNumberLocalized(value.div(ZTG).toNumber())}{" "}
+          {isNTT ? "NTT" : "ZTG"}
         </div>
         <div
           className={`hidden w-1/3 flex-1 sm:block ${
@@ -130,12 +132,14 @@ export const BreakdownSlot = ({
           {Math.abs(changePercentage).toFixed(1)}%
         </div>
       </div>
-      <div className="mb-1 font-mono text-sm text-sky-600">
-        $
-        {formatNumberLocalized(
-          usdZtgPrice?.mul(value.div(ZTG)).toNumber() ?? 0,
-        )}
-      </div>
+      {!isNTT && (
+        <div className="mb-1 font-mono text-sm text-sky-600">
+          $
+          {formatNumberLocalized(
+            usdZtgPrice?.mul(value.div(ZTG)).toNumber() ?? 0,
+          )}
+        </div>
+      )}
     </>
   );
 };

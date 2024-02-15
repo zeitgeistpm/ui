@@ -1,6 +1,8 @@
 import { useAtom } from "jotai";
 import { persistentAtom } from "./util/persistent-atom";
 import { AssetOption } from "components/ui/AssetSelect";
+import { useEffect } from "react";
+import { nttID, isNTT } from "lib/constants";
 
 type SelectedFeeAsset = AssetOption;
 
@@ -14,6 +16,10 @@ const feePayingAssetStateAtom = persistentAtom<SelectedFeeAsset>({
 
 const useFeePayingAssetSelection = () => {
   const [state, setState] = useAtom(feePayingAssetStateAtom);
+
+  useEffect(() => {
+    isNTT && setState({ label: "NTT", value: { ForeignAsset: nttID } });
+  }, [isNTT]);
 
   const setAsset = (selection: SelectedFeeAsset) => {
     setState(selection);

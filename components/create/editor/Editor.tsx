@@ -35,9 +35,9 @@ import {
 } from "lib/constants/supported-currencies";
 import Input from "components/ui/Input";
 import TimezoneSelect from "./inputs/TimezoneSelect";
-import { Loader } from "components/ui/Loader";
 import FeeSelect from "./inputs/FeeSelect";
 import { useWallet } from "lib/state/wallet";
+import { isNTT } from "lib/constants";
 import { marketFormDataToExtrinsicParams } from "lib/state/market-creation/types/form";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 
@@ -51,6 +51,7 @@ export const MarketEditor = () => {
 
   const headerRef = useRef<HTMLDivElement>(null);
 
+  const { activeAccount, selectWallet, isNovaWallet } = useWallet();
   const {
     form,
     steps,
@@ -117,18 +118,6 @@ export const MarketEditor = () => {
 
   return (
     <>
-      {isLoaded === false && (
-        <div
-          className="flex items-center justify-center bg-white "
-          style={{ height: "calc(100vh - 100px)" }}
-        >
-          <Loader
-            loading={true}
-            className="h-[100px] w-[100px]"
-            variant={"Info"}
-          />
-        </div>
-      )}
       <Transition
         show={isLoaded}
         enter="transition-opacity duration-100"

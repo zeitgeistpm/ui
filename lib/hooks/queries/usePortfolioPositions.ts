@@ -41,6 +41,7 @@ import {
   lookupAssetPrice,
   useAmm2MarketSpotPrices,
 } from "./useAmm2MarketSpotPrices";
+import { formatNumberLocalized } from "lib/util";
 
 export type UsePortfolioPositions = {
   /**
@@ -635,7 +636,6 @@ export const totalPositionsValue = <
 ): Decimal => {
   return positions.reduce((acc, position) => {
     const assetId = parseAssetId(position.market.baseAsset).unwrap();
-
     const priceMultiplier = IOForeignAssetId.is(assetId)
       ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)
       : 1;

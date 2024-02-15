@@ -80,9 +80,6 @@ async function getSpotPrices(marketId: number, block?: string) {
 
   const accountId = await sdk.api.rpc.swaps.poolAccountId(poolId.toString());
 
-  console.log("block hash", blockHash);
-  console.log("pool account", accountId.toString());
-
   const balances = await apiAt.query.tokens.accounts.multi(
     assets.map((assets) => [accountId.toString(), assets]),
   );
@@ -99,6 +96,5 @@ async function getSpotPrices(marketId: number, block?: string) {
 
     spotPrices.set(weight.assetId, spotPrice);
   });
-  console.log(spotPrices);
   await sdk.api.disconnect();
 }

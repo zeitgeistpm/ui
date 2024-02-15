@@ -1,8 +1,18 @@
 import { FC } from "react";
 import Logo from "../icons/ZeitgeistIcon";
+import { isNTT } from "lib/constants";
+import Image from "next/image";
 
 const MenuLogo: FC<{}> = () => {
-  return (
+  return isNTT ? (
+    <Image
+      className="hidden sm:block"
+      src="/ntt/logo.svg"
+      alt="NTT Global logo"
+      width={140}
+      height={50}
+    />
+  ) : (
     <div className="flex items-center gap-4">
       <Logo variant={"light"} />
       <>

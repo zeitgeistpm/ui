@@ -76,6 +76,7 @@ import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
+import { isNTT } from "lib/constants";
 import { FaChevronUp } from "react-icons/fa";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
@@ -381,7 +382,9 @@ const Market: NextPage<MarketPageProps> = ({
             <MarketDescription market={indexedMarket} />
           </div>
 
-          <AddressDetails title="Oracle" address={indexedMarket.oracle} />
+          {!isNTT && (
+            <AddressDetails title="Oracle" address={indexedMarket.oracle} />
+          )}
           {marketHasPool === true && (
             <div className="mt-10 flex flex-col gap-4">
               <h3 className="mb-5 text-2xl">Latest Trades</h3>
@@ -402,7 +405,7 @@ const Market: NextPage<MarketPageProps> = ({
             />
           )}
 
-          {market && (marketHasPool || poolDeployed) && (
+          {!isNTT && market && (marketHasPool || poolDeployed) && (
             <div className="my-12">
               <div
                 className="mb-8 flex cursor-pointer items-center text-mariner"
@@ -455,12 +458,13 @@ const Market: NextPage<MarketPageProps> = ({
                 <></>
               )}
             </div>
+
             {referendumIndex != null && (
               <div className="mb-12 animate-pop-in opacity-0">
                 <ReferendumSummary referendumIndex={referendumIndex} />
               </div>
             )}
-            <SimilarMarketsSection market={market ?? undefined} />
+            {!isNTT && <SimilarMarketsSection market={market ?? undefined} />}
           </div>
         </div>
       </div>

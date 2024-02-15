@@ -6,7 +6,7 @@ import Modal from "components/ui/Modal";
 export const Onboarding = () => {
   const onboarding = useOnboarding();
 
-  const step = onboarding.hasWallet ? 3 : 2;
+  const step = onboarding.hasWallet ? 4 : 1;
 
   const walletInstallJustConfirmed = useMemo(
     () => onboarding.walletInstallJustConfirmed,
@@ -26,7 +26,7 @@ export const Onboarding = () => {
       <DesktopOnboardingModal
         step={step}
         notice={
-          step === 2
+          step === 1
             ? "Remember to install one of the supported wallets before continuing."
             : undefined
         }

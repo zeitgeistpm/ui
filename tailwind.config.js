@@ -197,6 +197,7 @@ module.exports = {
         success: "#E8FFE4",
         info: "#E4F5FF",
         error: "#FFE6E4",
+        "ntt-blue": "#0071bc",
         "ztg-gray": "#CFD7E4",
         "ztg-pink": "#DC056C",
         "tooltip-bg": "#FDF5DB",

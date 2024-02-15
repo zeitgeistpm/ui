@@ -4,7 +4,7 @@ import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
 import Avatar from "components/ui/Avatar";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
-import { SUPPORTED_WALLET_NAMES } from "lib/constants";
+import { SUPPORTED_WALLET_NAMES, isNTT } from "lib/constants";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -27,12 +27,10 @@ import {
   User,
 } from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
-import {
-  DesktopOnboardingModal,
-  MobileOnboardingModal,
-} from "./OnboardingModal";
+import { DesktopOnboardingModal } from "./OnboardingModal";
 import SettingsModal from "components/settings/SettingsModal";
 import CopyIcon from "../ui/CopyIcon";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 const BalanceRow = ({
   imgPath,
@@ -66,7 +64,7 @@ const HeaderActionButton: FC<
 > = ({ onClick, disabled, children }) => {
   return (
     <button
-      className={`flex w-[185px] cursor-pointer items-center justify-center rounded-full border-2 border-white px-6 font-medium leading-[40px] text-white disabled:cursor-default disabled:opacity-30`}
+      className={`border-ntt-blue text-ntt-blue flex w-[185px] cursor-pointer items-center justify-center rounded-full border-2 px-6 font-medium leading-[40px] disabled:cursor-default disabled:opacity-30`}
       onClick={onClick}
       disabled={disabled}
     >
@@ -89,6 +87,7 @@ const AccountButton: FC<{
     isNovaWallet,
     getProxyFor,
     realAddress,
+    walletId,
   } = useWallet();
   const proxy = getProxyFor(activeAccount?.address);
 
@@ -104,12 +103,11 @@ const AccountButton: FC<{
     ForeignAsset: 0,
   });
 
-  const { data: constants } = useChainConstants();
+  const { data: nttBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: 4,
+  });
 
-  const isMobileDevice =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    );
+  const { data: constants } = useChainConstants();
 
   const connect = async () => {
     if (isNovaWallet) {
@@ -152,14 +150,14 @@ const AccountButton: FC<{
               disabled={locationAllowed !== true || !isRpcSdk(sdk)}
               onClick={() => connect()}
             >
-              Connect Wallet
+              Log In
             </HeaderActionButton>
           ) : (
             <HeaderActionButton
               disabled={locationAllowed !== true}
-              onClick={() => setShowOnboarding(true)}
+              onClick={() => connect()}
             >
-              Get Started
+              Create Account
             </HeaderActionButton>
           )}
 
@@ -182,34 +180,45 @@ const AccountButton: FC<{
                       <div
                         className={`relative z-30 flex	h-full flex-1 cursor-pointer items-center justify-end rounded-full  ${
                           open
-                            ? "border-orange-500"
+                            ? "border-black"
                             : pathname === "/"
                               ? " border-white"
                               : "border-black"
                         }`}
                       >
                         <div
-                          className={`flex h-full items-center rounded-full border-2 bg-black py-1 pl-1.5 text-white transition-all md:py-0 ${
-                            open ? "border-sunglow-2" : "border-white"
+                          className={`bg-ntt-blue flex h-full w-max items-center rounded-full border-2 py-1 pl-1.5 text-white transition-all md:py-0 ${
+                            open ? "border-black" : "border-white"
                           }`}
                         >
-                          <div className={`rounded-full ring-2`}>
-                            {activeAccount?.address && (
-                              <Avatar
-                                zoomed
-                                address={activeAccount?.address}
-                                deps={avatarDeps}
-                              />
-                            )}
-                          </div>
-                          <span
-                            className={`hidden h-full pl-2 text-sm font-medium leading-[40px] transition-all md:block ${
-                              open ? "text-sunglow-2" : "text-white"
-                            }`}
-                          >
-                            {activeAccount &&
-                              shortenAddress(activeAccount?.address, 6, 4)}
-                          </span>
+                          {!isNTT && (
+                            <div className={`rounded-full ring-2`}>
+                              {activeAccount?.address && (
+                                <Avatar
+                                  zoomed
+                                  address={activeAccount?.address}
+                                  deps={avatarDeps}
+                                />
+                              )}
+                            </div>
+                          )}
+                          {isNTT ? (
+                            <span className="hidden h-full min-w-fit pl-2 text-sm font-medium leading-[40px] transition-all md:block">
+                              {formatNumberCompact(
+                                nttBalance?.div(ZTG).abs().toNumber() ?? 0,
+                              )}{" "}
+                              NTT
+                            </span>
+                          ) : (
+                            <span
+                              className={`hidden h-full pl-2 text-sm font-medium leading-[40px] transition-all md:block ${
+                                open ? "text-sunglow-2" : "text-white"
+                              }`}
+                            >
+                              {activeAccount &&
+                                shortenAddress(activeAccount?.address, 6, 4)}
+                            </span>
+                          )}
 
                           <div className="pr-1">
                             <ChevronDown
@@ -292,16 +301,26 @@ const AccountButton: FC<{
                   <Menu.Items className="fixed left-0 z-40 mt-3 h-full w-full origin-top-right divide-y divide-gray-100 overflow-hidden bg-white py-3 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:absolute md:left-auto md:right-0 md:mt-6 md:h-auto md:w-64 md:rounded-md">
                     <div className="">
                       <div className="mb-3 flex flex-col gap-2 border-b-2 px-6 py-2">
-                        <BalanceRow
-                          imgPath="/currencies/ztg.jpg"
-                          units={constants?.tokenSymbol}
-                          balance={activeBalance}
-                        />
-                        <BalanceRow
-                          imgPath="/currencies/dot.png"
-                          units="DOT"
-                          balance={polkadotBalance}
-                        />
+                        {isNTT ? (
+                          <BalanceRow
+                            imgPath="/currencies/ntt-currency.png"
+                            units="NTT"
+                            balance={nttBalance}
+                          />
+                        ) : (
+                          <>
+                            <BalanceRow
+                              imgPath="/currencies/ztg.jpg"
+                              units={constants?.tokenSymbol}
+                              balance={activeBalance}
+                            />
+                            <BalanceRow
+                              imgPath="/currencies/dot.png"
+                              units="DOT"
+                              balance={polkadotBalance}
+                            />
+                          </>
+                        )}
                         <Menu.Item>
                           {({ active }) => (
                             <Link
@@ -321,28 +340,33 @@ const AccountButton: FC<{
                           )}
                         </Menu.Item>
                       </div>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="mb-3 flex items-center px-6 hover:bg-slate-100"
-                            onClick={() => setShowGetZtgModal(true)}
-                          >
-                            <DollarSign />
-                            <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                      {!isNTT && (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className="mb-3 flex items-center px-6 hover:bg-slate-100"
+                              onClick={() => setShowGetZtgModal(true)}
                             >
-                              Get ZTG
-                            </button>
-                          </div>
-                        )}
-                      </Menu.Item>
+                              <DollarSign />
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                              >
+                                Get ZTG
+                              </button>
+                            </div>
+                          )}
+                        </Menu.Item>
+                      )}
+                      {/* TODO: disable when ready to launch */}
                       {isNovaWallet !== true && (
                         <Menu.Item>
                           {({ active }) => (
                             <div
                               className="mb-3 flex items-center px-6 hover:bg-slate-100"
                               onClick={() => {
-                                accountModals.openAccountSelect();
+                                walletId === "web3auth"
+                                  ? accountModals.openWalletSelect()
+                                  : accountModals.openAccountSelect();
                               }}
                             >
                               <User />
@@ -369,21 +393,23 @@ const AccountButton: FC<{
                           </Link>
                         )}
                       </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="mb-3 flex cursor-pointer items-center px-6 hover:bg-slate-100"
-                            onClick={() => setShowSettingsModal(true)}
-                          >
-                            <Settings />
-                            <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                      {!isNTT && (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className="mb-3 flex cursor-pointer items-center px-6 hover:bg-slate-100"
+                              onClick={() => setShowSettingsModal(true)}
                             >
-                              Settings
-                            </button>
-                          </div>
-                        )}
-                      </Menu.Item>
+                              <Settings />
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                              >
+                                Settings
+                              </button>
+                            </div>
+                          )}
+                        </Menu.Item>
+                      )}
                       <Menu.Item>
                         {({ active }) => (
                           <div
@@ -415,23 +441,14 @@ const AccountButton: FC<{
           setShowSettingsModal(false);
         }}
       />
-      {isMobileDevice ? (
+      <>
         <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
-          <MobileOnboardingModal />
+          <DesktopOnboardingModal />
         </Modal>
-      ) : (
-        <>
-          <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
-            <DesktopOnboardingModal />
-          </Modal>
-          <Modal
-            open={showGetZtgModal}
-            onClose={() => setShowGetZtgModal(false)}
-          >
-            <DesktopOnboardingModal step={4} />
-          </Modal>
-        </>
-      )}
+        <Modal open={showGetZtgModal} onClose={() => setShowGetZtgModal(false)}>
+          <DesktopOnboardingModal step={4} />
+        </Modal>
+      </>
     </>
   );
 };

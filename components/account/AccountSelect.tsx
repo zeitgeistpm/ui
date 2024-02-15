@@ -1,7 +1,6 @@
-import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 import { useWallet } from "lib/state/wallet";
 
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { FC } from "react";
 import Select, {
   components,
   ControlProps,
@@ -14,7 +13,6 @@ import Select, {
 import CopyIcon from "../ui/CopyIcon";
 import AccountSelectOption from "./AccountSelectOption";
 import AccountSelectValue from "./AccountSelectValue";
-import { useAccountModals } from "lib/state/account";
 
 export type AccountOption = { label: string; value: string };
 

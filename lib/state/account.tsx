@@ -16,7 +16,10 @@ export const useAccountModals = () => {
   return {
     ...state,
     openAccountSelect: () => {
-      setState({ ...state, accountSelectModalOpen: true });
+      setState({
+        ...state,
+        accountSelectModalOpen: true,
+      });
     },
     openWalletSelect: () => {
       if (disclaimerAccepted) {

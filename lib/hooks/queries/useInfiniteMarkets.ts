@@ -18,6 +18,7 @@ import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { CmsMarketMetadata } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 import { marketMetaFilter } from "./constants";
+import { isNTT, nttAssetIdString } from "../../constants";
 import { marketsRootQuery } from "./useMarket";
 
 export const rootKey = "markets-filtered";
@@ -75,7 +76,11 @@ export const useInfiniteMarkets = (
             status_not_in: [MarketStatus.Destroyed],
             status_in: statuses.length === 0 ? undefined : statuses,
             tags_containsAny: tags?.length === 0 ? undefined : tags,
-            baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
+            baseAsset_in: isNTT
+              ? [nttAssetIdString]
+              : currencies?.length !== 0
+                ? currencies
+                : undefined,
           },
           {
             OR: [

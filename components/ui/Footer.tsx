@@ -3,8 +3,13 @@ import axios from "axios";
 import Link from "next/link";
 import { useNotifications } from "lib/state/notifications";
 import { useForm } from "react-hook-form";
-import { endpointOptions } from "lib/constants";
+import { endpointOptions, isNTT } from "lib/constants";
 import Input from "./Input";
+import Image from "next/image";
+
+const emailList = isNTT
+  ? "https://emails.zeitgeist.pm/ntt-subscribe"
+  : "https://emails.zeitgeist.pm/app-subscribe";
 
 const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
   const notificationStore = useNotifications();
@@ -14,13 +19,15 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
 
   const subscribe = async ({ email }: { email: string }) => {
     try {
-      await axios.post("https://emails.zeitgeist.pm/app-subscribe", { email });
+      const response = await axios.post(emailList, { email });
 
-      notificationStore.pushNotification(
-        "Email sent successfully! We'll be in touch soon.",
-        { type: "Success" },
-      );
-
+      response.status === 201
+        ? notificationStore.pushNotification("Success! You're on the list.", {
+            type: "Success",
+          })
+        : notificationStore.pushNotification("Email already exists.", {
+            type: "Error",
+          });
       reset();
     } catch {
       notificationStore.pushNotification(
@@ -36,14 +43,14 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
       <div className="mb-auto flex h-10 w-full items-center gap-3">
         <Input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-          className={`h-full grow rounded-md border-[1px] bg-anti-flash-white p-2 text-ztg-12-120 text-sky-600 focus:outline-none ${
+          className={`h-full grow rounded-md border-[1px] bg-anti-flash-white p-2 text-sm text-white focus:outline-none ${
             invalid ? "border-vermilion" : "border-none"
           }`}
           type="email"
         />
         <button
           type="submit"
-          className={`center h-full flex-shrink rounded-full bg-ztg-blue px-5 text-ztg-16-150 text-white ${
+          className={`center h-full flex-shrink rounded-full bg-ztg-blue px-5 text-white ${
             invalid ? "cursor-default" : "cursor-pointer"
           } disabled:opacity-60`}
           disabled={invalid}
@@ -65,7 +72,7 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
   return (
     <div className={`${className}`}>
       <h6 className="mb-1 font-semibold text-white">{title}</h6>
-      <div className="flex flex-col text-ztg-14-150 text-sky-600">
+      <div className="flex flex-col text-ztg-14-150 text-white">
         {links.map(({ text, href }, idx) => {
           return (
             <Link
@@ -83,45 +90,82 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
   );
 };
 
+const FooterMenus = () => {
+  return (
+    <>
+      {isNTT ? (
+        <div className="grid w-full grid-cols-3 gap-7">
+          <FooterMenu
+            className="col-span-1"
+            title="General"
+            links={[{ text: "Website", href: "https://www.global.ntt/" }]}
+          />
+          {/* <FooterMenu
+            className="col-span-1"
+            title="Community"
+            links={[
+              { text: "Discord", href: "https://discord.gg/xv8HuA4s8v" },
+              { text: "Telegram", href: "https://t.me/zeitgeist_official" },
+              { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
+            ]}
+          /> */}
+        </div>
+      ) : (
+        <div className="flex w-full justify-between gap-7">
+          <FooterMenu
+            title="General"
+            links={[
+              {
+                text: "Apps (Advanced UI)",
+                href: `https://polkadot.js.org/apps/?rpc=${endpointOptions[0].value}`,
+              },
+              { text: "Website", href: "https://zeitgeist.pm" },
+            ]}
+          />
+          <FooterMenu
+            title="Technology"
+            links={[
+              { text: "Documentation", href: "https://docs.zeitgeist.pm" },
+              { text: "Github", href: "https://github.com/zeitgeistpm" },
+            ]}
+          />
+          <FooterMenu
+            title="Community"
+            links={[
+              { text: "Discord", href: "https://discord.gg/xv8HuA4s8v" },
+              { text: "Telegram", href: "https://t.me/zeitgeist_official" },
+              { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
+            ]}
+          />
+        </div>
+      )}
+    </>
+  );
+};
+
 const Footer = () => {
   return (
-    <div className="mt-auto flex w-full flex-col bg-[#1C1C1C] pb-24 pt-12">
+    <div className="bg-ntt-blue mt-auto flex w-full flex-col pb-24 pt-12">
       <div className="container-fluid">
         <div className="mb-8 flex flex-wrap justify-between gap-12 md:mb-16 md:flex-nowrap lg:gap-36">
-          <div className="flex w-full justify-between gap-7">
-            <FooterMenu
-              title="General"
-              links={[
-                {
-                  text: "Apps (Advanced UI)",
-                  href: `https://polkadot.js.org/apps/?rpc=${endpointOptions[0].value}`,
-                },
-                { text: "Website", href: "https://zeitgeist.pm" },
-              ]}
-            />
-            <FooterMenu
-              title="Technology"
-              links={[
-                { text: "Documentation", href: "https://docs.zeitgeist.pm" },
-                { text: "Github", href: "https://github.com/zeitgeistpm" },
-              ]}
-            />
-            <FooterMenu
-              title="Community"
-              links={[
-                { text: "Discord", href: "https://discord.gg/xv8HuA4s8v" },
-                { text: "Telegram", href: "https://t.me/zeitgeist_official" },
-                { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
-              ]}
-            />
-          </div>
-          <FooterNewsletterSub title="Subscribe to Newsletter" />
+          {/* <FooterMenus /> */}
+          {/* <FooterNewsletterSub title="Subscribe to Newsletter" /> */}
         </div>
         <div className="flex flex-col gap-5 md:flex-row">
-          <span className="whitespace-nowrap text-center text-ztg-12-150 text-white md:text-start">
-            © 2022 Equipoise Corp.
-          </span>
-          <span className="text-[11px] leading-relaxed text-sky-600">
+          {isNTT ? (
+            <Image
+              className=" mx-auto block invert"
+              src="/wsx/powered-ztg.svg"
+              alt="ZeitgePubist logo "
+              width={247}
+              height={106}
+            />
+          ) : (
+            <span className="whitespace-nowrap text-center text-ztg-12-150 text-white md:text-start">
+              © 2022 Equipoise Corp.
+            </span>
+          )}
+          <span className="text-[11px] leading-relaxed text-white">
             Please be advised that Equipoise Corp. d/b/a Zeitgeist is registered
             under the laws of Panama, and Zeitgeist has not sought licensing
             with any other regulatory authority of any country or jurisdiction,

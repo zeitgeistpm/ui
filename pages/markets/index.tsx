@@ -1,5 +1,6 @@
 import { NextPage } from "next";
 import MarketsList from "components/markets/MarketsList";
+import { HeroBannerNTT } from "components/front-page/HeroBannerNTT";
 import { QueryClient, dehydrate } from "@tanstack/query-core";
 import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
@@ -15,10 +16,13 @@ const MarketsPage: NextPage = ({
   cmsTopicPlaceholders: string[];
 }) => {
   return (
-    <MarketsList
-      cmsTopics={cmsTopics}
-      cmsTopicPlaceholders={cmsTopicPlaceholders}
-    />
+    <>
+      <HeroBannerNTT />
+      <MarketsList
+        cmsTopics={cmsTopics}
+        cmsTopicPlaceholders={cmsTopicPlaceholders}
+      />
+    </>
   );
 };
 

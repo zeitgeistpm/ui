@@ -8,6 +8,8 @@ import { ChainConstants, useChainConstants } from "./useChainConstants";
 import { CurrencyBalance } from "./useCurrencyBalances";
 import { useForeignAssetBalances } from "./useForeignAssetBalances";
 import { useZtgBalance } from "./useZtgBalance";
+import { isNTT } from "lib/constants";
+import { useEffect } from "react";
 
 type FeeAsset = {
   assetId: AssetId;
@@ -32,7 +34,6 @@ export const useFeePayingAsset = (
   const { data: constants } = useChainConstants();
   const { data: assetMetadata } = useAllAssetMetadata();
   const { assetSelection } = useFeePayingAssetSelection();
-
   const enabled =
     !!nativeBalance &&
     !!foreignAssetBalances &&
@@ -52,7 +53,7 @@ export const useFeePayingAsset = (
     ],
     async () => {
       if (enabled) {
-        if (assetSelection.label === "Default") {
+        if (assetSelection.label === "Default" && !isNTT) {
           // if user has ztg, use that to pay
           if (nativeBalance.greaterThanOrEqualTo(baseFee)) {
             return {
@@ -110,7 +111,6 @@ export const useFeePayingAsset = (
       enabled: enabled,
     },
   );
-
   return query;
 };
 
