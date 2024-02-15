@@ -67,17 +67,17 @@ const useWeb3Wallet = () => {
       if (web3authProvider) {
         await getKeypair(web3authProvider);
         const user = await web3auth.getUserInfo();
-        try {
-          const res = await fetch("/api/onboardUser", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email: user.email, name: user.name }),
-          });
-        } catch (e) {
-          return;
-        }
+        // try {
+        //   const res = await fetch("/api/onboardUser", {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({ email: user.email, name: user.name }),
+        //   });
+        // } catch (e) {
+        //   return;
+        // }
       }
     } catch {
       notificationStore.pushNotification(
@@ -166,6 +166,16 @@ const useWeb3Wallet = () => {
       try {
         const resp = await checkNewUser(keyPair?.address);
         console.log(resp);
+        if (resp.success) {
+          notificationStore.pushNotification(
+            `Welcome! Your walet will soon be funded with 100 NTT tokens.`,
+            {
+              type: "Success",
+              autoRemove: true,
+              lifetime: 7,
+            },
+          );
+        }
       } catch (e) {
         console.log(e);
       }
