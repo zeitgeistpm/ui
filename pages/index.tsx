@@ -1,5 +1,6 @@
 import { GenericChainProperties } from "@polkadot/types";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
 import { BgBallGfx } from "components/front-page/BgBallFx";
 import GettingStartedSection from "components/front-page/GettingStartedSection";
@@ -13,10 +14,8 @@ import PopularCategories, {
 import { Topics } from "components/front-page/Topics";
 import TrendingMarketsCompact from "components/front-page/TrendingMarketsCompact";
 import WatchHow from "components/front-page/WatchHow";
-import MarketCard, {
-  IndexedMarketCardData,
-} from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
+import MarketCard from "components/markets/market-card";
 import { GraphQLClient } from "graphql-request";
 import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
 import { CmsNews, getCmsNews } from "lib/cms/news";
@@ -28,6 +27,7 @@ import {
 import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
+import { MarketStats } from "lib/gql/markets-stats";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
 import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
@@ -143,8 +143,8 @@ export async function getStaticProps() {
 
 const IndexPage: NextPage<{
   news: CmsNews[];
-  featuredMarkets: IndexedMarketCardData[];
-  trendingMarkets: IndexedMarketCardData[];
+  featuredMarkets: FullMarketFragment[];
+  trendingMarkets: FullMarketFragment[];
   categoryPlaceholders: string[];
   newsImagePlaceholders: string[];
   topicImagePlaceholders: string[];
@@ -155,7 +155,7 @@ const IndexPage: NextPage<{
   cmsTopics: CmsTopicHeader[];
   topicsMarkets: {
     topic: CmsTopicHeader;
-    markets: IndexedMarketCardData[];
+    markets: { market: FullMarketFragment; stats: MarketStats }[];
   }[];
 }> = ({
   news,
@@ -189,7 +189,7 @@ const IndexPage: NextPage<{
           chainProperties={chainProperties}
         />
 
-        {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" && (
+        {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" ? (
           <div className="relative z-30 mb-12">
             <div className="mb-8 flex gap-2">
               <Topics
@@ -209,8 +209,13 @@ const IndexPage: NextPage<{
             {topic && topic.topic.marketIds && (
               <>
                 <div className="mb-4 flex gap-3">
-                  {topic.markets.map((market) => (
-                    <MarketCard key={market.marketId} {...market} />
+                  {topic.markets.map(({ market, stats }) => (
+                    <MarketCard
+                      key={market.marketId}
+                      market={market}
+                      numParticipants={stats.participants}
+                      liquidity={stats.liquidity}
+                    />
                   ))}
                 </div>
                 <Link href={`/topics/${topic.topic.slug}`}>
@@ -221,6 +226,14 @@ const IndexPage: NextPage<{
                 </Link>
               </>
             )}
+          </div>
+        ) : (
+          <div className="mb-12">
+            <NetworkStats
+              marketCount={stats.marketCount}
+              tradersCount={stats.tradersCount}
+              totalVolumeUsd={stats.volumeUsd}
+            />
           </div>
         )}
 

@@ -21,7 +21,7 @@ export const getCategoryCounts = async (
     [key: string]: {
       totalCount: number;
     };
-  }>(`query MyQuery {${queries.join(" ")}}`);
+  }>(`query CategoryCounts {${queries.join(" ")}}`);
 
   const counts = Object.values(response).map((a) => a.totalCount);
 
