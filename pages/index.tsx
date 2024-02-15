@@ -7,6 +7,7 @@ import GettingStartedSection from "components/front-page/GettingStartedSection";
 import { HeroBanner } from "components/front-page/HeroBanner";
 import LatestTrades from "components/front-page/LatestTrades";
 import LatestTradesCompact from "components/front-page/LatestTradesCompact";
+import NetworkStats from "components/front-page/NetworkStats";
 import { NewsSection } from "components/front-page/News";
 import PopularCategories, {
   CATEGORIES,
@@ -248,12 +249,6 @@ const IndexPage: NextPage<{
           </div>
         )}
 
-        <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} />
-
-        <div className="mb-12">
-          <WatchHow />
-        </div>
-
         <div className="flex w-full gap-x-8">
           <div className="flex w-full flex-col gap-y-6">
             <div className="flex items-center">
@@ -282,16 +277,11 @@ const IndexPage: NextPage<{
           </div>
         </div>
 
-        {trendingMarkets.length > 0 && (
-          <div className="my-[60px]">
-            <MarketScroll
-              title="Trending Markets"
-              cta="Go to Markets"
-              markets={trendingMarkets}
-              link="markets"
-            />
-          </div>
-        )}
+        <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} />
+
+        <div className="mb-12">
+          <WatchHow />
+        </div>
 
         <div className="mb-12">
           <PopularCategories imagePlaceholders={categoryPlaceholders} />
