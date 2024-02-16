@@ -38,11 +38,6 @@ export const SUPPORTED_WALLET_NAMES = [
 
 export const endpoints: EndpointOption[] = [
   {
-    value: "wss://main.rpc.zeitgeist.pm/ws",
-    label: "ZeitgeistPM",
-    environment: "production",
-  },
-  {
     value: "wss://zeitgeist-rpc.dwellir.com",
     label: "Dwellir",
     environment: "production",
@@ -50,6 +45,11 @@ export const endpoints: EndpointOption[] = [
   {
     value: "wss://zeitgeist.api.onfinality.io/public-ws",
     label: "OnFinality",
+    environment: "production",
+  },
+  {
+    value: "wss://main.rpc.zeitgeist.pm/ws",
+    label: "ZeitgeistPM",
     environment: "production",
   },
   {
