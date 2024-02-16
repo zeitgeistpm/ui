@@ -614,19 +614,25 @@ const MarketBreakdownModal = ({ markets }: { markets: MarketSummary[] }) => {
     <>
       <button onClick={() => setIsOpen(true)}>View Breakdown</button>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        <Dialog.Panel className="flex max-h-[250px] flex-col gap-y-6 overflow-y-auto rounded-ztg-10 bg-white p-[15px] py-5 md:max-h-[600px]">
-          <div>
-            total:{" "}
-            {markets.reduce<number>((prev, curr) => {
-              return prev + curr.profit;
-            }, 0)}
-          </div>
+        <Dialog.Panel className="flex max-h-[350px] w-full max-w-[600px] flex-col gap-y-6 overflow-y-auto rounded-ztg-10 bg-white p-[15px] py-5 md:max-h-[600px]">
+          <div className="text-lg font-bold">Market Profit Breakdown</div>
           {markets
             .sort((a, b) => b.profit - a.profit)
             .map((market, index) => (
-              <div key={index}>
-                <div>{market.question}</div>
-                <div>${market.profit.toFixed(2)}</div>
+              <div key={index} className="flex">
+                <Link
+                  href={`/markets/${market.marketId}`}
+                  className="line-clamp-1 max-w-[80%]"
+                >
+                  {market.question}
+                </Link>
+                <div
+                  className={`ml-auto ${
+                    market.profit > 0 ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  ${market.profit.toFixed(2)}
+                </div>
               </div>
             ))}
         </Dialog.Panel>
