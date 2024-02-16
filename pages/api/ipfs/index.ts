@@ -1,32 +1,14 @@
+import { tryCatch } from "@zeitgeistpm/utility/dist/either";
+import * as IPFSHTTPClient from "ipfs-http-client";
+import { extractBody } from "lib/edge/extract-body";
 import type { PageConfig } from "next";
 import { NextRequest } from "next/server";
-import * as z from "zod";
 import { fromZodError } from "zod-validation-error";
+import { IOMarketMetadata } from "./types";
 
-const IOMarketMetadata = z.object({
-  question: z.string(),
-  description: z.optional(z.string()),
-  tags: z.optional(z.array(z.string())),
-  slug: z.optional(z.string()),
-  categories: z.optional(
-    z.array(
-      z.object({
-        name: z.string(),
-        ticker: z.optional(z.string()),
-        img: z.optional(z.string()),
-        color: z.optional(z.string()),
-      }),
-    ),
-  ),
+const node = IPFSHTTPClient.create({
+  url: process.env.NEXT_PUBLIC_IPFS_NODE_URL,
 });
-
-const CLUSTER_ENDPOINT = process.env.IPFS_CLUSTER_URL;
-
-const headers = {
-  Authorization: `Basic ${Buffer.from(
-    `${process.env.IPFS_CLUSTER_USERNAME}:${process.env.IPFS_CLUSTER_PASSWORD}`,
-  ).toString("base64")}`,
-};
 
 export const config: PageConfig = {
   runtime: "edge",
@@ -34,130 +16,112 @@ export const config: PageConfig = {
 
 export default async function handler(req: NextRequest) {
   if (req.method === "POST") {
-    const parsed = IOMarketMetadata.safeParse(
-      JSON.parse(await extractBody(req)),
-    );
+    return POST(req);
+  }
+}
 
-    const { searchParams } = new URL(req.url);
-    const onlyHash = searchParams.get("only-hash") ?? "false";
+const POST = async (req: NextRequest) => {
+  const body = await extractBody(req);
 
-    if (!parsed.success) {
-      return new Response(
-        JSON.stringify({ message: fromZodError(parsed.error).toString() }),
-        {
-          status: 400,
-        },
-      );
-    }
+  const rawJSon = tryCatch(() => JSON.parse(body));
 
-    const metadata = {
-      __meta: "markets",
-      ...parsed.data,
-    };
-
-    const json = JSON.stringify(metadata);
-    const kbSize = Buffer.byteLength(json) / 1024;
-
-    if (kbSize > 10) {
-      return new Response(
-        JSON.stringify({
-          message: "Market metadata is too large. Please keep it under 10kb.",
-        }),
-        {
-          status: 400,
-        },
-      );
-    }
-
-    const formData = new FormData();
-
-    formData.append("file", json);
-
-    const response = await fetch(
-      new URL(
-        `/add?hash=sha3-384&cid-version=1&only-hash=${onlyHash}`,
-        CLUSTER_ENDPOINT,
-      ).href,
-      {
-        headers,
-        method: `POST`,
-        body: formData,
-      },
-    );
-
-    if (!response.ok) {
-      const data = await response.json();
-      return new Response(
-        JSON.stringify({
-          message: data?.message ?? "Unknown cluster api error.",
-        }),
-        {
-          status: 500,
-        },
-      );
-    }
-
-    const { cid } = await response.json();
-
+  if (rawJSon.isLeft()) {
     return new Response(
-      JSON.stringify({
-        message: `Market metadata ${
-          onlyHash === "true" ? "hashed" : "pinned"
-        } successfully.`,
-        onlyHash: onlyHash === "true",
-        cid: cid,
-      }),
+      JSON.stringify({ message: "Request body must be valid json." }),
       {
-        status: response.status,
+        status: 400,
       },
     );
   }
 
-  if (req.method === "DELETE") {
-    const { cid } = JSON.parse(await extractBody(req));
-    const response = await fetch(
-      new URL(`/pins/${cid}`, CLUSTER_ENDPOINT).href,
+  const parsed = IOMarketMetadata.safeParse(rawJSon.unwrap());
+
+  const { searchParams } = new URL(req.url);
+  const onlyHash = searchParams.get("only-hash") === "true" ? true : false;
+
+  if (!parsed.success) {
+    return new Response(
+      JSON.stringify({ message: fromZodError(parsed.error).toString() }),
       {
-        headers,
-        method: `DELETE`,
+        status: 400,
       },
     );
+  }
 
-    const data = await response.json();
+  const metadata = {
+    __meta: "markets",
+    ...parsed.data,
+  };
 
-    if (!response.ok) {
-      return new Response(
-        JSON.stringify({
-          message: data?.message ?? "Unknown cluster api error.",
-        }),
-        {
-          status: response.status,
-        },
-      );
-    }
+  const content = JSON.stringify(metadata);
+  const kbSize = Buffer.byteLength(content) / 1024;
+
+  if (kbSize > 10) {
+    return new Response(
+      JSON.stringify({
+        message: "Market metadata is too large. Please keep it under 10kb.",
+      }),
+      {
+        status: 400,
+      },
+    );
+  }
+
+  try {
+    const { cid } = await node.add(
+      { content },
+      { hashAlg: "sha3-384", pin: !onlyHash, onlyHash },
+    );
+
+    // if (!onlyHash) {
+    //   await node.pin.add(cid);
+    // }
 
     return new Response(
       JSON.stringify({
-        message: "Market metadata unpinned successfully.",
+        message: `Market metadata ${
+          onlyHash ? "hashed" : "pinned"
+        } successfully.`,
+        cid: cid.toString(),
       }),
       {
         status: 200,
       },
     );
+  } catch (error) {
+    return new Response(
+      JSON.stringify({
+        message: error.message,
+      }),
+      {
+        status: 500,
+      },
+    );
   }
-}
+};
 
-async function extractBody(request: NextRequest) {
-  const dec = new TextDecoder();
-  const reader = request.body?.getReader();
+// const DELETE = async (req: NextRequest) => {
+//   const { cid } = JSON.parse(await extractBody(req));
 
-  if (!reader) return "";
-  let body = "";
+//   try {
+//     await node.pin.rm(IPFSHTTPClient.CID.parse(cid));
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) return body;
-
-    body = body + dec.decode(value);
-  }
-}
+//     return new Response(
+//       JSON.stringify({
+//         message: `Market metadata(cid: ${cid}) unpinned successfully.`,
+//       }),
+//       {
+//         status: 200,
+//       },
+//     );
+//   } catch (error) {
+//     return new Response(
+//       JSON.stringify({
+//         message: error.message,
+//       }),
+//       {
+//         status: 500,
+//       },
+//     );
+//   }
+// };
