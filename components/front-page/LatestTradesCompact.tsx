@@ -31,7 +31,7 @@ const LatestTradeRow = ({ trade }: { trade: TradeItem }) => {
       href={`/markets/${trade.marketId}`}
       className="flex h-[70px] items-center p-4 hover:bg-[#D4E7F4]"
     >
-      <div className="mr-4 flex h-[30px] w-[30px] rounded-md">
+      <div className="flex h-[30px] w-[30px] flex-none rounded-md">
         <Image
           priority
           alt="Market image"
@@ -42,15 +42,19 @@ const LatestTradeRow = ({ trade }: { trade: TradeItem }) => {
           sizes={"30px"}
         />
       </div>
-      <div className="flex flex-col">
-        <div className="text-sm">{cmsMetadata?.question ?? trade.question}</div>
+      <div className="ml-4 flex flex-col">
+        <div className="line-clamp-1 overflow-ellipsis text-sm">
+          {cmsMetadata?.question ?? trade.question}
+        </div>
         <div className="flex items-center gap-x-1 text-sm text-ztg-blue">
           <Avatar size={15} address={trade.traderAddress} />
           {trade.type === "buy" ? "Bought" : "Sold"}
           <span className="font-bold">{trade.outcomeName}</span>
-          at {formatNumberLocalized(trade.outcomePrice.toNumber())}{" "}
-          {trade.costSymbol}
-          <span className="font-bold">
+          <span className="hidden sm:inline">
+            at {formatNumberLocalized(trade.outcomePrice.toNumber())}{" "}
+            {trade.costSymbol}
+          </span>
+          <span className="hidden font-bold sm:inline">
             {moment.duration(now.diff(trade.time)).humanize()} ago
           </span>
         </div>
