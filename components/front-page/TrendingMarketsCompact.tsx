@@ -47,7 +47,7 @@ const TrendingMarketRow = ({ market }: { market: FullMarketFragment }) => {
       href={`/markets/${marketId}`}
       className="flex h-[70px] items-center p-4 hover:bg-[#D4E7F4]"
     >
-      <div className="mr-4 flex h-[45px] w-[45px] rounded-md">
+      <div className="mr-4 flex h-[45px] w-[45px] flex-none rounded-md">
         <Image
           priority
           alt="Market image"
