@@ -1,4 +1,4 @@
-import { PortableText } from "@portabletext/react";
+import { PortableText, toPlainText } from "@portabletext/react";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { ZeitgeistIpfs, create } from "@zeitgeistpm/sdk";
 import MarketCard from "components/markets/market-card";
@@ -72,11 +72,13 @@ const TopicPage: NextPage<{
       blurDataURL: cmsTopic.bannerBlurData,
     };
   }
-  console.log(cmsTopic.description);
 
   return (
     <div>
-      <OgHead title={cmsTopic.title} />
+      <OgHead
+        title={cmsTopic.title}
+        description={toPlainText(cmsTopic.description)}
+      />
       {banner && (
         <div className="relative mb-10 mt-3 h-[150px] w-full md:h-[262px]">
           <Image
