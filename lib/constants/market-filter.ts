@@ -28,10 +28,11 @@ export const categoryImages: Record<
   Technology: "/category/technology.png",
   Crypto: "/category/crypto.png",
   Science: "/category/science.png",
-  "E-Sports": "/category/e-sports.png",
   Zeitgeist: "/category/zeitgeist.png",
   Dotsama: "/category/dotsama.png",
   News: "/category/news.png",
+  Entertainment: "/category/entertainment.png",
+  Finance: "/category/finance.png",
 } as const;
 
 export const marketTagFilterOptions: MarketTagFilter[] = defaultTags.map(
