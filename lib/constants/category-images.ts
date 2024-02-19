@@ -10,9 +10,11 @@ export const CATEGORY_IMAGES = union<(typeof tags)[number]>().exhaustAsRecord({
   Technology: range(1, 5).map((i) => `/categories/tech/${i}.png`),
   Crypto: range(1, 5).map((i) => `/categories/crypto/${i}.png`),
   Science: range(1, 5).map((i) => `/categories/science/${i}.png`),
-  "E-Sports": range(1, 6).map((i) => `/categories/esports/${i}.png`),
   News: range(1, 6).map((i) => `/categories/news/${i}.png`),
   Dotsama: range(1, 2).map((i) => `/categories/dotsama/${i}.png`),
   Zeitgeist: range(1, 2).map((i) => `/categories/zeitgeist/${i}.png`),
+  Finance: range(1, 5).map((i) => `/categories/finance/${i}.png`),
+  //todo: add selections for entertainment
+  Entertainment: range(1, 2).map((i) => `/categories/zeitgeist/${i}.png`),
   untagged: range(1, 2).map((i) => `/categories/zeitgeist/${i}.png`),
 });
