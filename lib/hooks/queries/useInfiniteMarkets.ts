@@ -19,6 +19,7 @@ import { marketMetaFilter } from "./constants";
 import { marketsRootQuery } from "./useMarket";
 import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 import { CmsMarketMetadata } from "lib/cms/markets";
+import { tryCatch } from "@zeitgeistpm/utility/dist/either";
 
 export const rootKey = "markets-filtered";
 
@@ -39,9 +40,11 @@ export type QueryMarketData = Market<IndexerContext> & {
   prediction: { name: string; price: number };
 };
 
-const WHITELISTED_TRUSTED_CREATORS = [
-  "dE2cVL9QAgh3MZEK3ZhPG5S2YSqZET8V1Qa36epaU4pQG4pd8",
-];
+const WHITELISTED_TRUSTED_CREATORS: string[] = tryCatch(() =>
+  JSON.parse(process.env.NEXT_PUBLIC_WHITELISTED_TRUSTED_CREATORS as string),
+).unwrapOr([]);
+
+console.log(WHITELISTED_TRUSTED_CREATORS);
 
 export const useInfiniteMarkets = (
   orderBy: MarketsOrderBy,
