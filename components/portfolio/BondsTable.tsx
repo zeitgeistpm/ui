@@ -50,6 +50,7 @@ const BondsTable = ({ address }: { address: string }) => {
               <MarketPositionHeader
                 marketId={market.marketId}
                 question={market.question}
+                baseAsset={market.baseAsset}
               />
               <Table
                 columns={columns}
