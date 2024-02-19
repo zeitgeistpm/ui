@@ -8,7 +8,7 @@ const MenuLogo: FC<{}> = () => {
       <>
         <div className="hidden flex-col md:flex">
           <h1 className={`w-[500px] font-kanit text-xl text-blue-500 `}>
-            {navigator.userAgent}
+            {typeof navigator === "object" && navigator?.userAgent}
           </h1>
         </div>
       </>
