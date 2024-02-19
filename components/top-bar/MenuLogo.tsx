@@ -7,7 +7,9 @@ const MenuLogo: FC<{}> = () => {
       <Logo variant={"light"} />
       <>
         <div className="hidden flex-col md:flex">
-          <h1 className={`font-kanit text-xl text-white `}>Zeitgeist</h1>
+          <h1 className={`w-[500px] font-kanit text-xl text-blue-500 `}>
+            {navigator.userAgent}
+          </h1>
         </div>
       </>
     </div>
