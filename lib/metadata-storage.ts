@@ -1,6 +1,10 @@
 import { u8aToString } from "@polkadot/util";
 import { u8aConcat } from "@polkadot/util/u8a";
-import { MetadataStorage, createStorage } from "@zeitgeistpm/sdk";
+import {
+  MarketMetadata,
+  MetadataStorage,
+  createStorage,
+} from "@zeitgeistpm/sdk";
 import { Codec, JsonCodec } from "@zeitgeistpm/utility/dist/codec";
 import * as O from "@zeitgeistpm/utility/dist/option";
 import * as Te from "@zeitgeistpm/utility/dist/taskeither";
@@ -12,10 +16,13 @@ const node = IPFSHTTPClient.create({
   url: process.env.NEXT_PUBLIC_IPFS_NODE_URL,
 });
 
-export const createMetadataStorage = (): MetadataStorage => {
+export const createMetadataStorage = (): MetadataStorage<MarketMetadata> => {
   const createInnerStorage = (
-    codec: Codec<string | Uint8Array, any> = JsonCodec(),
-  ): Storage<any, any> => {
+    codec: Codec<
+      string | Uint8Array,
+      MarketMetadata
+    > = JsonCodec<MarketMetadata>(),
+  ): Storage<MarketMetadata, CID> => {
     return {
       put: Te.from(
         async (data) => {
@@ -76,24 +83,7 @@ export const createMetadataStorage = (): MetadataStorage => {
         },
         (message, error) => new StorageError(message, error),
       ),
-      del: Te.from(
-        async (cid) => {
-          const response = await fetch("/api/ipfs", {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ cid: cid.toString() }),
-          });
-
-          if (!response.ok) {
-            const { message } = await response.json();
-            throw message;
-          }
-        },
-        (message, error) => new StorageError(message, error),
-      ),
-      withCodec: (codec) => createInnerStorage(codec),
+      withCodec: <A>() => createInnerStorage(codec) as Storage<A, CID>,
       provider: node,
     };
   };
