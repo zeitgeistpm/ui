@@ -22,6 +22,7 @@ import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { getCurrentPrediction } from "lib/util/assets";
 
 const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
   ssr: false,
@@ -81,12 +82,7 @@ export const MarketCard = ({
     marketCategories.some((outcome) => outcome.name.toLowerCase() === "yes") &&
     marketCategories.some((outcome) => outcome.name.toLowerCase() === "no");
 
-  const prediction =
-    marketCategories.length > 0
-      ? marketCategories?.reduce((prev, curr) => {
-          return prev && prev.price > curr.price ? prev : curr;
-        })
-      : undefined;
+  const prediction = getCurrentPrediction(assets, market);
 
   //always show "Yes" prediction percentage
   const displayPrediction =
