@@ -126,6 +126,9 @@ export const MarketCard = ({
           }`}
         >
           <div className="flex h-[54px] w-full gap-4 whitespace-normal">
+            <div className="absolute right-4 top-4">
+              <MarketFavoriteToggle marketId={marketId} />
+            </div>
             <div className="relative min-h-[54px] min-w-[54px] rounded-lg bg-gray-400 bg-opacity-30">
               <Image
                 priority
@@ -140,7 +143,7 @@ export const MarketCard = ({
                 sizes={"54px"}
               />
             </div>
-            <h5 className="line-clamp-2 h-fit w-full text-base duration-200">
+            <h5 className="line-clamp-2 h-fit w-full pr-4 text-base duration-200">
               {cmsMetadata?.question ?? question}
             </h5>
           </div>
@@ -190,7 +193,6 @@ export const MarketCard = ({
                 liquidity={liquidity}
               />
             </div>
-            <MarketFavoriteToggle marketId={marketId} />
           </div>
         </Link>
       </div>
