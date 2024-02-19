@@ -114,10 +114,9 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
           <div className="absolute right-0 top-0 translate-x-[50%] translate-y-[-50%] rounded-full bg-orange-500 p-[0.5]">
             <InfoPopover
               overlay={false}
-              className="text-white"
               position="top-end"
               popoverCss="-ml-12"
-              icon={<IoIosInformation />}
+              icon={<IoIosInformation className="text-white" />}
             >
               You are currently delegating to other jurors. If you join the
               court as a juror, your delegations will be removed and delegated
