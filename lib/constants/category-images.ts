@@ -14,6 +14,6 @@ export const CATEGORY_IMAGES = union<(typeof tags)[number]>().exhaustAsRecord({
   Dotsama: range(1, 2).map((i) => `/categories/dotsama/${i}.png`),
   Zeitgeist: range(1, 2).map((i) => `/categories/zeitgeist/${i}.png`),
   Finance: range(1, 5).map((i) => `/categories/finance/${i}.png`),
-  Entertainment: range(1, 2).map((i) => `/categories/entertainment/${i}.png`),
+  Entertainment: range(1, 5).map((i) => `/categories/entertainment/${i}.png`),
   untagged: range(1, 2).map((i) => `/categories/zeitgeist/${i}.png`),
 });
