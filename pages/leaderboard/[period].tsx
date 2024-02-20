@@ -483,7 +483,7 @@ export async function getStaticProps({ params }) {
       timePeriod: period,
       bannerPlaceholder: bannerPlaceholder.base64,
     },
-    revalidate: 60 * 24, //1 hour
+    revalidate: 60 * 30, // 30 mins
   };
 }
 
