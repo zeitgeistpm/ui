@@ -103,7 +103,7 @@ const DelegateButton = ({ address }: { address: string }) => {
         Delegate
       </SecondaryButton>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
+        <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white p-[30px]">
           <h3 className="mb-8">Delegate to</h3>
           <div className="flex items-center gap-2 text-xxs">
             <Avatar address={address} />

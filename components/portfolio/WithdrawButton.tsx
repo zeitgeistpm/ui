@@ -210,7 +210,7 @@ const WithdrawModal = ({
   };
 
   return (
-    <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
+    <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white p-[30px]">
       <h3 className="mb-8 text-center">Withdraw</h3>
       <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
         <Transfer destinationChain={toChain} sourceChain="Zeitgeist" />
