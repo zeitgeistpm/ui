@@ -13,12 +13,13 @@ import {
 } from "lib/types/market-filter";
 import { MarketOutcomes } from "lib/types/markets";
 import { useSdkv2 } from "../useSdkv2";
-
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { CmsMarketMetadata } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 import { marketMetaFilter } from "./constants";
 import { marketsRootQuery } from "./useMarket";
+
+import { tryCatch } from "@zeitgeistpm/utility/dist/either";
 
 export const rootKey = "markets-filtered";
 
@@ -38,6 +39,10 @@ export type QueryMarketData = Market<IndexerContext> & {
   outcomes: MarketOutcomes;
   prediction: { name: string; price: number };
 };
+
+const WHITELISTED_TRUSTED_CREATORS: string[] = tryCatch(() =>
+  JSON.parse(process.env.NEXT_PUBLIC_WHITELISTED_TRUSTED_CREATORS as string),
+).unwrapOr([]);
 
 export const useInfiniteMarkets = (
   orderBy: MarketsOrderBy,
@@ -76,6 +81,14 @@ export const useInfiniteMarkets = (
             status_in: statuses.length === 0 ? undefined : statuses,
             tags_containsAny: tags?.length === 0 ? undefined : tags,
             baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
+          },
+          {
+            disputeMechanism_isNull: false,
+            OR: [
+              {
+                creator_in: WHITELISTED_TRUSTED_CREATORS,
+              },
+            ],
           },
           {
             OR: [
