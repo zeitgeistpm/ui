@@ -1,4 +1,3 @@
-import type { ScalarRangeType } from "@zeitgeistpm/sdk";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
