@@ -29,10 +29,9 @@ const ManageDelegationButton = ({ className }: { className?: string }) => {
           <div className="absolute right-0 top-0 translate-x-[50%] translate-y-[-50%] rounded-full bg-orange-500 p-[0.5]">
             <InfoPopover
               overlay={false}
-              className="text-white"
               position="top-end"
               popoverCss="-ml-12"
-              icon={<IoIosInformation />}
+              icon={<IoIosInformation className="text-white" />}
             >
               You are currently a juror. If you delegate to other jurors your
               stake will be removed from your personal stake and delegated
