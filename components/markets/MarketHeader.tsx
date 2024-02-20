@@ -40,6 +40,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { FC, PropsWithChildren, useState } from "react";
 import { X } from "react-feather";
+import { HiOutlineShieldCheck } from "react-icons/hi";
 import { MdModeEdit, MdOutlineHistory } from "react-icons/md";
 import { AddressDetails } from "./MarketAddresses";
 import { MarketTimer, MarketTimerSkeleton } from "./MarketTimer";
@@ -533,9 +534,43 @@ const MarketHeader: FC<{
           </div>
         </div>
 
+        {!market.disputeMechanism && (
+          <div className="group relative">
+            <InfoPopover
+              position="bottom-end"
+              icon={
+                <div className="center h-[22px] w-[22px] rounded-full bg-orange-200">
+                  <HiOutlineShieldCheck size={14} />
+                </div>
+              }
+            >
+              <div className="text-left">
+                <div className="mb-3">
+                  This market has no dispute mechanism and will be resolved
+                  automatically when reported.
+                </div>
+                <div className="flex gap-4">
+                  <div>
+                    <AddressDetails title="Creator" address={market.creator} />
+                  </div>
+                  <div>
+                    <AddressDetails title="Oracle" address={market.oracle} />
+                  </div>
+                </div>
+              </div>
+            </InfoPopover>
+            <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="rounded-lg bg-orange-200 px-2 py-1 text-sm">
+                Trusted Market
+              </div>
+            </div>
+          </div>
+        )}
+
         {market.hasEdits && (
           <div className="group relative">
             <InfoPopover
+              position="bottom-end"
               icon={
                 <div className="center h-[22px] w-[22px] rounded-full bg-yellow-200">
                   <MdModeEdit size={12} />
