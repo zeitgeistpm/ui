@@ -2,7 +2,6 @@ import { BaseDotsamaWallet } from "@talismn/connect-wallets";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { atom } from "jotai";
-import { isWSX } from "lib/constants";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { TypeOfLogin } from "@web3auth/openlogin-adapter";
@@ -16,17 +15,9 @@ interface LoginConfig {
   };
 }
 
-export const clientId = isWSX
-  ? process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_WSX
-  : process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
-
-const auth0ClientID = isWSX
-  ? process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_WSX
-  : process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_ZTG;
-
-const discordClientID = isWSX
-  ? process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID_WSX
-  : process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID_ZTG;
+export const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
+const auth0ClientID = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
+const discordClientID = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID;
 
 class Web3AuthWallet extends BaseDotsamaWallet {
   constructor({ extensionName, title, installUrl, logo }) {

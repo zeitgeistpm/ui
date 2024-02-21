@@ -1,8 +1,6 @@
-import { BaseDotsamaWallet } from "@talismn/connect-wallets";
 import Image from "next/image";
 
 interface WalletIconProps {
-  wallet?: BaseDotsamaWallet;
   extensionName: string;
   logoAlt: string;
   logoSrc: string;
@@ -13,7 +11,6 @@ interface WalletIconProps {
 }
 
 const WalletIcon = ({
-  wallet,
   logoAlt,
   logoSrc,
   extensionName,

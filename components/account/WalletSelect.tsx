@@ -71,7 +71,6 @@ const WalletSelect = () => {
                 onClick={() => {
                   handleSelectWallet(wallet);
                 }}
-                wallet={wallet}
                 extensionName={wallet.extensionName}
                 logoAlt={wallet.logo?.alt}
                 logoSrc={wallet.logo?.src}
