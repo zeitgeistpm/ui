@@ -57,10 +57,11 @@ export const endpoints: EndpointOption[] = [
     label: "Battery Station",
     environment: "staging",
   },
-  // {
-  //   value: "ws://127.0.0.1:9944",
-  //   label: "Custom",
-  // },
+  {
+    value: "ws://127.0.0.1:9944",
+    label: "Local",
+    environment: "local",
+  },
 ];
 
 export const graphQlEndpoints: EndpointOption[] = [
@@ -74,16 +75,20 @@ export const graphQlEndpoints: EndpointOption[] = [
     label: "Polkadot (Live)",
     environment: "production",
   },
-  // {
-  //   value: "http://localhost:4350/graphql",
-  //   label: "Custom",
-  // },
+  {
+    value: "http://localhost:4350/graphql",
+    label: "Local",
+    environment: "local",
+  },
 ];
 
 const getEnvironment = (): Environment => {
-  const environments = ["production", "staging"];
+  const environments = ["production", "staging", "local"];
   const env = process.env.NEXT_PUBLIC_VERCEL_ENV;
-  if (env == null || !["production", "staging"].includes(env)) {
+
+  console.log("env:", env);
+
+  if (env == null || !environments.includes(env)) {
     throw Error(
       `Invalid environment, please set NEXT_PUBLIC_VERCEL_ENV environment variable to one of ${environments.join(
         ",",
@@ -109,5 +114,4 @@ const getEndpointOptions = (env: Environment): EndpointOption[] => {
 export const endpointsProduction = getEndpointOptions("production");
 export const endpointsStaging = getEndpointOptions("staging");
 
-export const endpointOptions =
-  environment === "production" ? endpointsProduction : endpointsStaging;
+export const endpointOptions = getEndpointOptions(environment);

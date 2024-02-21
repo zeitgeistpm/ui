@@ -8,7 +8,7 @@ export type JSONObject =
   | { [key: string]: JSONObject }
   | JSONObject[];
 
-export type Environment = "production" | "staging";
+export type Environment = "production" | "staging" | "local";
 
 export interface EndpointOption {
   value: string;
