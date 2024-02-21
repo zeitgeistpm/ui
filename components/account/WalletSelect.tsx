@@ -50,16 +50,13 @@ const WalletSelect = () => {
     );
 
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex flex-col">
       <h3 className="mb-4 text-2xl font-bold">
-        {userConfig?.selectedAddress
-          ? "Log back in to Zeitgeist"
-          : "Create Account"}
+        {userConfig?.selectedAddress && "Log back in to Zeitgeist"}
       </h3>
       <p className="mb-4">
-        {userConfig?.selectedAddress
-          ? "Use one of the following options to log in and start using Prediction Markets."
-          : "Use one of the following options to create a wallet and start using Prediction Markets."}
+        {userConfig?.selectedAddress &&
+          "Use one of the following options to log in and start using Prediction Markets."}
       </p>
       <Web3wallet />
       <h3 className="my-4 text-lg font-bold">Crypto Wallet</h3>

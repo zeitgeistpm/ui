@@ -80,14 +80,14 @@ const resourceList = [
 
 const Stepper = ({ start, end, currentStep, onStepClick }: StepperProps) => {
   return (
-    <div className="flex gap-x-[18px]">
+    <div className="mt-4 flex gap-x-2">
       {range(start, end).map((step) => (
         <button
           key={step}
           onClick={() => onStepClick(step)}
           disabled={step === currentStep}
-          className={`h-[7px] w-[7px] rounded-full ${
-            step === currentStep ? "bg-black" : "bg-sky-600"
+          className={`h-[5px] w-full ${
+            step === currentStep ? "bg-black" : "bg-mystic"
           }`}
         ></button>
       ))}
@@ -120,14 +120,14 @@ const TextSection = ({
 }: TextSectionProps) => {
   return (
     <>
-      <div className="text-center text-2xl font-bold">{headerText}</div>
-      <div className="mb-auto text-center">{bodyText}</div>
+      <div className="text-2xl font-bold">{headerText}</div>
+      <p>{bodyText}</p>
       {children && children}
       {(leftButton || rightButton) && (
-        <div className="flex h-[56px] w-full justify-center gap-x-5 px-5 font-medium">
+        <div className="flex h-[56px] w-full gap-x-5 font-medium">
           {leftButton && (
             <button
-              className={`w-full rounded-[100px] border-2 hover:bg-gray-200 ${
+              className={`w-full rounded-[100px] bg-mystic hover:bg-gray-100 ${
                 leftButton.disabled === true
                   ? "cursor-default bg-gray-light-2"
                   : "border"
@@ -139,7 +139,7 @@ const TextSection = ({
           )}
           {rightButton && (
             <button
-              className={`w-full rounded-[100px] border-2 hover:bg-gray-200 ${
+              className={`w-full rounded-[100px] bg-ztg-blue text-white hover:bg-black ${
                 rightButton.disabled === true
                   ? "cursor-default bg-gray-light-2"
                   : "border"
@@ -154,18 +154,6 @@ const TextSection = ({
     </>
   );
 };
-
-const TopPic = () => (
-  <div className="mb-6">
-    <Image
-      alt="Portal Gate"
-      src={"/wsx/wsx-logo-header.svg"}
-      objectFit="cover"
-      width={200}
-      height={120}
-    />
-  </div>
-);
 
 const walletsConfig = [
   new TalismanWallet(),
@@ -182,7 +170,7 @@ export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
           key={index}
           disabled={button.disabled}
           onClick={button.onClick}
-          className={`flex h-[56px] w-full items-center justify-center rounded-lg text-center hover:bg-gray-200 ${
+          className={`flex h-[56px] w-full items-center justify-center rounded-lg bg-mystic text-center hover:bg-gray-100 ${
             button.disabled === true ? "bg-gray-light-2" : "border"
           }`}
         >
@@ -241,11 +229,9 @@ export const DesktopOnboardingModal = (props: {
 
   return (
     <Dialog.Panel
-      className="flex w-full max-w-[450px] flex-col items-center justify-center 
-    gap-y-[20px] rounded-ztg-10 bg-white p-8"
+      className="mt-8 flex w-full max-w-[450px]  
+    flex-col gap-y-[20px] rounded-ztg-10 bg-white p-8"
     >
-      {/* <TopPic /> */}
-
       {screens[step]}
 
       {props.notice && (
