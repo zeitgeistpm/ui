@@ -3,7 +3,6 @@ import Decimal from "decimal.js";
 import React, { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type { ApiPromise } from "@polkadot/api";
-import { encodeAddress } from "@polkadot/keyring";
 import { AssetId, IOForeignAssetId, ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
 import AddressInput, { AddressOption } from "components/ui/AddressInput";
 import AssetInput from "components/ui/AssetInput";

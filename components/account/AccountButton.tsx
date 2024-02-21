@@ -13,7 +13,6 @@ import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { FaNetworkWired } from "react-icons/fa";
-
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, Fragment, PropsWithChildren, useState } from "react";
@@ -89,6 +88,7 @@ const AccountButton: FC<{
     isNovaWallet,
     getProxyFor,
     realAddress,
+    walletId,
   } = useWallet();
   const proxy = getProxyFor(activeAccount?.address);
 
@@ -342,7 +342,9 @@ const AccountButton: FC<{
                             <div
                               className="mb-3 flex items-center px-6 hover:bg-slate-100"
                               onClick={() => {
-                                accountModals.openAccountSelect();
+                                walletId === "web3auth"
+                                  ? accountModals.openWalletSelect()
+                                  : accountModals.openAccountSelect();
                               }}
                             >
                               <User />
