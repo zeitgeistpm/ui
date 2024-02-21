@@ -27,6 +27,7 @@
     "@plaiceholder/next": "^2.5.0",
     "@polkadot/api": "^10.10.1",
     "@polkadot/extension-dapp": "^0.44.6",
+    "@polkadot/keyring": "^12.6.2",
     "@polkadot/ui-keyring": "^2.4.1",
     "@portabletext/react": "^3.0.11",
     "@sanity/client": "^6.10.0",
