@@ -1,15 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  FullMarketFragment,
-  MarketOrderByInput,
-  MarketStatus,
-  ZeitgeistIndexer,
-} from "@zeitgeistpm/indexer";
+import { MarketOrderByInput, MarketStatus } from "@zeitgeistpm/indexer";
 import { isIndexedSdk } from "@zeitgeistpm/sdk";
-import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
-import { getCurrentPrediction } from "lib/util/assets";
 import { useSdkv2 } from "../useSdkv2";
-import { QueryMarketData } from "./useInfiniteMarkets";
 import { useMarket } from "./useMarket";
 import { searchMarketsText } from "./useMarketSearch";
 
@@ -32,12 +24,9 @@ export const useRecommendedMarkets = (marketId?: number, limit = 2) => {
 
         if (market.question && similarMarkets.length > 0) {
           return {
-            markets: await mapMarkets(
-              sdk.indexer,
-              similarMarkets
-                .filter((m) => m.question !== market.question)
-                .slice(0, 2),
-            ),
+            markets: similarMarkets
+              .filter((m) => m.question !== market.question)
+              .slice(0, 2),
             type: "similar" as const,
           };
         } else {
@@ -51,7 +40,7 @@ export const useRecommendedMarkets = (marketId?: number, limit = 2) => {
             },
           });
           return {
-            markets: await mapMarkets(sdk.indexer, popularMarkets),
+            markets: popularMarkets,
             type: "popular" as const,
           };
         }
@@ -64,28 +53,4 @@ export const useRecommendedMarkets = (marketId?: number, limit = 2) => {
   );
 
   return query;
-};
-
-const mapMarkets = async (
-  indexer: ZeitgeistIndexer,
-  markets: FullMarketFragment[],
-) => {
-  const outcomes = await getOutcomesForMarkets(indexer.client, markets);
-
-  let resMarkets: Array<QueryMarketData> = [];
-
-  for (const market of markets) {
-    const marketOutcomes = outcomes[market.marketId];
-    const prediction =
-      market && market.assets.length > 0
-        ? getCurrentPrediction(market.assets, market)
-        : { name: "None", price: 0 };
-
-    resMarkets = [
-      ...resMarkets,
-      { ...market, outcomes: marketOutcomes, prediction },
-    ];
-  }
-
-  return resMarkets;
 };

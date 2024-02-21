@@ -32,7 +32,7 @@ const BuySellFullSetsButton = ({
       </SecondaryButton>
 
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
+        <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white">
           <Tab.Group>
             <Tab.List className="flex h-[71px] text-center text-ztg-18-150 font-medium">
               <Tab className="w-1/2 rounded-tl-[10px] bg-anti-flash-white transition-all ui-selected:bg-white ui-selected:font-bold">

@@ -9,7 +9,8 @@ export const prodTags = [
   "Science",
   "News",
   "Sports",
-  "E-Sports",
+  "Entertainment",
+  "Finance",
 ] as const;
 
 const otherTags = process.env.NEXT_PUBLIC_OTHER_TAGS
