@@ -3,7 +3,6 @@ import Decimal from "decimal.js";
 import React, { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type { ApiPromise } from "@polkadot/api";
-import { encodeAddress } from "@polkadot/keyring";
 import { AssetId, IOForeignAssetId, ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
 import AddressInput, { AddressOption } from "components/ui/AddressInput";
 import AssetInput from "components/ui/AssetInput";
@@ -203,7 +202,7 @@ const TransferModal = ({
   };
 
   return (
-    <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
+    <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white p-[30px]">
       <h3 className="mb-5 text-center text-lg font-bold">On-Chain Transfers</h3>
       <form className="flex flex-col" onSubmit={handleSubmit(submit)}>
         <div className="mb-2 flex justify-between text-sm font-semibold">

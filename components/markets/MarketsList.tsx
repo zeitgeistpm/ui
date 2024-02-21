@@ -19,8 +19,6 @@ import { Topics } from "components/front-page/Topics";
 
 export type MarketsListProps = {
   className?: string;
-  cmsTopics: CmsTopicHeader[];
-  cmsTopicPlaceholders: string[];
 };
 
 const useChangeQuery = (
@@ -59,11 +57,7 @@ const useChangeQuery = (
   }, [withLiquidityOnly]);
 };
 
-const MarketsList = ({
-  className = "",
-  cmsTopics,
-  cmsTopicPlaceholders,
-}: MarketsListProps) => {
+const MarketsList = ({ className = "" }: MarketsListProps) => {
   const [filters, setFilters] = useState<MarketFilter[]>();
   const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
   const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
@@ -104,12 +98,6 @@ const MarketsList = ({
       data-testid="marketsList"
       id={"market-list"}
     >
-      {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" && (
-        <div className="flex gap-2 py-8">
-          <Topics topics={cmsTopics} imagePlaceholders={cmsTopicPlaceholders} />
-        </div>
-      )}
-
       <MarketFilterSelection
         onFiltersChange={setFilters}
         onOrderingChange={setOrderBy}
@@ -118,44 +106,14 @@ const MarketsList = ({
 
       <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
         {markets?.map((market) => {
-          const volume = market.volume;
-          const scalarType = market.scalarType as ScalarRangeType;
           const stat = stats?.find((s) => s.marketId === market.marketId);
-          const question = market.question ?? "";
-          const image = market.img ?? "";
-          //check if market is categorical or scalar
-          let { categorical, scalar } = market.marketType ?? {};
-          if (categorical === null) {
-            categorical = "";
-          }
-          const filteredScalar =
-            scalar?.filter((item): item is string => item !== null) ?? [];
-          const marketType = { categorical, scalar: filteredScalar };
-          const pool = market.pool ?? null;
-          const tags =
-            market.tags?.filter((tag): tag is string => tag !== null) ?? [];
 
           return (
             <MarketCard
-              marketId={market.marketId}
-              outcomes={market.outcomes}
-              question={question}
-              creation={market.creation}
-              creator={market.creator}
-              img={image}
-              prediction={market.prediction}
-              endDate={market.period.end}
-              marketType={marketType}
-              scalarType={scalarType}
-              pool={pool}
-              neoPool={market.neoPool}
-              status={market.status}
-              baseAsset={market.baseAsset}
-              volume={new Decimal(volume).div(ZTG).toNumber()}
-              tags={tags}
+              key={`market-${market.marketId}`}
+              market={market}
               numParticipants={stat?.participants}
               liquidity={stat?.liquidity}
-              key={`market-${market.marketId}`}
             />
           );
         })}

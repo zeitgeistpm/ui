@@ -36,7 +36,7 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
         open={showResetConfirmation}
         onClose={() => setShowResetConfirmation(false)}
       >
-        <Dialog.Panel className="w-full max-w-[462px] cursor-pointer rounded-[10px] bg-white p-8">
+        <Dialog.Panel className="w-full max-w-[564px] cursor-pointer rounded-[10px] bg-white p-8">
           <div className="mb-6 text-center">
             Are you sure you want to clear the form?
           </div>

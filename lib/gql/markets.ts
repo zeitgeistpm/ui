@@ -83,7 +83,7 @@ const marketQuery = gql`
   }
 `;
 
-export interface MarketPageIndexedData {
+export type MarketPageIndexedData = {
   marketId: number;
   slug: string;
   question: string;
@@ -125,7 +125,19 @@ export interface MarketPageIndexedData {
   baseAsset: string;
   disputeMechanism: "SimpleDisputes" | "Authorized" | "Court";
   img?: string;
-}
+} & (WithCmsEdits | NoCmsEdits);
+
+export type WithCmsEdits = {
+  hasEdits?: true;
+  originalMetadata: {
+    question?: string;
+    description?: string;
+  };
+};
+
+export type NoCmsEdits = {
+  hasEdits?: false;
+};
 
 export const getRecentMarketIds = async (
   client: GraphQLClient,
