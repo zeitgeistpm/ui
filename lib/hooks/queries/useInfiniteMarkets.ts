@@ -14,7 +14,7 @@ import {
 import { MarketOutcomes } from "lib/types/markets";
 import { useSdkv2 } from "../useSdkv2";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { CmsMarketMetadataFull } from "lib/cms/markets";
+import { FullCmsMarketMetadata } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 import { marketMetaFilter } from "./constants";
 import { marketsRootQuery } from "./useMarket";
@@ -121,7 +121,7 @@ export const useInfiniteMarkets = (
     });
 
     for (const market of markets) {
-      const cmsData: CmsMarketMetadataFull | undefined =
+      const cmsData: FullCmsMarketMetadata | undefined =
         queryClient.getQueryData(marketCmsDatakeyForMarket(market.marketId));
       if (cmsData?.question) market.question = cmsData.question;
       if (cmsData?.imageUrl) market.img = cmsData.imageUrl;

@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as batshit from "@yornaath/batshit";
-import { CmsMarketMetadataFull } from "lib/cms/markets";
+import { FullCmsMarketMetadata } from "lib/cms/markets";
 
 export const marketCmsDataRootKey = ["cms", "market-metadata"];
 
@@ -10,7 +10,7 @@ export const marketCmsDatakeyForMarket = (marketId: string | number) => [
 ];
 
 export const useMarketCmsMetadata = (marketId: string | number) => {
-  return useQuery<CmsMarketMetadataFull | null>(
+  return useQuery<FullCmsMarketMetadata | null>(
     marketCmsDatakeyForMarket(marketId),
     async () => {
       return batcher.fetch(Number(marketId));
@@ -23,7 +23,7 @@ const batcher = batshit.create({
     const res = await fetch(
       `/api/cms/market-metadata/batch?marketIds=${JSON.stringify(marketIds)}`,
     );
-    return (await res.json()) as CmsMarketMetadataFull[];
+    return (await res.json()) as FullCmsMarketMetadata[];
   },
   scheduler: batshit.windowScheduler(10),
   resolver: (items, query) =>
