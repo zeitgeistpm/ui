@@ -36,7 +36,7 @@ import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
 import {
-  CmsMarketMetadata,
+  CmsMarketMetadataFull,
   getCmsMarketMetadataForMarket,
 } from "lib/cms/markets";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
@@ -181,7 +181,7 @@ type MarketPageProps = {
   chartSeries: ChartSeries[];
   resolutionTimestamp: string;
   promotionData: PromotedMarket | null;
-  cmsMetadata: CmsMarketMetadata | null;
+  cmsMetadata: CmsMarketMetadataFull | null;
 };
 
 const Market: NextPage<MarketPageProps> = ({

@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { IndexerContext, Market, isIndexedSdk } from "@zeitgeistpm/sdk";
-import { CmsMarketMetadata } from "lib/cms/markets";
+import { CmsMarketMetadataFull } from "lib/cms/markets";
 import { useFavoriteMarketsStorage } from "lib/state/favorites";
 import { MarketOutcomes } from "lib/types/markets";
 import { useSdkv2 } from "../useSdkv2";
@@ -31,9 +31,8 @@ export const useFavoriteMarkets = () => {
     });
 
     for (const market of markets) {
-      const cmsData: CmsMarketMetadata | undefined = queryClient.getQueryData(
-        marketCmsDatakeyForMarket(market.marketId),
-      );
+      const cmsData: CmsMarketMetadataFull | undefined =
+        queryClient.getQueryData(marketCmsDatakeyForMarket(market.marketId));
       if (cmsData?.question) market.question = cmsData.question;
       if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
     }

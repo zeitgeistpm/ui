@@ -1,7 +1,7 @@
 import { GenericChainProperties } from "@polkadot/types";
-import { dehydrate, QueryClient } from "@tanstack/react-query";
+import { QueryClient, dehydrate } from "@tanstack/react-query";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
+import { ZeitgeistIpfs, create } from "@zeitgeistpm/sdk";
 import { BgBallGfx } from "components/front-page/BgBallFx";
 import GettingStartedSection from "components/front-page/GettingStartedSection";
 import { HeroBanner } from "components/front-page/HeroBanner";
@@ -16,7 +16,7 @@ import WatchHow from "components/front-page/WatchHow";
 import MarketScroll from "components/markets/MarketScroll";
 import MarketCard from "components/markets/market-card";
 import { GraphQLClient } from "graphql-request";
-import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
+import { getCmsMarketCardMetadataForAllMarkets } from "lib/cms/markets";
 import { CmsNews, getCmsNews } from "lib/cms/news";
 import {
   CmsTopicHeader,
@@ -31,8 +31,8 @@ import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
 import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import {
-  getZTGHistory,
   ZtgPriceHistory,
+  getZTGHistory,
 } from "lib/hooks/queries/useAssetUsdPrice";
 import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
 import { getPlaiceholders } from "lib/util/getPlaiceHolders";
@@ -85,7 +85,7 @@ export async function getStaticProps() {
     getNetworkStats(sdk),
     getZTGHistory(),
     sdk.api.rpc.system.properties(),
-    getCmsMarketMetadataForAllMarkets(),
+    getCmsMarketCardMetadataForAllMarkets(),
     Promise.all(
       cmsTopics.map((topic) =>
         marketsForTopic(topic, sdk.indexer, { limit: 3 }).then((markets) => ({
