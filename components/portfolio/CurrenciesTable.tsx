@@ -49,8 +49,12 @@ const ImageAndText = ({
 }) => {
   return (
     <div className="flex items-center gap-2">
-      {imagePath && <Image src={imagePath} alt={name} width={30} height={30} />}
-      <div>{name}</div>
+      <div className="h-[16px] w-[16px] md:h-[30px] md:w-[30px]">
+        {imagePath && (
+          <Image src={imagePath} alt={name} width={30} height={30} />
+        )}
+      </div>
+      <div className="md:text-md text-xs">{name}</div>
     </div>
   );
 };
@@ -89,17 +93,20 @@ const MoveButton = ({
   return (
     <>
       {chain === "Zeitgeist" && <TransferButton assetId={transferAssetId} />}
-      {chain === "Zeitgeist" && sourceChain && destinationAsset != null && (
-        <WithdrawButton
-          toChain={sourceChain}
-          tokenSymbol={token}
-          balance={balance}
-          foreignAssetId={foreignAssetId}
-          destinationExistentialDeposit={destinationAsset.existentialDeposit}
-          destinationTokenBalance={destinationAsset.balance}
-          assetDecimals={assetDecimals}
-        />
-      )}
+      {chain === "Zeitgeist" &&
+        !isNativeTokenBalance &&
+        sourceChain &&
+        destinationAsset != null && (
+          <WithdrawButton
+            toChain={sourceChain}
+            tokenSymbol={token}
+            balance={balance}
+            foreignAssetId={foreignAssetId}
+            destinationExistentialDeposit={destinationAsset.existentialDeposit}
+            destinationTokenBalance={destinationAsset.balance}
+            assetDecimals={assetDecimals}
+          />
+        )}
       {chain !== "Zeitgeist" && (
         <DepositButton
           sourceChain={chain}
