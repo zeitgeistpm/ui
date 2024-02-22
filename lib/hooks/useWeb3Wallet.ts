@@ -62,12 +62,10 @@ const useWeb3Wallet = () => {
         WALLET_ADAPTERS.OPENLOGIN,
         loginOptions,
       );
-      console.log(web3authProvider);
       if (web3authProvider) {
         await getKeypair(web3authProvider);
       }
     } catch (e) {
-      console.log(e);
       notificationStore.pushNotification(
         `Error connecting: please try again later.`,
         {
