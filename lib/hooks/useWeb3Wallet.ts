@@ -141,17 +141,12 @@ const useWeb3Wallet = () => {
     if (!provider) {
       return;
     }
-    const resp = await cryptoWaitReady();
-    console.log(resp);
+    await cryptoWaitReady();
     const privateKey = await provider.request({
       method: "private_key",
     });
-    console.log(privateKey);
-    console.log(Keyring);
     const keyring = new Keyring({ ss58Format: 73, type: "sr25519" });
-    console.log(keyring);
     const keyPair = keyring.addFromUri("0x" + privateKey);
-    console.log(keyring, keyPair);
     if (keyPair) {
       selectWallet("web3auth", keyPair);
     }
