@@ -1,6 +1,6 @@
 import { WALLET_ADAPTERS, IProvider } from "@web3auth/base";
 import { Keyring } from "@polkadot/keyring";
-import { waitReady } from "@polkadot/wasm-crypto";
+import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { useWallet } from "lib/state/wallet";
 import { web3authAtom } from "lib/state/util/web3auth-config";
 import { useAtom } from "jotai";
@@ -143,12 +143,15 @@ const useWeb3Wallet = () => {
     if (!provider) {
       return;
     }
-    const resp = await waitReady();
+    const resp = await cryptoWaitReady();
     console.log(resp);
     const privateKey = await provider.request({
       method: "private_key",
     });
+    console.log(privateKey);
+    console.log(Keyring);
     const keyring = new Keyring({ ss58Format: 73, type: "sr25519" });
+    console.log(keyring);
     const keyPair = keyring.addFromUri("0x" + privateKey);
     console.log(keyring, keyPair);
     if (keyPair) {
