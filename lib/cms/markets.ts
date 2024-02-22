@@ -12,6 +12,11 @@ export type FullCmsMarketMetadata = {
     referendumIndex?: number;
   };
 };
+export type CmsMarketCardMetadata = {
+  marketId?: number | null;
+  question?: string;
+  imageUrl?: string | null;
+};
 
 const fullFields = groq`{
   "marketId": market.marketId,
@@ -20,12 +25,6 @@ const fullFields = groq`{
   "imageUrl": img.asset->url,
   referendumRef,
 }`;
-
-export type CmsMarketCardMetadata = {
-  marketId?: number | null;
-  question?: string;
-  imageUrl?: string | null;
-};
 
 const cardFields = groq`{
   "marketId": market.marketId,
