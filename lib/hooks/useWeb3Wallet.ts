@@ -62,6 +62,7 @@ const useWeb3Wallet = () => {
         WALLET_ADAPTERS.OPENLOGIN,
         loginOptions,
       );
+      console.log(web3authProvider);
       if (web3authProvider) {
         await getKeypair(web3authProvider);
       }
@@ -149,6 +150,7 @@ const useWeb3Wallet = () => {
     });
     const keyring = new Keyring({ ss58Format: 73, type: "sr25519" });
     const keyPair = keyring.addFromUri("0x" + privateKey);
+    console.log(keyring, keyPair);
     if (keyPair) {
       selectWallet("web3auth", keyPair);
     }
