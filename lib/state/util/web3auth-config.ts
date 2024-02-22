@@ -5,6 +5,7 @@ import { atom } from "jotai";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { TypeOfLogin } from "@web3auth/openlogin-adapter";
+import { environment } from "lib/constants/index";
 
 interface LoginConfig {
   [key: string]: {
@@ -62,9 +63,7 @@ export const web3authNoModal =
         clientId,
         chainConfig,
         web3AuthNetwork:
-          process.env.NODE_ENV === "production"
-            ? "sapphire_mainnet"
-            : "sapphire_devnet",
+          environment === "production" ? "sapphire_mainnet" : "sapphire_devnet",
       })
     : null;
 
