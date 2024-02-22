@@ -65,7 +65,8 @@ const useWeb3Wallet = () => {
       if (web3authProvider) {
         await getKeypair(web3authProvider);
       }
-    } catch {
+    } catch (e) {
+      console.log(e);
       notificationStore.pushNotification(
         `Error connecting: please try again later.`,
         {
