@@ -3,8 +3,6 @@ import { range } from "lodash-es";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useWallet } from "lib/state/wallet";
 import WalletSelect from "./WalletSelect";
-import TwitterIcon from "components/icons/TwitterIcon";
-import { BsTelegram, BsDiscord } from "react-icons/bs";
 import WalletIcon from "./WalletIcon";
 
 interface StepperProps {
