@@ -8,6 +8,8 @@ import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
 import { useState } from "react";
 import { FaNetworkWired, FaUserCheck } from "react-icons/fa";
+import Link from "next/link";
+import { ExternalLink } from "react-feather";
 
 const PortfolioIdentity = ({ address }: { address: string }) => {
   const wallet = useWallet();
@@ -68,11 +70,25 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
                 </div>
               )}
             </div>
-            <div className="hidden text-sm sm:block md:text-base">
-              {address}
+            <div className="hidden gap-4 text-sm sm:block md:text-base">
+              <Link
+                className="flex items-center gap-2 hover:text-ztg-blue"
+                href={`https://zeitgeist.subscan.io/account/${address}`}
+                target="_blank"
+              >
+                <span>{address}</span>
+                <ExternalLink size={18} />
+              </Link>
             </div>
             <div className="text-sm sm:hidden">
-              {shortenAddress(address, 12, 26)}
+              <Link
+                className="flex items-center gap-2 hover:text-ztg-blue"
+                href={`https://zeitgeist.subscan.io/account/${address}`}
+                target="_blank"
+              >
+                <span> {shortenAddress(address, 12, 26)}</span>
+                <ExternalLink size={18} />
+              </Link>
             </div>
           </div>
         </div>
