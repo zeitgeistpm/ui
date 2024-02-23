@@ -1,5 +1,5 @@
 import { WALLET_ADAPTERS, IProvider } from "@web3auth/base";
-import { Keyring } from "@polkadot/keyring";
+import { Keyring } from "@polkadot/api";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { useWallet } from "lib/state/wallet";
 import { web3authAtom } from "lib/state/util/web3auth-config";
@@ -77,7 +77,7 @@ const useWeb3Wallet = () => {
           return;
         }
       }
-    } catch {
+    } catch (e) {
       notificationStore.pushNotification(
         `Error connecting: please try again later.`,
         {
