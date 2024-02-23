@@ -50,7 +50,7 @@ const WalletSelect = () => {
     );
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col p-4">
       <h3 className="mb-4 text-2xl font-bold">
         {userConfig?.selectedAddress && "Log back in to Zeitgeist"}
       </h3>

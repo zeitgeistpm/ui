@@ -139,7 +139,7 @@ const AccountButton: FC<{
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {hasWallet !== true ? (
+          {hasWallet === true ? (
             <HeaderActionButton
               disabled={locationAllowed !== true || !isRpcSdk(sdk)}
               onClick={() => connect()}

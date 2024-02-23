@@ -35,12 +35,12 @@ const Web3wallet = () => {
           <input
             type="text"
             placeholder="Enter email for passwordless login"
-            className="col-span-2 rounded-md border px-2 py-1 leading-8 placeholder:text-xs focus:outline-none focus:ring-1 focus:ring-ztg-blue"
+            className=" col-span-2 h-[56px] rounded-md border px-2 py-1 leading-8 placeholder:text-xs focus:outline-none focus:ring-1 focus:ring-ztg-blue"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <button
-            className="col-span-1 rounded-md bg-ztg-blue py-1 leading-8 text-white hover:bg-black"
+            className=" col-span-1 h-[56px] rounded-md bg-ztg-blue py-1 leading-8 text-white hover:bg-black"
             onClick={() => loginEmail(email)}
           >
             Submit

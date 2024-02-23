@@ -1,20 +1,11 @@
 import { Dialog } from "@headlessui/react";
-import {
-  PolkadotjsWallet,
-  SubWallet,
-  TalismanWallet,
-} from "@talismn/connect-wallets";
 import { range } from "lodash-es";
-import { web3AuthWalletInstance } from "../../lib/state/util/web3auth-config";
-
-import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-
 import { useWallet } from "lib/state/wallet";
 import WalletSelect from "./WalletSelect";
-
 import TwitterIcon from "components/icons/TwitterIcon";
 import { BsTelegram, BsDiscord } from "react-icons/bs";
+import WalletIcon from "./WalletIcon";
 
 interface StepperProps {
   start: number;
@@ -25,7 +16,7 @@ interface StepperProps {
 
 interface ButtonProps {
   title: string;
-  icon?: React.ReactNode;
+  icon?: React.ReactNode | string;
   disabled: boolean;
   onClick: () => void;
 }
@@ -56,24 +47,25 @@ const resourceList = [
   {
     title: "Blog",
     disabled: false,
+    icon: "/icons/google-g.svg",
     onClick: () => window.open("https://blog.zeitgeist.pm"),
   },
   {
     title: "Discord",
-    icon: <BsDiscord />,
     disabled: false,
+    icon: "/icons/discord.svg",
     onClick: () => window.open("https://discord.com/invite/xv8HuA4s8v"),
   },
   {
     title: "Telegram",
-    icon: <BsTelegram />,
     disabled: false,
+    icon: "/icons/telegram.svg",
     onClick: () => window.open("https://t.me/zeitgeist_official"),
   },
   {
     title: "Twitter",
-    icon: <TwitterIcon />,
     disabled: false,
+    icon: "/icons/x-logo.svg",
     onClick: () => window.open("https://twitter.com/ZeitgeistPM"),
   },
 ];
@@ -155,13 +147,6 @@ const TextSection = ({
   );
 };
 
-const walletsConfig = [
-  new TalismanWallet(),
-  new PolkadotjsWallet(),
-  new SubWallet(),
-  web3AuthWalletInstance,
-];
-
 export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
   return (
     <>
@@ -181,6 +166,37 @@ export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
         </button>
       ))}
     </>
+  );
+};
+
+export const ResourceList: React.FC<ButtonListProps> = ({ buttonList }) => {
+  return (
+    <div className="grid grid-cols-3 gap-4">
+      {resourceList.map((resource, index) =>
+        resource.title === "Blog" ? (
+          <button
+            key={index}
+            disabled={resource.disabled}
+            onClick={resource.onClick}
+            className={`col-span-3 flex h-[56px] w-full items-center justify-center rounded-lg bg-mystic text-center hover:bg-gray-100 ${
+              resource.disabled === true ? "bg-gray-light-2" : "border"
+            }`}
+          >
+            <div className="ml-4 flex items-center gap-2 text-lg font-medium">
+              <span>{resource.title}</span>
+            </div>
+          </button>
+        ) : (
+          <WalletIcon
+            onClick={resource.onClick}
+            logoAlt={resource.title}
+            logoSrc={resource.icon}
+            className={resource.title == "Twitter" ? "invert" : ""}
+            extensionName="web3auth"
+          />
+        ),
+      )}
+    </div>
   );
 };
 
@@ -217,7 +233,7 @@ export const DesktopOnboardingModal = (props: {
       }}
     />,
     <TextSection
-      children={<ButtonList setStep={setStep} buttonList={resourceList} />}
+      children={<ResourceList setStep={setStep} buttonList={resourceList} />}
       headerText="You're All Set!"
       bodyText="If you have any questions, feel free to check out our community channels."
       leftButton={{
