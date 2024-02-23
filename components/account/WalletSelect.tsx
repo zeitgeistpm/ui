@@ -6,6 +6,8 @@ import Web3wallet from "components/web3wallet";
 import WalletIcon from "./WalletIcon";
 import { userConfigAtom } from "lib/state/wallet";
 import { useAtom } from "jotai";
+import { getWallets } from "@talismn/connect-wallets";
+import { SUPPORTED_WALLET_NAMES } from "lib/constants";
 
 import { useEffect } from "react";
 
@@ -49,15 +51,27 @@ const WalletSelect = () => {
       navigator.userAgent,
     );
 
+  const hasWallet =
+    typeof window !== "undefined" &&
+    getWallets().some(
+      (wallet) =>
+        wallet?.installed &&
+        SUPPORTED_WALLET_NAMES.some(
+          (walletName) => walletName === wallet.extensionName,
+        ),
+    );
+
   return (
-    <div className="flex flex-col p-4">
-      <h3 className="mb-4 text-2xl font-bold">
-        {userConfig?.selectedAddress && "Log back in to Zeitgeist"}
-      </h3>
-      <p className="mb-4">
-        {userConfig?.selectedAddress &&
-          "Use one of the following options to log in and start using Prediction Markets."}
-      </p>
+    <div className="flex flex-col">
+      {hasWallet === true && (
+        <>
+          <h3 className="mb-4 text-2xl font-bold">Log back in to Zeitgeist</h3>
+          <p className="mb-4">
+            Use one of the following options to log in and start using
+            Prediction Markets.
+          </p>
+        </>
+      )}
       <Web3wallet />
       <h3 className="my-4 text-lg font-bold">Crypto Wallet</h3>
       <div className="flex justify-between gap-6">
