@@ -85,6 +85,10 @@ const MarketContextActionOutcomeSelector = ({
 
   const [revealed, setRevealed] = useState(false);
 
+  const text = market.categories?.[getIndexOf(selected)].name ?? ""
+  const option = assetOptions.find(
+    (a) => getIndexOf(a.asset) === getIndexOf(selected),
+  );
   return (
     <>
       <Listbox
@@ -98,34 +102,25 @@ const MarketContextActionOutcomeSelector = ({
         <div className="center gap-3">
           <Listbox.Button onClick={() => setOpen(!open)}>
             <div className="center gap-2 text-2xl md:text-xl lg:text-2xl">
-              <TruncatedText
-                length={24}
-                text={market.categories?.[getIndexOf(selected)].name ?? ""}
-              >
-                {(text) => {
-                  const option = assetOptions.find(
-                    (a) => getIndexOf(a.asset) === getIndexOf(selected),
-                  );
 
-                  return (
                     <>
                       {hideValue ? (
-                        <div className="center gap-2">
+                        <div className="center gap-2  line-clamp-1 overflow-auto">
                           <span>{revealed ? text : "∗∗∗∗∗∗"}</span>
                         </div>
                       ) : (
-                        <div className="center gap-2">
+                        <div className="center gap-2 line-clamp-1 overflow-hidden">
                           <div
-                            className="h-3 w-3 rounded-full "
+                            className=""
                             style={{ backgroundColor: option?.color }}
                           ></div>
+                          <span className="line-clamp-1 overflow-hidden">
                           {text}
+                          </span>
+
                         </div>
                       )}
                     </>
-                  );
-                }}
-              </TruncatedText>
               {!disabled && <RiArrowDownSLine />}
             </div>
           </Listbox.Button>

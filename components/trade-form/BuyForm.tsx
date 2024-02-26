@@ -237,7 +237,6 @@ const BuyForm = ({
           <div className="mr-4 font-mono">
             {amountOut.div(ZTG).abs().toFixed(3)}
           </div>
-          <div>
             {market && selectedAsset && (
               <MarketContextActionOutcomeSelector
                 market={market}
@@ -249,7 +248,6 @@ const BuyForm = ({
                 }}
               />
             )}
-          </div>
         </div>
         <div className="text-sm">For</div>
         <div className="center relative h-[56px] w-full rounded-md bg-anti-flash-white text-ztg-18-150 font-normal">
