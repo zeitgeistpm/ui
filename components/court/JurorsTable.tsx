@@ -46,9 +46,7 @@ const columns: TableColumn[] = [
 const JurorsTable = () => {
   const { data: participants } = useCourtParticipants();
   const jurors = participants?.filter((p) => p.type === "Juror");
-  const { data: identities } = useIdentities(
-    participants?.map((j) => j.address),
-  );
+  const { data: identities } = useIdentities(jurors?.map((j) => j.address));
 
   const tableData: TableData[] | undefined = jurors
     ?.filter((p) => p.type === "Juror")
