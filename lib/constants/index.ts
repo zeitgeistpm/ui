@@ -58,7 +58,7 @@ export const endpoints: EndpointOption[] = [
     environment: "staging",
   },
   {
-    value: "ws://127.0.0.1:9944",
+    value: "ws://zeitgeist-blockchain:9944",
     label: "Local",
     environment: "local",
   },
