@@ -76,7 +76,7 @@ export const graphQlEndpoints: EndpointOption[] = [
     environment: "production",
   },
   {
-    value: "http://localhost:4350/graphql",
+    value: "http://subsquid-api:4350/graphql",
     label: "Local",
     environment: "local",
   },
