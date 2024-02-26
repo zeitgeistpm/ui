@@ -64,7 +64,7 @@ export const useChainConstants = () => {
           .replace("]", ""),
         ss58Prefix: consts.system.ss58Prefix.toNumber(),
         blockTimeSec: blockTimeSec,
-        parachainId: parachainId.toNumber(),
+        parachainId: parachainId?.toNumber(),
         markets: {
           maxDisputes: consts.predictionMarkets.maxDisputes.toNumber(),
           disputeBond: consts.predictionMarkets.disputeBond.toNumber() / ZTG,

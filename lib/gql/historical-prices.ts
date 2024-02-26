@@ -15,7 +15,7 @@ export const lookupPrice = (
   timestamp: number,
 ) => {
   //BSR has been live before some assets existed, so no price data is available
-  if (environment === "staging") return 1;
+  if (environment !== "staging") return 1;
   const prices = IOForeignAssetId.is(baseAsset)
     ? basePrices[baseAsset.ForeignAsset]
     : basePrices["ztg"];
