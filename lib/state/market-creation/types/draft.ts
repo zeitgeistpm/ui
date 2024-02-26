@@ -1,4 +1,5 @@
 import {
+  disputePeriodOptions,
   gracePeriodOptions,
   reportingPeriodOptions,
 } from "../constants/deadline-options";
@@ -65,7 +66,7 @@ export const empty = (): MarketDraftState => ({
     oracle: "",
     gracePeriod: gracePeriodOptions[0],
     reportingPeriod: reportingPeriodOptions[1],
-    disputePeriod: reportingPeriodOptions[1],
+    disputePeriod: disputePeriodOptions[0],
     moderation: "Permissionless",
     creatorFee: {
       type: "preset",
