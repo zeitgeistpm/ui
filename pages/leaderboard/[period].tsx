@@ -400,7 +400,11 @@ export async function getStaticProps({ params }) {
 
       const suspiciousActivity = marketTotal.baseAssetIn.eq(0);
 
-      if (market?.status === "Resolved" && !suspiciousActivity) {
+      if (
+        market?.status === "Resolved" &&
+        market.question &&
+        !suspiciousActivity
+      ) {
         const diff = marketTotal.baseAssetOut.minus(marketTotal.baseAssetIn);
 
         const endTimestamp = market.period.end;
@@ -414,7 +418,7 @@ export async function getStaticProps({ params }) {
         const usdProfitLoss = diff.mul(marketEndBaseAssetPrice ?? 0);
 
         marketsSummary.push({
-          question: market.question!,
+          question: market.question,
           marketId: market.marketId,
           baseAssetId: parseAssetIdString(market.baseAsset) as BaseAssetId,
           profit: usdProfitLoss.div(ZTG).toNumber(),
