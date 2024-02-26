@@ -166,7 +166,7 @@ export type ZtgPriceHistory = {
 };
 
 export const getZTGHistory = async (): Promise<ZtgPriceHistory> => {
-  if (environment === "staging") {
+  if (environment !== "production") {
     return {
       prices: [
         [1, 0],

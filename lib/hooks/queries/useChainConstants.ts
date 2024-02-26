@@ -50,7 +50,7 @@ export const useChainConstants = () => {
       const [consts, properties, parachainId] = await Promise.all([
         sdk.api.consts,
         sdk.api.rpc.system.properties(),
-        sdk.api.query.parachainInfo.parachainId(),
+        sdk.api.query.parachainInfo?.parachainId(),
       ]);
 
       // minimumPeriod * 2 is fair assumption for now but need to make sure this stays up
