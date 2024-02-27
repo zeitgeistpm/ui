@@ -6,6 +6,8 @@ import {
   calculateSwapAmountOutForBuy,
   calculateSwapAmountOutForSell,
   calculatePoolAmounts,
+  isValidBuyAmount,
+  isValidSellAmount,
 } from "./amm2";
 
 // test cases copied from https://github.com/zeitgeistpm/zeitgeist/blob/f0586d32c692f738b04d03bec4e59a73d6899182/zrml/neo-swaps/src/math.rs
@@ -26,7 +28,7 @@ describe("amm2", () => {
     test("should work with fees", () => {
       const amountOut = calculateSwapAmountOutForBuy(
         new Decimal(1_000_000_000_000),
-        new Decimal(109270000000),
+        new Decimal(109_270_000_000),
         new Decimal(1_442_695_040_889),
         new Decimal(0.03),
         new Decimal(0.005),
@@ -144,6 +146,82 @@ describe("amm2", () => {
       expect(amounts[0].toFixed(0)).toEqual("522878745280");
       expect(amounts[1].toFixed(0)).toEqual("1000000000000");
       expect(amounts[2].toFixed(0)).toEqual("221848749616");
+    });
+  });
+
+  describe("isValidBuyAmount", () => {
+    test("should return true if amount in is allowed", () => {
+      const { isValid, message } = isValidBuyAmount(
+        new Decimal(10 * 10 ** 10),
+        new Decimal(10 * 10 ** 10),
+        new Decimal(144269504088),
+        new Decimal(0),
+        new Decimal(0),
+      );
+
+      expect(isValid).toEqual(true);
+      expect(message).toEqual(undefined);
+    });
+
+    test("should return false if amount in is too high", () => {
+      const { isValid, message } = isValidBuyAmount(
+        new Decimal(10 * 10 ** 10),
+        new Decimal(10000 * 10 ** 10),
+        new Decimal(144269504088),
+        new Decimal(0),
+        new Decimal(0),
+      );
+
+      expect(isValid).toEqual(false);
+      expect(message).toEqual("Amount in too high");
+    });
+
+    test("should return false if amount in is too low", () => {
+      const { isValid, message } = isValidBuyAmount(
+        new Decimal(100 * 10 ** 10),
+        new Decimal(1 * 10 ** 10),
+        new Decimal(144269504088),
+        new Decimal(0),
+        new Decimal(0),
+      );
+
+      expect(isValid).toEqual(false);
+      expect(message).toEqual("Amount in too low");
+    });
+  });
+
+  describe("isValidSellAmount", () => {
+    test("should return true if amount in is allowed", () => {
+      const { isValid, message } = isValidSellAmount(
+        new Decimal(10 * 10 ** 10),
+        new Decimal(10 * 10 ** 10),
+        new Decimal(144269504088),
+      );
+
+      expect(isValid).toEqual(true);
+      expect(message).toEqual(undefined);
+    });
+
+    test("should return false if amount in is too high ", () => {
+      const { isValid, message } = isValidSellAmount(
+        new Decimal(10 * 10 ** 10),
+        new Decimal(10000 * 10 ** 10),
+        new Decimal(144269504088),
+      );
+
+      expect(isValid).toEqual(false);
+      expect(message).toEqual("Amount in too high");
+    });
+
+    test("should return false if price is too low", () => {
+      const { isValid, message } = isValidSellAmount(
+        new Decimal(1000 * 10 ** 10),
+        new Decimal(10 * 10 ** 10),
+        new Decimal(144269504088),
+      );
+
+      expect(isValid).toEqual(false);
+      expect(message).toEqual("Price is low to sell");
     });
   });
 
