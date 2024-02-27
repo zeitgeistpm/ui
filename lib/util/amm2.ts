@@ -161,9 +161,30 @@ export const isValidSellAmount = (
     return { isValid: false, message: "Price is low to sell" };
   } else if (amountIn.greaterThanOrEqualTo(numericalThreshold)) {
     return { isValid: false, message: "Amount in too high" };
+  } else if (
+    amountIn.greaterThanOrEqualTo(numericalThreshold) ||
+    calculateReserveAfterSell(
+      assetReserve,
+      amountIn,
+      liquidityParameter,
+    ).greaterThanOrEqualTo(numericalThreshold)
+  ) {
+    return { isValid: false, message: "Amount in too high" };
   } else {
     return { isValid: true };
   }
+};
+
+export const calculateReserveAfterSell = (
+  assetReserve: Decimal,
+  amountIn: Decimal,
+  liquidity: Decimal, // liqudity parameter of the pool
+) => {
+  // new_reserve = old_reserve + b ln(exp(old_reserve/liquidity_param) - 1 + exp(-amount/liquidity_param))
+  const term1 = assetReserve.div(liquidity).exp();
+  const term2 = new Decimal(0).minus(amountIn).div(liquidity).exp();
+
+  return term1.plus(term2).minus(1).ln().mul(liquidity).plus(assetReserve);
 };
 
 const lsmrConstant = 0.1;

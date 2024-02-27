@@ -8,7 +8,9 @@ import {
   calculatePoolAmounts,
   isValidBuyAmount,
   isValidSellAmount,
+  calculateReserveAfterSell,
 } from "./amm2";
+import { ZTG } from "@zeitgeistpm/sdk";
 
 // test cases copied from https://github.com/zeitgeistpm/zeitgeist/blob/f0586d32c692f738b04d03bec4e59a73d6899182/zrml/neo-swaps/src/math.rs
 describe("amm2", () => {
@@ -222,6 +224,18 @@ describe("amm2", () => {
 
       expect(isValid).toEqual(false);
       expect(message).toEqual("Price is low to sell");
+    });
+  });
+
+  describe("calculateReserveAfterSell", () => {
+    test("should work", () => {
+      const newReserve = calculateReserveAfterSell(
+        new Decimal(10 * 10 ** 10),
+        new Decimal(10 * 10 ** 10),
+        new Decimal(144269504088),
+      );
+
+      expect(newReserve.div(ZTG).toFixed(3)).toEqual("15.850");
     });
   });
 
