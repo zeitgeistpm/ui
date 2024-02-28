@@ -1,30 +1,22 @@
-import { Disclosure } from "@headlessui/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
+import { Disclosure, Tab } from "@headlessui/react";
+import { ZTG } from "@zeitgeistpm/sdk";
 import { CourtCasesTable } from "components/court/CourtCasesTable";
-import JoinCourtAsJurorButton from "components/court/JoinCourtAsJurorButton";
-import ManageDelegationButton from "components/court/ManageDelegationButton";
+import CourtExitButton from "components/court/CourtExitButton";
 import CourtUnstakeButton from "components/court/CourtUnstakeButton";
+import JoinCourtAsJurorButton from "components/court/JoinCourtAsJurorButton";
+import JurorsTable from "components/court/JurorsTable";
+import ManageDelegationButton from "components/court/ManageDelegationButton";
 import InfoPopover from "components/ui/InfoPopover";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
-import {
-  courtParticipantsRootKey,
-  useCourtParticipants,
-} from "lib/hooks/queries/court/useCourtParticipants";
+import { useCourtParticipants } from "lib/hooks/queries/court/useCourtParticipants";
 import { useCourtStakeSharePercentage } from "lib/hooks/queries/court/useCourtStakeSharePercentage";
 import { useCourtTotalStakedAmount } from "lib/hooks/queries/court/useCourtTotalStakedAmount";
-import {
-  useCourtYearlyInflation,
-  useCourtYearlyInflationAmount,
-} from "lib/hooks/queries/court/useCourtYearlyInflation";
+import { useCourtYearlyInflationAmount } from "lib/hooks/queries/court/useCourtYearlyInflation";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
-import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useNotifications } from "lib/state/notifications";
-import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized } from "lib/util";
+import { isNumber } from "lodash-es";
 import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -55,35 +47,14 @@ const CourtPage: NextPage = ({
   }
 
   const { data: constants } = useChainConstants();
-  const [sdk, id] = useSdkv2();
-  const notificationStore = useNotifications();
-  const wallet = useWallet();
-  const queryClient = useQueryClient();
-
   const connectedParticipant = useConnectedCourtParticipant();
   const { data: ztgPrice } = useZtgPrice();
-
   const stakeShare = useCourtStakeSharePercentage();
-
-  const { isLoading: isLeaveLoading, send: leaveCourt } = useExtrinsic(
-    () => {
-      if (!isRpcSdk(sdk) || !wallet.realAddress) return;
-      return sdk.api.tx.court.exitCourt(wallet.realAddress); //todo: is this correct input?
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries([id, courtParticipantsRootKey]);
-        notificationStore.pushNotification("Successfully exited court", {
-          type: "Success",
-        });
-      },
-    },
-  );
 
   return (
     <div className="mt-4 flex flex-col gap-y-4">
       <div className="relative mb-4 basis-7 flex-wrap items-center gap-4 lg:flex">
-        <div className="relative flex-1 overflow-hidden rounded-lg p-6">
+        <div className="relative flex-1 rounded-lg p-6">
           <div className="absolute left-0 top-0 z-10 h-full w-full">
             <Image
               title="Wizard draped in purple robes holding a flaming crypto key."
@@ -94,6 +65,7 @@ const CourtPage: NextPage = ({
               objectFit="cover"
               blurDataURL={bannerPlaiceholder.base64}
               placeholder="blur"
+              className="rounded-lg"
               style={{
                 objectPosition: "20% 30%",
               }}
@@ -175,12 +147,17 @@ const CourtPage: NextPage = ({
 
               <div>
                 <div className="mb-3 flex flex-col gap-4 md:flex-row">
-                  <JoinCourtAsJurorButton className="w-full md:w-auto" />
-                  <ManageDelegationButton className="w-full md:w-auto" />
+                  <JoinCourtAsJurorButton className="h-full w-full md:w-auto" />
+                  <ManageDelegationButton className="h-full w-full md:w-auto" />
 
                   {connectedParticipant &&
-                    !connectedParticipant?.prepareExit && (
-                      <CourtUnstakeButton className="w-full md:w-auto" />
+                    !isNumber(connectedParticipant.prepareExitAt) && (
+                      <CourtUnstakeButton className="h-full w-full md:w-auto" />
+                    )}
+
+                  {connectedParticipant &&
+                    isNumber(connectedParticipant.prepareExitAt) && (
+                      <CourtExitButton className="h-full w-full md:w-auto" />
                     )}
                 </div>
               </div>
@@ -211,10 +188,33 @@ const CourtPage: NextPage = ({
       </div>
 
       <section>
-        <h3 className="mb-3 ml-2 text-base">Court Cases</h3>
-        <div className="!break-words text-sm md:text-base">
-          <CourtCasesTable />
-        </div>
+        <Tab.Group>
+          <Tab.List className="mb-4 flex">
+            {["Court Cases", "Jurors"].map((title, index) => (
+              <Tab className="text-sm sm:text-xl" key={index}>
+                {({ selected }) => (
+                  <div
+                    className={`${
+                      selected
+                        ? "font-semibold text-black transition-all"
+                        : "text-sky-600 transition-all"
+                    } ${index === 0 ? "px-0 pr-4" : "px-4"}`}
+                  >
+                    {title}
+                  </div>
+                )}
+              </Tab>
+            ))}
+          </Tab.List>
+          <Tab.Panels>
+            <Tab.Panel>
+              <CourtCasesTable />
+            </Tab.Panel>
+            <Tab.Panel>
+              <JurorsTable />
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
       </section>
     </div>
   );
@@ -223,7 +223,6 @@ const CourtPage: NextPage = ({
 const Stats = () => {
   const { data: courtCases } = useCourtCases();
   const { data: constants } = useChainConstants();
-  const { data: yearlyInflation } = useCourtYearlyInflation();
   const { data: yearlyInflationAmount } = useCourtYearlyInflationAmount();
   const { data: participants } = useCourtParticipants();
 
@@ -334,19 +333,24 @@ const Stats = () => {
               "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
           }}
         >
-          <label className="font text-sm text-gray-500">Yearly Inflation</label>
+          <label className="font text-sm text-gray-500">APY</label>
           <div className="flex items-center gap-2">
             <div className="text-md font-mono font-semibold">
-              {yearlyInflation?.toString()}%
+              {formatNumberLocalized(
+                yearlyInflationAmount
+                  ?.div(totalStake.all)
+                  .mul(100)
+                  .toNumber() ?? 0,
+              )}
+              %
             </div>
             <InfoPopover
               className="text-slate-500"
               overlay={false}
               position="top"
             >
-              Yearly Inflation is the yearly percentage of the total ZTG
-              issuance minted through inflation by the court system to its
-              participants (jurors and delegators).
+              The current yearly percentage returns that jurors and delegators
+              will receive on their staked ZTG
             </InfoPopover>
           </div>
         </div>
@@ -360,7 +364,9 @@ const Stats = () => {
               "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgba(240, 206, 135, 0.048) 93.27%)",
           }}
         >
-          <label className="font text-sm text-gray-500">Amount</label>
+          <label className="font text-sm text-gray-500">
+            Yearly Incentives
+          </label>
 
           <div className="flex items-center gap-2">
             <div className="text-md font-mono font-semibold">

@@ -25,6 +25,7 @@ import Skeleton from "components/ui/Skeleton";
 import { delay } from "lib/util/delay";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { MdFavoriteBorder } from "react-icons/md";
 
 const AccountButton = dynamic(
   async () => {
@@ -113,7 +114,7 @@ const TopBar = () => {
                             onClick={close}
                           >
                             <button
-                              className={`group mb-4 flex w-full  items-center gap-3 border-b-1 border-gray-300 px-2 py-2 pb-5 text-sm`}
+                              className={`group mb-4 flex w-full  items-center gap-3 border-gray-300 px-2 py-2 text-sm`}
                             >
                               <div className="relative h-6 w-6">
                                 <FiStar size={"100%"} />
@@ -121,6 +122,24 @@ const TopBar = () => {
 
                               <h3 className="text-sm font-semibold">
                                 Popular Markets
+                              </h3>
+                            </button>
+                          </Link>
+                        )}
+                      </Menu.Item>
+
+                      <Menu.Item>
+                        {({ active, close }) => (
+                          <Link href="/markets/favorites" onClick={close}>
+                            <button
+                              className={`group mb-4 flex w-full items-center gap-3 border-b-1 px-2 py-2 pb-5 text-sm`}
+                            >
+                              <div className="relative h-6 w-6">
+                                <MdFavoriteBorder size={"100%"} />
+                              </div>
+
+                              <h3 className="text-sm font-semibold">
+                                Favorites
                               </h3>
                             </button>
                           </Link>
@@ -248,9 +267,17 @@ const GetTokensButton = () => {
 
 const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
   const { data: counts } = useCategoryCounts();
+
+  const topCategories = CATEGORIES.map((category, index) => ({
+    ...category,
+    count: counts?.[index] ?? 0,
+  }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 9);
+
   return (
     <div className="grid grid-flow-row-dense grid-cols-2 md:h-full md:grid-cols-3">
-      {CATEGORIES.map((category, index) => (
+      {topCategories.map((category, index) => (
         <Link
           key={index}
           onClick={onSelect}
@@ -267,9 +294,7 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
           </div>
           <div className="flex flex-col">
             <div className="font-light">{category.name}</div>
-            <div className="h-[16px] text-xs font-light">
-              {counts ? counts[index] : ""}
-            </div>
+            <div className="h-[16px] text-xs font-light">{category.count}</div>
           </div>
         </Link>
       ))}

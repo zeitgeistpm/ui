@@ -4,16 +4,25 @@ import { QueryClient, dehydrate } from "@tanstack/query-core";
 import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { environment } from "lib/constants";
+import { CmsTopicHeader, getCmsTopicHeaders } from "lib/cms/topics";
+import { getPlaiceholders } from "lib/util/getPlaiceHolders";
 
-const MarketsPage: NextPage = () => {
+const MarketsPage: NextPage = ({
+  cmsTopicPlaceholders,
+}: {
+  cmsTopicPlaceholders: string[];
+}) => {
   return <MarketsList />;
 };
 
 export async function getStaticProps() {
   const queryClient = new QueryClient();
-  const cmsData = await getCmsMarketMetadataForAllMarkets();
 
-  for (const marketCmsData of cmsData) {
+  const [cmsMarketMetaData] = await Promise.all([
+    getCmsMarketMetadataForAllMarkets(),
+  ]);
+
+  for (const marketCmsData of cmsMarketMetaData) {
     if (marketCmsData.marketId) {
       queryClient.setQueryData(
         marketCmsDatakeyForMarket(marketCmsData.marketId),

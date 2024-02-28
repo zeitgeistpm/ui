@@ -76,21 +76,17 @@ const WatchHow = () => {
             </span>
           ))}
         </div>
-        <div className="relative">
-          <a
-            className={`center relative z-10 ml-auto flex cursor-wait gap-2 rounded-md bg-ztg-pink px-[20px] py-[10px] text-white opacity-70 ${
-              animationState === "finished" && "animate-pop-in"
-            }`}
-          >
-            <span className="text-sm font-semibold md:text-[px]">
-              Watch how
-            </span>
-            <Video size={24} />
-          </a>
-          <div className="absolute right-0 top-0 z-10 -translate-y-[50%] translate-x-[10%] rounded-full bg-blue-300 px-2 py-1 text-xs text-white">
-            Coming soon!
-          </div>
-        </div>
+        <a
+          href="https://www.youtube.com/playlist?list=PLdOlgpqyU8RP-ZK2A2qbcfxOlzoeuR6sx"
+          target="_blank"
+          rel="noreferrer"
+          className={`center relative z-10 ml-auto flex cursor-pointer gap-2 rounded-md bg-ztg-pink px-[20px] py-[10px] text-white opacity-70 ${
+            animationState === "finished" && "animate-pop-in"
+          }`}
+        >
+          <span className="text-sm font-semibold md:text-[px]">Watch how</span>
+          <Video size={24} />
+        </a>
         <motion.div
           className="absolute left-[10%] top-12 h-[0] w-[40%] rounded-full pb-[40%] blur-3xl sm:left-[25%] sm:top-8"
           style={{ x: ax, y: ay, backgroundColor: "rgba(250,217,255, 1)" }}

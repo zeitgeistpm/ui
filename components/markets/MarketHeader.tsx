@@ -1,3 +1,5 @@
+import { Dialog } from "@headlessui/react";
+import { OutcomeReport } from "@zeitgeistpm/indexer";
 import {
   IOBaseAssetId,
   IOForeignAssetId,
@@ -6,46 +8,54 @@ import {
   ScalarRangeType,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import CourtStageTimer from "components/court/CourtStageTimer";
 import Avatar from "components/ui/Avatar";
+import InfoPopover from "components/ui/InfoPopover";
+import Modal from "components/ui/Modal";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
+import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { BLOCK_TIME_SECONDS, ZTG } from "lib/constants";
-import { X } from "react-feather";
+import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { MarketPageIndexedData } from "lib/gql/markets";
+import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
-import { shortenAddress } from "lib/util";
-import { formatNumberCompact } from "lib/util/format-compact";
-import { hasDatePassed } from "lib/util/hasDatePassed";
-import { FC, PropsWithChildren, useState } from "react";
-import { MarketTimer } from "./MarketTimer";
-import { MarketTimerSkeleton } from "./MarketTimer";
-import { OutcomeReport } from "@zeitgeistpm/indexer";
 import {
   MarketEventHistory,
   useMarketEventHistory,
 } from "lib/hooks/queries/useMarketEventHistory";
-import Modal from "components/ui/Modal";
-import { getMarketStatusDetails } from "lib/util/market-status-details";
-import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
-import { Dialog } from "@headlessui/react";
-import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
-import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolution";
-import { MarketReport } from "lib/types";
-import { AddressDetails } from "./MarketAddresses";
-import Image from "next/image";
-import {
-  FOREIGN_ASSET_METADATA,
-  lookupAssetImagePath,
-} from "lib/constants/foreign-asset";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
-import { MarketPromotionCallout } from "./PromotionCallout";
-import { PromotedMarket } from "lib/cms/get-promoted-markets";
-import { MarketDispute } from "lib/types/markets";
-import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
-import CourtStageTimer from "components/court/CourtStageTimer";
 import { useMarketImage } from "lib/hooks/useMarketImage";
-import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
+import { MarketReport } from "lib/types";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { MarketDispute } from "lib/types/markets";
+import { shortenAddress } from "lib/util";
+import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolution";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
+import { hasDatePassed } from "lib/util/hasDatePassed";
+import { getMarketStatusDetails } from "lib/util/market-status-details";
+import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import { FC, PropsWithChildren, useState } from "react";
+import { X } from "react-feather";
+import { HiOutlineShieldCheck } from "react-icons/hi";
+import { MdModeEdit, MdOutlineHistory } from "react-icons/md";
+import { AddressDetails } from "./MarketAddresses";
+import { MarketTimer, MarketTimerSkeleton } from "./MarketTimer";
+import { MarketPromotionCallout } from "./PromotionCallout";
+
+export const QuillViewer = dynamic(
+  () => import("../../components/ui/QuillViewer"),
+  {
+    ssr: false,
+  },
+);
+
+const MarketFavoriteToggle = dynamic(() => import("./MarketFavoriteToggle"), {
+  ssr: false,
+});
 
 export const UserIdentity: FC<
   PropsWithChildren<{
@@ -99,55 +109,56 @@ const MarketOutcome: FC<
   }>
 > = ({ status, outcome, by, setShowMarketHistory, marketHistory }) => {
   return (
-    <div
-      className={`center flex w-full items-center gap-4 rounded-lg py-3 ${
-        status === "Resolved"
-          ? "bg-green-light"
-          : status === "Reported"
-            ? "bg-powderblue"
-            : "bg-yellow-light"
-      }`}
-    >
-      <div className="center gap-1">
-        {status === "Reported" && (
-          <div className="flex gap-1">
-            <span>{status} Outcome </span>
-            {outcome ? (
-              <span className="font-bold">{outcome}</span>
-            ) : status === "Reported" ? (
-              <Skeleton width={100} height={24} />
-            ) : (
-              ""
-            )}
-          </div>
-        )}
+    <div className="flex gap-2">
+      {status === "Resolved" && (
+        <div className="flex-1 rounded-lg bg-green-light px-5 py-3">
+          <span className="text-gray-500">Outcome:</span>{" "}
+          <span className="font-bold">{outcome}</span>
+        </div>
+      )}
 
-        {status === "Disputed" && (
-          <div className="flex gap-1">
-            <span>{status} Outcome </span>
-          </div>
-        )}
+      {status === "Reported" && (
+        <div className="flex-1 rounded-lg bg-powderblue px-5 py-3">
+          <span>{status} Outcome </span>
+          {outcome ? (
+            <span className="font-bold">{outcome}</span>
+          ) : status === "Reported" ? (
+            <Skeleton width={100} height={24} />
+          ) : (
+            ""
+          )}
+        </div>
+      )}
 
-        {status !== "Resolved" && by && (
-          <div className="flex items-center gap-4">
-            <span>by: </span>
-            <div className="flex items-center">
-              <UserIdentity user={by} />
-            </div>
+      {status === "Disputed" && (
+        <div className="flex-1 rounded-lg bg-yellow-light px-5 py-3">
+          <span>{status} Outcome </span>
+        </div>
+      )}
+
+      {status !== "Resolved" && by && (
+        <div className="flex flex-1 gap-2 rounded-lg bg-gray-200 px-5 py-3">
+          <span className="text-gray-400">By: </span>
+          <div className="flex items-center">
+            <UserIdentity user={by} />
           </div>
+        </div>
+      )}
+
+      <div
+        className={`center flex w-40  items-center gap-4 rounded-lg bg-powderblue py-3`}
+      >
+        {marketHistory ? (
+          <button
+            className="center gap-3 font-medium text-ztg-blue"
+            onClick={() => setShowMarketHistory(true)}
+          >
+            History <MdOutlineHistory size={20} />
+          </button>
+        ) : (
+          <Skeleton width={100} height={24} />
         )}
       </div>
-
-      {marketHistory ? (
-        <button
-          className="font-medium text-ztg-blue"
-          onClick={() => setShowMarketHistory(true)}
-        >
-          See History
-        </button>
-      ) : (
-        <Skeleton width={100} height={24} />
-      )}
     </div>
   );
 };
@@ -519,6 +530,98 @@ const MarketHeader: FC<{
           <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
             <div className="rounded-lg bg-green-lighter px-2 py-1 text-sm">
               Verified Market
+            </div>
+          </div>
+        </div>
+
+        {!market.disputeMechanism && (
+          <div className="group relative">
+            <InfoPopover
+              position="bottom-end"
+              icon={
+                <div className="center h-[22px] w-[22px] rounded-full bg-orange-200">
+                  <HiOutlineShieldCheck size={14} />
+                </div>
+              }
+            >
+              <div className="text-left">
+                <div className="mb-3">
+                  This market has no dispute mechanism and will be resolved
+                  automatically when reported.
+                </div>
+                <div className="flex gap-4">
+                  <div>
+                    <AddressDetails title="Creator" address={market.creator} />
+                  </div>
+                  <div>
+                    <AddressDetails title="Oracle" address={market.oracle} />
+                  </div>
+                </div>
+              </div>
+            </InfoPopover>
+            <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="rounded-lg bg-orange-200 px-2 py-1 text-sm">
+                Trusted Market
+              </div>
+            </div>
+          </div>
+        )}
+
+        {market.hasEdits && (
+          <div className="group relative">
+            <InfoPopover
+              position="bottom-end"
+              icon={
+                <div className="center h-[22px] w-[22px] rounded-full bg-yellow-200">
+                  <MdModeEdit size={12} />
+                </div>
+              }
+            >
+              <div className="text-left">
+                <h4 className="mb-1 text-lg font-bold">Market edits</h4>
+                <p className="mb-3 text-sm text-gray-500">
+                  This market has been edited in the zeitgeist cms. The
+                  following is the immutable original metadata that was set when
+                  the market was created.
+                </p>
+
+                {market.originalMetadata?.question && (
+                  <div className="mb-3">
+                    <label className="mb-1 text-xs text-gray-500">
+                      Question:
+                    </label>
+                    <div>{market.originalMetadata.question}</div>
+                  </div>
+                )}
+
+                {market.originalMetadata?.description && (
+                  <div className="mb-3">
+                    <label className="mb-1 text-xs text-gray-500">
+                      Description:
+                    </label>
+                    <div>
+                      <QuillViewer
+                        value={market.originalMetadata.description}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </InfoPopover>
+            <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="rounded-lg bg-yellow-200 px-2 py-1 text-sm">
+                Has been edited.
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="group relative flex items-center">
+          <div className="pt-1">
+            <MarketFavoriteToggle size={24} marketId={market.marketId} />
+          </div>
+          <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="rounded-lg bg-pink-300 px-2 py-1 text-sm">
+              Toggle Favorited
             </div>
           </div>
         </div>

@@ -14,6 +14,10 @@ export const getCurrentPrediction = (
 ): { name: string; price: number; percentage: number } => {
   const totalPrice = assets.reduce((acc, asset) => acc + asset.price, 0);
 
+  if (assets?.length < 2) {
+    return { name: "N/A", price: 0, percentage: 0 };
+  }
+
   if (market?.marketType?.categorical) {
     let [highestPrice, highestPriceIndex] = [0, 0];
     assets.sort(
