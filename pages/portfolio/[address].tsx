@@ -81,7 +81,7 @@ const Portfolio: NextPageWithLayout = () => {
   }
 
   return (
-    <div className="mt-8">
+    <div className="mt-8 overflow-hidden">
       {address && <PortfolioIdentity address={address} />}
       <div className="mb-12">
         <PortfolioBreakdown
