@@ -77,7 +77,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
                 target="_blank"
               >
                 <span>{address}</span>
-                <ExternalLink size={18} />
+                <ExternalLink className="flex-none" size={18} />
               </Link>
             </div>
             <div className="text-sm sm:hidden">
@@ -87,7 +87,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
                 target="_blank"
               >
                 <span> {shortenAddress(address, 12, 26)}</span>
-                <ExternalLink size={18} />
+                <ExternalLink className="flex-none" size={18} />
               </Link>
             </div>
           </div>
