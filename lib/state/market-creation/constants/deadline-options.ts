@@ -36,9 +36,9 @@ export const disputePeriodOptions = [
   },
   {
     type: "duration",
-    preset: "4 Days",
+    preset: "2 Days",
     unit: "days",
-    value: 4,
+    value: 2,
   },
   { type: "custom-duration" },
 ] as const satisfies DeepReadonly<BlockPeriodPickerOptions>;
