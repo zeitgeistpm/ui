@@ -68,6 +68,9 @@ export const Topics = ({
       <div className="relative block w-full md:hidden">
         <Carousel
           options={{ align: "start", duration: 10 }}
+          css={{
+            width: "100%",
+          }}
           slides={chunk(topics, 3).map((topics, index) => (
             <div className="flex gap-2">
               {topics.map((topic, index) => (

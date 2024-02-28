@@ -209,7 +209,7 @@ const IndexPage: NextPage<{
 
             {topic && topic.topic.marketIds && (
               <>
-                <div className="mb-4 flex gap-3">
+                <div className="mb-4 flex w-full flex-col gap-3 md:flex-row">
                   {topic.markets.map(({ market, stats }) => (
                     <MarketCard
                       key={market.marketId}
