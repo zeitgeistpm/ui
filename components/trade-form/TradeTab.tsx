@@ -11,8 +11,8 @@ const TradeTab: FC<
       className ?? ""
     } ${
       selected
-        ? "bg-[#0F1A2D] font-bold text-pastel-blue"
-        : "text-black bg-[#B1BBCE]"
+        ? "bg-ztg-blue font-bold text-white"
+        : "text-pastel-blue bg-[#CCE0F4]"
     }`;
     return (
       <div ref={ref} className={classes} {...rest}>
