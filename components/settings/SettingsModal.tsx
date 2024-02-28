@@ -29,7 +29,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Dialog.Panel className="w-full max-w-[462px] rounded-md bg-white p-8">
+      <Dialog.Panel className="w-full max-w-[564px] rounded-md bg-white p-8">
         <h3 className="mb-5 text-center text-2xl">Settings</h3>
         <Tab.Group
           onChange={(index) => setTabSelection(index)}

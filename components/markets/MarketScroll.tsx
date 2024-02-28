@@ -3,11 +3,12 @@ import { BREAKPOINTS } from "lib/constants/breakpoints";
 import { useWindowSize } from "lib/hooks/events/useWindowSize";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 import { range } from "lodash-es";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import MarketCard, { IndexedMarketCardData } from "./market-card/index";
+import MarketCard from "./market-card/index";
 import { useDebouncedCallback } from "use-debounce";
 import { useHasMounted } from "lib/hooks/events/useHasMounted";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 
 const MarketScroll = ({
   title,
@@ -17,7 +18,7 @@ const MarketScroll = ({
 }: {
   title: string;
   cta?: string;
-  markets: IndexedMarketCardData[];
+  markets: FullMarketFragment[];
   link?: string;
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -114,12 +115,6 @@ const MarketScroll = ({
             const isShown =
               showRange.includes(cardIndex) || windowWidth < BREAKPOINTS.md;
 
-            market = {
-              ...market,
-              numParticipants: stat?.participants,
-              liquidity: stat?.liquidity,
-            };
-
             return (
               <MarketCard
                 key={market.marketId}
@@ -127,7 +122,9 @@ const MarketScroll = ({
                 className={`market-card rounded-ztg-10 transition duration-500 ease-in-out ${
                   isShown ? "opacity-1" : "opacity-0"
                 }`}
-                {...market}
+                market={market}
+                numParticipants={stat?.participants}
+                liquidity={stat?.liquidity}
               />
             );
           })}

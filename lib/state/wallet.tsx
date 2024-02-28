@@ -16,8 +16,6 @@ import { PollingTimeout, poll } from "lib/util/poll";
 import { isString } from "lodash-es";
 import { useMemo } from "react";
 import { persistentAtom } from "./util/persistent-atom";
-
-//Web3Auth
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import {
   Notification,

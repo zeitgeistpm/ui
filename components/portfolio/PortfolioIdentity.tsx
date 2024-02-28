@@ -9,6 +9,8 @@ import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
 import { useState } from "react";
 import { FaNetworkWired, FaUserCheck } from "react-icons/fa";
+import Link from "next/link";
+import { ExternalLink } from "react-feather";
 
 const PortfolioIdentity = ({ address }: { address: string }) => {
   const wallet = useWallet();
@@ -76,6 +78,36 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
               <div className="text-sm sm:hidden">
                 {shortenAddress(address, 12, 26)}
               </div>
+              {isOwned && !hasIdentity && (
+                <div className="flex flex-1 items-center justify-end">
+                  <button
+                    className="center gap-2 rounded-lg bg-ztg-blue px-3 py-2 text-sm text-white"
+                    onClick={() => setShowSettingsModal(true)}
+                  >
+                    Set On-Chain Identity <FaUserCheck />
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="hidden gap-4 text-sm sm:block md:text-base">
+              <Link
+                className="flex items-center gap-2 hover:text-ztg-blue"
+                href={`https://zeitgeist.subscan.io/account/${address}`}
+                target="_blank"
+              >
+                <span>{address}</span>
+                <ExternalLink className="flex-none" size={18} />
+              </Link>
+            </div>
+            <div className="text-sm sm:hidden">
+              <Link
+                className="flex items-center gap-2 hover:text-ztg-blue"
+                href={`https://zeitgeist.subscan.io/account/${address}`}
+                target="_blank"
+              >
+                <span> {shortenAddress(address, 12, 26)}</span>
+                <ExternalLink className="flex-none" size={18} />
+              </Link>
             </div>
           </div>
         )}

@@ -9,49 +9,43 @@ export type OgProps = {
 const defaultDescription =
   "The application interface for Zeitgeist Prediction Markets. Built on Polkadot, Zeitgeist is the leader in decentralized prediction markets.";
 
-export const OgHead = (props: OgProps) => {
+export const OgHead = ({ title, description, image }: OgProps) => {
+  description ??= defaultDescription;
+
   return (
     <Head>
-      {props.title && (
+      {title && (
         <>
-          <title>{props.title}</title>
-          <meta key="og:title" property="og:title" content={props.title} />
-          <meta
-            key="twitter:title"
-            property="twitter:title"
-            content={props.title}
-          />
+          <title>{title}</title>
+          <meta key="og:title" property="og:title" content={title} />
+          <meta key="twitter:title" property="twitter:title" content={title} />
         </>
       )}
       <>
-        <meta
-          key="description"
-          name="description"
-          content={defaultDescription}
-        />
+        <meta key="description" name="description" content={description} />
         <meta
           key="og:description"
           property="og:description"
-          content={defaultDescription}
+          content={description}
         />
         <meta
           key="twitter:description"
           property="twitter:description"
-          content={defaultDescription}
+          content={description}
         />
       </>
-      {props.image && (
+      {image && (
         <>
-          <meta key="og:image" property="og:image" content={props.image.href} />
+          <meta key="og:image" property="og:image" content={image.href} />
           <meta
             key="twitter:image"
             property="twitter:image"
-            content={`${props.image}`}
+            content={`${image}`}
           />
           <meta
             key="twitter:image:src"
             property="twitter:image:src"
-            content={`${props.image}`}
+            content={`${image}`}
           />
         </>
       )}
