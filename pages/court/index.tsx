@@ -333,7 +333,7 @@ const Stats = () => {
               "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
           }}
         >
-          <label className="font text-sm text-gray-500">APR</label>
+          <label className="font text-sm text-gray-500">APY</label>
           <div className="flex items-center gap-2">
             <div className="text-md font-mono font-semibold">
               {formatNumberLocalized(
