@@ -11,10 +11,9 @@ export const useMarketCaseId = (marketId?: number) => {
   const query = useQuery(
     [id, marketCaseIdRootKey, marketId],
     async () => {
-      if (!enabled) return;
+      if (!enabled) return null;
       const res = await sdk.api.query.court.marketIdToCourtId(marketId);
-
-      return res.unwrapOr(null)?.toNumber();
+      return res.unwrapOr(null)?.toNumber() ?? null;
     },
     {
       enabled: enabled,

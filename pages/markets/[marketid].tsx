@@ -43,6 +43,7 @@ import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
   MarketPageIndexedData,
+  WithCmsEdits,
   getMarket,
   getRecentMarketIds,
 } from "lib/gql/markets";
@@ -136,9 +137,28 @@ export async function getStaticProps({ params }) {
     const { timestamp } = await getResolutionTimestamp(client, market.marketId);
     resolutionTimestamp = timestamp ?? undefined;
 
-    if (cmsMetadata?.imageUrl) market.img = cmsMetadata?.imageUrl;
-    if (cmsMetadata?.question) market.question = cmsMetadata?.question;
-    if (cmsMetadata?.description) market.description = cmsMetadata?.description;
+    if (cmsMetadata?.question || cmsMetadata?.description) {
+      market.hasEdits = true;
+      (market as MarketPageIndexedData & WithCmsEdits).originalMetadata = {};
+    }
+
+    if (cmsMetadata?.imageUrl) {
+      market.img = cmsMetadata?.imageUrl;
+    }
+
+    if (cmsMetadata?.question) {
+      (
+        market as MarketPageIndexedData & WithCmsEdits
+      ).originalMetadata.question = market.question;
+      market.question = cmsMetadata?.question;
+    }
+
+    if (cmsMetadata?.description) {
+      (
+        market as MarketPageIndexedData & WithCmsEdits
+      ).originalMetadata.description = market.description as string;
+      market.description = cmsMetadata?.description;
+    }
   }
 
   return {
@@ -287,7 +307,7 @@ const Market: NextPage<MarketPageProps> = ({
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
-        <div className="flex-1">
+        <div className="flex-1 overflow-hidden">
           <MarketMeta market={indexedMarket} />
 
           <MarketHeader

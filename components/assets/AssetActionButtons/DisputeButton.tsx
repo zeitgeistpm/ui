@@ -44,7 +44,7 @@ const DisputeButton = ({
       </SecondaryButton>
 
       <Modal open={isOpen} onClose={() => setOpen(false)}>
-        <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
+        <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white">
           {market.marketType.scalar ? (
             <ScalarDisputeBox
               market={market}

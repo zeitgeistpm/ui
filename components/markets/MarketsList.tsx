@@ -19,8 +19,6 @@ import { Topics } from "components/front-page/Topics";
 
 export type MarketsListProps = {
   className?: string;
-  cmsTopics: CmsTopicHeader[];
-  cmsTopicPlaceholders: string[];
 };
 
 const useChangeQuery = (
@@ -59,11 +57,7 @@ const useChangeQuery = (
   }, [withLiquidityOnly]);
 };
 
-const MarketsList = ({
-  className = "",
-  cmsTopics,
-  cmsTopicPlaceholders,
-}: MarketsListProps) => {
+const MarketsList = ({ className = "" }: MarketsListProps) => {
   const [filters, setFilters] = useState<MarketFilter[]>();
   const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
   const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
@@ -104,12 +98,6 @@ const MarketsList = ({
       data-testid="marketsList"
       id={"market-list"}
     >
-      {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" && (
-        <div className="flex gap-2 py-8">
-          <Topics topics={cmsTopics} imagePlaceholders={cmsTopicPlaceholders} />
-        </div>
-      )}
-
       <MarketFilterSelection
         onFiltersChange={setFilters}
         onOrderingChange={setOrderBy}

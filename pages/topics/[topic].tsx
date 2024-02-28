@@ -1,7 +1,8 @@
-import { PortableText } from "@portabletext/react";
+import { PortableText, toPlainText } from "@portabletext/react";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { ZeitgeistIpfs, create } from "@zeitgeistpm/sdk";
 import MarketCard from "components/markets/market-card";
+import { OgHead } from "components/meta/OgHead";
 import { sanityImageBuilder } from "lib/cms/sanity";
 import {
   CmsTopicFull,
@@ -9,7 +10,7 @@ import {
   getCmsTopicHeaders,
   marketsForTopic,
 } from "lib/cms/topics";
-import { endpointOptions, graphQlEndpoint } from "lib/constants";
+import { endpointOptions, graphQlEndpoint, environment } from "lib/constants";
 import { MarketStats } from "lib/gql/markets-stats";
 import { NextPage } from "next";
 import Image from "next/image";
@@ -45,6 +46,10 @@ export async function getStaticProps({
       cmsTopic: cmsTopic ?? null,
       markets: marketCardsData,
     },
+    revalidate:
+      environment === "production"
+        ? 5 * 60 //5min
+        : 60 * 60,
   };
 }
 
@@ -74,6 +79,10 @@ const TopicPage: NextPage<{
 
   return (
     <div>
+      <OgHead
+        title={cmsTopic.title}
+        description={toPlainText(cmsTopic.description)}
+      />
       {banner && (
         <div className="relative mb-10 mt-3 h-[150px] w-full md:h-[262px]">
           <Image
@@ -110,32 +119,67 @@ const TopicPage: NextPage<{
           <div className="hidden lg:block">
             <div className="mb-3 flex gap-3">
               <div className="-mr-1 flex w-2/3 flex-col gap-3">
-                <MarketCard {...marketOne} />
-                <MarketCard {...marketTwo} />
+                <MarketCard
+                  key={marketOne.market.marketId}
+                  market={marketOne.market}
+                  liquidity={marketOne.stats.liquidity}
+                  numParticipants={marketOne.stats.participants}
+                />
+                <MarketCard
+                  key={marketTwo.market.marketId}
+                  market={marketTwo.market}
+                  liquidity={marketTwo.stats.liquidity}
+                  numParticipants={marketTwo.stats.participants}
+                />
               </div>
               <div className="flex w-1/3 flex-col gap-3 pl-1">
-                <MarketCard {...marketThree} />
-                <MarketCard {...marketFour} />
+                <MarketCard
+                  key={marketThree.market.marketId}
+                  market={marketThree.market}
+                  liquidity={marketThree.stats.liquidity}
+                  numParticipants={marketThree.stats.participants}
+                />
+                <MarketCard
+                  key={marketFour.market.marketId}
+                  market={marketFour.market}
+                  liquidity={marketFour.stats.liquidity}
+                  numParticipants={marketFour.stats.participants}
+                />
               </div>
             </div>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-              {restMarkets.map((market) => (
-                <MarketCard {...market} />
+              {restMarkets.map(({ market, stats }) => (
+                <MarketCard
+                  key={market.marketId}
+                  market={market}
+                  liquidity={stats.liquidity}
+                  numParticipants={stats.participants}
+                />
               ))}
             </div>
           </div>
 
           <div className="grid grid-cols-1  gap-3 md:grid-cols-3 lg:hidden">
-            {markets.map((market) => (
-              <MarketCard {...market} />
+            {markets.map(({ market, stats }) => (
+              <MarketCard
+                key={market.marketId}
+                market={market}
+                numParticipants={stats.participants}
+                liquidity={stats.liquidity}
+              />
             ))}
           </div>
         </>
       ) : (
         <>
           <div className="grid grid-cols-1  gap-3 md:grid-cols-3">
-            {markets.map((market) => (
-              <MarketCard {...market} />
+            {markets.map(({ market, stats }) => (
+              <MarketCard
+                key={market.marketId}
+                market={market}
+                numParticipants={stats.participants}
+                liquidity={stats.liquidity}
+              />
             ))}
           </div>
         </>
