@@ -29,7 +29,7 @@ export const ZTG_MIN_LIQUIDITY = 100;
 export const TAILWIND = resolveTailwindConfig(tailwindConfig as any);
 
 export const ZTG_BLUE_COLOR = TAILWIND.theme.colors["ztg-blue"];
-export const COIN_GECKO_API_KEY = process.env["NEXT_PUBLIC_COIN_GECKO_API_KEY"];
+export const COIN_GECKO_API_KEY = process.env["COIN_GECKO_API_KEY"];
 
 export const SUPPORTED_WALLET_NAMES = [
   "talisman",
@@ -39,11 +39,6 @@ export const SUPPORTED_WALLET_NAMES = [
 
 export const endpoints: EndpointOption[] = [
   {
-    value: "wss://main.rpc.zeitgeist.pm/ws",
-    label: "ZeitgeistPM",
-    environment: "production",
-  },
-  {
     value: "wss://zeitgeist-rpc.dwellir.com",
     label: "Dwellir",
     environment: "production",
@@ -51,6 +46,11 @@ export const endpoints: EndpointOption[] = [
   {
     value: "wss://zeitgeist.api.onfinality.io/public-ws",
     label: "OnFinality",
+    environment: "production",
+  },
+  {
+    value: "wss://main.rpc.zeitgeist.pm/ws",
+    label: "ZeitgeistPM",
     environment: "production",
   },
   {

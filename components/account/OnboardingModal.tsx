@@ -11,7 +11,6 @@ import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import { useWallet } from "lib/state/wallet";
-import WalletSelect from "./WalletSelect";
 
 import TwitterIcon from "components/icons/TwitterIcon";
 import { BsTelegram, BsDiscord } from "react-icons/bs";

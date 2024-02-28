@@ -11,6 +11,7 @@ import { isWSX } from "lib/constants";
 
 const WalletSelect = () => {
   const { selectWallet, errors, accounts, connected, walletId } = useWallet();
+
   const accountModals = useAccountModals();
 
   const wasConnected = usePrevious(connected);
@@ -94,7 +95,6 @@ const WalletSelect = () => {
                       onClick={() => {
                         handleSelectWallet(wallet);
                       }}
-                      wallet={wallet}
                       extensionName={wallet.extensionName}
                       logoAlt={wallet.logo?.alt}
                       logoSrc={wallet.logo?.src}

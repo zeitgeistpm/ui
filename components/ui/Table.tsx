@@ -152,7 +152,7 @@ const Cell = ({
     case "text":
       return (
         <td
-          className={`text-sm ${base}`}
+          className={`text-xs md:text-sm ${base} `}
           data-test="outcomeText"
           onClick={onClick}
           style={style}

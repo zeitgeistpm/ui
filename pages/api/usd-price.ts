@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 //discourage others from using this endpoint as proxy for coingecko
-const allowedAssets = ["zeitgeist", "polkadot", "tether"];
+const allowedAssets = ["zeitgeist", "polkadot", "tether", "usd"];
 
 export default async function handler(
   request: NextApiRequest,

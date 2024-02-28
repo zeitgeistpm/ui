@@ -9,19 +9,14 @@ import { CmsTopicHeader, getCmsTopicHeaders } from "lib/cms/topics";
 import { getPlaiceholders } from "lib/util/getPlaiceHolders";
 
 const MarketsPage: NextPage = ({
-  cmsTopics,
   cmsTopicPlaceholders,
 }: {
-  cmsTopics: CmsTopicHeader[];
   cmsTopicPlaceholders: string[];
 }) => {
   return (
     <>
       <HeroBannerWSX />
-      <MarketsList
-        cmsTopics={cmsTopics}
-        cmsTopicPlaceholders={cmsTopicPlaceholders}
-      />
+      <MarketsList />
     </>
   );
 };
@@ -29,15 +24,9 @@ const MarketsPage: NextPage = ({
 export async function getStaticProps() {
   const queryClient = new QueryClient();
 
-  const [cmsMarketMetaData, cmsTopics] = await Promise.all([
+  const [cmsMarketMetaData] = await Promise.all([
     getCmsMarketMetadataForAllMarkets(),
-    getCmsTopicHeaders(),
   ]);
-
-  const cmsTopicPlaceholders = await getPlaiceholders(
-    cmsTopics.map((topic) => topic.thumbnail ?? ""),
-    { size: 16 },
-  ).then((plh) => plh.map((c) => c.base64) ?? []);
 
   for (const marketCmsData of cmsMarketMetaData) {
     if (marketCmsData.marketId) {
@@ -51,8 +40,6 @@ export async function getStaticProps() {
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
-      cmsTopics,
-      cmsTopicPlaceholders,
     },
     revalidate:
       environment === "production"

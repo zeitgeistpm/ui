@@ -22,7 +22,7 @@ export const MarketFavoriteToggle = ({
       {isFavorite(marketId) ? (
         <MdFavorite className="text-red-600" size={size ?? 16} />
       ) : (
-        <MdFavoriteBorder size={size ?? 16} />
+        <MdFavoriteBorder className="text-gray-400" size={size ?? 16} />
       )}
     </div>
   );

@@ -17,7 +17,7 @@ interface loginOptions {
   };
 }
 
-const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN_ZTG;
+const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
 
 const useWeb3Wallet = () => {
   const [web3auth] = useAtom(web3authAtom);
@@ -36,7 +36,7 @@ const useWeb3Wallet = () => {
           await getKeypair(web3auth.provider);
         }
       }
-    } catch (e) {
+    } catch (error) {
       return;
     }
   };
@@ -77,7 +77,7 @@ const useWeb3Wallet = () => {
           return;
         }
       }
-    } catch {
+    } catch (e) {
       notificationStore.pushNotification(
         `Error connecting: please try again later.`,
         {

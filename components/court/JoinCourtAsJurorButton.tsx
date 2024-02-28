@@ -114,10 +114,9 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
           <div className="absolute right-0 top-0 translate-x-[50%] translate-y-[-50%] rounded-full bg-orange-500 p-[0.5]">
             <InfoPopover
               overlay={false}
-              className="text-white"
               position="top-end"
               popoverCss="-ml-12"
-              icon={<IoIosInformation />}
+              icon={<IoIosInformation className="text-white" />}
             >
               You are currently delegating to other jurors. If you join the
               court as a juror, your delegations will be removed and delegated
@@ -128,7 +127,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
       </div>
 
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
+        <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white p-[30px]">
           <h3 className="mb-4">
             {connectedParticipant?.type === "Juror"
               ? "Set Personal Stake"

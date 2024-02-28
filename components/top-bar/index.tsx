@@ -246,9 +246,17 @@ const GetTokensButton = () => {
 
 const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
   const { data: counts } = useCategoryCounts();
+
+  const topCategories = CATEGORIES.map((category, index) => ({
+    ...category,
+    count: counts?.[index] ?? 0,
+  }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 9);
+
   return (
     <div className="grid grid-flow-row-dense grid-cols-2 md:h-full md:grid-cols-3">
-      {CATEGORIES.map((category, index) => (
+      {topCategories.map((category, index) => (
         <Link
           key={index}
           onClick={onSelect}
@@ -265,9 +273,7 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
           </div>
           <div className="flex flex-col">
             <div className="font-light">{category.name}</div>
-            <div className="h-[16px] text-xs font-light">
-              {counts ? counts[index] : ""}
-            </div>
+            <div className="h-[16px] text-xs font-light">{category.count}</div>
           </div>
         </Link>
       ))}
