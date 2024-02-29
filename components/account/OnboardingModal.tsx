@@ -1,19 +1,9 @@
 import { Dialog } from "@headlessui/react";
-import {
-  PolkadotjsWallet,
-  SubWallet,
-  TalismanWallet,
-} from "@talismn/connect-wallets";
 import { range } from "lodash-es";
-import { web3AuthWalletInstance } from "../../lib/state/util/web3auth-config";
-
-import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-
 import { useWallet } from "lib/state/wallet";
-
-import TwitterIcon from "components/icons/TwitterIcon";
-import { BsTelegram, BsDiscord } from "react-icons/bs";
+import WalletIcon from "./WalletIcon";
+import WalletSelect from "./WalletSelect";
 import { isWSX } from "lib/constants";
 
 interface StepperProps {
@@ -25,7 +15,7 @@ interface StepperProps {
 
 interface ButtonProps {
   title: string;
-  icon?: React.ReactNode;
+  icon?: React.ReactNode | string;
   disabled: boolean;
   onClick: () => void;
 }
@@ -52,63 +42,43 @@ const exchangeList = [
   },
 ];
 
-const resourceList = isWSX
-  ? [
-      {
-        title: "Discord",
-        icon: <BsDiscord />,
-        disabled: false,
-        onClick: () => window.open("https://discord.com/invite/xv8HuA4s8v"),
-      },
-      {
-        title: "Telegram",
-        icon: <BsTelegram />,
-        disabled: false,
-        onClick: () => window.open("https://t.me/zeitgeist_official"),
-      },
-      {
-        title: "Twitter",
-        icon: <TwitterIcon />,
-        disabled: false,
-        onClick: () => window.open("https://twitter.com/ZeitgeistPM"),
-      },
-    ]
-  : [
-      {
-        title: "Blog",
-        disabled: false,
-        onClick: () => window.open("https://blog.zeitgeist.pm"),
-      },
-      {
-        title: "Discord",
-        icon: <BsDiscord />,
-        disabled: false,
-        onClick: () => window.open("https://discord.com/invite/xv8HuA4s8v"),
-      },
-      {
-        title: "Telegram",
-        icon: <BsTelegram />,
-        disabled: false,
-        onClick: () => window.open("https://t.me/zeitgeist_official"),
-      },
-      {
-        title: "Twitter",
-        icon: <TwitterIcon />,
-        disabled: false,
-        onClick: () => window.open("https://twitter.com/ZeitgeistPM"),
-      },
-    ];
+const resourceList = [
+  {
+    title: "Blog",
+    disabled: false,
+    icon: "/icons/google-g.svg",
+    onClick: () => window.open("https://blog.zeitgeist.pm"),
+  },
+  {
+    title: "Discord",
+    disabled: false,
+    icon: "/icons/discord.svg",
+    onClick: () => window.open("https://discord.com/invite/xv8HuA4s8v"),
+  },
+  {
+    title: "Telegram",
+    disabled: false,
+    icon: "/icons/telegram.svg",
+    onClick: () => window.open("https://t.me/zeitgeist_official"),
+  },
+  {
+    title: "Twitter",
+    disabled: false,
+    icon: "/icons/x-logo.svg",
+    onClick: () => window.open("https://twitter.com/ZeitgeistPM"),
+  },
+];
 
 const Stepper = ({ start, end, currentStep, onStepClick }: StepperProps) => {
   return (
-    <div className="flex gap-x-[18px]">
+    <div className="mt-4 flex gap-x-2">
       {range(start, end).map((step) => (
         <button
           key={step}
           onClick={() => onStepClick(step)}
           disabled={step === currentStep}
-          className={`h-[7px] w-[7px] rounded-full ${
-            step === currentStep ? "bg-black" : "bg-sky-600"
+          className={`h-[5px] w-full ${
+            step === currentStep ? "bg-black" : "bg-mystic"
           }`}
         ></button>
       ))}
@@ -141,14 +111,14 @@ const TextSection = ({
 }: TextSectionProps) => {
   return (
     <>
-      <div className="text-center text-2xl font-bold">{headerText}</div>
-      <div className="mb-auto text-center">{bodyText}</div>
+      <div className="text-2xl font-bold">{headerText}</div>
+      <p>{bodyText}</p>
       {children && children}
       {(leftButton || rightButton) && (
-        <div className="flex h-[56px] w-full justify-center gap-x-5 px-5 font-medium">
+        <div className="flex h-[56px] w-full gap-x-5 font-medium">
           {leftButton && (
             <button
-              className={`w-full rounded-[100px] border-2 hover:bg-gray-200 ${
+              className={`w-full rounded-[100px] bg-mystic hover:bg-gray-100 ${
                 leftButton.disabled === true
                   ? "cursor-default bg-gray-light-2"
                   : "border"
@@ -160,7 +130,7 @@ const TextSection = ({
           )}
           {rightButton && (
             <button
-              className={`w-full rounded-[100px] border-2 hover:bg-gray-200 ${
+              className={`w-full rounded-[100px] bg-ztg-blue text-white hover:bg-black ${
                 rightButton.disabled === true
                   ? "cursor-default bg-gray-light-2"
                   : "border"
@@ -176,25 +146,6 @@ const TextSection = ({
   );
 };
 
-const TopPic = () => (
-  <div className="mb-6">
-    <Image
-      alt="Portal Gate"
-      src={"/wsx/wsx-logo-header.svg"}
-      objectFit="cover"
-      width={200}
-      height={120}
-    />
-  </div>
-);
-
-const walletsConfig = [
-  new TalismanWallet(),
-  new PolkadotjsWallet(),
-  new SubWallet(),
-  web3AuthWalletInstance,
-];
-
 export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
   return (
     <>
@@ -203,7 +154,7 @@ export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
           key={index}
           disabled={button.disabled}
           onClick={button.onClick}
-          className={`flex h-[56px] w-full items-center justify-center rounded-lg text-center hover:bg-gray-200 ${
+          className={`flex h-[56px] w-full items-center justify-center rounded-lg bg-mystic text-center hover:bg-gray-100 ${
             button.disabled === true ? "bg-gray-light-2" : "border"
           }`}
         >
@@ -214,6 +165,37 @@ export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
         </button>
       ))}
     </>
+  );
+};
+
+export const ResourceList: React.FC<ButtonListProps> = ({ buttonList }) => {
+  return (
+    <div className="grid grid-cols-3 gap-4">
+      {resourceList.map((resource, index) =>
+        resource.title === "Blog" ? (
+          <button
+            key={index}
+            disabled={resource.disabled}
+            onClick={resource.onClick}
+            className={`col-span-3 flex h-[56px] w-full items-center justify-center rounded-lg bg-mystic text-center hover:bg-gray-100 ${
+              resource.disabled === true ? "bg-gray-light-2" : "border"
+            }`}
+          >
+            <div className="ml-4 flex items-center gap-2 text-lg font-medium">
+              <span>{resource.title}</span>
+            </div>
+          </button>
+        ) : (
+          <WalletIcon
+            onClick={resource.onClick}
+            logoAlt={resource.title}
+            logoSrc={resource.icon}
+            className={resource.title == "Twitter" ? "invert" : ""}
+            extensionName="web3auth"
+          />
+        ),
+      )}
+    </div>
   );
 };
 
@@ -279,7 +261,9 @@ export const DesktopOnboardingModal = (props: {
           }}
         />,
         <TextSection
-          children={<ButtonList setStep={setStep} buttonList={resourceList} />}
+          children={
+            <ResourceList setStep={setStep} buttonList={resourceList} />
+          }
           headerText="You're All Set!"
           bodyText="If you have any questions, feel free to check out our community channels."
           leftButton={{
@@ -291,11 +275,9 @@ export const DesktopOnboardingModal = (props: {
 
   return (
     <Dialog.Panel
-      className="flex w-full max-w-[450px] flex-col items-center justify-center 
-    gap-y-[20px] rounded-ztg-10 bg-white p-8"
+      className="mt-8 flex w-full max-w-[450px]  
+    flex-col gap-y-[20px] rounded-ztg-10 bg-white p-8"
     >
-      {/* <TopPic /> */}
-
       {screens[step]}
 
       {props.notice && (

@@ -4,7 +4,10 @@ import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
 import Web3wallet from "components/web3wallet";
 import WalletIcon from "./WalletIcon";
+import { getWallets } from "@talismn/connect-wallets";
+import { SUPPORTED_WALLET_NAMES } from "lib/constants";
 import Image from "next/image";
+import Link from "next/link";
 
 import { useEffect } from "react";
 import { isWSX } from "lib/constants";
@@ -48,65 +51,70 @@ const WalletSelect = () => {
       navigator.userAgent,
     );
 
+  const hasWallet =
+    typeof window !== "undefined" &&
+    getWallets().some(
+      (wallet) =>
+        wallet?.installed &&
+        SUPPORTED_WALLET_NAMES.some(
+          (walletName) => walletName === wallet.extensionName,
+        ),
+    );
+
   return (
-    <div className="flex w-full flex-col p-4">
-      <h3 className="mb-4 text-center text-lg font-bold">
-        Log in to {isWSX ? "WSX" : "Zeitgeist"}
-      </h3>
-      {isWSX && (
-        <p className="mx-auto mb-4 max-w-[250px] text-center text-sm">
-          connect using a social account
-        </p>
-      )}
-      <Web3wallet />
-      {/* enablde/disable to allow for MW to be used */}
-      {isWSX && (
+    <div className="flex flex-col">
+      {hasWallet === true && (
         <>
-          <div className="text-s py-4 text-center text-sm">
-            <p>or using your own wallet</p>
-          </div>
-          <div className="flex justify-between gap-6">
-            {isMobileDevice ? (
-              <a
-                href="https://novawallet.io/"
-                className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"
-              >
-                <Image
-                  src="/icons/nova.png"
-                  alt={"wallet.logo.alt"}
-                  width={30}
-                  height={30}
-                  quality={100}
-                />
-                <div className="relative ml-4 font-medium">
-                  <span>Nova Wallet</span>
-                </div>
-              </a>
-            ) : (
-              supportedWallets
-                .filter((w) => w.extensionName !== "web3auth")
-                .map((wallet) => {
-                  const error = errors.find(
-                    (e) => e.extensionName === wallet.extensionName,
-                  );
-                  const hasError = error != null;
-                  return (
-                    <WalletIcon
-                      onClick={() => {
-                        handleSelectWallet(wallet);
-                      }}
-                      extensionName={wallet.extensionName}
-                      logoAlt={wallet.logo?.alt}
-                      logoSrc={wallet.logo?.src}
-                      hasError={hasError}
-                      error={error}
-                    />
-                  );
-                })
-            )}
-          </div>
+          <h3 className="mb-4 text-2xl font-bold">Log back in to WSX</h3>
+          <p className="mb-4">
+            Use one of the following options to log in and start using
+            Prediction Markets.
+          </p>
         </>
       )}
+      <Web3wallet />
+      <h3 className="my-4 text-lg font-bold">Crypto Wallet</h3>
+      <div className="flex justify-between gap-6">
+        {isMobileDevice && !isWSX ? (
+          <Link
+            href="https://novawallet.io/"
+            className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"
+            target="_blank"
+          >
+            <Image
+              src="/icons/nova.png"
+              alt={"wallet.logo.alt"}
+              width={30}
+              height={30}
+              quality={100}
+            />
+            <div className="relative ml-4 font-medium">
+              <span>Nova Wallet</span>
+            </div>
+          </Link>
+        ) : (
+          supportedWallets
+            .filter((w) => w.extensionName !== "web3auth")
+            .map((wallet) => {
+              const error = errors.find(
+                (e) => e.extensionName === wallet.extensionName,
+              );
+              const hasError = error != null;
+              return (
+                <WalletIcon
+                  onClick={() => {
+                    handleSelectWallet(wallet);
+                  }}
+                  extensionName={wallet.extensionName}
+                  logoAlt={wallet.logo?.alt}
+                  logoSrc={wallet.logo?.src}
+                  hasError={hasError}
+                  error={error}
+                />
+              );
+            })
+        )}
+      </div>
     </div>
   );
 };
