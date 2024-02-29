@@ -93,13 +93,15 @@ const CreateAccountPage: NextPage = () => {
         })}
       </div>
       <div className="my-9 flex p-2 text-blue">
-        {/* TODO: Update href attribute */}
-        <Link href="#" className="flex">
-          <div className="mr-3">
-            Watch this tutorial about how to buy tokens using crypto
-          </div>
+        <a
+          href="https://www.youtube.com/playlist?list=PLdOlgpqyU8RP-ZK2A2qbcfxOlzoeuR6sx"
+          target="_blank"
+          rel="noreferrer"
+          className=" flex gap-3"
+        >
+          <div>Watch this tutorial about how to buy tokens using crypto</div>
           <Video />
-        </Link>
+        </a>
       </div>
       <h2 className="mb-9 p-2">Next Steps</h2>
       <div className="flex flex-col gap-4 md:flex-row">

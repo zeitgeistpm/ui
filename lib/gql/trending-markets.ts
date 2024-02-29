@@ -113,7 +113,7 @@ const calcTrendingMarkets = (
   markets: { marketId: number; baseAsset: string }[],
 ) => {
   const marketVolumes: { [key: string]: Decimal } = {};
-  const maxMarkets = 8;
+  const maxMarkets = 4;
 
   // find total volume for each market
   transactions.forEach((transaction) => {

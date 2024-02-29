@@ -54,7 +54,7 @@ const CourtPage: NextPage = ({
   return (
     <div className="mt-4 flex flex-col gap-y-4">
       <div className="relative mb-4 basis-7 flex-wrap items-center gap-4 lg:flex">
-        <div className="relative flex-1 overflow-hidden rounded-lg p-6">
+        <div className="relative flex-1 rounded-lg p-6">
           <div className="absolute left-0 top-0 z-10 h-full w-full">
             <Image
               title="Wizard draped in purple robes holding a flaming crypto key."
@@ -65,6 +65,7 @@ const CourtPage: NextPage = ({
               objectFit="cover"
               blurDataURL={bannerPlaiceholder.base64}
               placeholder="blur"
+              className="rounded-lg"
               style={{
                 objectPosition: "20% 30%",
               }}
@@ -332,7 +333,7 @@ const Stats = () => {
               "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
           }}
         >
-          <label className="font text-sm text-gray-500">APR</label>
+          <label className="font text-sm text-gray-500">APY</label>
           <div className="flex items-center gap-2">
             <div className="text-md font-mono font-semibold">
               {formatNumberLocalized(

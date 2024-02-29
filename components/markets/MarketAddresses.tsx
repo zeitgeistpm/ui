@@ -123,7 +123,7 @@ export const AddressDetails = ({
   return (
     <>
       <div
-        className="ztg-transition flex w-fit cursor-pointer flex-col items-start rounded-lg hover:bg-sky-100 sm:flex-row sm:items-center"
+        className="ztg-transition flex w-fit cursor-pointer flex-col items-start rounded-lg sm:flex-row sm:items-center"
         onClick={() => setInspected(true)}
         data-test="inspectButton"
       >

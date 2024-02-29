@@ -6,12 +6,14 @@ import { BgBallGfx } from "components/front-page/BgBallFx";
 import GettingStartedSection from "components/front-page/GettingStartedSection";
 import { HeroBanner } from "components/front-page/HeroBanner";
 import LatestTrades from "components/front-page/LatestTrades";
+import LatestTradesCompact from "components/front-page/LatestTradesCompact";
 import NetworkStats from "components/front-page/NetworkStats";
 import { NewsSection } from "components/front-page/News";
 import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
 import { Topics } from "components/front-page/Topics";
+import TrendingMarketsCompact from "components/front-page/TrendingMarketsCompact";
 import WatchHow from "components/front-page/WatchHow";
 import MarketScroll from "components/markets/MarketScroll";
 import MarketCard from "components/markets/market-card";
@@ -247,22 +249,39 @@ const IndexPage: NextPage<{
           </div>
         )}
 
+        <div className="mb-12 flex w-full flex-col gap-8 md:flex-row">
+          <div className="flex w-full flex-col gap-y-6">
+            <div className="flex items-center">
+              <div className="text-xl font-bold">Trending Markets</div>
+              <Link
+                href="/markets"
+                className="ml-auto rounded-md bg-misty-harbor p-1 text-xs"
+              >
+                More Markets
+              </Link>
+            </div>
+            <TrendingMarketsCompact markets={trendingMarkets} />
+          </div>
+
+          <div className="flex w-full flex-col gap-y-6">
+            <div className="flex items-center ">
+              <div className="text-xl font-bold">Latest Trades</div>
+              <Link
+                href="/latest-trades"
+                className="ml-auto rounded-md bg-misty-harbor p-1 text-xs"
+              >
+                All Trades
+              </Link>
+            </div>
+            <LatestTradesCompact />
+          </div>
+        </div>
+
         <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} />
 
         <div className="mb-12">
           <WatchHow />
         </div>
-
-        {trendingMarkets.length > 0 && (
-          <div className="my-[60px]">
-            <MarketScroll
-              title="Trending Markets"
-              cta="Go to Markets"
-              markets={trendingMarkets}
-              link="markets"
-            />
-          </div>
-        )}
 
         <div className="mb-12">
           <PopularCategories imagePlaceholders={categoryPlaceholders} />

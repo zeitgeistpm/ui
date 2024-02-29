@@ -121,7 +121,8 @@ export const useLatestTrades = (limit?: number, marketId?: number) => {
     {
       keepPreviousData: true,
       enabled: Boolean(sdk && isIndexedSdk(sdk)),
-      refetchInterval: BLOCK_TIME_SECONDS * 1000,
+      refetchInterval: BLOCK_TIME_SECONDS * 1000 * 3, //3 blocks
+      staleTime: Infinity,
     },
   );
 

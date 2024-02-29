@@ -1,4 +1,3 @@
-import type { ScalarRangeType } from "@zeitgeistpm/sdk";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -22,6 +21,7 @@ import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { getCurrentPrediction } from "lib/util/assets";
 
 const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
   ssr: false,
@@ -81,12 +81,7 @@ export const MarketCard = ({
     marketCategories.some((outcome) => outcome.name.toLowerCase() === "yes") &&
     marketCategories.some((outcome) => outcome.name.toLowerCase() === "no");
 
-  const prediction =
-    marketCategories.length > 0
-      ? marketCategories?.reduce((prev, curr) => {
-          return prev && prev.price > curr.price ? prev : curr;
-        })
-      : undefined;
+  const prediction = getCurrentPrediction(assets, market);
 
   //always show "Yes" prediction percentage
   const displayPrediction =
@@ -130,6 +125,9 @@ export const MarketCard = ({
           }`}
         >
           <div className="flex h-[54px] w-full gap-4 whitespace-normal">
+            <div className="absolute right-4 top-4">
+              <MarketFavoriteToggle marketId={marketId} />
+            </div>
             <div className="relative min-h-[54px] min-w-[54px] rounded-lg bg-gray-400 bg-opacity-30">
               <Image
                 priority
@@ -144,7 +142,7 @@ export const MarketCard = ({
                 sizes={"54px"}
               />
             </div>
-            <h5 className="line-clamp-2 h-fit w-full text-base duration-200">
+            <h5 className="line-clamp-2 h-fit w-full pr-4 text-base duration-200">
               {cmsMetadata?.question ?? question}
             </h5>
           </div>
@@ -194,7 +192,6 @@ export const MarketCard = ({
                 liquidity={liquidity}
               />
             </div>
-            <MarketFavoriteToggle marketId={marketId} />
           </div>
         </Link>
       </div>
