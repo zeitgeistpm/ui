@@ -32,14 +32,10 @@ export const useSdkv2 = (): UseSdkv2 => {
   const [sub, setSub] = useState<Subscription>();
   const [sdk, setSdk] = useAtom(sdkAtom);
 
-  const id = identify(
-    endpoints.map((e) => e.value),
-    graphQlEndpoint,
-  );
+  const id = identify(endpoints, graphQlEndpoint);
   const prevId = usePrevious(id);
 
   useEffect(() => {
-    const endpointVals = endpoints.map((e) => e.value);
     if ((id && endpoints) || graphQlEndpoint) {
       if (sub && prevId && id !== prevId) {
         setTimeout(() => {
@@ -48,7 +44,7 @@ export const useSdkv2 = (): UseSdkv2 => {
         }, 500);
       }
 
-      const sdk$ = init(endpointVals, graphQlEndpoint);
+      const sdk$ = init(endpoints, graphQlEndpoint);
       const nextSub = sdk$.subscribe((sdk) => {
         setSdk(sdk);
       });

@@ -101,14 +101,22 @@ const getEnvironment = (): Environment => {
 export const environment = getEnvironment();
 
 const getGraphQlEndpoint = (): string => {
-  const endpoint = graphQlEndpoints.find((e) => e.environment === environment);
-  return endpoint!.value;
+  return (
+    process.env.SUBSQUID_ENDPOINT ??
+    process.env.NEXT_PUBLIC_SUBSQUID_ENDPOINT ??
+    graphQlEndpoints.find((e) => e.environment === environment)!.value
+  );
 };
 
 export const graphQlEndpoint = getGraphQlEndpoint();
 
-const getEndpointOptions = (env: Environment): EndpointOption[] => {
-  return endpoints.filter((e) => e.environment === env);
+const getEndpointOptions = (env: Environment): string[] => {
+  const overrideEndpoint: string | undefined =
+    process.env.SUBSQUID_ENDPOINT ?? process.env.NEXT_PUBLIC_SUBSQUID_ENDPOINT;
+
+  return overrideEndpoint
+    ? [overrideEndpoint]
+    : endpoints.filter((e) => e.environment === env).map((e) => e.value);
 };
 
 export const endpointsProduction = getEndpointOptions("production");

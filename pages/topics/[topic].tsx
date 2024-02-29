@@ -33,7 +33,7 @@ export async function getStaticProps({
   params: { topic: string };
 }) {
   const sdk = await create({
-    provider: endpointOptions.map((e) => e.value),
+    provider: endpointOptions,
     indexer: graphQlEndpoint,
     storage: ZeitgeistIpfs(),
   });

@@ -47,7 +47,7 @@ import { getPlaiceholder } from "plaiceholder";
 export async function getStaticProps() {
   const client = new GraphQLClient(graphQlEndpoint);
   const sdk = await create({
-    provider: endpointOptions.map((e) => e.value),
+    provider: endpointOptions,
     indexer: graphQlEndpoint,
     storage: ZeitgeistIpfs(),
   });

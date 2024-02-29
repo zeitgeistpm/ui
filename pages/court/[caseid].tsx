@@ -62,7 +62,7 @@ export async function getStaticProps({
   params: { caseid: string };
 }) {
   const sdk = await create({
-    provider: endpointOptions.map((e) => e.value),
+    provider: endpointOptions,
     indexer: graphQlEndpoint,
     storage: ZeitgeistIpfs(),
   });
@@ -114,7 +114,7 @@ export async function getStaticPaths() {
     return { paths: [], fallback: "blocking" };
   }
   const sdk = await create({
-    provider: endpointOptions.map((e) => e.value),
+    provider: endpointOptions,
     indexer: graphQlEndpoint,
     storage: ZeitgeistIpfs(),
   });
