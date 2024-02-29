@@ -119,3 +119,86 @@ export const calculatePoolAmounts = (
 
   return poolAmounts;
 };
+
+export const isValidBuyAmount = (
+  assetReserve: Decimal,
+  amountIn: Decimal,
+  liquidityParameter: Decimal,
+  poolFee: Decimal, // 1% is 0.01
+  creatorFee: Decimal, // 1% is 0.01
+) => {
+  const totalFee = poolFee.plus(creatorFee);
+  const feeMultiplier = new Decimal(1).minus(totalFee);
+  const amountInMinusFees = amountIn.mul(feeMultiplier);
+
+  if (
+    amountInMinusFees.greaterThanOrEqualTo(
+      calculatePoolNumericalThreshold(liquidityParameter),
+    )
+  ) {
+    return { isValid: false, message: "Amount in too high" };
+  } else if (
+    calculateBuyLnArgument(
+      assetReserve,
+      amountInMinusFees,
+      liquidityParameter,
+    ).lessThanOrEqualTo(lsmrConstant)
+  ) {
+    return { isValid: false, message: "Amount in too low" };
+  } else {
+    return { isValid: true };
+  }
+};
+
+export const isValidSellAmount = (
+  assetReserve: Decimal,
+  amountIn: Decimal,
+  liquidityParameter: Decimal,
+) => {
+  const numericalThreshold =
+    calculatePoolNumericalThreshold(liquidityParameter);
+  if (assetReserve.greaterThanOrEqualTo(numericalThreshold)) {
+    return { isValid: false, message: "Price is low to sell" };
+  } else if (amountIn.greaterThanOrEqualTo(numericalThreshold)) {
+    return { isValid: false, message: "Amount in too high" };
+  } else if (
+    amountIn.greaterThanOrEqualTo(numericalThreshold) ||
+    calculateReserveAfterSell(
+      assetReserve,
+      amountIn,
+      liquidityParameter,
+    ).greaterThanOrEqualTo(numericalThreshold)
+  ) {
+    return { isValid: false, message: "Amount in too high" };
+  } else {
+    return { isValid: true };
+  }
+};
+
+export const calculateReserveAfterSell = (
+  assetReserve: Decimal,
+  amountIn: Decimal,
+  liquidity: Decimal, // liqudity parameter of the pool
+) => {
+  // new_reserve = old_reserve + b ln(exp(old_reserve/liquidity_param) - 1 + exp(-amount/liquidity_param))
+  const term1 = assetReserve.div(liquidity).exp();
+  const term2 = new Decimal(0).minus(amountIn).div(liquidity).exp();
+
+  return term1.plus(term2).minus(1).ln().mul(liquidity).plus(assetReserve);
+};
+
+const lsmrConstant = 0.1;
+
+const calculatePoolNumericalThreshold = (liquidityParameter: Decimal) =>
+  liquidityParameter.mul(10);
+
+const calculateBuyLnArgument = (
+  assetReserve: Decimal,
+  amountInMinusFee: Decimal,
+  liquidity: Decimal, // liqudity parameter of the pool
+) => {
+  const term1 = amountInMinusFee.div(liquidity).exp();
+  const term2 = new Decimal(0).minus(assetReserve).div(liquidity).exp();
+
+  return term1.plus(term2).minus(1);
+};

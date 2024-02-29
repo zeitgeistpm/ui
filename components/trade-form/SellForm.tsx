@@ -24,6 +24,7 @@ import {
   approximateMaxAmountInForSell,
   calculateSpotPrice,
   calculateSwapAmountOutForSell,
+  isValidSellAmount,
 } from "lib/util/amm2";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
@@ -94,6 +95,15 @@ const SellForm = ({
     .abs();
   const assetReserve =
     pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
+
+  const validSell = useMemo(() => {
+    return (
+      assetReserve &&
+      pool.liquidity &&
+      swapFee &&
+      isValidSellAmount(assetReserve, amountIn, pool.liquidity)
+    );
+  }, [assetReserve, pool?.liquidity, amountIn]);
 
   const maxAmountIn = useMemo(() => {
     return (
@@ -243,6 +253,8 @@ const SellForm = ({
                   return `Maximum amount that can be traded is ${maxAmountIn
                     .div(ZTG)
                     .toFixed(3)}`;
+                } else if (validSell?.isValid === false) {
+                  return validSell.message;
                 }
               },
             })}

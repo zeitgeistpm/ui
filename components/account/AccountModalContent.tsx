@@ -9,7 +9,6 @@ import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 const AccountModalContent: FC = () => {
   const { activeAccount, disconnectWallet, accounts, selectAccount } =
     useWallet();
-
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: constants } = useChainConstants();
 

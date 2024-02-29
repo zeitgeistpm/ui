@@ -25,6 +25,7 @@ import {
   approximateMaxAmountInForBuy,
   calculateSpotPrice,
   calculateSwapAmountOutForBuy,
+  isValidBuyAmount,
 } from "lib/util/amm2";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
@@ -92,6 +93,21 @@ const BuyForm = ({
   ).mul(ZTG);
   const assetReserve =
     pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
+
+  const validBuy = useMemo(() => {
+    return (
+      assetReserve &&
+      pool.liquidity &&
+      swapFee &&
+      isValidBuyAmount(
+        assetReserve,
+        amountIn,
+        pool.liquidity,
+        swapFee,
+        creatorFee,
+      )
+    );
+  }, [assetReserve, pool?.liquidity, amountIn]);
 
   const maxAmountIn = useMemo(() => {
     return (
@@ -274,6 +290,8 @@ const BuyForm = ({
                   return `Maximum amount of ${baseSymbol} that can be traded is ${maxAmountIn
                     .div(ZTG)
                     .toFixed(3)}`;
+                } else if (validBuy?.isValid === false) {
+                  return validBuy.message;
                 }
               },
             })}
