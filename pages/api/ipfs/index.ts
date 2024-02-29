@@ -4,17 +4,7 @@ import type { PageConfig } from "next";
 import type { NextRequest } from "next/server";
 //import { fromZodError } from "zod-validation-error";
 import { IOMarketMetadata } from "./types";
-
-const node = createIPFSClient({
-  url: process.env.NEXT_PUBLIC_IPFS_NODE_URL,
-  // headers: {
-  //   Authorization: `Basic ${Buffer.from(
-  //     process.env.IPFS_NODE_BASIC_AUTH_USERNAME +
-  //       ":" +
-  //       process.env.IPFS_NODE_BASIC_AUTH_PASSWORD,
-  //   ).toString("base64")}`,
-  // },
-});
+import { tryCatch } from "@zeitgeistpm/utility/dist/either";
 
 export const config: PageConfig = {
   runtime: "edge",
@@ -27,13 +17,22 @@ export default async function handler(req: NextRequest) {
 }
 
 const POST = async (req: NextRequest) => {
+  const node = createIPFSClient({
+    url: process.env.NEXT_PUBLIC_IPFS_NODE_URL,
+    headers: {
+      Authorization: `Basic ${Buffer.from(
+        process.env.IPFS_NODE_BASIC_AUTH_USERNAME +
+          ":" +
+          process.env.IPFS_NODE_BASIC_AUTH_PASSWORD,
+      ).toString("base64")}`,
+    },
+  });
+
   const body = await extractBody(req);
 
-  let rawJSon: object;
+  let rawJSon = tryCatch(() => JSON.parse(body));
 
-  try {
-    rawJSon = JSON.parse(body);
-  } catch {
+  if (rawJSon.isLeft()) {
     return new Response(
       JSON.stringify({ message: "Request body must be valid json." }),
       {
@@ -42,8 +41,7 @@ const POST = async (req: NextRequest) => {
     );
   }
 
-  const parsed = IOMarketMetadata.safeParse(rawJSon);
-  //const parsed = { success: true, data: rawJSon };
+  const parsed = IOMarketMetadata.safeParse(rawJSon.unwrap());
 
   const { searchParams } = new URL(req.url);
 
