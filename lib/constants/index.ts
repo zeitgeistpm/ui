@@ -112,7 +112,7 @@ export const graphQlEndpoint = getGraphQlEndpoint();
 
 const getEndpointOptions = (env: Environment): string[] => {
   const overrideEndpoint: string | undefined =
-    process.env.SUBSQUID_ENDPOINT ?? process.env.NEXT_PUBLIC_SUBSQUID_ENDPOINT;
+    process.env.WS_ENDPOINT ?? process.env.NEXT_PUBLIC_WS_ENDPOINT;
 
   return overrideEndpoint
     ? [overrideEndpoint]
@@ -123,3 +123,6 @@ export const endpointsProduction = getEndpointOptions("production");
 export const endpointsStaging = getEndpointOptions("staging");
 
 export const endpointOptions = getEndpointOptions(environment);
+
+console.log(endpointOptions);
+console.log(graphQlEndpoint);
