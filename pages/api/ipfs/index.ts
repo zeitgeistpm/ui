@@ -1,20 +1,20 @@
-// import * as IPFSHTTPClient from "ipfs-http-client";
+import * as IPFSHTTPClient from "ipfs-http-client";
 // import { extractBody } from "lib/edge/extract-body";
 import type { PageConfig } from "next";
 import type { NextRequest } from "next/server";
 //import { fromZodError } from "zod-validation-error";
 //import { IOMarketMetadata } from "./types";
 
-// const node = IPFSHTTPClient.create({
-//   url: process.env.NEXT_PUBLIC_IPFS_NODE_URL,
-//   headers: {
-//     Authorization: `Basic ${Buffer.from(
-//       process.env.IPFS_NODE_BASIC_AUTH_USERNAME +
-//         ":" +
-//         process.env.IPFS_NODE_BASIC_AUTH_PASSWORD,
-//     ).toString("base64")}`,
-//   },
-// });
+const node = IPFSHTTPClient.create({
+  url: process.env.NEXT_PUBLIC_IPFS_NODE_URL,
+  headers: {
+    Authorization: `Basic ${Buffer.from(
+      process.env.IPFS_NODE_BASIC_AUTH_USERNAME +
+        ":" +
+        process.env.IPFS_NODE_BASIC_AUTH_PASSWORD,
+    ).toString("base64")}`,
+  },
+});
 
 export const config: PageConfig = {
   runtime: "edge",
