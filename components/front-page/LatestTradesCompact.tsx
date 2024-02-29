@@ -8,7 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const LatestTradesCompact = () => {
-  const { data: trades } = useLatestTrades(4);
+  const { data: trades } = useLatestTrades(100);
 
   return (
     <div>
@@ -40,6 +40,10 @@ const LatestTradeRow = ({ trade }: { trade: TradeItem }) => {
           height={30}
           className="overflow-hidden rounded-md"
           sizes={"30px"}
+          style={{
+            objectFit: "cover",
+            objectPosition: "50% 50%",
+          }}
         />
       </div>
       <div className="ml-4 flex flex-col">
