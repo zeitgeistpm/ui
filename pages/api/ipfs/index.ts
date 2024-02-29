@@ -2,7 +2,7 @@ import { create as createIPFSClient } from "ipfs-http-client";
 import { extractBody } from "lib/edge/extract-body";
 import type { PageConfig } from "next";
 import type { NextRequest } from "next/server";
-//import { fromZodError } from "zod-validation-error";
+import { fromZodError } from "zod-validation-error";
 import { IOMarketMetadata } from "./types";
 import { tryCatch } from "@zeitgeistpm/utility/dist/either";
 
@@ -48,10 +48,14 @@ const POST = async (req: NextRequest) => {
   const onlyHash = searchParams.get("only-hash") === "true" ? true : false;
 
   if (!parsed.success) {
-    return new Response(JSON.stringify({ message: "error" }), {
-      status: 400,
-    });
+    return new Response(
+      JSON.stringify({ message: fromZodError(parsed.error).toString() }),
+      {
+        status: 400,
+      },
+    );
   }
+
   const metadata = {
     __meta: "markets",
     ...parsed.data,
@@ -79,9 +83,11 @@ const POST = async (req: NextRequest) => {
         onlyHash,
       },
     );
+
     // if (!onlyHash) {
     //   await node.pin.add(cid);
     // }
+
     return new Response(
       JSON.stringify({
         message: `Market metadata ${
