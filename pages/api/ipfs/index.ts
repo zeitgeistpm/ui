@@ -42,7 +42,7 @@ const POST = async (req: NextRequest) => {
     );
   }
 
-  //const parsed = IOMarketMetadata.safeParse(rawJSon);
+  //const parsed = IOMarketMetadata.safeParse(rawJSon) hmm;
   const parsed = { success: true, data: rawJSon };
 
   const { searchParams } = new URL(req.url);
