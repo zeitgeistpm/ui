@@ -30,9 +30,11 @@ export default async function handler(req: NextRequest) {
 const POST = async (req: NextRequest) => {
   const body = await extractBody(req);
 
-  const rawJSon = tryCatch(() => JSON.parse(body));
+  let rawJSon: object;
 
-  if (rawJSon.isLeft()) {
+  try {
+    rawJSon = JSON.parse(body);
+  } catch {
     return new Response(
       JSON.stringify({ message: "Request body must be valid json." }),
       {
@@ -41,7 +43,7 @@ const POST = async (req: NextRequest) => {
     );
   }
 
-  const parsed = IOMarketMetadata.safeParse(rawJSon.unwrap());
+  const parsed = IOMarketMetadata.safeParse(rawJSon);
 
   const { searchParams } = new URL(req.url);
   const onlyHash = searchParams.get("only-hash") === "true" ? true : false;
