@@ -7,6 +7,7 @@ import WalletIcon from "./WalletIcon";
 import { getWallets } from "@talismn/connect-wallets";
 import { SUPPORTED_WALLET_NAMES } from "lib/constants";
 import Image from "next/image";
+import Link from "next/link";
 
 import { useEffect } from "react";
 
@@ -74,9 +75,10 @@ const WalletSelect = () => {
       <h3 className="my-4 text-lg font-bold">Crypto Wallet</h3>
       <div className="flex justify-between gap-6">
         {isMobileDevice ? (
-          <a
+          <Link
             href="https://novawallet.io/"
             className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"
+            target="_blank"
           >
             <Image
               src="/icons/nova.png"
@@ -88,7 +90,7 @@ const WalletSelect = () => {
             <div className="relative ml-4 font-medium">
               <span>Nova Wallet</span>
             </div>
-          </a>
+          </Link>
         ) : (
           supportedWallets
             .filter((w) => w.extensionName !== "web3auth")
