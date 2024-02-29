@@ -8,7 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const LatestTradesCompact = () => {
-  const { data: trades } = useLatestTrades(100);
+  const { data: trades } = useLatestTrades(4);
 
   return (
     <div>
