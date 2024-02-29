@@ -1,11 +1,11 @@
-import * as IPFSHTTPClient from "ipfs-http-client";
+import { create as createIPFSClient } from "ipfs-http-client";
 import { extractBody } from "lib/edge/extract-body";
 import type { PageConfig } from "next";
 import type { NextRequest } from "next/server";
 //import { fromZodError } from "zod-validation-error";
 import { IOMarketMetadata } from "./types";
 
-const node = IPFSHTTPClient.create({
+const node = createIPFSClient({
   url: process.env.NEXT_PUBLIC_IPFS_NODE_URL,
   // headers: {
   //   Authorization: `Basic ${Buffer.from(
