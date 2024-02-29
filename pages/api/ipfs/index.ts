@@ -1,8 +1,7 @@
-import { tryCatch } from "@zeitgeistpm/utility/dist/either";
 import * as IPFSHTTPClient from "ipfs-http-client";
 import { extractBody } from "lib/edge/extract-body";
 import type { PageConfig } from "next";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { fromZodError } from "zod-validation-error";
 import { IOMarketMetadata } from "./types";
 
