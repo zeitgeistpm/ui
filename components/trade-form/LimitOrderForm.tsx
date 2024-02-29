@@ -67,8 +67,8 @@ export const LimitBuyOrderForm = ({
   return (
     <LimitOrderForm
       marketId={marketId}
-      selectedAsset={selectedAsset}
-      buttonText="Place Buy Order"
+      asset={selectedAsset}
+      side="buy"
       onSubmit={() => {
         // place buy order
       }}
@@ -116,8 +116,8 @@ export const LimitSellOrderForm = ({
   return (
     <LimitOrderForm
       marketId={marketId}
-      selectedAsset={selectedAsset}
-      buttonText="Place Sell Order"
+      asset={selectedAsset}
+      side="sell"
       onSubmit={() => {
         // place sell order
       }}
@@ -131,18 +131,18 @@ export const LimitSellOrderForm = ({
 
 const LimitOrderForm = ({
   marketId,
-  selectedAsset,
+  asset,
   onAssetChange,
   onPriceChange,
   maxAmount,
-  buttonText,
+  side,
 }: {
   marketId: number;
-  selectedAsset?: MarketOutcomeAssetId; // todo: this can just be "asset" driven from parent
+  asset?: MarketOutcomeAssetId; // todo: this can just be "asset" driven from parent
   maxPrice?: Decimal;
   minPrice?: Decimal;
   maxAmount?: Decimal;
-  buttonText: string;
+  side: "buy" | "sell";
   onSubmit?: (price: Decimal, amount: Decimal) => void;
   onAssetChange?: (assetId: MarketOutcomeAssetId) => void;
   onPriceChange?: (price: Decimal) => void;
@@ -171,15 +171,15 @@ const LimitOrderForm = ({
   const [initialPriceSetAsset, setInitialPriceSetAsset] = useState<
     MarketOutcomeAssetId | undefined
   >();
-  const spotPrice = selectedAsset
-    ? spotPrices?.get(getIndexOf(selectedAsset)) //todo: check this works for scalar
+  const spotPrice = asset
+    ? spotPrices?.get(getIndexOf(asset)) //todo: check this works for scalar
     : undefined;
 
   useEffect(() => {
     // default price to current spot price
-    if (!assetsAreEqual(initialPriceSetAsset, selectedAsset)) {
+    if (!assetsAreEqual(initialPriceSetAsset, asset)) {
       setValue("price", spotPrice?.toFixed(3));
-      setInitialPriceSetAsset(selectedAsset);
+      setInitialPriceSetAsset(asset);
       onPriceChange?.(spotPrice ?? new Decimal(0));
       trigger("price"); // reset validation
     }
@@ -228,74 +228,83 @@ const LimitOrderForm = ({
   }, [watch, maxAmount]);
 
   const onSubmit = () => {};
+
+  const amount = new Decimal(getValues("amount") || 0);
+  const total = amount.mul(getValues("price") || 0);
+  const maxProfit = amount.minus(total);
+
   return (
     <div className="flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex w-full flex-col gap-y-4"
       >
-        <div className="text-sm">Amount</div>
-
-        <div className="flex w-full items-center justify-center rounded-md bg-white pr-2 font-mono">
-          <Input
-            type="number"
-            className="w-full bg-transparent outline-none"
-            step="any"
-            {...register("amount", {
-              value: 0,
-              required: {
-                value: true,
-                message: "Value is required",
-              },
-              validate: (value) => {
-                if (value > (maxAmount?.div(ZTG).toNumber() ?? 0)) {
-                  return `Insufficient balance. Max: ${maxAmount
-                    ?.div(ZTG)
-                    .toFixed(1)}`;
-                } else if (value <= 0) {
-                  return "Amount must be greater than 0";
-                }
-              },
-            })}
-          />
-          <div>
-            {market && selectedAsset && (
-              <MarketContextActionOutcomeSelector
-                market={market}
-                selected={selectedAsset}
-                options={outcomeAssets}
-                onChange={(assetId) => {
-                  onAssetChange?.(assetId);
-                }}
-              />
-            )}
+        <div>
+          <div className="mb-1 text-sm">Amount</div>
+          <div className="flex w-full items-center justify-center rounded-md bg-white pr-2 font-mono">
+            <Input
+              type="number"
+              className="w-full bg-transparent outline-none"
+              step="any"
+              {...register("amount", {
+                value: 0,
+                required: {
+                  value: true,
+                  message: "Value is required",
+                },
+                validate: (value) => {
+                  if (value > (maxAmount?.div(ZTG).toNumber() ?? 0)) {
+                    return `Insufficient balance. Max: ${maxAmount
+                      ?.div(ZTG)
+                      .toFixed(1)}`;
+                  } else if (value <= 0) {
+                    return "Amount must be greater than 0";
+                  }
+                },
+              })}
+            />
+            <div>
+              {market && asset && (
+                <MarketContextActionOutcomeSelector
+                  market={market}
+                  selected={asset}
+                  options={outcomeAssets}
+                  onChange={(assetId) => {
+                    onAssetChange?.(assetId);
+                  }}
+                />
+              )}
+            </div>
           </div>
         </div>
-        <div className="text-sm">Price</div>
-        <div className="center relative h-[56px] w-full rounded-md bg-white text-ztg-18-150 font-normal">
-          <Input
-            type="number"
-            className="w-full bg-transparent font-mono outline-none"
-            step="any"
-            {...register("price", {
-              value: 0,
-              required: {
-                value: true,
-                message: "Value is required",
-              },
-              validate: (value) => {
-                console.log("price", value);
+        <div>
+          <div className="mb-1 text-sm">Price</div>
+          <div className="center relative h-[56px] w-full rounded-md bg-white text-ztg-18-150 font-normal">
+            <Input
+              type="number"
+              className="w-full bg-transparent font-mono outline-none"
+              step="any"
+              {...register("price", {
+                value: 0,
+                required: {
+                  value: true,
+                  message: "Value is required",
+                },
+                validate: (value) => {
+                  console.log("price", value);
 
-                if (Number(value) >= 1) {
-                  return `Price must be less than 1`;
-                } else if (Number(value) <= 0) {
-                  return `Price must be greater than 0`;
-                }
-              },
-            })}
-          />
-          <div className="absolute right-0 mr-[10px]">{baseSymbol}</div>
+                  if (Number(value) >= 1) {
+                    return `Price must be less than 1`;
+                  } else if (Number(value) <= 0) {
+                    return `Price must be greater than 0`;
+                  }
+                },
+              })}
+            />
+            <div className="absolute right-0 mr-[10px]">{baseSymbol}</div>
+          </div>
         </div>
+
         <input
           className="mb-[10px] mt-[30px] w-full"
           type="range"
@@ -305,18 +314,20 @@ const LimitOrderForm = ({
           <div className="h-[16px] text-xs text-vermilion">
             <>{Object.values(formState.errors)[0]?.message}</>
           </div>
-          {/* <div className="flex w-full justify-between">
-            <div>Max profit:</div>
+          <div className="flex w-full justify-between">
+            <div>Total:</div>
             <div className="text-black">
-              {maxProfit.div(ZTG).toFixed(2)} {baseSymbol}
+              {total.toFixed(2)} {baseSymbol}
             </div>
           </div>
-          <div className="flex w-full justify-between">
-            <div>Price after trade:</div>
-            <div className="text-black">
-              {newSpotPrice?.toFixed(2)} ({priceImpact?.toFixed(2)}%)
+          {side === "buy" && (
+            <div className="flex w-full justify-between">
+              <div>Max Profit:</div>
+              <div className="text-black">
+                {maxProfit.toFixed(2)} {baseSymbol}
+              </div>
             </div>
-          </div> */}
+          )}
         </div>
         <div className="flex w-full items-center justify-center">
           <FormTransactionButton
@@ -325,7 +336,9 @@ const LimitOrderForm = ({
             disableFeeCheck={true}
           >
             <div>
-              <div className="center h-[20px] font-normal">{buttonText}</div>
+              <div className="center h-[20px] font-normal">
+                {side === "buy" ? "Place Buy Order" : "Place Sell Order"}
+              </div>
               {/* <div className="center h-[20px] text-ztg-12-120 font-normal">
               Network fee:{" "}
               {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
