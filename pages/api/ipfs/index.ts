@@ -2,7 +2,7 @@ import * as IPFSHTTPClient from "ipfs-http-client";
 import { extractBody } from "lib/edge/extract-body";
 import type { PageConfig } from "next";
 import type { NextRequest } from "next/server";
-import { fromZodError } from "zod-validation-error";
+//import { fromZodError } from "zod-validation-error";
 import { IOMarketMetadata } from "./types";
 
 const node = IPFSHTTPClient.create({
@@ -48,12 +48,9 @@ const POST = async (req: NextRequest) => {
   const onlyHash = searchParams.get("only-hash") === "true" ? true : false;
 
   if (!parsed.success) {
-    return new Response(
-      JSON.stringify({ message: fromZodError(parsed.error).toString() }),
-      {
-        status: 400,
-      },
-    );
+    return new Response(JSON.stringify({ message: "error" }), {
+      status: 400,
+    });
   }
 
   const metadata = {
