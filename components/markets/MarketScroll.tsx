@@ -83,8 +83,8 @@ const MarketScroll = ({
       ref={containerRef}
       className="grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-7 lg:grid-cols-3"
     >
-      <div className="flex items-center">
-        <h2 className="text-center sm:col-span-2 sm:text-start">{title}</h2>
+      <div className="flex items-center sm:col-span-2">
+        <h2 className="text-center sm:text-start">{title}</h2>
       </div>
       <HorizontalScroll
         classes="order-2 sm:order-none"
