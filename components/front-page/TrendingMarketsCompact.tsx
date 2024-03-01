@@ -56,6 +56,10 @@ const TrendingMarketRow = ({ market }: { market: FullMarketFragment }) => {
           height={45}
           className="overflow-hidden rounded-md"
           sizes={"45px"}
+          style={{
+            objectFit: "cover",
+            objectPosition: "50% 50%",
+          }}
         />
       </div>
       <div className="flex flex-col justify-center">
