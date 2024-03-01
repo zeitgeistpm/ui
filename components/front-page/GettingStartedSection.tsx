@@ -6,9 +6,7 @@ const GettingStartedSection = () => {
   return (
     <>
       <div className="w-full" data-testid="learnSection">
-        <h2 className="mb-6 text-center sm:col-span-3 sm:text-start">
-          Getting Started
-        </h2>
+        <h2 className="mb-6 sm:col-span-3">Getting Started</h2>
         <div className="flex flex-col gap-4 md:flex-row">
           <div className="flex-1">
             <CreateAccountActionableCard animationVariant="right" />
