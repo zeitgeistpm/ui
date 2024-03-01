@@ -1,6 +1,15 @@
 const { withPlaiceholder } = require("@plaiceholder/next");
 
 module.exports = withPlaiceholder({
+  async redirects() {
+    return [
+      {
+        source: "/leaderboard",
+        destination: "/404",
+        permanent: true,
+      },
+    ];
+  },
   reactStrictMode: true,
   experimental: {
     esmExternals: true,
