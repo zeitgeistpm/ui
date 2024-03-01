@@ -12,7 +12,7 @@ export const NewsSection = ({
 }) => {
   return (
     <div className="mb-12">
-      <h2 className="mb-6 text-center sm:col-span-2 sm:text-start">News</h2>
+      <h2 className="mb-6 sm:col-span-2">News</h2>
       <div className="flex flex-col gap-8 md:flex-row md:gap-4">
         {news.map((news, index) => {
           const link = news.link?.isMarket
@@ -44,8 +44,8 @@ export const NewsSection = ({
                   }}
                 />
               </div>
-              <h4 className="mb-1 font-semibold">{news.title}</h4>
-              <h5 className="text-base font-light">{news.subtitle}</h5>
+              <div className="mb-1 font-semibold">{news.title}</div>
+              <div className="text-sm font-light">{news.subtitle}</div>
             </Link>
           );
         })}

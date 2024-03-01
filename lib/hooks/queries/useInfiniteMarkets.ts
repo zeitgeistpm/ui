@@ -21,6 +21,7 @@ import { isWSX } from "../../constants";
 import { marketsRootQuery } from "./useMarket";
 
 import { tryCatch } from "@zeitgeistpm/utility/dist/either";
+import { WHITELISTED_TRUSTED_CREATORS } from "lib/constants/whitelisted-trusted-creators";
 
 export const rootKey = "markets-filtered";
 
@@ -40,10 +41,6 @@ export type QueryMarketData = Market<IndexerContext> & {
   outcomes: MarketOutcomes;
   prediction: { name: string; price: number };
 };
-
-const WHITELISTED_TRUSTED_CREATORS: string[] = tryCatch(() =>
-  JSON.parse(process.env.NEXT_PUBLIC_WHITELISTED_TRUSTED_CREATORS as string),
-).unwrapOr([]);
 
 export const useInfiniteMarkets = (
   orderBy: MarketsOrderBy,
@@ -86,6 +83,7 @@ export const useInfiniteMarkets = (
               : currencies?.length !== 0
                 ? currencies
                 : undefined,
+            scoringRule_not_eq: ScoringRule.Parimutuel,
           },
           {
             disputeMechanism_isNull: false,

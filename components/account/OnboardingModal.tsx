@@ -232,7 +232,9 @@ export const DesktopOnboardingModal = (props: {
           }}
         />,
         <TextSection
-          children={<ButtonList setStep={setStep} buttonList={resourceList} />}
+          children={
+            <ResourceList setStep={setStep} buttonList={resourceList} />
+          }
           headerText="You're All Set!"
           bodyText="If you have any questions, feel free to check out our community channels."
           leftButton={{
