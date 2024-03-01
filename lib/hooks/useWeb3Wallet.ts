@@ -2,10 +2,16 @@ import { WALLET_ADAPTERS, IProvider } from "@web3auth/base";
 import { Keyring } from "@polkadot/api";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { useWallet } from "lib/state/wallet";
-import { web3authAtom } from "lib/state/util/web3auth-config";
+import { web3authAtom, chainConfig } from "lib/state/util/web3auth-config";
 import { useAtom } from "jotai";
 import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
 import { useNotifications } from "lib/state/notifications";
+import { useEffect, useState } from "react";
+import {
+  getWalletConnectV2Settings,
+  WalletConnectV2Adapter,
+} from "@web3auth/wallet-connect-v2-adapter";
+
 interface loginOptions {
   loginProvider: string;
   extraLoginOptions: {
@@ -23,6 +29,7 @@ const useWeb3Wallet = () => {
   const [web3auth] = useAtom(web3authAtom);
   const notificationStore = useNotifications();
   const { selectWallet, disconnectWallet, walletId } = useWallet();
+  const [isReady, setIsReady] = useState(false);
 
   const initWeb3Auth = async () => {
     if (!clientId) {
@@ -40,6 +47,35 @@ const useWeb3Wallet = () => {
       return;
     }
   };
+
+  useEffect(() => {
+    const init = async () => {
+      if (typeof window !== "undefined") {
+        // Dynamically require the WalletConnect modules inside the useEffect hook
+        const { WalletConnectModal } = require("@walletconnect/modal");
+        const {
+          WalletConnectV2Adapter,
+        } = require("@web3auth/wallet-connect-v2-adapter");
+
+        const wc2Adapter = new WalletConnectV2Adapter({
+          adapterSettings: {
+            walletConnectInitOptions: {
+              projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
+            },
+          },
+          chainConfig: chainConfig,
+        });
+        // if (web3auth) {
+        //   web3auth.configureAdapter(wc2Adapter);
+        // }
+        // Now, you can use walletConnectV2Adapter as needed, e.g., configuring it with web3auth
+        // Example: web3auth.configureAdapter(walletConnectV2Adapter);
+
+        setIsReady(true);
+      }
+    };
+    init();
+  }, [web3auth]);
 
   const login = async (loginOptions: loginOptions) => {
     if (!web3auth || !auth0Domain) {
