@@ -79,7 +79,7 @@ const PopularCategories: FC<{
 
   return (
     <div className="flex flex-col" data-testid="popularCategories">
-      <h2 className="mb-7 text-center sm:text-start">Popular Categories</h2>
+      <h2 className="mb-7">Popular Categories</h2>
       <div className="no-scroll-bar flex gap-4 overflow-x-auto md:overflow-x-visible">
         {topCategories.map((category, index) => (
           <Category
