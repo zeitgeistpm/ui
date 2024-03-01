@@ -5,18 +5,22 @@ import type { NextRequest } from "next/server";
 import { fromZodError } from "zod-validation-error";
 import { IOMarketMetadata } from "./types";
 import { tryCatch } from "@zeitgeistpm/utility/dist/either";
+import { NextApiRequest, NextApiResponse } from "next";
 
 export const config: PageConfig = {
-  runtime: "edge",
+  runtime: "nodejs",
 };
 
-export default async function handler(req: NextRequest) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   if (req.method === "POST") {
-    return POST(req);
+    return POST(req, res);
   }
 }
 
-const POST = async (req: NextRequest) => {
+const POST = async (req: NextApiRequest, res: NextApiResponse) => {
   const node = createIPFSClient({
     url: process.env.NEXT_PUBLIC_IPFS_NODE_URL,
     headers: {
@@ -28,32 +32,14 @@ const POST = async (req: NextRequest) => {
     },
   });
 
-  const body = await extractBody(req);
+  const parsed = IOMarketMetadata.safeParse(req.body);
 
-  let rawJSon = tryCatch(() => JSON.parse(body));
-
-  if (rawJSon.isLeft()) {
-    return new Response(
-      JSON.stringify({ message: "Request body must be valid json." }),
-      {
-        status: 400,
-      },
-    );
-  }
-
-  const parsed = IOMarketMetadata.safeParse(rawJSon.unwrap());
-
-  const { searchParams } = new URL(req.url);
-
-  const onlyHash = searchParams.get("only-hash") === "true" ? true : false;
+  const onlyHash = req.query["only-hash"] === "true" ? true : false;
 
   if (!parsed.success) {
-    return new Response(
-      JSON.stringify({ message: fromZodError(parsed.error).toString() }),
-      {
-        status: 400,
-      },
-    );
+    return res.status(400).json({
+      message: fromZodError(parsed.error).toString(),
+    });
   }
 
   const metadata = {
@@ -65,14 +51,9 @@ const POST = async (req: NextRequest) => {
   const kbSize = Buffer.byteLength(content) / 1024;
 
   if (kbSize > 10) {
-    return new Response(
-      JSON.stringify({
-        message: "Market metadata is too large. Please keep it under 10kb.",
-      }),
-      {
-        status: 400,
-      },
-    );
+    return res.status(400).json({
+      message: "Market metadata is too large. Please keep it under 10kb.",
+    });
   }
   try {
     const { cid } = await node.add(
@@ -88,26 +69,16 @@ const POST = async (req: NextRequest) => {
     //   await node.pin.add(cid);
     // }
 
-    return new Response(
-      JSON.stringify({
-        message: `Market metadata ${
-          onlyHash ? "hashed" : "pinned"
-        } successfully.`,
-        cid: cid.toString(),
-      }),
-      {
-        status: 200,
-      },
-    );
+    return res.status(200).json({
+      message: `Market metadata ${
+        onlyHash ? "hashed" : "pinned"
+      } successfully.`,
+      cid: cid.toString(),
+    });
   } catch (error) {
-    return new Response(
-      JSON.stringify({
-        message: error.message,
-      }),
-      {
-        status: 500,
-      },
-    );
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
