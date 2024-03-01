@@ -64,18 +64,19 @@ const useWeb3Wallet = () => {
       );
       if (web3authProvider) {
         await getKeypair(web3authProvider);
-        const user = await web3auth.getUserInfo();
-        try {
-          const res = await fetch("/api/onboardUser", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email: user.email, name: user.name }),
-          });
-        } catch (e) {
-          return;
-        }
+        // TODO: refactor user onboarding
+        // const user = await web3auth.getUserInfo();
+        // try {
+        //   const res = await fetch("/api/onboardUser", {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({ email: user.email, name: user.name }),
+        //   });
+        // } catch (e) {
+        //   return;
+        // }
       }
     } catch (e) {
       notificationStore.pushNotification(
