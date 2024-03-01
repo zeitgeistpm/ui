@@ -86,7 +86,7 @@ const TopicPage: NextPage<{
       {banner && (
         <div className="relative mb-10 mt-3 h-[150px] w-full md:h-[262px]">
           <Image
-            alt=""
+            alt="Topic banner image"
             src={banner.url()}
             fill
             objectFit="cover"
