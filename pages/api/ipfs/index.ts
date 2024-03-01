@@ -1,11 +1,8 @@
 import { create as createIPFSClient } from "ipfs-http-client";
-import { extractBody } from "lib/edge/extract-body";
 import type { PageConfig } from "next";
-import type { NextRequest } from "next/server";
+import { NextApiRequest, NextApiResponse } from "next";
 import { fromZodError } from "zod-validation-error";
 import { IOMarketMetadata } from "./types";
-import { tryCatch } from "@zeitgeistpm/utility/dist/either";
-import { NextApiRequest, NextApiResponse } from "next";
 
 export const config: PageConfig = {
   runtime: "nodejs",
