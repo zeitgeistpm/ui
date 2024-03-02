@@ -104,7 +104,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
       editor.form.moderation === "Permissionless" &&
         editor.form.liquidity?.deploy &&
         editor.form.currency === "ZTG"
-        ? new Decimal(editor.form.liquidity.amount ?? 0).toNumber()
+        ? new Decimal(editor.form.liquidity.amount || 0).toNumber()
         : 0,
     )
     .plus(ztgTransactionFee ?? 0);
@@ -121,7 +121,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
 
   const foreignCurrencyCost =
     editor.form.liquidity?.deploy && editor.form.currency !== "ZTG"
-      ? new Decimal(editor.form.liquidity.amount ?? 0)
+      ? new Decimal(editor.form.liquidity.amount || 0)
           .mul(2)
           .plus(baseAssetTransactionFee ?? 0)
       : null;
@@ -314,7 +314,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
                                 </h4>
                                 <div className="">
                                   {new Decimal(
-                                    editor.form.liquidity.amount ?? 0,
+                                    editor.form.liquidity.amount || 0,
                                   ).toFixed(1)}{" "}
                                   {editor.form.currency}
                                 </div>
