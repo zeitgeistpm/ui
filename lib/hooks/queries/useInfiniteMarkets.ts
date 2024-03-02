@@ -17,9 +17,9 @@ import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { CmsMarketMetadata } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 import { marketMetaFilter } from "./constants";
+import { isWSX, wsxAssetIdString } from "../../constants";
 import { marketsRootQuery } from "./useMarket";
 
-import { tryCatch } from "@zeitgeistpm/utility/dist/either";
 import { WHITELISTED_TRUSTED_CREATORS } from "lib/constants/whitelisted-trusted-creators";
 
 export const rootKey = "markets-filtered";
@@ -77,7 +77,11 @@ export const useInfiniteMarkets = (
             status_not_in: [MarketStatus.Destroyed],
             status_in: statuses.length === 0 ? undefined : statuses,
             tags_containsAny: tags?.length === 0 ? undefined : tags,
-            baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
+            baseAsset_in: isWSX
+              ? [wsxAssetIdString]
+              : currencies?.length !== 0
+                ? currencies
+                : undefined,
             scoringRule_not_eq: ScoringRule.Parimutuel,
           },
           {

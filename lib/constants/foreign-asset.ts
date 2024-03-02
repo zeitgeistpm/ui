@@ -49,7 +49,7 @@ const BATTERY_STATION_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
   },
   3: {
     //todo: add WSX logo
-    image: "/currencies/ausd.jpg",
+    image: "/currencies/wsx-currency.png",
     withdrawSupported: false,
     coinGeckoId: "polkadot",
     tokenSymbol: "WSX",
@@ -79,6 +79,12 @@ const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     coinGeckoId: "usd",
     tokenSymbol: "USDC",
     subsquidId: "USDC",
+  },
+  2: {
+    image: "/currencies/wsx-currency.png",
+    withdrawSupported: false,
+    coinGeckoId: "polkadot",
+    tokenSymbol: "WSX",
   },
 };
 

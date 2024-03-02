@@ -6,6 +6,7 @@ import React, { Fragment } from "react";
 import AcccountSettingsForm from "./AccountSettingsForm";
 import FeePayingAssetSelect from "./FeePayingAssetSelect";
 import OtherSettingsForm from "./OtherSettingsForm";
+import { isWSX } from "lib/constants";
 
 export type SettingsModalProps = {
   open: boolean;
@@ -50,34 +51,38 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                   )}
                 </Tab>
               </div>
-              <div className="center flex-grow">
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <span
-                      className={
-                        "cursor-pointer text-sm " +
-                        (selected ? "font-semibold text-black" : "")
-                      }
-                    >
-                      Proxy
-                    </span>
-                  )}
-                </Tab>
-              </div>
-              <div className="center flex-grow">
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <span
-                      className={
-                        "cursor-pointer text-sm " +
-                        (selected ? "font-semibold text-black" : "")
-                      }
-                    >
-                      Fee Paying Asset
-                    </span>
-                  )}
-                </Tab>
-              </div>
+              {!isWSX && (
+                <>
+                  <div className="center flex-grow">
+                    <Tab as={Fragment}>
+                      {({ selected }) => (
+                        <span
+                          className={
+                            "cursor-pointer text-sm " +
+                            (selected ? "font-semibold text-black" : "")
+                          }
+                        >
+                          Proxy
+                        </span>
+                      )}
+                    </Tab>
+                  </div>
+                  <div className="center flex-grow">
+                    <Tab as={Fragment}>
+                      {({ selected }) => (
+                        <span
+                          className={
+                            "cursor-pointer text-sm " +
+                            (selected ? "font-semibold text-black" : "")
+                          }
+                        >
+                          Fee Paying Asset
+                        </span>
+                      )}
+                    </Tab>
+                  </div>
+                </>
+              )}
             </div>
           </Tab.List>
         </Tab.Group>

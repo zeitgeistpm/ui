@@ -23,6 +23,7 @@ import {
   removeNotification,
 } from "./notifications";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
+import { isWSX } from "lib/constants";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -37,6 +38,10 @@ export type UseWallet = WalletState & {
    * The active account of the current wallet.
    */
   activeAccount?: InjectedAccount;
+  /**
+   * Whether the wallet is nova wallet.
+   */
+  selectedAddress?: string | undefined;
   /**
    * Whether the wallet is nova wallet.
    */
@@ -114,6 +119,10 @@ export type WalletState = {
    * Error messages of the wallet.
    */
   errors: WalletError[];
+  /**
+   * Checks if user is new via call to DB.
+   */
+  newUser: boolean;
 };
 
 /**
@@ -146,7 +155,7 @@ const disconnectWalletStateTransition = (
  * Atom proxy storage.
  * Used to access and write all atom state in the app.
  */
-const store = getDefaultStore();
+export const store = getDefaultStore();
 
 /**
  * Atom proxy storage of wallet state.
@@ -156,6 +165,7 @@ export const walletAtom = atom<WalletState>({
   wallet: undefined,
   accounts: [],
   errors: [],
+  newUser: false,
 });
 
 /**
@@ -216,12 +226,16 @@ export type WalletError = {
 /**
  * List of supported wallets.
  */
-export const supportedWallets = [
-  new PolkadotjsWallet(),
-  new SubWallet(),
-  new TalismanWallet(),
-  web3AuthWalletInstance,
-];
+
+//TODO: revert logic when ready to go live
+export const supportedWallets = !isWSX
+  ? [web3AuthWalletInstance]
+  : [
+      new PolkadotjsWallet(),
+      new SubWallet(),
+      new TalismanWallet(),
+      web3AuthWalletInstance,
+    ];
 
 let accountsSubscriptionUnsub: VoidFunction | undefined | null;
 
@@ -280,7 +294,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
       const extension = await poll(
         async () => {
           await cryptoWaitReady();
-          await wallet.enable(DAPP_NAME);
+          await wallet?.enable(DAPP_NAME);
           return wallet;
         },
         {
@@ -292,7 +306,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
         throw new Error("Wallet enabling timed out");
       }
     } catch (err) {
-      throw wallet.transformError(err);
+      throw wallet?.transformError(err);
     }
   };
 
@@ -438,7 +452,7 @@ export const useWallet = (): UseWallet => {
     return walletState.wallet;
   };
 
-  const selectAccount = (account: InjectedAccount | string) => {
+  const selectAccount = async (account: InjectedAccount | string) => {
     const selectedAddress = isString(account) ? account : account.address;
     try {
       encodeAddress(selectedAddress, 73);
@@ -515,6 +529,7 @@ export const useWallet = (): UseWallet => {
     activeAccount: activeAccount,
     getSigner,
     selectWallet,
+    selectedAddress: userConfig.selectedAddress,
     disconnectWallet,
     isNovaWallet,
     walletId,

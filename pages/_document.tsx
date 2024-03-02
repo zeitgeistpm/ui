@@ -8,6 +8,7 @@ export default function Document() {
   return (
     <Html>
       <Head>
+        {/* TODO make dynamic */}
         {useAnalytics && (
           <Script id="google-analytics" strategy="afterInteractive">
             {`
@@ -15,19 +16,20 @@ export default function Document() {
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
 
-          gtag('config', 'G-J3881Y08L6');
+          gtag('config', 'G-HRMGM0K16B');
             `}
           </Script>
         )}
         {useAnalytics && (
           <Script
-            src="https://www.googletagmanager.com/gtag/js?id=G-J3881Y08L6"
+            src="https://www.googletagmanager.com/gtag/js?id=G-HRMGM0K16B"
             strategy="afterInteractive"
           />
         )}
+        {/* TODO make dynamic */}
         <meta
           name="description"
-          content="The application interface for Zeitgeist Prediction Markets. Built on Polkadot, Zeitgeist is the leader in decentralized prediction markets."
+          content="The application interface for The Washington Stock Exchange. Built on Polkadot, powered by Zeitgeist, the leader in decentralized prediction markets."
         />
         <link
           rel="apple-touch-icon"
@@ -49,6 +51,7 @@ export default function Document() {
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
 
+        {/* TODO: swap for WSX Twitter  */}
         <meta key="twitter:site" name="twitter:site" content="@ZeitgeistPM" />
         <meta
           key="twitter:card"

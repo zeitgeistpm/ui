@@ -6,7 +6,7 @@
 //   response: NextApiResponse,
 // ) {
 //   //change this value to match corresponding list id in Brevo
-//   const listId = 37;
+//   const listId = 38;
 //   const userEmail = request.body.email;
 //   const userName = request.body.name;
 

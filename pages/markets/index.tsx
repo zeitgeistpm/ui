@@ -4,6 +4,7 @@ import { QueryClient, dehydrate } from "@tanstack/query-core";
 import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { environment } from "lib/constants";
+import { HeroBannerWSX } from "components/front-page/HeroBannerWSX";
 import { CmsTopicHeader, getCmsTopicHeaders } from "lib/cms/topics";
 import { getPlaiceholders } from "lib/util/getPlaiceHolders";
 
@@ -12,7 +13,12 @@ const MarketsPage: NextPage = ({
 }: {
   cmsTopicPlaceholders: string[];
 }) => {
-  return <MarketsList />;
+  return (
+    <>
+      <HeroBannerWSX />
+      <MarketsList />
+    </>
+  );
 };
 
 export async function getStaticProps() {

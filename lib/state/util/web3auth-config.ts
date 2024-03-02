@@ -16,9 +16,9 @@ interface LoginConfig {
   };
 }
 
-export const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
-const auth0ClientID = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
-const discordClientID = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID;
+export const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_WSX;
+const auth0ClientID = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID_WSX;
+const discordClientID = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID_WSX;
 
 class Web3AuthWallet extends BaseDotsamaWallet {
   constructor({ extensionName, title, installUrl, logo }) {

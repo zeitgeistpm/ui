@@ -45,6 +45,7 @@ import { MdModeEdit, MdOutlineHistory } from "react-icons/md";
 import { AddressDetails } from "./MarketAddresses";
 import { MarketTimer, MarketTimerSkeleton } from "./MarketTimer";
 import { MarketPromotionCallout } from "./PromotionCallout";
+import { isWSX } from "lib/constants";
 
 export const QuillViewer = dynamic(
   () => import("../../components/ui/QuillViewer"),
@@ -489,51 +490,60 @@ const MarketHeader: FC<{
           </div>
         </div>
       </div>
+      {!isWSX && (
+        <>
+          <div className="relative mb-4 flex items-center gap-3">
+            <AddressDetails title="Creator" address={market.creator} />
 
-      <div className="relative mb-4 flex items-center gap-3 pl-1">
-        <AddressDetails title="Creator" address={market.creator} />
-
-        <div className="group relative">
-          <Image
-            width={20}
-            height={20}
-            src={imagePath}
-            alt="Currency token logo"
-            className="rounded-full"
-          />
-          <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity  group-hover:opacity-100">
-            <div className="rounded-lg bg-blue-100 px-2 py-1 text-sm">
-              <span className="text-gray-500">Currency: </span>
-              <span className="font-semibold">{token}</span>
+            <div className="group relative">
+              <Image
+                width={20}
+                height={20}
+                src={imagePath}
+                alt="Currency token logo"
+                className="rounded-full"
+              />
+              <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity  group-hover:opacity-100">
+                <div className="rounded-lg bg-blue-100 px-2 py-1 text-sm">
+                  <span className="text-gray-500">Currency: </span>
+                  <span className="font-semibold">{token}</span>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {market.disputeMechanism === "Court" && (
-          <div className="group relative">
-            <Image width={22} height={22} src="/icons/court.svg" alt="court" />
-            <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
-              <div className="rounded-lg bg-purple-200 px-2 py-1 text-sm">
-                Court Dispute Mechanism Enabled
+            {market.disputeMechanism === "Court" && (
+              <div className="group relative">
+                <Image
+                  width={22}
+                  height={22}
+                  src="/icons/court.svg"
+                  alt="court"
+                />
+                <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="rounded-lg bg-purple-200 px-2 py-1 text-sm">
+                    Court Dispute Mechanism Enabled
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="group relative">
+              <Image
+                width={22}
+                height={22}
+                src="/icons/verified-icon.svg"
+                alt="verified checkmark"
+              />
+              <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="rounded-lg bg-green-lighter px-2 py-1 text-sm">
+                  Verified Market
+                </div>
               </div>
             </div>
           </div>
-        )}
-
-        <div className="group relative">
-          <Image
-            width={22}
-            height={22}
-            src="/icons/verified-icon.svg"
-            alt="verified checkmark"
-          />
-          <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
-            <div className="rounded-lg bg-green-lighter px-2 py-1 text-sm">
-              Verified Market
-            </div>
-          </div>
-        </div>
-
+        </>
+      )}
+      <div className="flex items-center gap-3">
         {!market.disputeMechanism && (
           <div className="group relative">
             <InfoPopover

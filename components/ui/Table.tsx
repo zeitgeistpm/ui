@@ -14,6 +14,7 @@ import PercentageChange from "./PercentageChange";
 import { ChartData } from "./TimeSeriesChart";
 import InfoPopover from "components/ui/InfoPopover";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import { isWSX } from "lib/constants";
 
 interface TableProps {
   data?: TableData[] | null;
@@ -214,12 +215,14 @@ const Cell = ({
             <div className="mb-0.5 text-sm">
               {formatNumberLocalized(value.value)}
             </div>
-            <div className="text-xs font-light text-sky-600">
-              $
-              {(
-                value.usdValue ?? (ztgPrice?.toNumber() ?? 0) * value.value
-              ).toFixed(2)}
-            </div>
+            {!isWSX && (
+              <div className="text-xs font-light text-sky-600">
+                $
+                {(
+                  value.usdValue ?? (ztgPrice?.toNumber() ?? 0) * value.value
+                ).toFixed(2)}
+              </div>
+            )}
           </td>
         );
       } else {
