@@ -80,6 +80,12 @@ const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     tokenSymbol: "USDC",
     subsquidId: "USDC",
   },
+  2: {
+    image: "/currencies/wsx-currency.png",
+    withdrawSupported: false,
+    coinGeckoId: "polkadot",
+    tokenSymbol: "WSX",
+  },
 };
 
 export const FOREIGN_ASSET_METADATA: ForeignAssetMetadata =
