@@ -3,11 +3,12 @@ import { BREAKPOINTS } from "lib/constants/breakpoints";
 import { useWindowSize } from "lib/hooks/events/useWindowSize";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 import { range } from "lodash-es";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import MarketCard, { IndexedMarketCardData } from "./market-card/index";
+import MarketCard from "./market-card/index";
 import { useDebouncedCallback } from "use-debounce";
 import { useHasMounted } from "lib/hooks/events/useHasMounted";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 
 const MarketScroll = ({
   title,
@@ -17,7 +18,7 @@ const MarketScroll = ({
 }: {
   title: string;
   cta?: string;
-  markets: IndexedMarketCardData[];
+  markets: FullMarketFragment[];
   link?: string;
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -80,9 +81,11 @@ const MarketScroll = ({
   return (
     <div
       ref={containerRef}
-      className="grid grid-cols-1 gap-y-7 sm:grid-cols-2 sm:gap-7 lg:grid-cols-3"
+      className="grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-7 lg:grid-cols-3"
     >
-      <h2 className="text-center sm:col-span-2 sm:text-start">{title}</h2>
+      <div className="flex items-center sm:col-span-2">
+        <h2 className="text-center sm:text-start">{title}</h2>
+      </div>
       <HorizontalScroll
         classes="order-2 sm:order-none"
         link={link}
@@ -114,12 +117,6 @@ const MarketScroll = ({
             const isShown =
               showRange.includes(cardIndex) || windowWidth < BREAKPOINTS.md;
 
-            market = {
-              ...market,
-              numParticipants: stat?.participants,
-              liquidity: stat?.liquidity,
-            };
-
             return (
               <MarketCard
                 key={market.marketId}
@@ -127,7 +124,9 @@ const MarketScroll = ({
                 className={`market-card rounded-ztg-10 transition duration-500 ease-in-out ${
                   isShown ? "opacity-1" : "opacity-0"
                 }`}
-                {...market}
+                market={market}
+                numParticipants={stat?.participants}
+                liquidity={stat?.liquidity}
               />
             );
           })}

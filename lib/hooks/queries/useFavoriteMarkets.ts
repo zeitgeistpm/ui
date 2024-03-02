@@ -1,11 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { IndexerContext, Market, isIndexedSdk } from "@zeitgeistpm/sdk";
-import { MarketOutcomes } from "lib/types/markets";
-import { getCurrentPrediction } from "lib/util/assets";
-import { useSdkv2 } from "../useSdkv2";
 import { CmsMarketMetadata } from "lib/cms/markets";
-import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 import { useFavoriteMarketsStorage } from "lib/state/favorites";
+import { MarketOutcomes } from "lib/types/markets";
+import { useSdkv2 } from "../useSdkv2";
+import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 
 export const rootKey = "markets-favorites";
 
@@ -19,7 +19,7 @@ export const useFavoriteMarkets = () => {
   const queryClient = useQueryClient();
   const storage = useFavoriteMarketsStorage();
 
-  const fetcher = async (): Promise<QueryMarketData[] | null> => {
+  const fetcher = async (): Promise<FullMarketFragment[] | null> => {
     if (!isIndexedSdk(sdk)) {
       return null;
     }
@@ -38,26 +38,7 @@ export const useFavoriteMarkets = () => {
       if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
     }
 
-    const resMarkets: Array<QueryMarketData> = markets.map((market) => {
-      const outcomes: MarketOutcomes = market.assets.map((asset, index) => {
-        return {
-          price: asset.price,
-          name: market.categories?.[index].name ?? "",
-          assetId: asset.assetId,
-          amountInPool: asset.amountInPool,
-        };
-      });
-
-      const prediction = getCurrentPrediction(outcomes, market);
-
-      return {
-        ...market,
-        outcomes,
-        prediction,
-      };
-    });
-
-    return resMarkets;
+    return markets;
   };
 
   const query = useQuery({

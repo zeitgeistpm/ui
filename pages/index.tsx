@@ -1,25 +1,25 @@
-import { Disclosure } from "@headlessui/react";
 import { GenericChainProperties } from "@polkadot/types";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
 import { BgBallGfx } from "components/front-page/BgBallFx";
 import GettingStartedSection from "components/front-page/GettingStartedSection";
 import { HeroBanner } from "components/front-page/HeroBanner";
 import LatestTrades from "components/front-page/LatestTrades";
+import LatestTradesCompact from "components/front-page/LatestTradesCompact";
 import NetworkStats from "components/front-page/NetworkStats";
 import { NewsSection } from "components/front-page/News";
 import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
 import { Topics } from "components/front-page/Topics";
+import TrendingMarketsCompact from "components/front-page/TrendingMarketsCompact";
 import WatchHow from "components/front-page/WatchHow";
-import MarketCard, {
-  IndexedMarketCardData,
-} from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
+import MarketCard from "components/markets/market-card";
 import { GraphQLClient } from "graphql-request";
 import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
-import { getCmsNews, CmsNews } from "lib/cms/news";
+import { CmsNews, getCmsNews } from "lib/cms/news";
 import {
   CmsTopicHeader,
   getCmsTopicHeaders,
@@ -28,6 +28,7 @@ import {
 import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
+import { MarketStats } from "lib/gql/markets-stats";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
 import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
@@ -38,16 +39,10 @@ import {
 import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
 import { getPlaiceholders } from "lib/util/getPlaiceHolders";
 import { NextPage } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import path from "path";
-import {
-  getPlaiceholder,
-  IGetPlaiceholderOptions,
-  IGetPlaiceholderReturn,
-} from "plaiceholder";
-import { useState } from "react";
+import { getPlaiceholder } from "plaiceholder";
 
 export async function getStaticProps() {
   const client = new GraphQLClient(graphQlEndpoint);
@@ -149,8 +144,8 @@ export async function getStaticProps() {
 
 const IndexPage: NextPage<{
   news: CmsNews[];
-  featuredMarkets: IndexedMarketCardData[];
-  trendingMarkets: IndexedMarketCardData[];
+  featuredMarkets: FullMarketFragment[];
+  trendingMarkets: FullMarketFragment[];
   categoryPlaceholders: string[];
   newsImagePlaceholders: string[];
   topicImagePlaceholders: string[];
@@ -161,7 +156,7 @@ const IndexPage: NextPage<{
   cmsTopics: CmsTopicHeader[];
   topicsMarkets: {
     topic: CmsTopicHeader;
-    markets: IndexedMarketCardData[];
+    markets: { market: FullMarketFragment; stats: MarketStats }[];
   }[];
 }> = ({
   news,
@@ -195,7 +190,7 @@ const IndexPage: NextPage<{
           chainProperties={chainProperties}
         />
 
-        {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" && (
+        {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" ? (
           <div className="relative z-30 mb-12">
             <div className="mb-8 flex gap-2">
               <Topics
@@ -214,9 +209,14 @@ const IndexPage: NextPage<{
 
             {topic && topic.topic.marketIds && (
               <>
-                <div className="mb-4 flex gap-3">
-                  {topic.markets.map((market) => (
-                    <MarketCard key={market.marketId} {...market} />
+                <div className="mb-4 flex w-full flex-col gap-3 md:flex-row">
+                  {topic.markets.map(({ market, stats }) => (
+                    <MarketCard
+                      key={market.marketId}
+                      market={market}
+                      numParticipants={stats.participants}
+                      liquidity={stats.liquidity}
+                    />
                   ))}
                 </div>
                 <Link href={`/topics/${topic.topic.slug}`}>
@@ -227,6 +227,14 @@ const IndexPage: NextPage<{
                 </Link>
               </>
             )}
+          </div>
+        ) : (
+          <div className="mb-12">
+            <NetworkStats
+              marketCount={stats.marketCount}
+              tradersCount={stats.tradersCount}
+              totalVolumeUsd={stats.volumeUsd}
+            />
           </div>
         )}
 
@@ -241,39 +249,42 @@ const IndexPage: NextPage<{
           </div>
         )}
 
-        <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} />
-
-        <div className="mb-12">
-          <WatchHow />
-        </div>
-
-        {trendingMarkets.length > 0 && (
-          <div className="my-[60px]">
-            <MarketScroll
-              title="Trending Markets"
-              cta="Go to Markets"
-              markets={trendingMarkets}
-              link="markets"
-            />
+        <div className="mb-12 flex w-full flex-col gap-8 md:flex-row">
+          <div className="flex w-full flex-col gap-y-6">
+            <div className="flex items-center">
+              <div className="text-xl font-bold">Trending Markets</div>
+              <Link
+                href="/markets"
+                className="ml-auto rounded-md bg-misty-harbor p-1 text-xs"
+              >
+                More Markets
+              </Link>
+            </div>
+            <TrendingMarketsCompact markets={trendingMarkets} />
           </div>
-        )}
+
+          <div className="flex w-full flex-col gap-y-6">
+            <div className="flex items-center ">
+              <div className="text-xl font-bold">Latest Trades</div>
+              <Link
+                href="/latest-trades"
+                className="ml-auto rounded-md bg-misty-harbor p-1 text-xs"
+              >
+                All Trades
+              </Link>
+            </div>
+            <LatestTradesCompact />
+          </div>
+        </div>
 
         <div className="mb-12">
           <PopularCategories imagePlaceholders={categoryPlaceholders} />
         </div>
-        <div className="mb-12 flex flex-col gap-4">
-          <div>
-            <h2 className="mb-7 text-center sm:col-span-2 sm:text-start">
-              Latest Trades
-            </h2>
-            <LatestTrades />
-          </div>
-          <Link
-            className="w-full text-center text-ztg-blue"
-            href={"/latest-trades"}
-          >
-            View more
-          </Link>
+
+        <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} />
+
+        <div className="mb-12">
+          <WatchHow />
         </div>
 
         <div className="mb-12 flex w-full items-center justify-center">

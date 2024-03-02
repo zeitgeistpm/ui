@@ -6,7 +6,7 @@ import { EndpointOption, Environment } from "../types";
 // IMPORTANT: this should be false for all other branches other than the wsx branch.
 export const isWSX = false;
 
-export const wsxID = process.env.NEXT_PUBLIC_VERCEL_ENV === "staging" ? 3 : 3;
+export const wsxID = process.env.NEXT_PUBLIC_VERCEL_ENV === "staging" ? 3 : 2;
 export const wsxAssetIdString = `{"foreignAsset":${wsxID}}`;
 
 export const ZTG = 10 ** 10;
@@ -28,7 +28,7 @@ export const ZTG_MIN_LIQUIDITY = 100;
 export const TAILWIND = resolveTailwindConfig(tailwindConfig as any);
 
 export const ZTG_BLUE_COLOR = TAILWIND.theme.colors["ztg-blue"];
-export const COIN_GECKO_API_KEY = process.env["NEXT_PUBLIC_COIN_GECKO_API_KEY"];
+export const COIN_GECKO_API_KEY = process.env["COIN_GECKO_API_KEY"];
 
 export const SUPPORTED_WALLET_NAMES = [
   "talisman",
@@ -38,11 +38,6 @@ export const SUPPORTED_WALLET_NAMES = [
 
 export const endpoints: EndpointOption[] = [
   {
-    value: "wss://main.rpc.zeitgeist.pm/ws",
-    label: "ZeitgeistPM",
-    environment: "production",
-  },
-  {
     value: "wss://zeitgeist-rpc.dwellir.com",
     label: "Dwellir",
     environment: "production",
@@ -50,6 +45,11 @@ export const endpoints: EndpointOption[] = [
   {
     value: "wss://zeitgeist.api.onfinality.io/public-ws",
     label: "OnFinality",
+    environment: "production",
+  },
+  {
+    value: "wss://main.rpc.zeitgeist.pm/ws",
+    label: "ZeitgeistPM",
     environment: "production",
   },
   {

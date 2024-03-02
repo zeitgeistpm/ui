@@ -49,8 +49,12 @@ const ImageAndText = ({
 }) => {
   return (
     <div className="flex items-center gap-2">
-      {imagePath && <Image src={imagePath} alt={name} width={30} height={30} />}
-      <div>{name}</div>
+      <div className="h-[16px] w-[16px] md:h-[30px] md:w-[30px]">
+        {imagePath && (
+          <Image src={imagePath} alt={name} width={30} height={30} />
+        )}
+      </div>
+      <div className="md:text-md text-xs">{name}</div>
     </div>
   );
 };
@@ -76,43 +80,44 @@ const MoveButton = ({
   existentialDeposit: Decimal;
   assetDecimals: number;
 }) => {
-  if (chain === "Zeitgeist") {
-    const isNativeTokenBalance =
-      token.toUpperCase() === nativeToken.toUpperCase();
-    if (isNativeTokenBalance || sourceChain == null) {
-      const transferAssetId: AssetId = isNativeTokenBalance
-        ? { Ztg: null }
-        : { ForeignAsset: foreignAssetId };
-      return <TransferButton assetId={transferAssetId} />;
-    } else {
-      const destinationAsset = allBalanceDetails.find(
-        (detail) => detail.chain === sourceChain,
-      );
-      if (!destinationAsset) return <></>;
+  const isNativeTokenBalance =
+    token.toUpperCase() === nativeToken.toUpperCase();
+  const transferAssetId: AssetId = isNativeTokenBalance
+    ? { Ztg: null }
+    : { ForeignAsset: foreignAssetId };
+  const destinationAsset = allBalanceDetails.find(
+    (detail) => detail.chain === sourceChain,
+  );
+  console.log(chain, sourceChain, destinationAsset, transferAssetId);
 
-      return (
-        <WithdrawButton
-          toChain={sourceChain}
+  return (
+    <>
+      {chain === "Zeitgeist" && <TransferButton assetId={transferAssetId} />}
+      {chain === "Zeitgeist" &&
+        !isNativeTokenBalance &&
+        sourceChain &&
+        destinationAsset != null && (
+          <WithdrawButton
+            toChain={sourceChain}
+            tokenSymbol={token}
+            balance={balance}
+            foreignAssetId={foreignAssetId}
+            destinationExistentialDeposit={destinationAsset.existentialDeposit}
+            destinationTokenBalance={destinationAsset.balance}
+            assetDecimals={assetDecimals}
+          />
+        )}
+      {chain !== "Zeitgeist" && (
+        <DepositButton
+          sourceChain={chain}
           tokenSymbol={token}
           balance={balance}
-          foreignAssetId={foreignAssetId}
-          destinationExistentialDeposit={destinationAsset?.existentialDeposit}
-          destinationTokenBalance={destinationAsset?.balance}
+          sourceExistentialDeposit={existentialDeposit}
           assetDecimals={assetDecimals}
         />
-      );
-    }
-  } else {
-    return (
-      <DepositButton
-        sourceChain={chain}
-        tokenSymbol={token}
-        balance={balance}
-        sourceExistentialDeposit={existentialDeposit}
-        assetDecimals={assetDecimals}
-      />
-    );
-  }
+      )}
+    </>
+  );
 };
 
 const CurrenciesTable = ({ address }: { address: string }) => {
@@ -146,17 +151,19 @@ const CurrenciesTable = ({ address }: { address: string }) => {
         ),
         balance: amount.div(ZTG).toFixed(3),
         button: (
-          <MoveButton
-            chain={balance.chain}
-            sourceChain={balance.sourceChain}
-            token={balance.symbol}
-            foreignAssetId={balance.foreignAssetId ?? 0}
-            balance={amount}
-            nativeToken={constants?.tokenSymbol ?? ""}
-            existentialDeposit={balance.existentialDeposit}
-            allBalanceDetails={balances}
-            assetDecimals={balance.decimals}
-          />
+          <div className="flex gap-3">
+            <MoveButton
+              chain={balance.chain}
+              sourceChain={balance.sourceChain}
+              token={balance.symbol}
+              foreignAssetId={balance.foreignAssetId ?? 0}
+              balance={amount}
+              nativeToken={constants?.tokenSymbol ?? ""}
+              existentialDeposit={balance.existentialDeposit}
+              allBalanceDetails={balances}
+              assetDecimals={balance.decimals}
+            />
+          </div>
         ),
       };
     });

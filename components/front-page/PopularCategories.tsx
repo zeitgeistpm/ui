@@ -9,10 +9,11 @@ export const CATEGORIES = [
   { name: "Technology", imagePath: "/category/technology.png" },
   { name: "Crypto", imagePath: "/category/crypto.png" },
   { name: "Science", imagePath: "/category/science.png" },
-  { name: "E-Sports", imagePath: "/category/e-sports.png" },
   { name: "News", imagePath: "/category/news.png" },
   { name: "Dotsama", imagePath: "/category/dotsama.png" },
   { name: "Zeitgeist", imagePath: "/category/zeitgeist.png" },
+  { name: "Entertainment", imagePath: "/category/entertainment.png" },
+  { name: "Finance", imagePath: "/category/finance.png" },
 ] as const;
 
 const Category = ({
@@ -32,7 +33,7 @@ const Category = ({
       className="ztg-transition flex w-full min-w-[80px] flex-1 flex-col md:hover:scale-[1.035]"
       data-testid="category"
     >
-      <div className="relative  aspect-square h-full w-full">
+      <div className="relative aspect-square h-full w-full">
         <Link
           href={`/markets?status=Active&tag=${title}#market-list`}
           className="relative block h-full w-full"
@@ -74,11 +75,11 @@ const PopularCategories: FC<{
     placeholder: imagePlaceholders[index],
   }))
     .sort((a, b) => b.count - a.count)
-    .slice(0, 6);
+    .slice(0, 8);
 
   return (
     <div className="flex flex-col" data-testid="popularCategories">
-      <h2 className="mb-7 text-center sm:text-start">Popular Categories</h2>
+      <h2 className="mb-7">Popular Categories</h2>
       <div className="no-scroll-bar flex gap-4 overflow-x-auto md:overflow-x-visible">
         {topCategories.map((category, index) => (
           <Category

@@ -13,7 +13,6 @@ import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { FaNetworkWired } from "react-icons/fa";
-
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, Fragment, PropsWithChildren, useState } from "react";
@@ -27,10 +26,7 @@ import {
   User,
 } from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
-import {
-  DesktopOnboardingModal,
-  MobileOnboardingModal,
-} from "./OnboardingModal";
+import { DesktopOnboardingModal } from "./OnboardingModal";
 import SettingsModal from "components/settings/SettingsModal";
 import CopyIcon from "../ui/CopyIcon";
 
@@ -89,6 +85,7 @@ const AccountButton: FC<{
     isNovaWallet,
     getProxyFor,
     realAddress,
+    walletId,
   } = useWallet();
   const proxy = getProxyFor(activeAccount?.address);
 
@@ -105,11 +102,6 @@ const AccountButton: FC<{
   });
 
   const { data: constants } = useChainConstants();
-
-  const isMobileDevice =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    );
 
   const connect = async () => {
     if (isNovaWallet) {
@@ -342,7 +334,9 @@ const AccountButton: FC<{
                             <div
                               className="mb-3 flex items-center px-6 hover:bg-slate-100"
                               onClick={() => {
-                                accountModals.openAccountSelect();
+                                walletId === "web3auth"
+                                  ? accountModals.openWalletSelect()
+                                  : accountModals.openAccountSelect();
                               }}
                             >
                               <User />
@@ -415,23 +409,14 @@ const AccountButton: FC<{
           setShowSettingsModal(false);
         }}
       />
-      {isMobileDevice ? (
+      <>
         <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
-          <MobileOnboardingModal />
+          <DesktopOnboardingModal />
         </Modal>
-      ) : (
-        <>
-          <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
-            <DesktopOnboardingModal />
-          </Modal>
-          <Modal
-            open={showGetZtgModal}
-            onClose={() => setShowGetZtgModal(false)}
-          >
-            <DesktopOnboardingModal step={4} />
-          </Modal>
-        </>
-      )}
+        <Modal open={showGetZtgModal} onClose={() => setShowGetZtgModal(false)}>
+          <DesktopOnboardingModal step={4} />
+        </Modal>
+      </>
     </>
   );
 };
