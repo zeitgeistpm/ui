@@ -1,9 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { MarketOrderByInput, MarketStatus } from "@zeitgeistpm/indexer";
+import {
+  MarketOrderByInput,
+  MarketStatus,
+  ScoringRule,
+} from "@zeitgeistpm/indexer";
 import { isIndexedSdk } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 import { useMarket } from "./useMarket";
 import { searchMarketsText } from "./useMarketSearch";
+import { WHITELISTED_TRUSTED_CREATORS } from "lib/constants/whitelisted-trusted-creators";
 
 export const recommendedMarketsRootKey = "recommended-markets";
 
@@ -34,9 +39,22 @@ export const useRecommendedMarkets = (marketId?: number, limit = 2) => {
             limit,
             order: [MarketOrderByInput.VolumeDesc],
             where: {
-              status_eq: MarketStatus.Active,
-              marketId_not_eq: marketId,
-              volume_gt: "0",
+              AND: [
+                {
+                  status_eq: MarketStatus.Active,
+                  marketId_not_eq: marketId,
+                  volume_gt: "0",
+                  scoringRule_not_eq: ScoringRule.Parimutuel,
+                },
+                {
+                  disputeMechanism_isNull: false,
+                  OR: [
+                    {
+                      creator_in: WHITELISTED_TRUSTED_CREATORS,
+                    },
+                  ],
+                },
+              ],
             },
           });
           return {
