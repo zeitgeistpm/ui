@@ -2,8 +2,9 @@ import { Dialog } from "@headlessui/react";
 import { range } from "lodash-es";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useWallet } from "lib/state/wallet";
-import WalletSelect from "./WalletSelect";
 import WalletIcon from "./WalletIcon";
+import WalletSelect from "./WalletSelect";
+import { isWSX } from "lib/constants";
 
 interface StepperProps {
   start: number;
@@ -211,35 +212,68 @@ export const DesktopOnboardingModal = (props: {
     }
   }, [walletId]);
 
-  const screens = [
-    <TextSection
-      children={<WalletSelect />}
-      headerText="Create an Account"
-      bodyText="Use one of the following options to create a wallet and start trading."
-    />,
-    <TextSection
-      children={<ButtonList setStep={setStep} buttonList={exchangeList} />}
-      headerText="Wallet Successfully Installed"
-      bodyText="It's time to get ZTG so that you can start trading!"
-      leftButton={{
-        text: "Back",
-        onClick: () => setStep(0),
-      }}
-      rightButton={{
-        text: "Continue",
-        onClick: () => setStep(2),
-      }}
-    />,
-    <TextSection
-      children={<ResourceList setStep={setStep} buttonList={resourceList} />}
-      headerText="You're All Set!"
-      bodyText="If you have any questions, feel free to check out our community channels."
-      leftButton={{
-        text: "Back",
-        onClick: () => setStep(1),
-      }}
-    />,
-  ];
+  const screens = isWSX
+    ? [
+        <TextSection
+          children={<WalletSelect />}
+          headerText="Create an Account"
+          bodyText="Use one of the following options to create a wallet and start trading."
+        />,
+        <TextSection
+          headerText="Account Created"
+          bodyText="Your account will soon be funded with 2 Million WSX tokens so that you can start trading! Please allow a few minutes for the tokens to appear in your wallet."
+          leftButton={{
+            text: "Back",
+            onClick: () => setStep(0),
+          }}
+          rightButton={{
+            text: "Continue",
+            onClick: () => setStep(2),
+          }}
+        />,
+        <TextSection
+          children={
+            <ResourceList setStep={setStep} buttonList={resourceList} />
+          }
+          headerText="You're All Set!"
+          bodyText="If you have any questions, feel free to check out our community channels."
+          leftButton={{
+            text: "Back",
+            onClick: () => setStep(1),
+          }}
+        />,
+      ]
+    : [
+        <TextSection
+          children={<WalletSelect />}
+          headerText="Create an Account"
+          bodyText="Use one of the following options to create a wallet and start trading."
+        />,
+        <TextSection
+          children={<ButtonList setStep={setStep} buttonList={exchangeList} />}
+          headerText="Wallet Successfully Installed"
+          bodyText="It's time to get ZTG so that you can start trading!"
+          leftButton={{
+            text: "Back",
+            onClick: () => setStep(0),
+          }}
+          rightButton={{
+            text: "Continue",
+            onClick: () => setStep(2),
+          }}
+        />,
+        <TextSection
+          children={
+            <ResourceList setStep={setStep} buttonList={resourceList} />
+          }
+          headerText="You're All Set!"
+          bodyText="If you have any questions, feel free to check out our community channels."
+          leftButton={{
+            text: "Back",
+            onClick: () => setStep(1),
+          }}
+        />,
+      ];
 
   return (
     <Dialog.Panel

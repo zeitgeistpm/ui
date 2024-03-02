@@ -12,6 +12,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { hotjar } from "react-hotjar";
+import { isWSX } from "lib/constants";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
@@ -23,7 +24,8 @@ const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
 const domain = process.env["NEXT_PUBLIC_DOMAIN"];
 const hotjarSiteId = process.env["NEXT_PUBLIC_HOTJAR_SITE_ID"];
 const isProduction =
-  process.env.NEXT_PUBLIC_SITE_URL === "https://app.zeitgeist.pm";
+  process.env.NEXT_PUBLIC_SITE_URL === "https://app.zeitgeist.pm" ||
+  "https://app.thewsx.com";
 
 const MyApp = ({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
@@ -95,7 +97,11 @@ const MyApp = ({ Component, pageProps }) => {
             }}
           >
             <Head>
-              <title>Zeitgeist - Prediction Markets</title>
+              <title>
+                {isWSX
+                  ? "The WSX - Powered by Zeitgeist"
+                  : "Zeitgeist - Prediction Markets"}
+              </title>
             </Head>
             <DefaultLayout>
               <Layout>

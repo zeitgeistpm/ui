@@ -10,6 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useEffect } from "react";
+import { isWSX } from "lib/constants";
 
 const WalletSelect = () => {
   const { selectWallet, errors, accounts, connected, walletId } = useWallet();
@@ -64,7 +65,7 @@ const WalletSelect = () => {
     <div className="flex flex-col">
       {hasWallet === true && (
         <>
-          <h3 className="mb-4 text-2xl font-bold">Log back in to Zeitgeist</h3>
+          <h3 className="mb-4 text-2xl font-bold">Log back in to WSX</h3>
           <p className="mb-4">
             Use one of the following options to log in and start using
             Prediction Markets.
@@ -74,7 +75,7 @@ const WalletSelect = () => {
       <Web3wallet />
       <h3 className="my-4 text-lg font-bold">Crypto Wallet</h3>
       <div className="flex justify-between gap-6">
-        {isMobileDevice ? (
+        {isMobileDevice && !isWSX ? (
           <Link
             href="https://novawallet.io/"
             className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"

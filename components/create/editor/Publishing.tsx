@@ -222,7 +222,6 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
       setIsTransacting(false);
     }
   };
-
   return (
     <>
       <div className="">

@@ -36,7 +36,6 @@ export const useExtrinsic = <T>(
     const ext = extrinsicFn();
     return ext;
   }, [extrinsicFn]);
-
   const { data: fee } = useExtrinsicFee(extrinsic);
   const resetState = () => {
     setIsError(false);
@@ -70,7 +69,7 @@ export const useExtrinsic = <T>(
       const confirmed = await confirm.prompt({
         title: "Confirm Transaction",
         description:
-          "This will make a onchain transaction. Please confirm that you want to proceed.",
+          "This will make an onchain transaction. Please confirm that you want to proceed.",
       });
 
       if (!confirmed) {
