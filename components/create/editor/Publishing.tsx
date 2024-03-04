@@ -152,7 +152,9 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
             ? feeDetails?.assetId
             : undefined,
         );
-        const marketId = result.saturate().unwrap().market.marketId;
+
+        const { market } = result.saturate().unwrap();
+        const marketId = market.marketId;
 
         editor.published(marketId);
 
@@ -198,7 +200,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
         let errorMessage = "Unknown error occurred.";
 
         if (StorageError.is(error)) {
-          errorMessage = "IPFS metadata upload failed.";
+          errorMessage = error?.message ?? "IPFS metadata upload failed.";
         }
 
         if (isArray(error?.docs)) {
