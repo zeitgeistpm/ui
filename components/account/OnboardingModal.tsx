@@ -1,9 +1,11 @@
 import { Dialog } from "@headlessui/react";
-import { range } from "lodash-es";
+import { get, range } from "lodash-es";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useWallet } from "lib/state/wallet";
 import WalletSelect from "./WalletSelect";
 import WalletIcon from "./WalletIcon";
+import { getWallets } from "@talismn/connect-wallets";
+import { SUPPORTED_WALLET_NAMES } from "lib/constants";
 
 interface StepperProps {
   start: number;
@@ -153,7 +155,7 @@ export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
           key={index}
           disabled={button.disabled}
           onClick={button.onClick}
-          className={`flex h-[56px] w-full items-center justify-center rounded-lg bg-mystic text-center hover:bg-gray-100 ${
+          className={`flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${
             button.disabled === true ? "bg-gray-light-2" : "border"
           }`}
         >
@@ -176,13 +178,13 @@ export const ResourceList: React.FC<ButtonListProps> = ({ buttonList }) => {
             key={index}
             disabled={resource.disabled}
             onClick={resource.onClick}
-            className={`col-span-3 flex h-[56px] w-full items-center justify-center rounded-lg bg-mystic text-center hover:bg-gray-100 ${
+            className={`col-span-3 flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${
               resource.disabled === true ? "bg-gray-light-2" : "border"
             }`}
           >
-            <div className="ml-4 flex items-center gap-2 text-lg font-medium">
-              <span>{resource.title}</span>
-            </div>
+            <span className="ml-4 flex items-center gap-2 text-lg font-medium">
+              {resource.title}
+            </span>
           </button>
         ) : (
           <WalletIcon
@@ -203,13 +205,23 @@ export const DesktopOnboardingModal = (props: {
   notice?: string;
 }) => {
   const [step, setStep] = useState(props.step ?? 0);
-  const { walletId } = useWallet();
+  const { walletId, activeAccount } = useWallet();
+
+  const hasWallet =
+    typeof window !== "undefined" &&
+    getWallets().some(
+      (wallet) =>
+        wallet?.installed &&
+        SUPPORTED_WALLET_NAMES.some(
+          (walletName) => walletName === wallet.extensionName,
+        ),
+    );
 
   useEffect(() => {
-    if (walletId) {
+    if (hasWallet && activeAccount) {
       setStep(1);
     }
-  }, [walletId]);
+  }, [hasWallet, activeAccount]);
 
   const screens = [
     <TextSection
