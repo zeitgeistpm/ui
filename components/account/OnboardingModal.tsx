@@ -1,5 +1,5 @@
 import { Dialog } from "@headlessui/react";
-import { get, range } from "lodash-es";
+import { range } from "lodash-es";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useWallet } from "lib/state/wallet";
 import WalletSelect from "./WalletSelect";
