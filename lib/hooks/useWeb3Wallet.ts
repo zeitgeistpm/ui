@@ -11,7 +11,8 @@ import { useAtom } from "jotai";
 import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
 import { useNotifications } from "lib/state/notifications";
 import { useEffect, useState } from "react";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import UniversalProvider from "@walletconnect/universal-provider";
+import { WalletConnectModal } from "@walletconnect/modal";
 
 interface loginOptions {
   loginProvider: string;
@@ -48,6 +49,47 @@ const useWeb3Wallet = () => {
     } catch (error) {
       return;
     }
+  };
+
+  const initWC = async () => {
+    const wcProvider = await UniversalProvider.init({
+      projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
+      relayUrl: "wss://relay.walletconnect.com",
+    });
+
+    const params = {
+      requiredNamespaces: {
+        polkadot: {
+          methods: ["polkadot_signTransaction", "polkadot_signMessage"],
+          chains: ["polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c"],
+          events: ['chainChanged", "accountsChanged'],
+        },
+      },
+    };
+    const { uri, approval } = await wcProvider.client.connect(params);
+    console.log(uri, approval);
+    const walletConnectModal = new WalletConnectModal({
+      projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
+    });
+
+    // if there is a URI from the client connect step open the modal
+    if (uri) {
+      walletConnectModal.openModal({ uri });
+    }
+    // await session approval from the wallet app
+    const walletConnectSession = await approval();
+
+    const walletConnectAccount = Object.values(walletConnectSession.namespaces)
+      .map((namespace) => namespace.accounts)
+      .flat();
+
+    console.log(walletConnectAccount);
+
+    // grab account addresses from CAIP account formatted accounts
+    // const accounts = wcAccounts.map(wcAccount => {
+    //   const address = wcAccount.split(':')[2]
+    //   return address
+    // })
   };
 
   const login = async (loginOptions: loginOptions) => {
@@ -189,6 +231,7 @@ const useWeb3Wallet = () => {
     loginDiscord,
     logoutWeb3Auth,
     initWeb3Auth,
+    initWC,
   };
 };
 

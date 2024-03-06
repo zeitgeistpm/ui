@@ -3,7 +3,7 @@ import useWeb3Wallet from "lib/hooks/useWeb3Wallet";
 import { useState } from "react";
 
 const Web3wallet = () => {
-  const { loginGoogle, loginTwitter, loginDiscord, loginEmail } =
+  const { loginGoogle, loginTwitter, loginDiscord, loginEmail, initWC } =
     useWeb3Wallet();
   const [email, setEmail] = useState<string>("");
 
@@ -46,6 +46,12 @@ const Web3wallet = () => {
             Submit
           </button>
         </div>
+        <WalletIcon
+          logoAlt="walletconnect"
+          logoSrc="/icons/walletconnect-icon.svg"
+          extensionName="walletconnect"
+          onClick={initWC}
+        />
       </div>
     </div>
   );
