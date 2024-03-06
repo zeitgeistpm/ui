@@ -17,8 +17,8 @@ export const HeroBanner = ({
 }) => {
   return (
     <div className="main-container md:mt-18 z-2 relative mb-14 mt-12">
-      <div className="flex h-[220px] flex-col-reverse md:flex-row md:gap-8">
-        <div className="mb-8 flex w-2/3 overflow-hidden rounded-lg md:mb-0">
+      <div className="flex h-[220px] md:gap-8">
+        <div className="mb-8 flex w-2/3 flex-none overflow-hidden rounded-lg md:mb-0">
           <div className="flex h-full w-1/2 flex-col gap-y-8 bg-black px-[30px] py-[20px]">
             <div className="text-3xl font-bold leading-8 text-white">
               Welcome to the Future of Betting
@@ -28,7 +28,7 @@ export const HeroBanner = ({
               chainProperties={chainProperties}
             />
           </div>
-          <div className="relative mb-8 h-64 w-1/2 overflow-hidden md:mb-0 md:h-auto">
+          <div className="relative mb-8 hidden h-64 w-1/2 overflow-hidden md:mb-0 md:block md:h-auto">
             <Image
               alt="Futuristic City Image"
               fill={true}
@@ -41,7 +41,22 @@ export const HeroBanner = ({
             />
           </div>
         </div>
+        <div className="flex w-full flex-col gap-y-2">
+          <div className="text-lg font-bold">Stats</div>
+          <StatRow title="Hello" value={1} />
+          <StatRow title="Hello" value={1} />
+          <StatRow title="Hello" value={1} />
+        </div>
       </div>
+    </div>
+  );
+};
+
+const StatRow = ({ title, value }: { title: string; value: number }) => {
+  return (
+    <div className="flex h-full w-full items-center rounded-lg bg-blue-lighter p-3">
+      <div>{title}</div>
+      <div className="font-mono">{value}</div>
     </div>
   );
 };
