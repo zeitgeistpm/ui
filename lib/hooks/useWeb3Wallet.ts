@@ -2,15 +2,16 @@ import { WALLET_ADAPTERS, IProvider } from "@web3auth/base";
 import { Keyring } from "@polkadot/api";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { useWallet } from "lib/state/wallet";
-import { web3authAtom, chainConfig } from "lib/state/util/web3auth-config";
+import {
+  web3authAtom,
+  web3WalletConnectAtom,
+  chainConfig,
+} from "lib/state/util/web3auth-config";
 import { useAtom } from "jotai";
 import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
 import { useNotifications } from "lib/state/notifications";
 import { useEffect, useState } from "react";
-import {
-  getWalletConnectV2Settings,
-  WalletConnectV2Adapter,
-} from "@web3auth/wallet-connect-v2-adapter";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 
 interface loginOptions {
   loginProvider: string;
@@ -27,6 +28,7 @@ const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
 
 const useWeb3Wallet = () => {
   const [web3auth] = useAtom(web3authAtom);
+  const [web3WalletConnect] = useAtom(web3WalletConnectAtom);
   const notificationStore = useNotifications();
   const { selectWallet, disconnectWallet, walletId } = useWallet();
   const [isReady, setIsReady] = useState(false);
@@ -51,26 +53,31 @@ const useWeb3Wallet = () => {
   useEffect(() => {
     const init = async () => {
       if (typeof window !== "undefined") {
-        // Dynamically require the WalletConnect modules inside the useEffect hook
         const { WalletConnectModal } = require("@walletconnect/modal");
         const {
           WalletConnectV2Adapter,
+          getWalletConnectV2Settings,
         } = require("@web3auth/wallet-connect-v2-adapter");
 
-        const wc2Adapter = new WalletConnectV2Adapter({
-          adapterSettings: {
-            walletConnectInitOptions: {
-              projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
-            },
-          },
-          chainConfig: chainConfig,
+        const defaultWcSettings = await getWalletConnectV2Settings(
+          CHAIN_NAMESPACES.OTHER,
+          ["0x1"],
+          "bc3373ccb16b53e7d5eb57672db4b4f8",
+        );
+        const walletConnectModal = new WalletConnectModal({
+          projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
         });
-        // if (web3auth) {
-        //   web3auth.configureAdapter(wc2Adapter);
-        // }
-        // Now, you can use walletConnectV2Adapter as needed, e.g., configuring it with web3auth
-        // Example: web3auth.configureAdapter(walletConnectV2Adapter);
-
+        const walletConnectV2Adapter = new WalletConnectV2Adapter({
+          adapterSettings: {
+            qrcodeModal: walletConnectModal,
+            ...defaultWcSettings.adapterSettings,
+          },
+          loginSettings: { ...defaultWcSettings.loginSettings },
+        });
+        if (web3WalletConnect) {
+          web3WalletConnect.configureAdapter(walletConnectV2Adapter);
+        }
+        console.log(web3WalletConnect);
         setIsReady(true);
       }
     };
