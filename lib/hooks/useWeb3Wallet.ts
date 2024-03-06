@@ -50,40 +50,6 @@ const useWeb3Wallet = () => {
     }
   };
 
-  useEffect(() => {
-    const init = async () => {
-      if (typeof window !== "undefined") {
-        const { WalletConnectModal } = require("@walletconnect/modal");
-        const {
-          WalletConnectV2Adapter,
-          getWalletConnectV2Settings,
-        } = require("@web3auth/wallet-connect-v2-adapter");
-
-        const defaultWcSettings = await getWalletConnectV2Settings(
-          CHAIN_NAMESPACES.OTHER,
-          ["0x1"],
-          "bc3373ccb16b53e7d5eb57672db4b4f8",
-        );
-        const walletConnectModal = new WalletConnectModal({
-          projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
-        });
-        const walletConnectV2Adapter = new WalletConnectV2Adapter({
-          adapterSettings: {
-            qrcodeModal: walletConnectModal,
-            ...defaultWcSettings.adapterSettings,
-          },
-          loginSettings: { ...defaultWcSettings.loginSettings },
-        });
-        if (web3WalletConnect) {
-          web3WalletConnect.configureAdapter(walletConnectV2Adapter);
-        }
-        console.log(web3WalletConnect);
-        setIsReady(true);
-      }
-    };
-    init();
-  }, [web3auth]);
-
   const login = async (loginOptions: loginOptions) => {
     if (!web3auth || !auth0Domain) {
       notificationStore.pushNotification(
