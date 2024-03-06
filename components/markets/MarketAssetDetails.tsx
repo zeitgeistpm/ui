@@ -47,6 +47,8 @@ const MarketAssetDetails = ({
   const { data: usdPrice } = useAssetUsdPrice(baseAsset);
 
   const { data: spotPrices } = useMarketSpotPrices(marketId);
+  console.log(spotPrices);
+
   const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
 
   const totalAssetPrice = spotPrices

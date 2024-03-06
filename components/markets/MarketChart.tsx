@@ -1,4 +1,4 @@
-import { MarketStatus, parseAssetId } from "@zeitgeistpm/sdk";
+import { IOScalarAssetId, MarketStatus, parseAssetId } from "@zeitgeistpm/sdk";
 import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
 import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
 import { ZTG } from "lib/constants";
@@ -7,6 +7,7 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketPriceHistory } from "lib/hooks/queries/useMarketPriceHistory";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 import { calcMarketColors } from "lib/util/color-calc";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useMemo, useState } from "react";
 
 const setTimeToNow = (date: Date) => {
@@ -134,8 +135,23 @@ export const ScalarMarketChart = ({
     ?.filter((data) => data.prices.every((p) => p.price != null))
     .map((price) => {
       const time = new Date(price.timestamp).getTime();
-      const shortPrice = price.prices[1].price;
-      const longPrice = price.prices[0].price;
+      const shortPrice =
+        price.prices.find((price) => {
+          const assetId = parseAssetIdString(price.assetId);
+          return (
+            IOScalarAssetId.is(assetId) && assetId.ScalarOutcome[1] === "Short"
+          );
+        })?.price ?? 0;
+
+      const longPrice =
+        price.prices.find((price) => {
+          const assetId = parseAssetIdString(price.assetId);
+
+          return (
+            IOScalarAssetId.is(assetId) && assetId.ScalarOutcome[1] === "Long"
+          );
+        })?.price ?? 0;
+
       const prediction =
         (Number(upperBound) - Number(lowerBound)) *
           ((1 - shortPrice + longPrice) / 2) +

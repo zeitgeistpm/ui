@@ -87,6 +87,8 @@ const calcMarketPricesAmm2 = (pool: Amm2Pool) => {
   return spotPrices;
 };
 
+export const lookupPrice = (prices: MarketPrices) => {};
+
 const calcMarketPrices = (
   market: FullMarketFragment,
   basePoolBalance: Decimal,

@@ -17,6 +17,7 @@ export const calcResolvedMarketPrices = (
   )?.filter((assetId) => IOBaseAssetId.is(assetId) === false);
 
   const spotPrices: MarketPrices = new Map();
+  console.log(market.resolvedOutcome);
 
   if (market.resolvedOutcome == null) return spotPrices;
 
