@@ -1,7 +1,6 @@
-import { Context, create$, Sdk } from "@zeitgeistpm/sdk";
+import { Context, create$, Sdk, ZeitgeistIpfsApi } from "@zeitgeistpm/sdk";
 import { atom, useAtom } from "jotai";
 import { endpointOptions as endpoints, graphQlEndpoint } from "lib/constants";
-import { createMetadataStorage } from "lib/metadata-storage";
 import { memoize } from "lodash-es";
 import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
@@ -78,7 +77,9 @@ const init = memoize(
     return create$({
       provider: endpoints,
       indexer: graphQlEndpoint,
-      storage: createMetadataStorage(),
+      storage: ZeitgeistIpfsApi({
+        apiUrl: "./",
+      }),
     });
   },
   (endpoints, graphQlEndpoint) => identify(endpoints, graphQlEndpoint) ?? "--",
