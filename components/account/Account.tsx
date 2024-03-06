@@ -27,7 +27,7 @@ export const Account = () => {
       <Modal open={walletSelectModalOpen} onClose={closeWalletSelect}>
         <Dialog.Panel
           className="
-    w-full max-w-[450px]  rounded-lg bg-white p-4"
+    w-full max-w-[450px]  rounded-lg bg-white p-8"
         >
           <WalletSelect />
         </Dialog.Panel>

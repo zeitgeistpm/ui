@@ -58,7 +58,7 @@ export const getBaseAssetHistoricalPrices = async (): Promise<BasePrices> => {
 const findPrice = (timestamp: number, prices: [number, number][]) => {
   const date = new Date(Number(timestamp));
 
-  const price = prices.find((p) => {
+  const price = prices?.find((p) => {
     return datesAreOnSameDay(date, new Date(p[0]));
   });
 

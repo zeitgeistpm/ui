@@ -209,7 +209,7 @@ const IndexPage: NextPage<{
 
             {topic && topic.topic.marketIds && (
               <>
-                <div className="mb-4 flex gap-3">
+                <div className="mb-4 flex w-full flex-col gap-3 md:flex-row">
                   {topic.markets.map(({ market, stats }) => (
                     <MarketCard
                       key={market.marketId}
@@ -277,28 +277,14 @@ const IndexPage: NextPage<{
           </div>
         </div>
 
+        <div className="mb-12">
+          <PopularCategories imagePlaceholders={categoryPlaceholders} />
+        </div>
+
         <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} />
 
         <div className="mb-12">
           <WatchHow />
-        </div>
-
-        <div className="mb-12">
-          <PopularCategories imagePlaceholders={categoryPlaceholders} />
-        </div>
-        <div className="mb-12 flex flex-col gap-4">
-          <div>
-            <h2 className="mb-7 text-center sm:col-span-2 sm:text-start">
-              Latest Trades
-            </h2>
-            <LatestTrades />
-          </div>
-          <Link
-            className="w-full text-center text-ztg-blue"
-            href={"/latest-trades"}
-          >
-            View more
-          </Link>
         </div>
 
         <div className="mb-12 flex w-full items-center justify-center">

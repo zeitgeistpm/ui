@@ -10,7 +10,7 @@ import {
   getCmsTopicHeaders,
   marketsForTopic,
 } from "lib/cms/topics";
-import { endpointOptions, graphQlEndpoint } from "lib/constants";
+import { endpointOptions, graphQlEndpoint, environment } from "lib/constants";
 import { MarketStats } from "lib/gql/markets-stats";
 import { NextPage } from "next";
 import Image from "next/image";
@@ -46,6 +46,10 @@ export async function getStaticProps({
       cmsTopic: cmsTopic ?? null,
       markets: marketCardsData,
     },
+    revalidate:
+      environment === "production"
+        ? 5 * 60 //5min
+        : 60 * 60,
   };
 }
 
