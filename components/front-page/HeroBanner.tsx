@@ -57,8 +57,8 @@ const PriceWidget = ({
     return { v: price, t: 1 };
   });
 
-  const firstPrice = ztgHistory.prices[0][1];
-  const latestPrice = ztgHistory.prices[ztgHistory.prices.length - 1][1];
+  const firstPrice = ztgHistory.prices?.[0]?.[1];
+  const latestPrice = ztgHistory.prices?.[ztgHistory.prices.length - 1]?.[1];
   const prctChange = ((latestPrice - firstPrice) / firstPrice) * 100;
   return (
     <a

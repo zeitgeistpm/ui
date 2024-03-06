@@ -45,6 +45,10 @@ const LatestTradeRow = ({ trade }: { trade: TradeItem }) => {
           height={30}
           className="overflow-hidden rounded-md"
           sizes={"30px"}
+          style={{
+            objectFit: "cover",
+            objectPosition: "50% 50%",
+          }}
         />
       </div>
       <div className="ml-4 flex flex-col">
