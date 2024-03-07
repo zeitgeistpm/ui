@@ -115,6 +115,3 @@ export const openloginAdapter = new OpenloginAdapter({
 });
 
 export const web3authAtom = atom<Web3AuthNoModal | null>(web3authNoModal);
-export const web3WalletConnectAtom = atom<Web3AuthNoModal | null>(
-  web3authNoModal,
-);

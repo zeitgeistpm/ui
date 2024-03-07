@@ -1,7 +1,11 @@
 import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { stringToHex, u8aToHex } from "@polkadot/util";
-import { cryptoWaitReady, encodeAddress } from "@polkadot/util-crypto";
+import {
+  cryptoWaitReady,
+  encodeAddress,
+  decodeAddress,
+} from "@polkadot/util-crypto";
 import {
   BaseDotsamaWallet,
   PolkadotjsWallet,
@@ -238,7 +242,37 @@ let currentErrorNotification: Readonly<Notification> | null = null;
 const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
 
-  if (walletId === "web3auth" && !keyPair) {
+  if (
+    (walletId === "web3auth" && !keyPair) ||
+    (walletId === "walletconnect" && !keyPair)
+  ) {
+    return;
+  }
+
+  if (walletId === "walletconnect" && keyPair) {
+    store.set(walletAtom, (state) => {
+      return {
+        ...state,
+        wallet: { ...keyPair },
+        connected: true,
+        walletId: "web3auth",
+        accounts:
+          [keyPair].map((account) => {
+            return {
+              address: account,
+            };
+          }) ?? [],
+        errors:
+          [keyPair?.address].length === 0
+            ? [
+                {
+                  extensionName: "walletconnect",
+                  type: "NoAccounts",
+                },
+              ]
+            : [],
+      };
+    });
     return;
   }
 
@@ -411,7 +445,7 @@ export const useWallet = (): UseWallet => {
       ...userConfig,
       walletId: isString(wallet) ? wallet : wallet.extensionName,
     });
-    if (wallet === "web3auth") {
+    if (wallet === "web3auth" || wallet === "walletconnect") {
       enableWallet(wallet, keyPair);
     } else {
       enableWallet(isString(wallet) ? wallet : wallet.extensionName);
@@ -467,6 +501,7 @@ export const useWallet = (): UseWallet => {
 
   const activeAccount = useMemo(() => {
     const userSelectedAddress = walletState.accounts.find((acc) => {
+      console.log(acc.address);
       return (
         userConfig.selectedAddress &&
         encodeAddress(acc.address, 73) ===

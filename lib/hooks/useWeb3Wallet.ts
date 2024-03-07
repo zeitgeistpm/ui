@@ -2,17 +2,14 @@ import { WALLET_ADAPTERS, IProvider } from "@web3auth/base";
 import { Keyring } from "@polkadot/api";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { useWallet } from "lib/state/wallet";
-import {
-  web3authAtom,
-  web3WalletConnectAtom,
-  chainConfig,
-} from "lib/state/util/web3auth-config";
+import { web3authAtom } from "lib/state/util/web3auth-config";
 import { useAtom } from "jotai";
 import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
 import { useNotifications } from "lib/state/notifications";
-import { useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import UniversalProvider from "@walletconnect/universal-provider";
 import { WalletConnectModal } from "@walletconnect/modal";
+import { KeyringPair } from "@polkadot/keyring/types";
 
 interface loginOptions {
   loginProvider: string;
@@ -29,10 +26,8 @@ const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
 
 const useWeb3Wallet = () => {
   const [web3auth] = useAtom(web3authAtom);
-  const [web3WalletConnect] = useAtom(web3WalletConnectAtom);
   const notificationStore = useNotifications();
   const { selectWallet, disconnectWallet, walletId } = useWallet();
-  const [isReady, setIsReady] = useState(false);
 
   const initWeb3Auth = async () => {
     if (!clientId) {
@@ -85,11 +80,14 @@ const useWeb3Wallet = () => {
 
     console.log(walletConnectAccount);
 
-    // grab account addresses from CAIP account formatted accounts
-    // const accounts = wcAccounts.map(wcAccount => {
-    //   const address = wcAccount.split(':')[2]
-    //   return address
-    // })
+    const accounts = walletConnectAccount.map((wcAccount) => {
+      const address = wcAccount.split(":")[2];
+      return address;
+    });
+    console.log(accounts);
+    selectWallet("walletconnect", accounts);
+    console.log(walletConnectSession);
+    return { walletConnectSession };
   };
 
   const login = async (loginOptions: loginOptions) => {
