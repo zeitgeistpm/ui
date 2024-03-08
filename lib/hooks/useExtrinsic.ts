@@ -53,6 +53,7 @@ export const useExtrinsic = <T>(
 
     const signer = wallet.getSigner();
 
+    //todo: renable
     // if (!signer) return;
 
     let extrinsic = extrinsicFn(params);
@@ -80,25 +81,86 @@ export const useExtrinsic = <T>(
       }
     }
     if (!signer) return;
-    console.log(extrinsic.method);
+    console.log(extrinsic);
 
+    if (!wallet.activeAccount?.address) {
+      return;
+    }
+    const lastHeader = await sdk.api.rpc.chain.getHeader();
+    console.log(lastHeader);
+
+    const blockNumber = sdk.api.registry.createType(
+      "BlockNumber",
+      lastHeader.number.toNumber(),
+    );
+    console.log(blockNumber);
+
+    const tx = extrinsic.method;
+
+    const method = sdk.api.createType("Call", tx);
+    console.log(method);
+
+    const era = sdk.api.registry.createType("ExtrinsicEra", {
+      current: lastHeader.number.toNumber(),
+      period: 64,
+    });
+    console.log(era);
+
+    const accountNonce =
+      (await sdk.api.query.system.account(wallet.activeAccount?.address)) || 0;
+    const nonce = sdk.api.registry.createType(
+      "Compact<Index>",
+      accountNonce.nonce,
+    );
+    console.log(accountNonce, nonce);
+
+    const specVersion = sdk.api.runtimeVersion.specVersion;
+    const transactionVersion = sdk.api.runtimeVersion.transactionVersion;
+
+    console.log(specVersion, transactionVersion);
+
+    const unsignedTransaction = {
+      specVersion: specVersion.toHex(),
+      transactionVersion: transactionVersion.toHex(),
+      address: wallet.activeAccount?.address,
+      blockHash: lastHeader.hash.toHex(),
+      blockNumber: blockNumber.toHex(),
+      era: era.toHex(),
+      genesisHash: sdk.api.genesisHash.toHex(),
+      method: method.toHex(),
+      nonce: nonce.toHex(),
+      signedExtensions: [
+        "CheckNonZeroSender",
+        "CheckSpecVersion",
+        "CheckTxVersion",
+        "CheckGenesis",
+        "CheckMortality",
+        "CheckNonce",
+        "CheckWeight",
+        "ChargeTransactionPayment",
+      ],
+      tip: sdk.api.registry.createType("Compact<Balance>", 0).toHex(),
+      version: extrinsic.version,
+    };
+    console.log(unsignedTransaction);
     const wcProvider = await UniversalProvider.init({
       projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
       relayUrl: "wss://relay.walletconnect.com",
     });
-    console.log(wcProvider);
+
     const result = await wcProvider.client.request({
       chainId: "polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c",
-      topic: "1df1fd61f57af203d2284b856f7e471fbd83069e6cba2c8db1f27c5a9ddf6da3",
+      topic: "98acd26989f41be9ea148477d6af3417f0e4b3c7480bfcf4e996c2a427dad805",
       request: {
         method: "polkadot_signTransaction",
         params: {
           address: "dE38s12vhpZtsgJKjAXBxCGKqDEEtfypufj1EebndBQnEm2gt",
-          transactionPayload: extrinsic,
+          transactionPayload: unsignedTransaction,
         },
       },
     });
     console.log(result);
+
     return;
     signAndSend(
       extrinsic,
