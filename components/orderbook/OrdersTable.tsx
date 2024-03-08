@@ -1,9 +1,10 @@
+import { InputMaybe, OrderWhereInput } from "@zeitgeistpm/indexer";
 import { BaseAssetId, ZTG, getIndexOf, isRpcSdk } from "@zeitgeistpm/sdk";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { lookupAssetSymbol } from "lib/constants/foreign-asset";
 import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
-import { useMarket } from "lib/hooks/queries/useMarket";
+import { useMarketsByIds } from "lib/hooks/queries/useMarketsByIds";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
@@ -44,13 +45,25 @@ const columns: TableColumn[] = [
   },
 ];
 
-const MyOrdersTable = ({ marketId }: { marketId: number }) => {
-  const { data: orders } = useOrders();
-  const { data: market } = useMarket({ marketId });
+const OrdersTable = ({ where }: { where: InputMaybe<OrderWhereInput> }) => {
+  const { realAddress } = useWallet();
+  const { data: orders } = useOrders(where);
+  const { data: markets } = useMarketsByIds(
+    orders?.map((order) => ({ marketId: order.marketId })),
+  );
 
   const tableData: TableData[] | undefined = orders?.map(
-    ({ side, price, outcomeAssetId, outcomeAmount, id }) => {
+    ({
+      side,
+      price,
+      outcomeAssetId,
+      outcomeAmount,
+      id,
+      marketId,
+      makerAddress,
+    }) => {
       const index = getIndexOf(outcomeAssetId);
+      const market = markets?.find((market) => market.marketId === marketId);
       const outcomeName = market?.categories?.[index]?.name;
       const baseAsset = parseAssetIdString(market?.baseAsset) as BaseAssetId;
       const baseSymbol = lookupAssetSymbol(baseAsset);
@@ -61,7 +74,12 @@ const MyOrdersTable = ({ marketId }: { marketId: number }) => {
         amount: outcomeAmount.div(ZTG).toFixed(3),
         value: `${outcomeAmount.mul(price).div(ZTG).toFixed(3)} ${baseSymbol}`,
         price: `${price.toFixed(3)} ${baseSymbol}`,
-        button: <CancelOrderButton orderId={id} />,
+        button: (
+          <CancelOrderButton
+            orderId={id}
+            disabled={realAddress !== makerAddress}
+          />
+        ),
       };
     },
   );
@@ -72,7 +90,13 @@ const MyOrdersTable = ({ marketId }: { marketId: number }) => {
   );
 };
 
-const CancelOrderButton = ({ orderId }: { orderId: string }) => {
+const CancelOrderButton = ({
+  orderId,
+  disabled,
+}: {
+  orderId: string;
+  disabled: boolean;
+}) => {
   const notificationStore = useNotifications();
   const [sdk] = useSdkv2();
 
@@ -104,4 +128,4 @@ const CancelOrderButton = ({ orderId }: { orderId: string }) => {
   );
 };
 
-export default MyOrdersTable;
+export default OrdersTable;

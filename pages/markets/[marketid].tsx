@@ -78,7 +78,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { FaChevronUp } from "react-icons/fa";
-import MyOrdersTable from "components/orderbook/MyOrdersTable";
+import OrdersTable from "components/orderbook/OrdersTable";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -195,6 +195,7 @@ const Market: NextPage<MarketPageProps> = ({
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
+  const { realAddress } = useWallet();
 
   const referendumChain = cmsMetadata?.referendumRef?.chain;
   const referendumIndex = cmsMetadata?.referendumRef?.referendumIndex;
@@ -354,7 +355,9 @@ const Market: NextPage<MarketPageProps> = ({
           ) : (
             <></>
           )}
-          <MyOrdersTable marketId={marketId} />
+          <OrdersTable
+            where={{ marketId_eq: marketId, makerAccountId_eq: realAddress }}
+          />
           {marketIsLoading === false && marketHasPool === false && (
             <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
               <div className="h-ztg-20 w-ztg-20">
