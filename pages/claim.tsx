@@ -13,8 +13,8 @@ const claimListMock: { address: string; amount: string }[] = [
 const ClaimPage: NextPage = () => {
   const { connected, realAddress } = useWallet();
 
-  const polkadotAddress = encodeAddress(decodeAddress(realAddress), 0);
-  console.log(polkadotAddress.toString());
+  const polkadotAddress =
+    realAddress && encodeAddress(decodeAddress(realAddress), 0);
 
   return (
     <div className="relative mt-2">
@@ -41,12 +41,14 @@ const Eligibility = ({ address }: { address: string }) => {
 
   const isValid =
     claimAddress === null || validateZeigeistAddress(claimAddress);
+  const tx = api?.tx.system.remarkWithEvent(
+    `zeitgeist.airdrop-1-${claimAddress}`,
+  );
+
+  const txHex = tx?.toHex();
 
   const submitClaim = () => {
-    if (!claimAddress || !api) return;
-    const tx = api.tx.system.remarkWithEvent(
-      `zeitgeist.airdrop-1-${claimAddress}`,
-    );
+    if (!tx || !api) return;
 
     const signer = wallet.getSigner();
 
@@ -97,9 +99,16 @@ const Eligibility = ({ address }: { address: string }) => {
               setClaimAddress(event.target.value);
             }}
           />
+          <a
+            href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frococo-rpc.polkadot.io#/extrinsics/decode/${txHex}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Wallet not supported? Sign on Polkadot.js/apps
+          </a>
           <button
             disabled={claimAddress === null || isValid === false}
-            onSubmit={() => submitClaim()}
+            onClick={() => submitClaim()}
           >
             Claim
           </button>
