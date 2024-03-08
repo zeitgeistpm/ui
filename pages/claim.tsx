@@ -12,26 +12,52 @@ const claimListMock: { address: string; amount: string }[] = [
 
 const ClaimPage: NextPage = () => {
   const { connected, realAddress } = useWallet();
+  const [showEligibility, setShowEligibility] = useState(false);
+  const [polkadotAddress, setPolkadotAddress] = useState("");
 
-  const polkadotAddress =
-    realAddress && encodeAddress(decodeAddress(realAddress), 0);
+  // const polkadotAddress =
+  // realAddress && encodeAddress(decodeAddress(realAddress), 0);
 
   return (
     <div className="relative mt-2">
       <div className="flex flex-col">
-        <div>Claim ZTG</div>
-        <div>Polkadot Address: {polkadotAddress}</div>
-        {connected === true && polkadotAddress ? (
-          <Eligibility address={polkadotAddress} />
+        {showEligibility === false ? (
+          <>
+            <div>Claim ZTG</div>
+            <input
+              placeholder="Enter Polkadot address"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                setPolkadotAddress(event.target.value);
+              }}
+            />
+            <button
+              onClick={() => {
+                setShowEligibility(true);
+              }}
+            >
+              Check Eligibility
+            </button>
+          </>
         ) : (
-          <div>Connect wallet</div>
+          <Eligibility
+            address={polkadotAddress}
+            onCheckAgain={() => {
+              setShowEligibility(false);
+            }}
+          />
         )}
       </div>
     </div>
   );
 };
 
-const Eligibility = ({ address }: { address: string }) => {
+const Eligibility = ({
+  address,
+  onCheckAgain,
+}: {
+  address: string;
+  onCheckAgain: () => void;
+}) => {
   const wallet = useWallet();
   const notifications = useNotifications();
 
@@ -117,6 +143,7 @@ const Eligibility = ({ address }: { address: string }) => {
       ) : (
         <div>You are not eligible for this airdrop</div>
       )}
+      <button onClick={() => onCheckAgain()}>Check another wallet</button>
     </div>
   );
 };
