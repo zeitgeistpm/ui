@@ -6,6 +6,7 @@ import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { TypeOfLogin } from "@web3auth/openlogin-adapter";
 import { environment } from "lib/constants/index";
+import UniversalProvider from "@walletconnect/universal-provider";
 
 interface LoginConfig {
   [key: string]: {

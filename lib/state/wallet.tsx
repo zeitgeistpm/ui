@@ -1,6 +1,6 @@
 import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { KeyringPair } from "@polkadot/keyring/types";
-import { stringToHex, u8aToHex } from "@polkadot/util";
+import { stringToHex, u8aToHex, isHex, hexToU8a } from "@polkadot/util";
 import {
   cryptoWaitReady,
   encodeAddress,
@@ -18,7 +18,7 @@ import { atom, getDefaultStore, useAtom } from "jotai";
 import { isPresent } from "lib/types";
 import { PollingTimeout, poll } from "lib/util/poll";
 import { isString } from "lodash-es";
-import { useMemo } from "react";
+import { use, useMemo } from "react";
 import { persistentAtom } from "./util/persistent-atom";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import {
@@ -259,7 +259,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
         accounts:
           [keyPair].map((account) => {
             return {
-              address: account,
+              address: encodeAddress(account.toString(), 73),
             };
           }) ?? [],
         errors:
@@ -501,7 +501,6 @@ export const useWallet = (): UseWallet => {
 
   const activeAccount = useMemo(() => {
     const userSelectedAddress = walletState.accounts.find((acc) => {
-      console.log(acc.address);
       return (
         userConfig.selectedAddress &&
         encodeAddress(acc.address, 73) ===
@@ -512,7 +511,6 @@ export const useWallet = (): UseWallet => {
     if (!userSelectedAddress) {
       return walletState.accounts[0];
     }
-
     return userSelectedAddress;
   }, [userConfig.selectedAddress, walletState.accounts]);
 

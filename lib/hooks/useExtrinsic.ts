@@ -8,6 +8,7 @@ import { useMemo, useState } from "react";
 import { useSdkv2 } from "./useSdkv2";
 import { useExtrinsicFee } from "./queries/useExtrinsicFee";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
+import UniversalProvider from "@walletconnect/universal-provider";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -52,7 +53,7 @@ export const useExtrinsic = <T>(
 
     const signer = wallet.getSigner();
 
-    if (!signer) return;
+    // if (!signer) return;
 
     let extrinsic = extrinsicFn(params);
     if (!extrinsic) return;
@@ -78,7 +79,27 @@ export const useExtrinsic = <T>(
         return;
       }
     }
+    if (!signer) return;
+    console.log(extrinsic.method);
 
+    const wcProvider = await UniversalProvider.init({
+      projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
+      relayUrl: "wss://relay.walletconnect.com",
+    });
+    console.log(wcProvider);
+    const result = await wcProvider.client.request({
+      chainId: "polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c",
+      topic: "1df1fd61f57af203d2284b856f7e471fbd83069e6cba2c8db1f27c5a9ddf6da3",
+      request: {
+        method: "polkadot_signTransaction",
+        params: {
+          address: "dE38s12vhpZtsgJKjAXBxCGKqDEEtfypufj1EebndBQnEm2gt",
+          transactionPayload: extrinsic,
+        },
+      },
+    });
+    console.log(result);
+    return;
     signAndSend(
       extrinsic,
       signer,
