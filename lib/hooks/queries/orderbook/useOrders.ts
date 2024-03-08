@@ -1,30 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
+import { InputMaybe, OrderWhereInput } from "@zeitgeistpm/indexer";
 import {
   AssetId,
   IOBaseAssetId,
   IOMarketOutcomeAssetId,
   MarketId,
-  isRpcSdk,
+  isIndexedSdk,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { MarketOutcome } from "lib/types";
 
-export const ordersRootKey = "orders";
+export const ordersRootKey = "order";
 
-type RawMarketOrderData = {
-  makerAmount: Decimal;
-  makerAsset: AssetId;
-  takerAmount: Decimal;
-  takerAsset: AssetId;
-};
-
-export type MarketOrder = {
-  id: number;
+export type Order = {
+  id: string;
   marketId: number;
   makerAddress: string;
-  raw: RawMarketOrderData;
   side: "buy" | "sell";
   price: Decimal;
   outcomeAmount: Decimal;
@@ -37,58 +29,61 @@ export type MarketOrder = {
       };
 };
 
-export const useOrders = () => {
+export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
   const [sdk, id] = useSdkv2();
+  const enabled = !!sdk && !!isIndexedSdk(sdk);
 
   const query = useQuery(
-    [id, ordersRootKey],
+    [id, ordersRootKey, where],
     async () => {
-      if (isRpcSdk(sdk)) {
-        const ordersRes = await sdk.api.query.orderbook.orders.entries();
-        const orders: MarketOrder[] = ordersRes.map(([a, b]) => {
-          const chainOrder = b.unwrap();
-          const rawData: RawMarketOrderData = {
-            makerAmount: new Decimal(chainOrder.makerAmount.toString()),
-            makerAsset: parseAssetId(
-              chainOrder.makerAsset,
-            ).unwrap() as unknown as AssetId,
-            takerAmount: new Decimal(chainOrder.takerAmount.toString()),
-            takerAsset: parseAssetId(
-              chainOrder.takerAsset,
-            ).unwrap() as unknown as AssetId,
-          };
+      if (enabled) {
+        const { orders } = await sdk.indexer.orders({ where });
 
-          const side = IOBaseAssetId.is(rawData.makerAsset) ? "buy" : "sell";
-          const price = IOBaseAssetId.is(rawData.makerAsset)
-            ? rawData.takerAmount.div(rawData.makerAmount)
-            : rawData.makerAmount.div(rawData.takerAmount);
-          const outcomeAssetId = IOMarketOutcomeAssetId.is(rawData.makerAsset)
-            ? rawData.makerAsset
-            : IOMarketOutcomeAssetId.is(rawData.takerAsset)
-              ? rawData.takerAsset
+        const ordersMapped: Order[] = orders.map((order) => {
+          const makerAsset = parseAssetId(
+            order.maker.asset,
+          ).unwrap() as unknown as AssetId;
+          const takerAsset = parseAssetId(
+            order.taker.asset,
+          ).unwrap() as unknown as AssetId;
+
+          const side = IOBaseAssetId.is(makerAsset) ? "buy" : "sell";
+          const price = IOBaseAssetId.is(makerAsset)
+            ? new Decimal(order.taker.initialAmount).div(
+                order.maker.initialAmount,
+              )
+            : new Decimal(order.maker.initialAmount).div(
+                order.taker.initialAmount,
+              );
+
+          const outcomeAssetId = IOMarketOutcomeAssetId.is(makerAsset)
+            ? makerAsset
+            : IOMarketOutcomeAssetId.is(takerAsset)
+              ? takerAsset
               : undefined;
-          const outcomeAmount = IOBaseAssetId.is(rawData.makerAsset)
-            ? rawData.takerAmount
-            : rawData.makerAmount;
 
-          const order: MarketOrder = {
-            id: Number(a[0]),
-            marketId: Number(chainOrder.marketId.toString()),
-            makerAddress: chainOrder.maker.toString(),
-            raw: rawData,
+          const outcomeAmount = IOBaseAssetId.is(makerAsset)
+            ? order.taker.initialAmount
+            : order.maker.initialAmount;
+
+          const mappedOrder: Order = {
+            id: order.id,
+            marketId: order.marketId,
+            makerAddress: order.makerAccountId,
             side,
             price,
-            outcomeAmount,
+            outcomeAmount: new Decimal(outcomeAmount),
             outcomeAssetId: outcomeAssetId!, // one of the assets must be MarketOutcome
           };
 
-          return order;
+          return mappedOrder;
         });
-        return orders;
+
+        return ordersMapped;
       }
     },
     {
-      enabled: Boolean(sdk && isRpcSdk(sdk)),
+      enabled,
       staleTime: 10_000,
     },
   );

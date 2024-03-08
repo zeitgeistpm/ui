@@ -9,7 +9,7 @@ import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
-import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
+import { useRpcOrders } from "lib/hooks/queries/orderbook/useRpcOrders";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -44,7 +44,7 @@ export const LimitBuyOrderForm = ({
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
   const wallet = useWallet();
-  const { data: orders } = useOrders();
+  const { data: orders } = useRpcOrders();
   const { data: market } = useMarket({
     marketId,
   });
@@ -93,7 +93,7 @@ export const LimitSellOrderForm = ({
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
   const wallet = useWallet();
-  const { data: orders } = useOrders();
+  const { data: orders } = useRpcOrders();
   const { data: market } = useMarket({
     marketId,
   });

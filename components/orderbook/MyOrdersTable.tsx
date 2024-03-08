@@ -43,8 +43,6 @@ const MyOrdersTable = ({ marketId }: { marketId: number }) => {
   const { data: orders } = useOrders();
   const { data: market } = useMarket({ marketId });
 
-  // console.log(orders);
-
   const tableData: TableData[] | undefined = orders?.map(
     ({ side, price, outcomeAssetId, outcomeAmount }) => {
       const index = getIndexOf(outcomeAssetId);
