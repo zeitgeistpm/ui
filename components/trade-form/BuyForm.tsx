@@ -268,7 +268,7 @@ const BuyForm = ({
           </div>
         </div>
         <div className="text-sm">For</div>
-        <div className="center relative h-[56px] w-full rounded-md bg-anti-flash-white text-ztg-18-150 font-normal">
+        <div className="center relative h-[56px] w-full rounded-md bg-white text-ztg-18-150 font-normal">
           <Input
             type="number"
             className="w-full bg-transparent font-mono outline-none"

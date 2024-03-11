@@ -231,7 +231,7 @@ const SellForm = ({
         onSubmit={handleSubmit(onSubmit)}
         className="flex w-full flex-col items-center gap-y-4"
       >
-        <div className="flex w-full items-center justify-center rounded-md bg-anti-flash-white pr-2 font-mono">
+        <div className="flex w-full items-center justify-center rounded-md bg-white pr-2 font-mono">
           <Input
             type="number"
             className="w-full bg-transparent outline-none"

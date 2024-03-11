@@ -78,6 +78,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { FaChevronUp } from "react-icons/fa";
+import OrdersTable from "components/orderbook/OrdersTable";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -194,6 +195,7 @@ const Market: NextPage<MarketPageProps> = ({
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
+  const { realAddress } = useWallet();
 
   const referendumChain = cmsMetadata?.referendumRef?.chain;
   const referendumIndex = cmsMetadata?.referendumRef?.referendumIndex;
@@ -353,6 +355,9 @@ const Market: NextPage<MarketPageProps> = ({
           ) : (
             <></>
           )}
+          <OrdersTable
+            where={{ marketId_eq: marketId, makerAccountId_eq: realAddress }}
+          />
           {marketIsLoading === false && marketHasPool === false && (
             <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
               <div className="h-ztg-20 w-ztg-20">
@@ -455,7 +460,13 @@ const Market: NextPage<MarketPageProps> = ({
 
         <div className="hidden md:-mr-6 md:block md:w-[320px] lg:mr-auto lg:w-[460px]">
           <div className="sticky top-28">
-            <div className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg">
+            <div
+              className="mb-12 animate-pop-in rounded-lg  opacity-0 shadow-lg"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
+              }}
+            >
               {market?.status === MarketStatus.Active ? (
                 <>
                   <Amm2TradeForm marketId={marketId} />
