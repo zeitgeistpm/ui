@@ -4487,7 +4487,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/augment-api@npm:3.1.3, @zeitgeistpm/augment-api@npm:^3.1.2, @zeitgeistpm/augment-api@npm:^3.1.3":
+"@zeitgeistpm/augment-api@npm:3.1.3":
   version: 3.1.3
   resolution: "@zeitgeistpm/augment-api@npm:3.1.3"
   peerDependencies:
@@ -4495,6 +4495,17 @@ __metadata:
     "@polkadot/rpc-core": "*"
     "@polkadot/types": "*"
   checksum: 57ac62bfe6e3a76c9ec0a3c50e58fb8753f89814785632aa9f8f0d106aa8fd54ccb1f32cf6600d046ae9527e26d403ed94091cef770af8cca308879a442f7450
+  languageName: node
+  linkType: hard
+
+"@zeitgeistpm/augment-api@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "@zeitgeistpm/augment-api@npm:3.2.1"
+  peerDependencies:
+    "@polkadot/api-base": "*"
+    "@polkadot/rpc-core": "*"
+    "@polkadot/types": "*"
+  checksum: 65751aa4946a6d969d290b503416defa200f09a8924c27582db378816f681fc3046a4e3cba9ca347c3a593cdaddd8530b3da23f2895ff76a030764c6f95f2ccc
   languageName: node
   linkType: hard
 
@@ -4564,40 +4575,40 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "@zeitgeistpm/indexer@npm:4.1.2"
+"@zeitgeistpm/indexer@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "@zeitgeistpm/indexer@npm:4.2.1"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: 834b8211cc97e28ea6004751eca2ed0a1d4368c60bd14f119e7fd7e78fd5cda9fbf22f4239811fa6c05a7f218c0baa6f5c0ddb074f4d8e689c0e1f63acf2d0da
+  checksum: 27e2729e33d0bede1d475450d88d231d2d800d83bb7bce61d7604c3639d3a4a8774d8034bb8933ed4f74a34d173af936c35bb12f33d026ae81806f213cf8a664
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/rpc@npm:^3.1.1":
-  version: 3.1.2
-  resolution: "@zeitgeistpm/rpc@npm:3.1.2"
+"@zeitgeistpm/rpc@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "@zeitgeistpm/rpc@npm:3.2.1"
   dependencies:
-    "@zeitgeistpm/augment-api": ^3.1.3
-    "@zeitgeistpm/utility": ^3.1.1
+    "@zeitgeistpm/augment-api": ^3.2.1
+    "@zeitgeistpm/utility": ^3.2.1
   peerDependencies:
     "@polkadot/api": "*"
     "@polkadot/keyring": "*"
     "@polkadot/types": "*"
-  checksum: 075ad196db4e033085e93566a0c99b6b08cf3dcba7dd7d73b518e22962e240def2dcb94784e8e97530772d31340df9b0acdf68d5e4d7105c89397860675eb383
+  checksum: 24eb61ee592566602b433981c203c476764093072b44267e277357439eae51bb9fcf0fd9fadb9683d77355aa3bbfef2b41cf10d62a5b1bc986d6979cb0d06223
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk@npm:3.1.3":
-  version: 3.1.3
-  resolution: "@zeitgeistpm/sdk@npm:3.1.3"
+"@zeitgeistpm/sdk@npm:3.2.1":
+  version: 3.2.1
+  resolution: "@zeitgeistpm/sdk@npm:3.2.1"
   dependencies:
-    "@zeitgeistpm/augment-api": ^3.1.2
-    "@zeitgeistpm/indexer": ^4.1.2
-    "@zeitgeistpm/rpc": ^3.1.1
-    "@zeitgeistpm/utility": ^3.1.1
-    "@zeitgeistpm/web3.storage": ^3.1.1
+    "@zeitgeistpm/augment-api": ^3.2.1
+    "@zeitgeistpm/indexer": ^4.2.1
+    "@zeitgeistpm/rpc": ^3.2.1
+    "@zeitgeistpm/utility": ^3.2.1
+    "@zeitgeistpm/web3.storage": ^3.2.1
     cids: ^1.1.9
     decimal.js: ^10.4.3
     human-object-diff: ^3.0.0
@@ -4611,7 +4622,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 976d6b9bebfb6abe5fccee65fc13a6c35806509c23e9cfb26b11bbc949c168c7871235dea6ffbf271cf5534faea80d7fbe267668a2f14b5481dd31c08e914627
+  checksum: 7f1039596c1bb349f9f95153a7428557e1d9b6f6239e1a5ef3c9287c235983f82c1686f517d03edf7b0b6b60e85b67639382edcb541e658b539ce27848fc9ed4
   languageName: node
   linkType: hard
 
@@ -4679,8 +4690,8 @@ __metadata:
     "@zeitgeistpm/avatara-nft-sdk": ^1.3.1
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
-    "@zeitgeistpm/sdk": 3.1.3
-    "@zeitgeistpm/utility": 3.1.0
+    "@zeitgeistpm/sdk": 3.2.1
+    "@zeitgeistpm/utility": 3.2.1
     autoprefixer: 10.2.5
     axios: ^0.21.4
     boring-avatars: ^1.6.1
@@ -4697,12 +4708,15 @@ __metadata:
     fuse.js: ^6.6.2
     graphql-request: ^5.0.0
     groq: ^3.23.4
+    ipfs-http-client: ^60.0.1
+    ipfs-utils: ^9.0.14
     jotai: ^2.0.4
     jotai-tanstack-query: ^0.7.0
     lodash.merge: ^4.6.2
     median-range: ^0.0.11
     moment: ^2.29.1
     moment-timezone: ^0.5.43
+    multiformats: ^13.0.1
     next: ^13.4.19
     next-absolute-url: ^1.2.2
     next-qrcode: ^2.5.1
@@ -4748,12 +4762,13 @@ __metadata:
     validatorjs: ^3.22.1
     vitest: ^0.34.6
     zod: ^3.21.4
+    zod-validation-error: ^3.0.2
   languageName: unknown
   linkType: soft
 
-"@zeitgeistpm/utility@npm:3.1.0":
-  version: 3.1.0
-  resolution: "@zeitgeistpm/utility@npm:3.1.0"
+"@zeitgeistpm/utility@npm:3.2.1, @zeitgeistpm/utility@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "@zeitgeistpm/utility@npm:3.2.1"
   dependencies:
     decimal.js: ^10.4.3
     lodash.omit: ^4.5.0
@@ -4763,31 +4778,15 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: d4424be9856e556b09328ea78bcd6ed3cb1eb677ce683a0bac9d5f9f75d4e8f75cf0c9afc44039644746f3abc969412aac19c09338641b210ae12dc5cd2241f1
+  checksum: 8f03f63a577c7a5f958142d813fc85e1147c76aab44249ff653932cb15a37a4c461e686b2f08e0965d31233e2d0bb0b9c8958f1cf7fea7ad12806ce15c4e8ad6
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/utility@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "@zeitgeistpm/utility@npm:3.1.1"
+"@zeitgeistpm/web3.storage@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "@zeitgeistpm/web3.storage@npm:3.2.1"
   dependencies:
-    decimal.js: ^10.4.3
-    lodash.omit: ^4.5.0
-    ms: ^2.1.3
-    rxjs: ^7.2.0
-  peerDependencies:
-    "@polkadot/api": "*"
-    "@polkadot/types": "*"
-    "@polkadot/util": "*"
-  checksum: 58e63a79fa9950c2fb5a8b4ece60788404d9788c8ca70e7915cf6fdfa9fb272a92e896b22ea5e3be132b978d4107607131ec12cfccca55a1553e02880136d714
-  languageName: node
-  linkType: hard
-
-"@zeitgeistpm/web3.storage@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "@zeitgeistpm/web3.storage@npm:3.1.1"
-  dependencies:
-    "@zeitgeistpm/utility": ^3.1.1
+    "@zeitgeistpm/utility": ^3.2.1
     cids: ^1.1.9
     ipfs-http-client: ^60.0.0
     ipfs-only-hash: ^4.0.0
@@ -4796,7 +4795,7 @@ __metadata:
     up: ^1.0.2
   peerDependencies:
     "@polkadot/util": "*"
-  checksum: b6125da994ada80b2bea656bd4670d5f58a4d945b12fedee2a604d02207a046b3343da841a29e923f503c452ff642b7e680414ac3b8f60e6611319e59d8f6e59
+  checksum: 58820eb06554c1067b24148ddbe1be6dc30bdfbdd52838855f399acf70978fe886c668d65e60e8ab6207f59e8d046e2da771f03d929a3f9bd6bf5b11f3c4c551
   languageName: node
   linkType: hard
 
@@ -8532,7 +8531,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ipfs-http-client@npm:^60.0.0":
+"ipfs-http-client@npm:^60.0.0, ipfs-http-client@npm:^60.0.1":
   version: 60.0.1
   resolution: "ipfs-http-client@npm:60.0.1"
   dependencies:
@@ -8636,7 +8635,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ipfs-utils@npm:^9.0.13":
+"ipfs-utils@npm:^9.0.13, ipfs-utils@npm:^9.0.14":
   version: 9.0.14
   resolution: "ipfs-utils@npm:9.0.14"
   dependencies:
@@ -10496,6 +10495,13 @@ __metadata:
   version: 12.1.3
   resolution: "multiformats@npm:12.1.3"
   checksum: 1060488612f8e6729c600f47a8741b91aa6e7b807ce165eca3c8cf07ab7465d2d9b212415a9c18886938b9e35b30ea7b9ae19b5ab5122589c65063440643e6bb
+  languageName: node
+  linkType: hard
+
+"multiformats@npm:^13.0.1":
+  version: 13.0.1
+  resolution: "multiformats@npm:13.0.1"
+  checksum: 63e5d6ee2c2a1d1e8fbd4b8c76fa41cf3d8204ceed1d57bc44cb30ff3d06b880ad58c3de52ae6d4397a662a6f1e3285dae74ee5d445fd1597516e1baec96d22a
   languageName: node
   linkType: hard
 
@@ -15131,6 +15137,15 @@ __metadata:
   version: 0.8.15
   resolution: "zen-observable@npm:0.8.15"
   checksum: b7289084bc1fc74a559b7259faa23d3214b14b538a8843d2b001a35e27147833f4107590b1b44bf5bc7f6dfe6f488660d3a3725f268e09b3925b3476153b7821
+  languageName: node
+  linkType: hard
+
+"zod-validation-error@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "zod-validation-error@npm:3.0.2"
+  peerDependencies:
+    zod: ^3.18.0
+  checksum: 5127ff75f50db2f195d739142d4e56b1d8f7294b82c08d1b308978bc546afc7c3b2958f677d00eca1e3254342704d48a34ba93f8e88ae5799feefda6b6dc911e
   languageName: node
   linkType: hard
 

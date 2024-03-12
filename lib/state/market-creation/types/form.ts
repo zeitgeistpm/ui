@@ -191,7 +191,7 @@ export const marketFormDataToExtrinsicParams = (
           },
     metadata: {
       __meta: "markets",
-      description: form.description,
+      description: form.description ?? "",
       question: form.question,
       slug: form.question,
       tags: form.tags,

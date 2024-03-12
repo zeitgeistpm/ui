@@ -44,7 +44,7 @@ h1 {
   @apply text-2.5xl font-bold text-fog-of-war;
 }
 h2 {
-  @apply text-2.5xl font-bold text-fog-of-war;
+  @apply text-xl font-bold text-fog-of-war;
 }
 h3 {
   @apply text-xl font-semibold text-fog-of-war;
