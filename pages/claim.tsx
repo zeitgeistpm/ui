@@ -5,6 +5,7 @@ import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { NextPage } from "next";
 import { ChangeEvent, useState } from "react";
+import Image from "next/image";
 
 const claimListMock: { address: string; amount: string }[] = [
   { address: "1vcwFJXqgzJPAmt81v4oFAdeKnSfSEzTauMNbGvRcT1F26J", amount: "100" },
@@ -19,25 +20,51 @@ const ClaimPage: NextPage = () => {
   // realAddress && encodeAddress(decodeAddress(realAddress), 0);
 
   return (
-    <div className="relative mt-2">
-      <div className="flex flex-col">
+    <div className="relative mt-10 ">
+      <div className="flex max-w-[850px] flex-col items-center justify-center gap-y-5">
+        <div className="flex w-full gap-x-10">
+          <div
+            className="w-full text-6xl font-bold"
+            style={{ lineHeight: "77px" }}
+          >
+            Find out if you are eligible for the Airdrop
+          </div>
+          <img
+            className=" relative mr-auto w-2/5 scale-110"
+            // width={500}
+            // height={100}
+            // fill={true}
+            // style={{ objectFit: "contain", position: "relative" }}
+            src="/airdrop.svg"
+            alt="Airdrop"
+          />
+        </div>
+        <div className="w-full text-lg">
+          This airdrop is dedicated to the successful passing of the Zeitgeist
+          proposal blah-blah-blah. If you're a supporter and a voter, you might
+          find yourself eligible for this airdrop.
+        </div>
+        <div className="w-full text-xl font-bold">
+          Enter Your Polkadot address below to check your eligibility:
+        </div>
         {showEligibility === false ? (
-          <>
-            <div>Claim ZTG</div>
+          <div className="flex w-full gap-4 rounded-md bg-[#DFE5ED] p-7">
             <input
+              className="w-full rounded-md bg-white p-2"
               placeholder="Enter Polkadot address"
               onChange={(event: ChangeEvent<HTMLInputElement>) => {
                 setPolkadotAddress(event.target.value);
               }}
             />
             <button
+              className="w-[200px] rounded-md bg-[#2468E2] text-white"
               onClick={() => {
                 setShowEligibility(true);
               }}
             >
               Check Eligibility
             </button>
-          </>
+          </div>
         ) : (
           <Eligibility
             address={polkadotAddress}
