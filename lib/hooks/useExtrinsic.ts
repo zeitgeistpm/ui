@@ -97,10 +97,10 @@ export const useExtrinsic = <T>(
     // const tx = sdk.api.tx.balances.transfer(keyring.bob.publicKey, 100);
 
     // const method = sdk.api.createType("Call", tx);
-    // const era = sdk.api.registry.createType("ExtrinsicEra", {
-    //   current: lastHeader.number.toNumber(),
-    //   period: 64,
-    // });
+    const era = sdk.api.registry.createType("ExtrinsicEra", {
+      current: lastHeader.number.toNumber(),
+      period: 64,
+    });
 
     // const accountNonce = getBalanceAccount(submitAddress)?.nonce || 0;
     // const nonce = sdk.api.registry.createType("Compact<Index>", accountNonce);
@@ -117,7 +117,7 @@ export const useExtrinsic = <T>(
       address: wallet.activeAccount?.address,
       blockHash: lastHeader.hash.toHex(),
       blockNumber: blockNumber.toHex(),
-      era: extrinsic.era.toHex(),
+      era: era.toHex(),
       genesisHash: sdk.api.genesisHash.toHex(),
       method: extrinsic.method.toHex(),
       nonce: extrinsic.nonce.toHex(),
@@ -142,7 +142,7 @@ export const useExtrinsic = <T>(
 
     const result = await wcProvider.client.request({
       chainId: "polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c",
-      topic: "3de6835a36936223cbe922a792f9bec3632ef58d2b5821184477e544b309d6a1",
+      topic: "1af6d6ce9a3ead3db52650bb1b0b51076d5c6efba494c1ef5f3d152b4b11dd6e",
       request: {
         method: "polkadot_signTransaction",
         params: {

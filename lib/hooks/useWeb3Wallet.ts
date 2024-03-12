@@ -64,6 +64,7 @@ const useWeb3Wallet = () => {
       },
     };
     const { uri, approval } = await wcProvider.client.connect(params);
+    console.log(uri, approval);
     const walletConnectModal = new WalletConnectModal({
       projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
     });
