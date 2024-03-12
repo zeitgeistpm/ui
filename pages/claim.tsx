@@ -44,27 +44,29 @@ const ClaimPage: NextPage = () => {
           proposal blah-blah-blah. If you're a supporter and a voter, you might
           find yourself eligible for this airdrop.
         </div>
-        <div className="w-full text-xl font-bold">
-          Enter Your Polkadot address below to check your eligibility:
-        </div>
         {showEligibility === false ? (
-          <div className="flex w-full gap-4 rounded-md bg-[#DFE5ED] p-7">
-            <input
-              className="w-full rounded-md bg-white p-2"
-              placeholder="Enter Polkadot address"
-              onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                setPolkadotAddress(event.target.value);
-              }}
-            />
-            <button
-              className="w-[200px] rounded-md bg-[#2468E2] text-white"
-              onClick={() => {
-                setShowEligibility(true);
-              }}
-            >
-              Check Eligibility
-            </button>
-          </div>
+          <>
+            <div className="w-full text-xl font-bold">
+              Enter Your Polkadot address below to check your eligibility:
+            </div>
+            <div className="flex w-full gap-4 rounded-md bg-[#DFE5ED] p-7">
+              <input
+                className="w-full rounded-md bg-white p-2"
+                placeholder="Enter Polkadot address"
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                  setPolkadotAddress(event.target.value);
+                }}
+              />
+              <button
+                className="w-[200px] rounded-md bg-[#2468E2] text-white"
+                onClick={() => {
+                  setShowEligibility(true);
+                }}
+              >
+                Check Eligibility
+              </button>
+            </div>
+          </>
         ) : (
           <Eligibility
             address={polkadotAddress}
@@ -138,40 +140,54 @@ const Eligibility = ({
   };
 
   return (
-    <div>
+    <>
       {claim ? (
-        <div className="flex flex-col">
-          <div>
+        <>
+          <div className="w-full text-xl font-bold">
             You are eligible for {claim.amount} ZTG, enter Zeitgeist address to
             claim
           </div>
-          <input
-            type="text"
-            placeholder="Zeitgeist Address"
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setClaimAddress(event.target.value);
-            }}
-          />
-          <a
-            href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frococo-rpc.polkadot.io#/extrinsics/decode/${txHex}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Wallet not supported? Sign on Polkadot.js/apps
-          </a>
-          <button
-            disabled={claimAddress === null || isValid === false}
-            onClick={() => submitClaim()}
-          >
-            Claim
-          </button>
-          {isValid === false && <div>Invalid address</div>}
-        </div>
+          <div className="flex w-full flex-col">
+            <div className="flex w-full gap-4 rounded-md bg-[#DFE5ED] p-7">
+              <div className="relative flex w-full flex-col">
+                <input
+                  className="w-full rounded-md bg-white p-2"
+                  placeholder="Zeitgeist Address"
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                    setClaimAddress(event.target.value);
+                  }}
+                />
+                {isValid === false && (
+                  <div className="absolute top-10 text-xs text-red-600">
+                    Invalid address
+                  </div>
+                )}
+              </div>
+              <button
+                className="w-[200px] rounded-md bg-[#2468E2] text-white"
+                disabled={claimAddress === null || isValid === false}
+                onClick={() => submitClaim()}
+              >
+                Claim Airdrop
+              </button>
+            </div>
+            <a
+              href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frococo-rpc.polkadot.io#/extrinsics/decode/${txHex}`}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 text-sm text-blue-700"
+            >
+              Wallet not supported? Sign on Polkadot.js/apps
+            </a>
+          </div>
+        </>
       ) : (
-        <div>You are not eligible for this airdrop</div>
+        <div className="w-full text-xl font-bold">
+          You are not eligible for this airdrop
+        </div>
       )}
-      <button onClick={() => onCheckAgain()}>Check another wallet</button>
-    </div>
+      <button onClick={() => onCheckAgain()}>Check another address</button>
+    </>
   );
 };
 
