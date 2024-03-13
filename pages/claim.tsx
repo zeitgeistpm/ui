@@ -104,7 +104,7 @@ const Eligibility = ({
   const isValid =
     claimAddress === null || validateZeigeistAddress(claimAddress);
   const tx = api?.tx.system.remarkWithEvent(
-    `zeitgeist.airdrop-1-${claimAddress}`,
+    `zeitgeistairdrop-1-${claimAddress}`,
   );
 
   const txHex = tx?.toHex();
