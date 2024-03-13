@@ -20,7 +20,14 @@ const ClaimPage: NextPage = () => {
   // realAddress && encodeAddress(decodeAddress(realAddress), 0);
 
   return (
-    <div className="relative mt-10 ">
+    <div className="relative mt-10 flex items-center justify-center">
+      <div
+        className="absolute z-0 h-full w-full overflow-hidden"
+        style={{
+          background:
+            "radial-gradient(50% 50% at 50% 50%, rgba(254, 207, 255, 0.3) 20.83%, rgba(205, 222, 255, 0.3) 54.17%, rgba(201, 232, 255, 0.3) 57.29%, rgba(245, 245, 245, 0) 100%)",
+        }}
+      ></div>
       <div className="flex max-w-[850px] flex-col items-center justify-center gap-y-5">
         <div className="flex w-full gap-x-10">
           <div
@@ -186,7 +193,14 @@ const Eligibility = ({
           You are not eligible for this airdrop
         </div>
       )}
-      <button onClick={() => onCheckAgain()}>Check another address</button>
+      <div className="flex w-full">
+        <button
+          className="h-[40px] w-[200px] rounded-md bg-[#2468E2] text-white"
+          onClick={() => onCheckAgain()}
+        >
+          Check another address
+        </button>
+      </div>
     </>
   );
 };
