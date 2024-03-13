@@ -128,12 +128,10 @@ const Eligibility = ({
           });
         },
         successCallback: (data) => {
-          notifications?.pushNotification(
-            `Successfully claimed to ${claimAddress}`,
-            {
-              autoRemove: true,
-            },
-          );
+          notifications?.pushNotification(`Successfully claimed`, {
+            autoRemove: true,
+            type: "Success",
+          });
         },
         failCallback: (error) => {
           notifications.pushNotification(error, { type: "Error" });
