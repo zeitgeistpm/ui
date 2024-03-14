@@ -3,13 +3,13 @@ import { ISubmittableResult } from "@polkadot/types/types";
 import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { extrinsicCallback, signAndSend, constructUnsigned } from "lib/util/tx";
+import { extrinsicCallback, signAndSend, sendUnsigned } from "lib/util/tx";
 import { useMemo, useState } from "react";
 import { useSdkv2 } from "./useSdkv2";
 import { useExtrinsicFee } from "./queries/useExtrinsicFee";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 import { useAtom } from "jotai";
-import { providerAtom, sessionAtom } from "lib/state/util/web3auth-config";
+import { providerAtom, topicAtom } from "lib/state/util/web3auth-config";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -29,8 +29,9 @@ export const useExtrinsic = <T>(
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const confirm = useConfirmation();
   const [provider] = useAtom(providerAtom);
-  const [session] = useAtom(sessionAtom); //Show transaction confirmation modal for web3auth
+  const [topic] = useAtom(topicAtom);
   const confirmEnabled = wallet?.walletId === "web3auth";
+  const walletId = wallet?.walletId;
 
   const notifications = useNotifications();
 
@@ -53,9 +54,6 @@ export const useExtrinsic = <T>(
     }
 
     const signer = wallet.getSigner();
-
-    //todo: renable
-    // if (!signer) return;
 
     let extrinsic = extrinsicFn(params);
     if (!extrinsic) return;
@@ -81,58 +79,70 @@ export const useExtrinsic = <T>(
         return;
       }
     }
-    console.log(provider, session);
 
-    console.log(wallet.activeAccount?.address);
     if (!wallet.activeAccount?.address) return;
 
-    const signature = constructUnsigned(
-      sdk.api,
-      extrinsic,
-      wallet.activeAccount?.address,
-      provider,
-      session,
-    );
-    console.log(signature);
-    return;
-    signAndSend(
-      extrinsic,
-      signer,
-      extrinsicCallback({
-        api: sdk.api,
-        notifications,
-        broadcastCallback: () => {
-          setIsBroadcasting(true);
-          callbacks?.onBroadcast
-            ? callbacks.onBroadcast()
-            : notifications?.pushNotification("Broadcasting transaction...", {
-                autoRemove: true,
-              });
-        },
-        successCallback: (data) => {
-          setIsLoading(false);
-          setIsSuccess(true);
-          setIsBroadcasting(false);
+    const extrinsicCallbackParams = {
+      api: sdk.api,
+      notifications,
+      broadcastCallback: () => {
+        setIsBroadcasting(true);
+        callbacks?.onBroadcast
+          ? callbacks.onBroadcast()
+          : notifications?.pushNotification("Broadcasting transaction...", {
+              autoRemove: true,
+            });
+      },
+      successCallback: (data) => {
+        setIsLoading(false);
+        setIsSuccess(true);
+        setIsBroadcasting(false);
 
-          callbacks?.onSuccess && callbacks.onSuccess(data);
-        },
-        failCallback: (error) => {
-          setIsLoading(false);
-          setIsError(true);
-          setIsBroadcasting(false);
+        callbacks?.onSuccess && callbacks.onSuccess(data);
+      },
+      failCallback: (error) => {
+        setIsLoading(false);
+        setIsError(true);
+        setIsBroadcasting(false);
 
-          callbacks?.onError && callbacks.onError();
-          notifications.pushNotification(error, { type: "Error" });
-        },
-      }),
-      IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
-    ).catch((error) => {
-      notifications.pushNotification(error?.toString() ?? "Unknown Error", {
-        type: "Error",
+        callbacks?.onError && callbacks.onError();
+        notifications.pushNotification(error, { type: "Error" });
+      },
+    };
+
+    if (walletId === "walletconnect") {
+      sendUnsigned(
+        sdk.api,
+        extrinsic,
+        wallet.activeAccount?.address,
+        provider,
+        topic,
+        extrinsicCallback(extrinsicCallbackParams),
+      ).catch((error) => {
+        notifications.pushNotification(error?.toString() ?? "Unknown Error", {
+          type: "Error",
+        });
+        setIsBroadcasting(false);
+        setIsLoading(false);
       });
-      setIsBroadcasting(false);
-      setIsLoading(false);
-    });
+    } else {
+      if (!signer) return;
+
+      signAndSend(
+        extrinsic,
+        signer,
+        extrinsicCallback(extrinsicCallbackParams),
+        IOForeignAssetId.is(fee?.assetId)
+          ? fee?.assetId.ForeignAsset
+          : undefined,
+      ).catch((error) => {
+        notifications.pushNotification(error?.toString() ?? "Unknown Error", {
+          type: "Error",
+        });
+        setIsBroadcasting(false);
+        setIsLoading(false);
+      });
+    }
   };
 
   return {

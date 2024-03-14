@@ -6,12 +6,10 @@ import { web3authAtom } from "lib/state/util/web3auth-config";
 import { useAtom } from "jotai";
 import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
 import { useNotifications } from "lib/state/notifications";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import UniversalProvider from "@walletconnect/universal-provider";
 import IUniversalProvider from "@walletconnect/universal-provider";
 import { WalletConnectModal } from "@walletconnect/modal";
-import { KeyringPair } from "@polkadot/keyring/types";
-import { set } from "lodash-es";
 
 interface loginOptions {
   loginProvider: string;
@@ -51,49 +49,49 @@ const useWeb3Wallet = () => {
     }
   };
 
-  const initWC = async () => {
-    const wcProvider = await UniversalProvider.init({
-      projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
-      relayUrl: "wss://relay.walletconnect.com",
-    });
-    const params = {
-      requiredNamespaces: {
-        polkadot: {
-          methods: ["polkadot_signTransaction", "polkadot_signMessage"],
-          chains: ["polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c"],
-          events: ['chainChanged", "accountsChanged'],
-        },
-      },
-    };
-    setWalletConnectProvider(wcProvider);
+  // const initWC = async () => {
+  //   const wcProvider = await UniversalProvider.init({
+  //     projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
+  //     relayUrl: "wss://relay.walletconnect.com",
+  //   });
+  //   const params = {
+  //     requiredNamespaces: {
+  //       polkadot: {
+  //         methods: ["polkadot_signTransaction", "polkadot_signMessage"],
+  //         chains: ["polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c"],
+  //         events: ['chainChanged", "accountsChanged'],
+  //       },
+  //     },
+  //   };
+  //   setWalletConnectProvider(wcProvider);
 
-    const { uri, approval } = await wcProvider.client.connect(params);
-    console.log(uri);
-    const walletConnectModal = new WalletConnectModal({
-      projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
-    });
+  //   const { uri, approval } = await wcProvider.client.connect(params);
+  //   console.log(uri);
+  //   const walletConnectModal = new WalletConnectModal({
+  //     projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
+  //   });
 
-    if (uri) {
-      walletConnectModal.openModal({ uri });
-    }
-    const walletConnectSession = await approval();
-    console.log(walletConnectSession);
+  //   if (uri) {
+  //     walletConnectModal.openModal({ uri });
+  //   }
+  //   const walletConnectSession = await approval();
+  //   console.log(walletConnectSession);
 
-    setWalletConnectTopic(walletConnectSession.topic);
-    const walletConnectAccount = Object.values(walletConnectSession.namespaces)
-      .map((namespace) => namespace.accounts)
-      .flat();
+  //   setWalletConnectTopic(walletConnectSession.topic);
+  //   const walletConnectAccount = Object.values(walletConnectSession.namespaces)
+  //     .map((namespace) => namespace.accounts)
+  //     .flat();
 
-    console.log(walletConnectAccount);
-    console.log(walletConnectSession);
+  //   console.log(walletConnectAccount);
+  //   console.log(walletConnectSession);
 
-    const accounts = walletConnectAccount.map((wcAccount) => {
-      const address = wcAccount.split(":")[2];
-      return address;
-    });
-    await walletConnectModal.closeModal();
-    selectWallet("walletconnect", accounts);
-  };
+  //   const accounts = walletConnectAccount.map((wcAccount) => {
+  //     const address = wcAccount.split(":")[2];
+  //     return address;
+  //   });
+  //   await walletConnectModal.closeModal();
+  //   selectWallet("walletconnect", accounts);
+  // };
 
   const login = async (loginOptions: loginOptions) => {
     if (!web3auth || !auth0Domain) {
@@ -234,7 +232,6 @@ const useWeb3Wallet = () => {
     loginDiscord,
     logoutWeb3Auth,
     initWeb3Auth,
-    initWC,
     walletConnectProvider,
     walletConnectTopic,
   };

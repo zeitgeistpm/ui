@@ -1,18 +1,20 @@
-import { useState, useCallback } from "react";
 import { UniversalProvider } from "@walletconnect/universal-provider";
 import { WalletConnectModal } from "@walletconnect/modal";
 import { useWallet } from "lib/state/wallet";
-import IUniversalProvider from "@walletconnect/universal-provider";
 import { useAtom } from "jotai";
-import { providerAtom, sessionAtom } from "lib/state/util/web3auth-config";
+import { providerAtom, topicAtom } from "lib/state/util/web3auth-config";
+import { hexToU8a, isHex } from "@polkadot/util";
+import { decodeAddress } from "@polkadot/keyring";
+export interface WalletConnectAccounts {
+  address: Uint8Array[];
+}
 
 const useWalletConnectInit = () => {
   const [, setProvider] = useAtom(providerAtom);
-  const [, setSession] = useAtom(sessionAtom);
-  const [accounts, setAccounts] = useState([]);
-  const { selectWallet, disconnectWallet, walletId } = useWallet();
+  const [, setTopic] = useAtom(topicAtom);
+  const { selectWallet } = useWallet();
 
-  const initWC = useCallback(async () => {
+  const initWC = async () => {
     const wcProvider = await UniversalProvider.init({
       projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
       relayUrl: "wss://relay.walletconnect.com",
@@ -39,23 +41,38 @@ const useWalletConnectInit = () => {
     }
 
     const walletConnectSession = await approval();
-    setSession(walletConnectSession);
+    if (!walletConnectSession.topic) return;
+    setTopic(walletConnectSession.topic);
 
     const walletConnectAccounts = Object.values(walletConnectSession.namespaces)
       .map((namespace) => namespace.accounts)
       .flat();
 
-    const extractedAccounts = walletConnectAccounts.map((wcAccount) => {
-      const address = wcAccount.split(":")[2];
-      return address;
-    });
+    // const extractedAccounts =
+    //   walletConnectAccounts.reduce<WalletConnectAccounts>(
+    //     (acc, wcAccount) => {
+    //       const address = wcAccount.split(":")[2].toString();
+    //       const formattedAddress = isHex(address)
+    //         ? hexToU8a(address)
+    //         : decodeAddress(address);
+    //       if (acc.address.length < 1) {
+    //         acc.address = [formattedAddress];
+    //       } else {
+    //         acc.address = [...acc.address, formattedAddress];
+    //       }
+    //       return acc;
+    //     },
+    //     { address: [] },
+    //   );
 
-    setAccounts(extractedAccounts);
     await walletConnectModal.closeModal();
-    selectWallet("walletconnect", extractedAccounts); // Handle as needed
-  }, []);
+    console.log(walletConnectAccounts);
+    if (walletConnectAccounts.length > 0) {
+      selectWallet("walletconnect", { address: walletConnectAccounts });
+    }
+  };
 
-  return { initWC, accounts };
+  return { initWC };
 };
 
 export default useWalletConnectInit;

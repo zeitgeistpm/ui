@@ -101,6 +101,7 @@ const WalletSelect = () => {
               const hasError = error != null;
               return (
                 <WalletIcon
+                  key={wallet.extensionName}
                   onClick={() => {
                     handleSelectWallet(wallet);
                   }}

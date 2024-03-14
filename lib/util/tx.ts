@@ -1,10 +1,9 @@
 import { AddressOrPair, SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
 import { KeyringPairOrExtSigner, isExtSigner } from "@zeitgeistpm/rpc";
-import { useWallet } from "lib/state/wallet";
-
+import IUniversalProvider from "@walletconnect/universal-provider";
 import type { ApiPromise } from "@polkadot/api";
-
+import { GenericExtrinsicPayload } from "@polkadot/types/extrinsic";
 import { UseNotifications } from "lib/state/notifications";
 import { unsubOrWarns } from "./unsub-or-warns";
 
@@ -137,8 +136,6 @@ export const signAndSend = async (
   return new Promise(async (resolve, reject) => {
     try {
       if (isExtSigner(signer)) {
-        // constructUnsigned(tx, signer, cb, foreignAssetNumber);
-      } else if (isExtSigner(signer)) {
         const unsub = await tx.signAndSend(
           signer.address,
           {
@@ -162,106 +159,106 @@ export const signAndSend = async (
   });
 };
 
-export const constructUnsigned = async (
+const _callback = (
+  result: ISubmittableResult,
+  _resolve: (value: boolean | PromiseLike<boolean>) => void,
+  _reject: (value: boolean | PromiseLike<boolean>) => void,
+  _unsub: any,
+) => {
+  const { events, status } = result;
+  if (status.isInBlock) {
+    events.forEach(({ phase, event: { data, method, section } }) => {
+      console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+
+      if (method == "ExtrinsicSuccess") {
+        unsubOrWarns(_unsub);
+        _reject(true);
+      }
+      if (method == "ExtrinsicFailed") {
+        unsubOrWarns(_unsub);
+        _reject(false);
+      }
+    });
+  }
+};
+
+export const sendUnsigned = async (
   api: ApiPromise,
   tx: SubmittableExtrinsic<"promise">,
   address: string,
-  walletConnectProvider,
-  walletConnectTopic,
+  provider: IUniversalProvider,
+  topic: string,
+  cb?: GenericCallback,
 ) => {
-  console.log("hey");
-  console.log(walletConnectProvider);
-  const lastHeader = await api.rpc.chain.getHeader();
-  const blockNumber = api.registry.createType(
-    "BlockNumber",
-    lastHeader.number.toNumber(),
-  );
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!provider || !topic) return;
 
-  const era = api.registry.createType("ExtrinsicEra", {
-    current: lastHeader.number.toNumber(),
-    period: 64,
-  });
+      const lastHeader = await api.rpc.chain.getHeader();
+      const blockNumber = api.registry.createType(
+        "BlockNumber",
+        lastHeader.number.toNumber(),
+      );
 
-  const unsignedTransaction = {
-    specVersion: api.runtimeVersion.specVersion.toHex(),
-    transactionVersion: api.runtimeVersion.transactionVersion.toHex(),
-    address: address,
-    blockHash: lastHeader.hash.toHex(),
-    blockNumber: blockNumber.toHex(),
-    era: era.toHex(),
-    genesisHash: api.genesisHash.toHex(),
-    method: tx.method.toHex(),
-    nonce: tx.nonce.toHex(),
-    signedExtensions: [
-      "CheckNonZeroSender",
-      "CheckSpecVersion",
-      "CheckTxVersion",
-      "CheckGenesis",
-      "CheckMortality",
-      "CheckNonce",
-      "CheckWeight",
-      "ChargeAssetTxPayment",
-    ],
-    tip: tx.tip.toHex(),
-    version: tx.version,
-  };
-  // console.log(unsignedTransaction);
-  if (!walletConnectProvider) return;
+      const { nonce } = await api.query.system.account(address);
 
-  const result = await walletConnectProvider.client.request({
-    chainId: "polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c",
-    topic: walletConnectTopic,
-    request: {
-      method: "polkadot_signTransaction",
-      params: {
-        address: address,
-        transactionPayload: unsignedTransaction,
-      },
-    },
-  });
-  console.log(result);
-
-  const rawUnsignedTransaction = api.registry.createType(
-    "txPayload",
-    unsignedTransaction,
-    {
-      version: unsignedTransaction.version,
-    },
-  );
-  console.log(rawUnsignedTransaction);
-
-  if (!result) return;
-
-  await tx.addSignature(address, result.signature, rawUnsignedTransaction);
-  console.log(tx);
-  // send the signed transaction to the node
-  const unsub = await tx.send(({ status, events }) => {
-    // optionally handle ready status, notify user of submission
-    console.log(status, events);
-    if (status.isReady) {
-      console.log("ready");
-    }
-
-    // optionally handle in block status, notify user of in block
-    if (status.isInBlock) {
-      console.log("inblock", status);
-    }
-
-    // let user know outcome of transaction
-    if (status.isFinalized) {
-      events.forEach(({ event: { method } }) => {
-        // if success optionally notify/update state
-        console.log(method);
-        if (method === "ExtrinsicSuccess") {
-          console.log(method);
-          unsub(); // unsubscribe from extrinsic
-        } else if (method === "ExtrinsicFailed") {
-          console.log(method);
-          // on failure optionally notify/update state
-          // ...
-          unsub(); // unsubscribe from extrinsic
-        }
+      const era = api.registry.createType("ExtrinsicEra", {
+        current: lastHeader.number.toNumber(),
+        period: 64,
       });
+
+      const unsignedTransaction = {
+        specVersion: api.runtimeVersion.specVersion.toHex(),
+        transactionVersion: api.runtimeVersion.transactionVersion.toHex(),
+        address: address,
+        blockHash: lastHeader.hash.toHex(),
+        blockNumber: blockNumber.toHex(),
+        era: era.toHex(),
+        genesisHash: api.genesisHash.toHex(),
+        method: tx.method.toHex(),
+        nonce: nonce.toHex(),
+        signedExtensions: [
+          "CheckNonZeroSender",
+          "CheckSpecVersion",
+          "CheckTxVersion",
+          "CheckGenesis",
+          "CheckMortality",
+          "CheckNonce",
+          "CheckWeight",
+          "ChargeAssetTxPayment",
+        ],
+        tip: tx.tip.toHex(),
+        version: tx.version,
+      };
+
+      const result: { id: number; signature: Uint8Array } =
+        await provider.client.request({
+          chainId: "polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c",
+          topic: topic,
+          request: {
+            method: "polkadot_signTransaction",
+            params: {
+              address: address,
+              transactionPayload: unsignedTransaction,
+            },
+          },
+        });
+
+      const rawUnsignedTransaction: GenericExtrinsicPayload =
+        api.registry.createType("ExtrinsicPayload", unsignedTransaction, {
+          version: unsignedTransaction.version,
+        });
+
+      tx.addSignature(
+        address,
+        result.signature,
+        rawUnsignedTransaction.toU8a(),
+      );
+      const unsub = await tx.send((result) => {
+        cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
+      });
+    } catch (error) {
+      reject(error);
     }
   });
 };

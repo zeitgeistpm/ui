@@ -27,6 +27,7 @@ import {
   removeNotification,
 } from "./notifications";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
+import { WalletConnectAccounts } from "../hooks/useWalletConnect";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -58,7 +59,10 @@ export type UseWallet = WalletState & {
    * @param wallet the selected wallet id or instance
    * @returns void
    */
-  selectWallet: (wallet: string, keyPair?: KeyringPair) => void;
+  selectWallet: (
+    wallet: string,
+    keyPair?: KeyringPair | WalletConnectAccounts,
+  ) => void;
   /**
    * Select an address.
    * @param account the address to select
@@ -109,7 +113,7 @@ export type WalletState = {
   /**
    * Instance of the current wallet.
    */
-  wallet?: BaseDotsamaWallet | KeyringPairOrExtSigner;
+  wallet?: BaseDotsamaWallet | KeyringPairOrExtSigner | WalletConnectAccounts;
   /**
    * The accounts of the current wallet.
    */
@@ -239,50 +243,23 @@ let currentErrorNotification: Readonly<Notification> | null = null;
  * @returns Promise<boolean> - whether the wallet was enabled
  */
 
-const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
+const enableWallet = async (
+  walletId: string,
+  keyPair?: KeyringPair | Uint8Array[],
+) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
 
   if (
-    (walletId === "web3auth" && !keyPair) ||
-    (walletId === "walletconnect" && !keyPair)
+    (walletId === "web3auth" && keyPair) ||
+    (walletId === "walletconnect" && keyPair)
   ) {
-    return;
-  }
-
-  if (walletId === "walletconnect" && keyPair) {
+    console.log(keyPair);
     store.set(walletAtom, (state) => {
       return {
         ...state,
         wallet: { ...keyPair },
         connected: true,
-        walletId: "web3auth",
-        accounts:
-          [keyPair].map((account) => {
-            return {
-              address: encodeAddress(account.toString(), 73),
-            };
-          }) ?? [],
-        errors:
-          [keyPair?.address].length === 0
-            ? [
-                {
-                  extensionName: "walletconnect",
-                  type: "NoAccounts",
-                },
-              ]
-            : [],
-      };
-    });
-    return;
-  }
-
-  if (walletId === "web3auth" && keyPair) {
-    store.set(walletAtom, (state) => {
-      return {
-        ...state,
-        wallet: { ...keyPair },
-        connected: true,
-        walletId: "web3auth",
+        walletId: walletId,
         accounts:
           [keyPair?.address].map((account) => {
             return {
@@ -293,7 +270,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
           [keyPair?.address].length === 0
             ? [
                 {
-                  extensionName: "web3auth",
+                  extensionName: walletId,
                   type: "NoAccounts",
                 },
               ]
@@ -439,7 +416,7 @@ export const useWallet = (): UseWallet => {
 
   const selectWallet = (
     wallet: BaseDotsamaWallet | string,
-    keyPair?: KeyringPair,
+    keyPair?: KeyringPair | Uint8Array[],
   ) => {
     setUserConfig({
       ...userConfig,
