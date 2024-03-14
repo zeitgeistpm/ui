@@ -172,7 +172,7 @@ export async function getStaticProps({ params }) {
 
   const [sdk, avatarSdk] = await Promise.all([
     create({
-      provider: endpointOptions.map((e) => e.value),
+      provider: endpointOptions,
       indexer: graphQlEndpoint,
       storage: ZeitgeistIpfs(),
     }),

@@ -94,7 +94,7 @@ const Footer = () => {
               links={[
                 {
                   text: "Apps (Advanced UI)",
-                  href: `https://polkadot.js.org/apps/?rpc=${endpointOptions[0].value}`,
+                  href: `https://polkadot.js.org/apps/?rpc=${endpointOptions[0]}`,
                 },
                 { text: "Website", href: "https://zeitgeist.pm" },
               ]}
