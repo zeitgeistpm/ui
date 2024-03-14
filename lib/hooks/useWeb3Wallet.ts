@@ -8,6 +8,7 @@ import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
 import { useNotifications } from "lib/state/notifications";
 import { useEffect, useState } from "react";
 import UniversalProvider from "@walletconnect/universal-provider";
+import IUniversalProvider from "@walletconnect/universal-provider";
 import { WalletConnectModal } from "@walletconnect/modal";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { set } from "lodash-es";
@@ -27,6 +28,8 @@ const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
 
 const useWeb3Wallet = () => {
   const [web3auth] = useAtom(web3authAtom);
+  const [walletConnectProvider, setWalletConnectProvider] =
+    useState<IUniversalProvider>();
   const [walletConnectTopic, setWalletConnectTopic] = useState<string>("");
   const notificationStore = useNotifications();
   const { selectWallet, disconnectWallet, walletId } = useWallet();
@@ -53,7 +56,6 @@ const useWeb3Wallet = () => {
       projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
       relayUrl: "wss://relay.walletconnect.com",
     });
-
     const params = {
       requiredNamespaces: {
         polkadot: {
@@ -63,8 +65,10 @@ const useWeb3Wallet = () => {
         },
       },
     };
+    setWalletConnectProvider(wcProvider);
+
     const { uri, approval } = await wcProvider.client.connect(params);
-    console.log(uri, approval);
+    console.log(uri);
     const walletConnectModal = new WalletConnectModal({
       projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
     });
@@ -73,7 +77,9 @@ const useWeb3Wallet = () => {
       walletConnectModal.openModal({ uri });
     }
     const walletConnectSession = await approval();
+    console.log(walletConnectSession);
 
+    setWalletConnectTopic(walletConnectSession.topic);
     const walletConnectAccount = Object.values(walletConnectSession.namespaces)
       .map((namespace) => namespace.accounts)
       .flat();
@@ -87,7 +93,6 @@ const useWeb3Wallet = () => {
     });
     await walletConnectModal.closeModal();
     selectWallet("walletconnect", accounts);
-    setWalletConnectTopic(walletConnectSession.topic);
   };
 
   const login = async (loginOptions: loginOptions) => {
@@ -230,6 +235,7 @@ const useWeb3Wallet = () => {
     logoutWeb3Auth,
     initWeb3Auth,
     initWC,
+    walletConnectProvider,
     walletConnectTopic,
   };
 };

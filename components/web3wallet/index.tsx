@@ -1,11 +1,14 @@
 import WalletIcon from "components/account/WalletIcon";
 import useWeb3Wallet from "lib/hooks/useWeb3Wallet";
+import useWalletConnect from "lib/hooks/useWalletConnect";
 import { useState } from "react";
+import { set } from "lodash-es";
 
 const Web3wallet = () => {
-  const { loginGoogle, loginTwitter, loginDiscord, loginEmail, initWC } =
+  const { loginGoogle, loginTwitter, loginDiscord, loginEmail } =
     useWeb3Wallet();
   const [email, setEmail] = useState<string>("");
+  const { initWC } = useWalletConnect();
 
   return (
     <div>
@@ -50,7 +53,7 @@ const Web3wallet = () => {
           logoAlt="walletconnect"
           logoSrc="/icons/walletconnect-icon.svg"
           extensionName="walletconnect"
-          onClick={initWC}
+          onClick={() => initWC()}
         />
       </div>
     </div>

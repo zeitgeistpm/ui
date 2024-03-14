@@ -3,12 +3,13 @@ import { ISubmittableResult } from "@polkadot/types/types";
 import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
+import { extrinsicCallback, signAndSend, constructUnsigned } from "lib/util/tx";
 import { useMemo, useState } from "react";
 import { useSdkv2 } from "./useSdkv2";
 import { useExtrinsicFee } from "./queries/useExtrinsicFee";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
-import UniversalProvider from "@walletconnect/universal-provider";
+import { useAtom } from "jotai";
+import { providerAtom, sessionAtom } from "lib/state/util/web3auth-config";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -27,8 +28,8 @@ export const useExtrinsic = <T>(
   const [isLoading, setIsLoading] = useState(false);
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const confirm = useConfirmation();
-
-  //Show transaction confirmation modal for web3auth
+  const [provider] = useAtom(providerAtom);
+  const [session] = useAtom(sessionAtom); //Show transaction confirmation modal for web3auth
   const confirmEnabled = wallet?.walletId === "web3auth";
 
   const notifications = useNotifications();
@@ -80,124 +81,19 @@ export const useExtrinsic = <T>(
         return;
       }
     }
-    if (!signer) return;
-    console.log(extrinsic);
+    console.log(provider, session);
 
-    // if (!wallet.activeAccount?.address) {
-    //   return;
-    // }
-    // const lastHeader = await sdk.api.rpc.chain.getHeader();
-    // console.log(lastHeader);
+    console.log(wallet.activeAccount?.address);
+    if (!wallet.activeAccount?.address) return;
 
-    const lastHeader = await sdk.api.rpc.chain.getHeader();
-    const blockNumber = sdk.api.registry.createType(
-      "BlockNumber",
-      lastHeader.number.toNumber(),
+    const signature = constructUnsigned(
+      sdk.api,
+      extrinsic,
+      wallet.activeAccount?.address,
+      provider,
+      session,
     );
-    // const tx = sdk.api.tx.balances.transfer(keyring.bob.publicKey, 100);
-
-    // const method = sdk.api.createType("Call", tx);
-    const era = sdk.api.registry.createType("ExtrinsicEra", {
-      current: lastHeader.number.toNumber(),
-      period: 64,
-    });
-
-    // const accountNonce = getBalanceAccount(submitAddress)?.nonce || 0;
-    // const nonce = sdk.api.registry.createType("Compact<Index>", accountNonce);
-
-    // console.log(
-    //   specVersion.toNumber(),
-    //   transactionVersion.toNumber(),
-    //   sdk.api.genesisHash.toString(),
-    // );
-
-    const unsignedTransaction = {
-      specVersion: sdk.api.runtimeVersion.specVersion.toHex(),
-      transactionVersion: sdk.api.runtimeVersion.transactionVersion.toHex(),
-      address: wallet.activeAccount?.address,
-      blockHash: lastHeader.hash.toHex(),
-      blockNumber: blockNumber.toHex(),
-      era: era.toHex(),
-      genesisHash: sdk.api.genesisHash.toHex(),
-      method: extrinsic.method.toHex(),
-      nonce: extrinsic.nonce.toHex(),
-      signedExtensions: [
-        "CheckNonZeroSender",
-        "CheckSpecVersion",
-        "CheckTxVersion",
-        "CheckGenesis",
-        "CheckMortality",
-        "CheckNonce",
-        "CheckWeight",
-        "ChargeAssetTxPayment",
-      ],
-      tip: extrinsic.tip.toHex(),
-      version: extrinsic.version,
-    };
-    // console.log(unsignedTransaction);
-    const wcProvider = await UniversalProvider.init({
-      projectId: "bc3373ccb16b53e7d5eb57672db4b4f8",
-      relayUrl: "wss://relay.walletconnect.com",
-    });
-
-    const result = await wcProvider.client.request({
-      chainId: "polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c",
-      topic: "1af6d6ce9a3ead3db52650bb1b0b51076d5c6efba494c1ef5f3d152b4b11dd6e",
-      request: {
-        method: "polkadot_signTransaction",
-        params: {
-          address: "dE38s12vhpZtsgJKjAXBxCGKqDEEtfypufj1EebndBQnEm2gt",
-          transactionPayload: unsignedTransaction,
-        },
-      },
-    });
-    console.log(result);
-
-    const rawUnsignedTransaction = sdk.api.registry.createType(
-      "ExtrinsicPayload",
-      unsignedTransaction,
-      {
-        version: unsignedTransaction.version,
-      },
-    );
-    console.log(rawUnsignedTransaction);
-    await extrinsic.addSignature(
-      "dE38s12vhpZtsgJKjAXBxCGKqDEEtfypufj1EebndBQnEm2gt",
-      result.signature,
-      rawUnsignedTransaction,
-    );
-    console.log(extrinsic);
-    // send the signed transaction to the node
-    const unsub = await extrinsic.send(({ status, events }) => {
-      // optionally handle ready status, notify user of submission
-      console.log(status, events);
-      if (status.isReady) {
-        console.log("ready");
-      }
-
-      // optionally handle in block status, notify user of in block
-      if (status.isInBlock) {
-        console.log("inblock", status);
-      }
-
-      // let user know outcome of transaction
-      if (status.isFinalized) {
-        events.forEach(({ event: { method } }) => {
-          // if success optionally notify/update state
-          console.log(method);
-          if (method === "ExtrinsicSuccess") {
-            console.log(method);
-            unsub(); // unsubscribe from extrinsic
-          } else if (method === "ExtrinsicFailed") {
-            console.log(method);
-            // on failure optionally notify/update state
-            // ...
-            unsub(); // unsubscribe from extrinsic
-          }
-        });
-      }
-    });
-
+    console.log(signature);
     return;
     signAndSend(
       extrinsic,
