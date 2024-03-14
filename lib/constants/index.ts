@@ -87,8 +87,6 @@ const getEnvironment = (): Environment => {
   const environments = ["production", "staging", "local"];
   const env = process.env.NEXT_PUBLIC_VERCEL_ENV;
 
-  console.log("env:", env);
-
   if (env == null || !environments.includes(env)) {
     throw Error(
       `Invalid environment, please set NEXT_PUBLIC_VERCEL_ENV environment variable to one of ${environments.join(
@@ -124,6 +122,3 @@ export const endpointsProduction = getEndpointOptions("production");
 export const endpointsStaging = getEndpointOptions("staging");
 
 export const endpointOptions = getEndpointOptions(environment);
-
-console.log(endpointOptions);
-console.log(graphQlEndpoint);
