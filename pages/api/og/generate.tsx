@@ -58,7 +58,7 @@ export default async function GenerateOgImage(request: NextRequest) {
 
   const image = (
     <div
-      tw="p-16 text-white"
+      tw="px-16 pt-16 pb-24 text-white"
       style={{
         width: "100%",
         height: "100%",
