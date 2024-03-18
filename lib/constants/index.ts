@@ -34,6 +34,7 @@ export const SUPPORTED_WALLET_NAMES = [
   "talisman",
   "subwallet-js",
   "polkadot-js",
+  "web3auth",
 ];
 
 export const endpoints: EndpointOption[] = [
