@@ -101,12 +101,23 @@ export default async function GenerateOgImage(request: NextRequest) {
               {ends}
             </div>
           </div>
-          <div tw="flex flex-col">
-            <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Volume:</h2>
-            <div tw={`flex ${"text-4xl"}  -mt-1`} style={{ color: "#ABC1F9" }}>
-              {formatNumberCompact(Number(volume))} {currencyMetadata?.name}
+
+          {Number(volume) > 0 ? (
+            <div tw="flex flex-col">
+              <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Volume:</h2>
+              <div
+                tw={`flex ${"text-4xl"}  -mt-1`}
+                style={{ color: "#ABC1F9" }}
+              >
+                {formatNumberCompact(Number(volume))} {currencyMetadata?.name}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div tw="flex flex-col justify-center items-center">
+              <div tw={`font-bold ${"text-5xl"} font-sans`}>New!</div>
+            </div>
+          )}
+
           <div tw="flex ml-auto mt-4">
             <img
               style={{
