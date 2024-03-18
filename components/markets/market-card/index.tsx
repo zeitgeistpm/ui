@@ -161,9 +161,9 @@ export const MarketCard = ({
               displayPrediction && (
                 <MarketCardPredictionBar prediction={displayPrediction} />
               )
-            ) : (pool || neoPool) && scalarType ? (
+            ) : pool || neoPool ? (
               <ScalarPriceRange
-                scalarType={scalarType as "date" | "number"}
+                scalarType={(scalarType ?? "number") as "number" | "date"}
                 lowerBound={lower}
                 upperBound={upper}
                 shortPrice={marketCategories[1]?.price}
