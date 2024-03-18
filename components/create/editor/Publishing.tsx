@@ -200,6 +200,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
         let errorMessage = "Unknown error occurred.";
 
         if (StorageError.is(error)) {
+          console.log("E", error);
           errorMessage = error?.message ?? "IPFS metadata upload failed.";
         }
 
