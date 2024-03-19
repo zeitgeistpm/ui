@@ -11,6 +11,7 @@ export type FullCmsMarketMetadata = {
     chain?: "polkadot" | "kusama";
     referendumIndex?: number;
   };
+  twitchStreamUrl?: string;
 };
 export type CmsMarketCardMetadata = {
   marketId?: number | null;
@@ -24,6 +25,7 @@ const fullFields = groq`{
   description,
   "imageUrl": img.asset->url,
   referendumRef,
+  twitchStreamUrl
 }`;
 
 const cardFields = groq`{
