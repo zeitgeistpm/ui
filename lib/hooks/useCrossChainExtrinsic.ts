@@ -128,8 +128,6 @@ export const useCrossChainExtrinsic = <T>(
         sdk.api,
         extrinsic,
         wallet.activeAccount?.address,
-        provider,
-        topic,
         extrinsicCallback(extrinsicCallbackParams),
       ).catch((error) => {
         notifications.pushNotification(error?.toString() ?? "Unknown Error", {

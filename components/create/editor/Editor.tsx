@@ -100,11 +100,6 @@ export const MarketEditor = () => {
 
   const isLoaded = Boolean(chainTime && isFetched);
 
-  //TODO: add wallet connect logic here with sendUnsigned
-  if (wallet.walletId === "walletconnect") {
-    return;
-  }
-
   const signer = wallet.getSigner();
   const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
 

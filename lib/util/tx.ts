@@ -6,6 +6,8 @@ import type { ApiPromise } from "@polkadot/api";
 import { GenericExtrinsicPayload } from "@polkadot/types/extrinsic";
 import { UseNotifications } from "lib/state/notifications";
 import { unsubOrWarns } from "./unsub-or-warns";
+import { useAtom } from "jotai";
+import { providerAtom, topicAtom } from "lib/state/util/web3auth-config";
 
 type GenericCallback = (...args: any[]) => void;
 
@@ -105,34 +107,35 @@ export const extrinsicCallback = ({
   };
 };
 
+const _callback = (
+  result: ISubmittableResult,
+  _resolve: (value: boolean | PromiseLike<boolean>) => void,
+  _reject: (value: boolean | PromiseLike<boolean>) => void,
+  _unsub: any,
+) => {
+  const { events, status } = result;
+  if (status.isInBlock) {
+    events.forEach(({ phase, event: { data, method, section } }) => {
+      console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+
+      if (method == "ExtrinsicSuccess") {
+        unsubOrWarns(_unsub);
+        _reject(true);
+      }
+      if (method == "ExtrinsicFailed") {
+        unsubOrWarns(_unsub);
+        _reject(false);
+      }
+    });
+  }
+};
+
 export const signAndSend = async (
   tx: SubmittableExtrinsic<"promise">,
   signer: KeyringPairOrExtSigner,
   cb?: GenericCallback,
   foreignAssetNumber?: number,
 ) => {
-  const _callback = (
-    result: ISubmittableResult,
-    _resolve: (value: boolean | PromiseLike<boolean>) => void,
-    _reject: (value: boolean | PromiseLike<boolean>) => void,
-    _unsub: any,
-  ) => {
-    const { events, status } = result;
-    if (status.isInBlock) {
-      events.forEach(({ phase, event: { data, method, section } }) => {
-        console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
-
-        if (method == "ExtrinsicSuccess") {
-          unsubOrWarns(_unsub);
-          _reject(true);
-        }
-        if (method == "ExtrinsicFailed") {
-          unsubOrWarns(_unsub);
-          _reject(false);
-        }
-      });
-    }
-  };
   return new Promise(async (resolve, reject) => {
     try {
       if (isExtSigner(signer)) {
@@ -159,38 +162,16 @@ export const signAndSend = async (
   });
 };
 
-const _callback = (
-  result: ISubmittableResult,
-  _resolve: (value: boolean | PromiseLike<boolean>) => void,
-  _reject: (value: boolean | PromiseLike<boolean>) => void,
-  _unsub: any,
-) => {
-  const { events, status } = result;
-  if (status.isInBlock) {
-    events.forEach(({ phase, event: { data, method, section } }) => {
-      console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
-
-      if (method == "ExtrinsicSuccess") {
-        unsubOrWarns(_unsub);
-        _reject(true);
-      }
-      if (method == "ExtrinsicFailed") {
-        unsubOrWarns(_unsub);
-        _reject(false);
-      }
-    });
-  }
-};
-
 export const sendUnsigned = async (
   api: ApiPromise,
   tx: SubmittableExtrinsic<"promise">,
   address: string,
-  provider: IUniversalProvider,
-  topic: string,
   cb?: GenericCallback,
 ) => {
-  return new Promise(async (resolve, reject) => {
+  const [provider] = useAtom(providerAtom);
+  const [topic] = useAtom(topicAtom);
+
+  return new Promise<ISubmittableResult>(async (resolve, reject) => {
     try {
       if (!provider || !topic) return;
 
@@ -248,14 +229,23 @@ export const sendUnsigned = async (
         api.registry.createType("ExtrinsicPayload", unsignedTransaction, {
           version: unsignedTransaction.version,
         });
-
+      console.log(result, rawUnsignedTransaction);
       tx.addSignature(
         address,
         result.signature,
         rawUnsignedTransaction.toU8a(),
       );
-      const unsub = await tx.send((result) => {
-        cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
+
+      const unsub = await tx.send((result: ISubmittableResult) => {
+        console.log(result);
+        if (cb) {
+          cb(result, unsub);
+        } else {
+          if (result.status.isFinalized || result.status.isInBlock) {
+            console.log(resolve(result), result);
+            resolve(result);
+          }
+        }
       });
     } catch (error) {
       reject(error);

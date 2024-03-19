@@ -32,6 +32,9 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import { RiSendPlaneLine } from "react-icons/ri";
+import { useAtom } from "jotai";
+import { providerAtom, topicAtom } from "lib/state/util/web3auth-config";
+import { sendUnsigned } from "lib/util/tx";
 
 export type PublishingProps = {
   editor: MarketDraftEditor;
@@ -46,6 +49,8 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
   const [isTransacting, setIsTransacting] = useState(false);
   const [totalCostIsOpen, setTotalCostIsOpen] = useState(false);
   const { data: constants } = useChainConstants();
+  const [provider] = useAtom(providerAtom);
+  const [topic] = useAtom(topicAtom);
 
   const feesEnabled = !(
     !sdk ||
@@ -147,7 +152,19 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
         });
 
         const result = await sdk.model.markets.create(
-          creationParams,
+          {
+            ...creationParams,
+            signer: {
+              address: wallet.activeAccount?.address!,
+              handle: async (extrinsic) => {
+                return await sendUnsigned(
+                  sdk.api,
+                  extrinsic,
+                  wallet.activeAccount?.address!,
+                );
+              },
+            },
+          },
           IOForeignAssetId.is(feeDetails?.assetId)
             ? feeDetails?.assetId
             : undefined,
