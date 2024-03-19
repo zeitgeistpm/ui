@@ -65,10 +65,11 @@ const ClaimPage: NextPage = () => {
                 }}
               />
               <button
-                className="w-[200px] rounded-md bg-[#2468E2] text-white"
+                className="w-[200px] rounded-md bg-[#2468E2] text-white disabled:opacity-50"
                 onClick={() => {
                   setShowEligibility(true);
                 }}
+                disabled={polkadotAddress === "" || polkadotAddress == null}
               >
                 Check Eligibility
               </button>
@@ -167,8 +168,12 @@ const Eligibility = ({
                 )}
               </div>
               <button
-                className="w-[200px] rounded-md bg-[#2468E2] text-white"
-                disabled={claimAddress === null || isValid === false}
+                className="w-[200px] rounded-md bg-[#2468E2] text-white disabled:opacity-50"
+                disabled={
+                  claimAddress === null ||
+                  isValid === false ||
+                  wallet.connected === false
+                }
                 onClick={() => submitClaim()}
               >
                 Claim Airdrop
