@@ -1,5 +1,5 @@
 import { ImageResponse } from "@vercel/og";
-import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { getFallbackImage } from "lib/hooks/useMarketImage";
 import { formatNumberCompact } from "lib/util/format-compact";
 import type { PageConfig } from "next";
 import { NextRequest } from "next/server";
@@ -20,8 +20,14 @@ export default async function GenerateOgImage(request: NextRequest) {
 
   const marketId = searchParams.get("marketId");
 
-  const url = request.nextUrl.clone();
-  url.pathname = `/api/og/${marketId}`;
+  const marketUrl = request.nextUrl.clone();
+  marketUrl.pathname = `/api/og/${marketId}`;
+
+  const cmsUrl = `${
+    marketUrl.origin
+  }/api/cms/market-metadata/batch?marketIds=${JSON.stringify([
+    Number(marketId),
+  ])}`;
 
   const {
     market,
@@ -29,32 +35,48 @@ export default async function GenerateOgImage(request: NextRequest) {
     prediction,
     ends,
     currencyMetadata,
-  }: MarketImageData = await fetch(url.href).then((r) => r.json());
+  }: MarketImageData = await fetch(marketUrl.href).then((r) => r.json());
 
-  if (!market?.question) return;
+  const cmsRes = await fetch(cmsUrl).then((r) => r.json());
+  const cmsImageUrl = cmsRes[0]?.imageUrl;
+  const cmsQuestion = cmsRes[0]?.question;
 
-  const questionClass = market.question.length > 90 ? "text-4xl" : "text-5xl";
+  const fallbackImagePath = `../../../public${getFallbackImage(
+    market.tags,
+    Number(marketId),
+  )}`;
 
-  const [boldFont, regularFont, bg, zeitgeistBadge] = await Promise.all([
-    fetch(
-      new URL(
-        "../../../public/fonts/inter/static/Inter-Bold.ttf",
-        import.meta.url,
-      ).href,
-    ).then((res) => res.arrayBuffer()),
-    fetch(
-      new URL(
-        "../../../public/fonts/inter/static/Inter-Regular.ttf",
-        import.meta.url,
-      ).href,
-    ).then((res) => res.arrayBuffer()),
-    fetch(new URL("../../../public/og/bg1.png", import.meta.url)).then((res) =>
-      res.arrayBuffer(),
-    ),
-    fetch(
-      new URL("../../../public/og/zeitgeist_badge.png", import.meta.url),
-    ).then((res) => res.arrayBuffer()),
-  ]);
+  const question = cmsQuestion ?? market?.question;
+
+  if (!question) return;
+
+  const questionClass = question.length > 90 ? "text-4xl" : "text-5xl";
+
+  const [boldFont, regularFont, bg, zeitgeistBadge, fallbackImage] =
+    await Promise.all([
+      fetch(
+        new URL(
+          "../../../public/fonts/inter/static/Inter-Bold.ttf",
+          import.meta.url,
+        ).href,
+      ).then((res) => res.arrayBuffer()),
+      fetch(
+        new URL(
+          "../../../public/fonts/inter/static/Inter-Regular.ttf",
+          import.meta.url,
+        ).href,
+      ).then((res) => res.arrayBuffer()),
+      fetch(new URL("../../../public/og/bg1.png", import.meta.url)).then(
+        (res) => res.arrayBuffer(),
+      ),
+      fetch(
+        new URL("../../../public/og/zeitgeist_badge.png", import.meta.url),
+      ).then((res) => res.arrayBuffer()),
+      fetch(
+        new URL("../../../public/categories/sports/4.png", import.meta.url),
+        // new URL(fallbackImagePath, import.meta.url),
+      ).then((res) => res.arrayBuffer()),
+    ]);
 
   const image = (
     <div
@@ -75,10 +97,21 @@ export default async function GenerateOgImage(request: NextRequest) {
         }}
       />
       <div tw="flex flex-col h-full w-full">
-        <h1 tw={`${questionClass}`} style={{ lineHeight: "1.3em" }}>
-          {market.question}
-        </h1>
-        <div tw="flex flex-col mt-20">
+        <div tw="flex">
+          <img
+            style={{
+              width: 150,
+              height: 150,
+              objectFit: "cover",
+            }}
+            src={cmsImageUrl ?? fallbackImage}
+            tw="rounded-[5px]"
+          />
+          <h1 tw={`${questionClass} ml-6`} style={{ lineHeight: "1.3em" }}>
+            {question}
+          </h1>
+        </div>
+        <div tw="flex flex-col mt-10">
           <h2 tw={`font-bold text-4xl font-sans`}>
             {market.status === "Reported" || market.status === "Resolved"
               ? "Winning Outcome:"
