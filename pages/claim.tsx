@@ -80,6 +80,7 @@ const ClaimPage: NextPage = () => {
             address={polkadotAddress}
             onCheckAgain={() => {
               setShowEligibility(false);
+              setPolkadotAddress("");
             }}
           />
         )}
