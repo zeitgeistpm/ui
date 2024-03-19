@@ -22,7 +22,7 @@ const ClaimPage: NextPage = () => {
   return (
     <div className="relative mt-10 flex items-center justify-center">
       <div
-        className="absolute z-0 h-full w-full overflow-hidden"
+        className="absolute z-[-1] h-full w-full overflow-hidden"
         style={{
           background:
             "radial-gradient(50% 50% at 50% 50%, rgba(254, 207, 255, 0.3) 20.83%, rgba(205, 222, 255, 0.3) 54.17%, rgba(201, 232, 255, 0.3) 57.29%, rgba(245, 245, 245, 0) 100%)",
