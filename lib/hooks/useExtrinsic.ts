@@ -53,8 +53,6 @@ export const useExtrinsic = <T>(
       throw new Error("SDK is not RPC");
     }
 
-    const signer = wallet.getSigner();
-
     let extrinsic = extrinsicFn(params);
     if (!extrinsic) return;
 
@@ -126,6 +124,7 @@ export const useExtrinsic = <T>(
         setIsLoading(false);
       });
     } else {
+      const signer = wallet.getSigner();
       if (!signer) return;
 
       signAndSend(

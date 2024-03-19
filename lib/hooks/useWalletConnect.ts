@@ -3,11 +3,6 @@ import { WalletConnectModal } from "@walletconnect/modal";
 import { useWallet } from "lib/state/wallet";
 import { useAtom } from "jotai";
 import { providerAtom, topicAtom } from "lib/state/util/web3auth-config";
-import { hexToU8a, isHex } from "@polkadot/util";
-import { decodeAddress } from "@polkadot/keyring";
-export interface WalletConnectAccounts {
-  address: Uint8Array[];
-}
 
 const useWalletConnectInit = () => {
   const [, setProvider] = useAtom(providerAtom);
@@ -48,27 +43,15 @@ const useWalletConnectInit = () => {
       .map((namespace) => namespace.accounts)
       .flat();
 
-    // const extractedAccounts =
-    //   walletConnectAccounts.reduce<WalletConnectAccounts>(
-    //     (acc, wcAccount) => {
-    //       const address = wcAccount.split(":")[2].toString();
-    //       const formattedAddress = isHex(address)
-    //         ? hexToU8a(address)
-    //         : decodeAddress(address);
-    //       if (acc.address.length < 1) {
-    //         acc.address = [formattedAddress];
-    //       } else {
-    //         acc.address = [...acc.address, formattedAddress];
-    //       }
-    //       return acc;
-    //     },
-    //     { address: [] },
-    //   );
+    const accounts = walletConnectAccounts.map((wcAccount) => {
+      const address = wcAccount.split(":")[2];
+      return address;
+    });
 
     await walletConnectModal.closeModal();
-    console.log(walletConnectAccounts);
-    if (walletConnectAccounts.length > 0) {
-      selectWallet("walletconnect", { address: walletConnectAccounts });
+
+    if (accounts.length > 0) {
+      selectWallet("walletconnect", accounts);
     }
   };
 

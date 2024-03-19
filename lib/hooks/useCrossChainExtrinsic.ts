@@ -12,6 +12,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { currencyBalanceRootKey } from "./queries/useCurrencyBalances";
 import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import { useExtrinsicFee } from "./queries/useExtrinsicFee";
+import { useAtom } from "jotai";
+import { providerAtom, topicAtom } from "lib/state/util/web3auth-config";
+import { sendUnsigned } from "lib/util/tx";
 
 export const useCrossChainExtrinsic = <T>(
   extrinsicFn: (
@@ -33,6 +36,8 @@ export const useCrossChainExtrinsic = <T>(
   const [isLoading, setIsLoading] = useState(false);
   const { api: sourceChainApi } = useChain(sourceChain);
   const { api: destinationChainApi } = useChain(destinationChain);
+  const [provider] = useAtom(providerAtom);
+  const [topic] = useAtom(topicAtom);
 
   const extrinsic = useMemo(() => {
     const ext = extrinsicFn();
@@ -52,7 +57,6 @@ export const useCrossChainExtrinsic = <T>(
     let extrinsic = extrinsicFn(params);
 
     const proxy = wallet?.getProxyFor(wallet.activeAccount?.address);
-    let signer = wallet.getSigner();
 
     if (extrinsic && proxy?.enabled && proxy?.address) {
       console.info("Proxying cross chain transaction");
@@ -65,69 +69,92 @@ export const useCrossChainExtrinsic = <T>(
       );
     }
 
-    if (!signer || !extrinsic || !sourceChainApi || !destinationChainApi)
-      return;
+    if (!extrinsic || !sourceChainApi || !destinationChainApi) return;
 
-    signAndSend(
-      extrinsic,
-      signer,
-      extrinsicCallback({
-        api: sourceChainApi,
-        notifications,
-        successCallback: async (data) => {
-          callbacks?.onSourceSuccess && callbacks.onSourceSuccess(data);
+    const extrinsicCallbackParams = {
+      api: sourceChainApi,
+      notifications,
+      successCallback: async (data) => {
+        callbacks?.onSourceSuccess && callbacks.onSourceSuccess(data);
 
-          const unsub = await destinationChainApi.query.system.events(
-            (events) => {
-              for (const record of events) {
-                const { event } = record;
-                const { method } = event;
-                const types = event.typeDef;
+        const unsub = await destinationChainApi.query.system.events(
+          (events) => {
+            for (const record of events) {
+              const { event } = record;
+              const { method } = event;
+              const types = event.typeDef;
 
-                // assumes that any activity for the connected address on the destination
-                // chain means that there has been a successful deposit
-                const destinationChainActivityDetected = event.data.some(
-                  (data, index) =>
-                    types[index].type === "AccountId32" &&
-                    ["deposit", "deposited"].includes(method.toLowerCase()) &&
-                    encodeAddress(
-                      decodeAddress(wallet.activeAccount?.address),
-                    ) === encodeAddress(decodeAddress(data.toString())),
-                );
+              // assumes that any activity for the connected address on the destination
+              // chain means that there has been a successful deposit
+              const destinationChainActivityDetected = event.data.some(
+                (data, index) =>
+                  types[index].type === "AccountId32" &&
+                  ["deposit", "deposited"].includes(method.toLowerCase()) &&
+                  encodeAddress(
+                    decodeAddress(wallet.activeAccount?.address),
+                  ) === encodeAddress(decodeAddress(data.toString())),
+              );
 
-                if (destinationChainActivityDetected) {
-                  unsub();
-                  setIsLoading(false);
-                  setIsSuccess(true);
-                  callbacks?.onDestinationSuccess &&
-                    callbacks.onDestinationSuccess();
+              if (destinationChainActivityDetected) {
+                unsub();
+                setIsLoading(false);
+                setIsSuccess(true);
+                callbacks?.onDestinationSuccess &&
+                  callbacks.onDestinationSuccess();
 
-                  queryClient.invalidateQueries([
-                    id,
-                    currencyBalanceRootKey,
-                    wallet.activeAccount?.address,
-                  ]);
-                  break;
-                }
+                queryClient.invalidateQueries([
+                  id,
+                  currencyBalanceRootKey,
+                  wallet.activeAccount?.address,
+                ]);
+                break;
               }
-            },
-          );
-        },
-        failCallback: (error) => {
-          setIsLoading(false);
-          setIsError(true);
+            }
+          },
+        );
+      },
+      failCallback: (error) => {
+        setIsLoading(false);
+        setIsError(true);
 
-          callbacks?.onSourceError && callbacks.onSourceError();
-          notifications.pushNotification(error, { type: "Error" });
-        },
-      }),
-      IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
-    ).catch((error) => {
-      notifications.pushNotification(error?.toString() ?? "Unknown Error", {
-        type: "Error",
+        callbacks?.onSourceError && callbacks.onSourceError();
+        notifications.pushNotification(error, { type: "Error" });
+      },
+    };
+
+    if (wallet.walletId === "walletconnect") {
+      if (!wallet.activeAccount?.address) return;
+      sendUnsigned(
+        sdk.api,
+        extrinsic,
+        wallet.activeAccount?.address,
+        provider,
+        topic,
+        extrinsicCallback(extrinsicCallbackParams),
+      ).catch((error) => {
+        notifications.pushNotification(error?.toString() ?? "Unknown Error", {
+          type: "Error",
+        });
+        setIsLoading(false);
       });
-      setIsLoading(false);
-    });
+    } else {
+      let signer = wallet.getSigner();
+      if (!signer) return;
+
+      signAndSend(
+        extrinsic,
+        signer,
+        extrinsicCallback(extrinsicCallbackParams),
+        IOForeignAssetId.is(fee?.assetId)
+          ? fee?.assetId.ForeignAsset
+          : undefined,
+      ).catch((error) => {
+        notifications.pushNotification(error?.toString() ?? "Unknown Error", {
+          type: "Error",
+        });
+        setIsLoading(false);
+      });
+    }
   };
 
   return { send, isError, isSuccess, isLoading };

@@ -27,7 +27,6 @@ import {
   removeNotification,
 } from "./notifications";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
-import { WalletConnectAccounts } from "../hooks/useWalletConnect";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -59,10 +58,7 @@ export type UseWallet = WalletState & {
    * @param wallet the selected wallet id or instance
    * @returns void
    */
-  selectWallet: (
-    wallet: string,
-    keyPair?: KeyringPair | WalletConnectAccounts,
-  ) => void;
+  selectWallet: (wallet: string, keyPair?: KeyringPair | string[]) => void;
   /**
    * Select an address.
    * @param account the address to select
@@ -113,7 +109,7 @@ export type WalletState = {
   /**
    * Instance of the current wallet.
    */
-  wallet?: BaseDotsamaWallet | KeyringPairOrExtSigner | WalletConnectAccounts;
+  wallet?: BaseDotsamaWallet | KeyringPairOrExtSigner | string[];
   /**
    * The accounts of the current wallet.
    */
@@ -245,7 +241,7 @@ let currentErrorNotification: Readonly<Notification> | null = null;
 
 const enableWallet = async (
   walletId: string,
-  keyPair?: KeyringPair | Uint8Array[],
+  keyPair?: KeyringPair | string[],
 ) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
 
@@ -253,21 +249,26 @@ const enableWallet = async (
     (walletId === "web3auth" && keyPair) ||
     (walletId === "walletconnect" && keyPair)
   ) {
-    console.log(keyPair);
     store.set(walletAtom, (state) => {
+      let address;
+      if (keyPair instanceof Array) {
+        address = keyPair;
+      } else {
+        address = [keyPair?.address];
+      }
       return {
         ...state,
         wallet: { ...keyPair },
         connected: true,
         walletId: walletId,
         accounts:
-          [keyPair?.address].map((account) => {
+          address.map((account) => {
             return {
               address: encodeAddress(account, 73),
             };
           }) ?? [],
         errors:
-          [keyPair?.address].length === 0
+          [address].length === 0
             ? [
                 {
                   extensionName: walletId,
@@ -416,7 +417,7 @@ export const useWallet = (): UseWallet => {
 
   const selectWallet = (
     wallet: BaseDotsamaWallet | string,
-    keyPair?: KeyringPair | Uint8Array[],
+    keyPair?: KeyringPair,
   ) => {
     setUserConfig({
       ...userConfig,
@@ -437,7 +438,7 @@ export const useWallet = (): UseWallet => {
   };
 
   const getSigner = (): KeyringPairOrExtSigner | undefined => {
-    if (!walletState.wallet) {
+    if (!walletState.wallet || walletState.wallet instanceof Array) {
       return;
     }
     if (walletState.wallet instanceof BaseDotsamaWallet) {
