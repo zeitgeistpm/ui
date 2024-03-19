@@ -104,7 +104,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
       editor.form.moderation === "Permissionless" &&
         editor.form.liquidity?.deploy &&
         editor.form.currency === "ZTG"
-        ? new Decimal(editor.form.liquidity.amount ?? 0).toNumber()
+        ? new Decimal(editor.form.liquidity.amount || 0).toNumber()
         : 0,
     )
     .plus(ztgTransactionFee ?? 0);
@@ -121,7 +121,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
 
   const foreignCurrencyCost =
     editor.form.liquidity?.deploy && editor.form.currency !== "ZTG"
-      ? new Decimal(editor.form.liquidity.amount ?? 0)
+      ? new Decimal(editor.form.liquidity.amount || 0)
           .mul(2)
           .plus(baseAssetTransactionFee ?? 0)
       : null;
@@ -152,7 +152,9 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
             ? feeDetails?.assetId
             : undefined,
         );
-        const marketId = result.saturate().unwrap().market.marketId;
+
+        const { market } = result.saturate().unwrap();
+        const marketId = market.marketId;
 
         editor.published(marketId);
 
@@ -198,7 +200,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
         let errorMessage = "Unknown error occurred.";
 
         if (StorageError.is(error)) {
-          errorMessage = "IPFS metadata upload failed.";
+          errorMessage = error?.message ?? "IPFS metadata upload failed.";
         }
 
         if (isArray(error?.docs)) {
@@ -314,7 +316,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
                                 </h4>
                                 <div className="">
                                   {new Decimal(
-                                    editor.form.liquidity.amount ?? 0,
+                                    editor.form.liquidity.amount || 0,
                                   ).toFixed(1)}{" "}
                                   {editor.form.currency}
                                 </div>

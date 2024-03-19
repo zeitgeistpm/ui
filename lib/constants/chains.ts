@@ -96,7 +96,7 @@ const PROD_CHAINS: Chain[] = [
     name: "Polkadot",
     isRelayChain: true,
     withdrawFee: "0.0422 DOT", // informed from testing
-    depositFee: new Decimal(0.02).mul(ZTG), // informed from testing
+    depositFee: new Decimal(0.064).mul(ZTG), // informed from testing
     endpoints: [
       "wss://rpc.polkadot.io",
       "wss://polkadot-rpc.dwellir.com",
