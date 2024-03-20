@@ -5,19 +5,22 @@ import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { NextPage } from "next";
 import { ChangeEvent, useState } from "react";
-import Image from "next/image";
+import airdrop from "../public/airdrop.json";
 
-const claimListMock: { address: string; amount: string }[] = [
-  { address: "1vcwFJXqgzJPAmt81v4oFAdeKnSfSEzTauMNbGvRcT1F26J", amount: "100" },
-];
+const TOTAL_AIRDROP_ZTG = 1_000_000;
+const ZTG_PER_ADDRESS = TOTAL_AIRDROP_ZTG / airdrop.length;
 
 const ClaimPage: NextPage = () => {
   const { connected, realAddress } = useWallet();
   const [showEligibility, setShowEligibility] = useState(false);
   const [polkadotAddress, setPolkadotAddress] = useState("");
+  console.log(Math.floor(ZTG_PER_ADDRESS));
 
   // const polkadotAddress =
   // realAddress && encodeAddress(decodeAddress(realAddress), 0);
+
+  const isValidPolkadotAddress =
+    polkadotAddress == "" || validateAddress(polkadotAddress, 0);
 
   return (
     <div className="relative mt-10 flex items-center justify-center">
@@ -54,13 +57,22 @@ const ClaimPage: NextPage = () => {
               Enter Your Polkadot address below to check your eligibility:
             </div>
             <div className="flex w-full flex-col gap-4 rounded-md bg-[#DFE5ED] p-7 sm:flex-row">
-              <input
-                className="w-full rounded-md bg-white p-2"
-                placeholder="Enter Polkadot address"
-                onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                  setPolkadotAddress(event.target.value);
-                }}
-              />
+              <div className="relative flex w-full flex-col">
+                <input
+                  className="w-full rounded-md bg-white p-2"
+                  placeholder="Enter Polkadot address"
+                  spellCheck={false}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                    setPolkadotAddress(event.target.value);
+                  }}
+                />
+                {isValidPolkadotAddress === false && (
+                  <div className="absolute top-10 text-xs text-red-600">
+                    Invalid Polkadot address
+                  </div>
+                )}
+              </div>
+
               <button
                 className="h-[40px] w-full rounded-md bg-[#2468E2] text-white disabled:opacity-50 sm:w-[200px]"
                 onClick={() => {
@@ -98,10 +110,11 @@ const Eligibility = ({
 
   const [claimAddress, setClaimAddress] = useState<string | null>(null);
   const { api } = usePolkadotApi();
-  const claim = claimListMock.find((c) => c.address === address);
 
-  const isValid =
-    claimAddress === null || validateZeigeistAddress(claimAddress);
+  //todo: formatting
+  const claim = airdrop.some((airdropAddress) => airdropAddress === address);
+
+  const isValid = claimAddress === null || validateAddress(claimAddress, 73);
   const tx = api?.tx.system.remark(`zeitgeistairdrop-1-${claimAddress}`);
 
   const txHex = tx?.toHex();
@@ -146,8 +159,8 @@ const Eligibility = ({
       {claim ? (
         <>
           <div className="w-full text-xl font-bold">
-            You are eligible for {claim.amount} ZTG, enter Zeitgeist address to
-            claim
+            You are eligible for at least {Math.floor(ZTG_PER_ADDRESS)} ZTG,
+            enter Zeitgeist address to claim
           </div>
           <div className="flex w-full flex-col">
             <div className="flex w-full flex-col gap-4 rounded-md bg-[#DFE5ED] p-7 sm:flex-row">
@@ -155,13 +168,14 @@ const Eligibility = ({
                 <input
                   className="w-full rounded-md bg-white p-2"
                   placeholder="Zeitgeist Address"
+                  spellCheck={false}
                   onChange={(event: ChangeEvent<HTMLInputElement>) => {
                     setClaimAddress(event.target.value);
                   }}
                 />
                 {isValid === false && (
                   <div className="absolute top-10 text-xs text-red-600">
-                    Invalid address
+                    Invalid Zeitgeist address
                   </div>
                 )}
               </div>
@@ -204,9 +218,12 @@ const Eligibility = ({
   );
 };
 
-const validateZeigeistAddress = (address: string) => {
+const validateAddress = (address: string, ss58Format: number) => {
   try {
-    const encodedAddress = encodeAddress(decodeAddress(address), 73).toString();
+    const encodedAddress = encodeAddress(
+      decodeAddress(address),
+      ss58Format,
+    ).toString();
 
     return encodedAddress === address;
   } catch {
