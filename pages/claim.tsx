@@ -186,7 +186,7 @@ const Eligibility = ({
               rel="noreferrer"
               className="mt-3 text-sm text-blue-700"
             >
-              Wallet not supported? Sign on Polkadot.js/apps
+              Wallet not supported? Sign with Polkadot.js/apps
             </a>
           </div>
         </>
