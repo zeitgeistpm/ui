@@ -30,14 +30,11 @@ const ClaimPage: NextPage = () => {
       ></div>
       <div className="flex max-w-[850px] flex-col items-center justify-center gap-y-5">
         <div className="flex w-full gap-x-10">
-          <div
-            className="w-full text-6xl font-bold"
-            style={{ lineHeight: "77px" }}
-          >
+          <div className="w-full  text-4xl font-bold sm:text-5xl sm:!leading-[77px] md:text-6xl">
             Find out if you are eligible for the Airdrop
           </div>
           <img
-            className=" relative mr-auto w-2/5 scale-110"
+            className="relative mr-auto hidden w-2/5 scale-110 sm:block"
             // width={500}
             // height={100}
             // fill={true}
@@ -56,7 +53,7 @@ const ClaimPage: NextPage = () => {
             <div className="w-full text-xl font-bold">
               Enter Your Polkadot address below to check your eligibility:
             </div>
-            <div className="flex w-full gap-4 rounded-md bg-[#DFE5ED] p-7">
+            <div className="flex w-full flex-col gap-4 rounded-md bg-[#DFE5ED] p-7 sm:flex-row">
               <input
                 className="w-full rounded-md bg-white p-2"
                 placeholder="Enter Polkadot address"
@@ -65,7 +62,7 @@ const ClaimPage: NextPage = () => {
                 }}
               />
               <button
-                className="w-[200px] rounded-md bg-[#2468E2] text-white disabled:opacity-50"
+                className="h-[40px] w-full rounded-md bg-[#2468E2] text-white disabled:opacity-50 sm:w-[200px]"
                 onClick={() => {
                   setShowEligibility(true);
                 }}
@@ -153,7 +150,7 @@ const Eligibility = ({
             claim
           </div>
           <div className="flex w-full flex-col">
-            <div className="flex w-full gap-4 rounded-md bg-[#DFE5ED] p-7">
+            <div className="flex w-full flex-col gap-4 rounded-md bg-[#DFE5ED] p-7 sm:flex-row">
               <div className="relative flex w-full flex-col">
                 <input
                   className="w-full rounded-md bg-white p-2"
@@ -169,7 +166,7 @@ const Eligibility = ({
                 )}
               </div>
               <button
-                className="w-[200px] rounded-md bg-[#2468E2] text-white disabled:opacity-50"
+                className="h-[40px] w-full rounded-md bg-[#2468E2] text-white disabled:opacity-50 sm:w-[200px]"
                 disabled={
                   claimAddress === null ||
                   isValid === false ||
