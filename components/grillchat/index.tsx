@@ -15,11 +15,12 @@ const GrillChat: React.FC<GrillChatProps> = () => {
     if (isInitialised === false) {
       grill.init({
         theme: "light",
+        widgetElementId: "grill",
+        hub: { id: "12661" },
         channel: {
           type: "channel",
-          id: "zeitgeist-2052",
+          id: "92846",
           settings: {
-            enableInputAutofocus: false, // doesn't work
             enableBackButton: false,
             enableLoginButton: true,
           },
