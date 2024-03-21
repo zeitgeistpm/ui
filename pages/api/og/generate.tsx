@@ -37,8 +37,8 @@ export default async function GenerateOgImage(request: NextRequest) {
   }: MarketImageData = await fetch(marketUrl.href).then((r) => r.json());
 
   const cmsRes = await fetch(cmsUrl).then((r) => r.json());
-  const cmsImageUrl = cmsRes[0]?.imageUrl;
-  const cmsQuestion = cmsRes[0]?.question;
+  const cmsImageUrl = cmsRes?.[0]?.imageUrl;
+  const cmsQuestion = cmsRes?.[0]?.question;
 
   const fallbackImagePath = `${urlBase}${getFallbackImage(
     market.tags,
