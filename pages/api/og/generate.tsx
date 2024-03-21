@@ -18,16 +18,15 @@ export default async function GenerateOgImage(request: NextRequest) {
     });
   }
 
-  const marketId = searchParams.get("marketId");
+  const urlBase = request.nextUrl.origin;
 
+  const marketId = searchParams.get("marketId");
   const marketUrl = request.nextUrl.clone();
   marketUrl.pathname = `/api/og/${marketId}`;
 
-  const cmsUrl = `${
-    marketUrl.origin
-  }/api/cms/market-metadata/batch?marketIds=${JSON.stringify([
-    Number(marketId),
-  ])}`;
+  const cmsUrl = `${urlBase}/api/cms/market-metadata/batch?marketIds=${JSON.stringify(
+    [Number(marketId)],
+  )}`;
 
   const {
     market,
@@ -41,7 +40,7 @@ export default async function GenerateOgImage(request: NextRequest) {
   const cmsImageUrl = cmsRes[0]?.imageUrl;
   const cmsQuestion = cmsRes[0]?.question;
 
-  const fallbackImagePath = `../../../public${getFallbackImage(
+  const fallbackImagePath = `${urlBase}${getFallbackImage(
     market.tags,
     Number(marketId),
   )}`;
@@ -52,32 +51,26 @@ export default async function GenerateOgImage(request: NextRequest) {
 
   const questionClass = question.length > 90 ? "text-4xl" : "text-5xl";
 
-  const [boldFont, regularFont, bg, zeitgeistBadge, fallbackImage] =
-    await Promise.all([
-      fetch(
-        new URL(
-          "../../../public/fonts/inter/static/Inter-Bold.ttf",
-          import.meta.url,
-        ).href,
-      ).then((res) => res.arrayBuffer()),
-      fetch(
-        new URL(
-          "../../../public/fonts/inter/static/Inter-Regular.ttf",
-          import.meta.url,
-        ).href,
-      ).then((res) => res.arrayBuffer()),
-      fetch(new URL("../../../public/og/bg1.png", import.meta.url)).then(
-        (res) => res.arrayBuffer(),
-      ),
-      fetch(
-        new URL("../../../public/og/zeitgeist_badge.png", import.meta.url),
-      ).then((res) => res.arrayBuffer()),
-      fetch(
-        new URL("../../../public/categories/sports/4.png", import.meta.url),
-        // new URL(fallbackImagePath, import.meta.url),
-      ).then((res) => res.arrayBuffer()),
-    ]);
-
+  const [boldFont, regularFont, bg, zeitgeistBadge] = await Promise.all([
+    fetch(
+      new URL(
+        "../../../public/fonts/inter/static/Inter-Bold.ttf",
+        import.meta.url,
+      ).href,
+    ).then((res) => res.arrayBuffer()),
+    fetch(
+      new URL(
+        "../../../public/fonts/inter/static/Inter-Regular.ttf",
+        import.meta.url,
+      ).href,
+    ).then((res) => res.arrayBuffer()),
+    fetch(new URL("../../../public/og/bg1.png", import.meta.url)).then((res) =>
+      res.arrayBuffer(),
+    ),
+    fetch(
+      new URL("../../../public/og/zeitgeist_badge.png", import.meta.url),
+    ).then((res) => res.arrayBuffer()),
+  ]);
   const image = (
     <div
       tw="px-16 pt-16 pb-24 text-white"
@@ -104,7 +97,7 @@ export default async function GenerateOgImage(request: NextRequest) {
               height: 150,
               objectFit: "cover",
             }}
-            src={cmsImageUrl ?? fallbackImage}
+            src={cmsImageUrl ?? fallbackImagePath}
             tw="rounded-[5px]"
           />
           <h1 tw={`${questionClass} ml-6`} style={{ lineHeight: "1.3em" }}>
