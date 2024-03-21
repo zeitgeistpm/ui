@@ -5,7 +5,7 @@ import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { NextPage } from "next";
 import { ChangeEvent, useState } from "react";
-import airdrop from "../public/airdrop.json";
+import airdrop from "../public/airdrop-mock.json";
 
 const TOTAL_AIRDROP_ZTG = 1_000_000;
 const ZTG_PER_ADDRESS = TOTAL_AIRDROP_ZTG / airdrop.length;
