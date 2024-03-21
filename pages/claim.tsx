@@ -11,13 +11,8 @@ const TOTAL_AIRDROP_ZTG = 1_000_000;
 const ZTG_PER_ADDRESS = TOTAL_AIRDROP_ZTG / airdrop.length;
 
 const ClaimPage: NextPage = () => {
-  const { connected, realAddress } = useWallet();
   const [showEligibility, setShowEligibility] = useState(false);
   const [polkadotAddress, setPolkadotAddress] = useState("");
-  console.log(Math.floor(ZTG_PER_ADDRESS));
-
-  // const polkadotAddress =
-  // realAddress && encodeAddress(decodeAddress(realAddress), 0);
 
   const isValidPolkadotAddress =
     polkadotAddress == "" || validateAddress(polkadotAddress, 0);
@@ -78,7 +73,11 @@ const ClaimPage: NextPage = () => {
                 onClick={() => {
                   setShowEligibility(true);
                 }}
-                disabled={polkadotAddress === "" || polkadotAddress == null}
+                disabled={
+                  polkadotAddress === "" ||
+                  polkadotAddress == null ||
+                  isValidPolkadotAddress === false
+                }
               >
                 Check Eligibility
               </button>
@@ -86,7 +85,7 @@ const ClaimPage: NextPage = () => {
           </>
         ) : (
           <Eligibility
-            address={polkadotAddress}
+            polkadotAddress={polkadotAddress}
             onCheckAgain={() => {
               setShowEligibility(false);
               setPolkadotAddress("");
@@ -99,10 +98,10 @@ const ClaimPage: NextPage = () => {
 };
 
 const Eligibility = ({
-  address,
+  polkadotAddress,
   onCheckAgain,
 }: {
-  address: string;
+  polkadotAddress: string;
   onCheckAgain: () => void;
 }) => {
   const wallet = useWallet();
@@ -112,10 +111,17 @@ const Eligibility = ({
   const { api } = usePolkadotApi();
 
   //todo: formatting
-  const claim = airdrop.some((airdropAddress) => airdropAddress === address);
+  const claim = airdrop.some(
+    (airdropAddress) => airdropAddress === polkadotAddress,
+  );
 
   const isValid = claimAddress === null || validateAddress(claimAddress, 73);
   const tx = api?.tx.system.remark(`zeitgeistairdrop-1-${claimAddress}`);
+
+  const connectedWalletMatchesPolkadotAddress = addressesMatch(
+    polkadotAddress,
+    wallet.realAddress ?? "",
+  );
 
   const txHex = tx?.toHex();
 
@@ -158,10 +164,18 @@ const Eligibility = ({
     <>
       {claim ? (
         <>
-          <div className="w-full text-xl font-bold">
-            You are eligible for at least {Math.floor(ZTG_PER_ADDRESS)} ZTG,
-            enter Zeitgeist address to claim
-          </div>
+          {connectedWalletMatchesPolkadotAddress ? (
+            <div className="w-full text-xl font-bold">
+              You are eligible for at least {Math.floor(ZTG_PER_ADDRESS)} ZTG,
+              enter Zeitgeist address to claim
+            </div>
+          ) : (
+            <div className="w-full text-xl font-bold">
+              This address is eligible for at least{" "}
+              {Math.floor(ZTG_PER_ADDRESS)} ZTG, enter Zeitgeist address to
+              claim
+            </div>
+          )}
           <div className="flex w-full flex-col">
             <div className="flex w-full flex-col gap-4 rounded-md bg-[#DFE5ED] p-7 sm:flex-row">
               <div className="relative flex w-full flex-col">
@@ -184,7 +198,8 @@ const Eligibility = ({
                 disabled={
                   claimAddress === null ||
                   isValid === false ||
-                  wallet.connected === false
+                  wallet.connected === false ||
+                  connectedWalletMatchesPolkadotAddress === false
                 }
                 onClick={() => submitClaim()}
               >
@@ -197,7 +212,8 @@ const Eligibility = ({
               rel="noreferrer"
               className="mt-3 text-sm text-blue-700"
             >
-              Wallet not supported? Sign with Polkadot.js/apps
+              Wallet not supported? Enter Zeitgeist address and sign with
+              Polkadot.js/apps
             </a>
           </div>
         </>
@@ -226,6 +242,23 @@ const validateAddress = (address: string, ss58Format: number) => {
     ).toString();
 
     return encodedAddress === address;
+  } catch {
+    return false;
+  }
+};
+
+const addressesMatch = (address1: string, address2: string) => {
+  try {
+    const encodedAddress1 = encodeAddress(
+      decodeAddress(address1),
+      0,
+    ).toString();
+    const encodedAddress2 = encodeAddress(
+      decodeAddress(address2),
+      0,
+    ).toString();
+
+    return encodedAddress1 === encodedAddress2;
   } catch {
     return false;
   }
