@@ -3,13 +3,11 @@ import { ISubmittableResult } from "@polkadot/types/types";
 import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { extrinsicCallback, signAndSend, sendUnsigned } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useMemo, useState } from "react";
 import { useSdkv2 } from "./useSdkv2";
 import { useExtrinsicFee } from "./queries/useExtrinsicFee";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
-import { useAtom } from "jotai";
-import { providerAtom, topicAtom } from "lib/state/util/web3auth-config";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (

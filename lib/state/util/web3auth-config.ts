@@ -6,7 +6,6 @@ import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { TypeOfLogin } from "@web3auth/openlogin-adapter";
 import { environment } from "lib/constants/index";
-import IUniversalProvider from "@walletconnect/universal-provider";
 
 interface LoginConfig {
   [key: string]: {
@@ -115,8 +114,4 @@ export const openloginAdapter = new OpenloginAdapter({
   },
 });
 
-const UniversalProvider = new IUniversalProvider({});
-
 export const web3authAtom = atom<Web3AuthNoModal | null>(web3authNoModal);
-export const providerAtom = atom<IUniversalProvider>(UniversalProvider);
-export const topicAtom = atom<string>("");
