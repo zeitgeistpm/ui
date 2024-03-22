@@ -4,6 +4,7 @@ import Decimal from "decimal.js";
 import { PorfolioBreakdown } from "lib/hooks/queries/usePortfolioPositions";
 import { formatNumberLocalized } from "lib/util";
 import { useMemo } from "react";
+import { useAccountAmm2Pool } from "lib/hooks/queries/useAccountAmm2Pools";
 
 export type PortfolioBreakdownProps =
   | {
@@ -11,8 +12,9 @@ export type PortfolioBreakdownProps =
        * The breakdown is loading and should render a skeleton.
        */
       loading: true;
+      address: string;
     }
-  | PorfolioBreakdown;
+  | (PorfolioBreakdown & { address: string });
 
 /**
  * Show a breakdown of an accounts portofolio.
@@ -21,6 +23,8 @@ export type PortfolioBreakdownProps =
  * @returns JSX.Element
  */
 export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
+  const { data: pools } = useAccountAmm2Pool(props.address);
+
   return (
     <div className="flex flex-col gap-y-[30px] md:flex-row">
       <div className="flex w-full max-w-[600px] md:border-r-2 md:border-gray-200">
