@@ -6,8 +6,6 @@ import type { ApiPromise } from "@polkadot/api";
 import { GenericExtrinsicPayload } from "@polkadot/types/extrinsic";
 import { UseNotifications } from "lib/state/notifications";
 import { unsubOrWarns } from "./unsub-or-warns";
-import { useAtom } from "jotai";
-import { providerAtom, topicAtom } from "lib/state/util/web3auth-config";
 
 type GenericCallback = (...args: any[]) => void;
 
@@ -166,10 +164,11 @@ export const sendUnsigned = async (
   api: ApiPromise,
   tx: SubmittableExtrinsic<"promise">,
   address: string,
+  provider: IUniversalProvider,
+  topic: string,
   cb?: GenericCallback,
 ) => {
-  const [provider] = useAtom(providerAtom);
-  const [topic] = useAtom(topicAtom);
+  console.log(provider, topic, "provider and topic");
 
   return new Promise<ISubmittableResult>(async (resolve, reject) => {
     try {

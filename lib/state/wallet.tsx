@@ -27,6 +27,7 @@ import {
   removeNotification,
 } from "./notifications";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
+import { WalletConnect } from "./wallet-connect";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -118,6 +119,10 @@ export type WalletState = {
    * Error messages of the wallet.
    */
   errors: WalletError[];
+  /**
+   * Name of wallet.
+   */
+  walletId: string | undefined;
 };
 
 /**
@@ -160,6 +165,7 @@ export const walletAtom = atom<WalletState>({
   wallet: undefined,
   accounts: [],
   errors: [],
+  walletId: undefined,
 });
 
 /**
@@ -220,10 +226,14 @@ export type WalletError = {
 /**
  * List of supported wallets.
  */
+
+const walletConnect = new WalletConnect();
+
 export const supportedWallets = [
   new PolkadotjsWallet(),
   new SubWallet(),
   new TalismanWallet(),
+  walletConnect,
   web3AuthWalletInstance,
 ];
 
@@ -244,11 +254,8 @@ const enableWallet = async (
   keyPair?: KeyringPair | string[],
 ) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
-
-  if (
-    (walletId === "web3auth" && keyPair) ||
-    (walletId === "walletconnect" && keyPair)
-  ) {
+  console.log(walletId, accountsSubscriptionUnsub);
+  if (walletId === "web3auth" && keyPair) {
     store.set(walletAtom, (state) => {
       let address;
       if (keyPair instanceof Array) {
@@ -282,7 +289,7 @@ const enableWallet = async (
   }
 
   const wallet = supportedWallets.find((w) => w.extensionName === walletId);
-
+  console.log(wallet, "wallet", isPresent(wallet));
   if (!isPresent(wallet)) {
     return;
   }
@@ -292,6 +299,7 @@ const enableWallet = async (
       const extension = await poll(
         async () => {
           await cryptoWaitReady();
+          console.log(wallet);
           await wallet.enable(DAPP_NAME);
           return wallet;
         },
@@ -326,6 +334,7 @@ const enableWallet = async (
     });
 
     accountsSubscriptionUnsub = await wallet?.subscribeAccounts((accounts) => {
+      console.log(accounts, "accounts");
       store.set(walletAtom, (state) => {
         const hasConnectedEthereumAccount = accounts?.some((account) => {
           if ((account as any).type?.toLowerCase() === "ethereum") {
@@ -419,11 +428,12 @@ export const useWallet = (): UseWallet => {
     wallet: BaseDotsamaWallet | string,
     keyPair?: KeyringPair,
   ) => {
+    console.log(wallet);
     setUserConfig({
       ...userConfig,
       walletId: isString(wallet) ? wallet : wallet.extensionName,
     });
-    if (wallet === "web3auth" || wallet === "walletconnect") {
+    if (wallet === "web3auth" && keyPair) {
       enableWallet(wallet, keyPair);
     } else {
       enableWallet(isString(wallet) ? wallet : wallet.extensionName);
@@ -438,7 +448,7 @@ export const useWallet = (): UseWallet => {
   };
 
   const getSigner = (): KeyringPairOrExtSigner | undefined => {
-    if (!walletState.wallet || walletState.wallet instanceof Array) {
+    if (!walletState.wallet) {
       return;
     }
     if (walletState.wallet instanceof BaseDotsamaWallet) {
@@ -447,11 +457,13 @@ export const useWallet = (): UseWallet => {
         signer: walletState.wallet.signer,
       };
     }
+    console.log(walletState, "no wallet");
     return walletState.wallet;
   };
 
   const selectAccount = (account: InjectedAccount | string) => {
     const selectedAddress = isString(account) ? account : account.address;
+    console.log(selectAccount, "selectAccount");
     try {
       encodeAddress(selectedAddress, 73);
       setUserConfig({

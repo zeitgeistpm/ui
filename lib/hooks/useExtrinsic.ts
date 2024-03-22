@@ -8,6 +8,8 @@ import { useMemo, useState } from "react";
 import { useSdkv2 } from "./useSdkv2";
 import { useExtrinsicFee } from "./queries/useExtrinsicFee";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
+import { useAtom } from "jotai";
+import { providerAtom, topicAtom } from "lib/state/util/web3auth-config";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -26,7 +28,8 @@ export const useExtrinsic = <T>(
   const [isLoading, setIsLoading] = useState(false);
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const confirm = useConfirmation();
-
+  const [provider] = useAtom(providerAtom);
+  const [topic] = useAtom(topicAtom);
   const confirmEnabled = wallet?.walletId === "web3auth";
   const walletId = wallet?.walletId;
 
@@ -110,6 +113,8 @@ export const useExtrinsic = <T>(
         sdk.api,
         extrinsic,
         wallet.activeAccount?.address,
+        provider,
+        topic,
         extrinsicCallback(extrinsicCallbackParams),
       ).catch((error) => {
         notifications.pushNotification(error?.toString() ?? "Unknown Error", {

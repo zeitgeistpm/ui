@@ -22,6 +22,7 @@ const WalletSelect = () => {
     if (!wallet.installed && wallet.extensionName !== "web3auth") {
       window.open(wallet.installUrl);
     } else {
+      console.log(wallet.extensionName, "wallet.extensionName");
       selectWallet(wallet.extensionName);
       accountModals.closeWalletSelect();
     }
