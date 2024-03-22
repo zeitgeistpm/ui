@@ -8,7 +8,7 @@ import {
 import { WalletConnectSigner } from "lib/util/wallet-connect-signer";
 import { ZTG_CHAIN_ID } from "lib/constants";
 
-const WC_PROJECT_ID = "bc3373ccb16b53e7d5eb57672db4b4f8";
+const WC_PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
 const DOMAIN_URL = "https://app.zeitgeist.pm/";
 
 const walletConnectParams = {
@@ -33,6 +33,10 @@ const requiredNamespaces = {
 const chains = Object.values(requiredNamespaces)
   .map((namespace) => namespace.chains)
   .flat();
+
+if (!WC_PROJECT_ID) {
+  throw new Error("Missing WalletConnect project ID");
+}
 
 const modal = new WalletConnectModal({
   projectId: WC_PROJECT_ID,
@@ -140,12 +144,34 @@ export class WalletConnect implements Wallet {
   };
 
   subscribeAccounts = async (callback: (accounts: WalletAccount[]) => void) => {
-    // Assuming this._extension or this._session has a method to subscribe to account changes
-    this._extension?.on("accountsChanged", async () => {
-      const accounts = await this.getAccounts();
-      callback(accounts);
-    });
+    if (!this._extension || !this._extension.events) {
+      console.error("Extension or event emitter is not initialized.");
+      return;
+    }
 
-    // You would also handle unsubscribing logic here, possibly returning a function to do so
+    try {
+      const initialAccounts = await this.getAccounts();
+      callback(initialAccounts);
+    } catch (error) {
+      console.error("Error fetching initial accounts:", error);
+    }
+
+    const handleAccountsChanged = async () => {
+      try {
+        const updatedAccounts = await this.getAccounts();
+        callback(updatedAccounts);
+      } catch (error) {
+        console.error(
+          "Error fetching updated accounts on accountsChanged event:",
+          error,
+        );
+      }
+    };
+
+    this._extension.events.on("accountsChanged", handleAccountsChanged);
+
+    return () => {
+      this._extension?.events.off("accountsChanged", handleAccountsChanged);
+    };
   };
 }

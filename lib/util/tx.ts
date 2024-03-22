@@ -146,15 +146,18 @@ export const signAndSend = async (
               : {}),
           },
           (result) => {
+            console.log(result);
             cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
           },
         );
       } else {
         const unsub = await tx.signAndSend(signer, (result) => {
+          console.log(result);
           cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
         });
       }
     } catch (error) {
+      console.log(error);
       reject(error);
     }
   });

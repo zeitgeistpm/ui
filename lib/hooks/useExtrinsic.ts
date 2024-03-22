@@ -28,10 +28,7 @@ export const useExtrinsic = <T>(
   const [isLoading, setIsLoading] = useState(false);
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const confirm = useConfirmation();
-  const [provider] = useAtom(providerAtom);
-  const [topic] = useAtom(topicAtom);
   const confirmEnabled = wallet?.walletId === "web3auth";
-  const walletId = wallet?.walletId;
 
   const notifications = useNotifications();
 
@@ -108,40 +105,21 @@ export const useExtrinsic = <T>(
       },
     };
 
-    if (walletId === "walletconnect") {
-      sendUnsigned(
-        sdk.api,
-        extrinsic,
-        wallet.activeAccount?.address,
-        provider,
-        topic,
-        extrinsicCallback(extrinsicCallbackParams),
-      ).catch((error) => {
-        notifications.pushNotification(error?.toString() ?? "Unknown Error", {
-          type: "Error",
-        });
-        setIsBroadcasting(false);
-        setIsLoading(false);
-      });
-    } else {
-      const signer = wallet.getSigner();
-      if (!signer) return;
+    const signer = wallet.getSigner();
+    if (!signer) return;
 
-      signAndSend(
-        extrinsic,
-        signer,
-        extrinsicCallback(extrinsicCallbackParams),
-        IOForeignAssetId.is(fee?.assetId)
-          ? fee?.assetId.ForeignAsset
-          : undefined,
-      ).catch((error) => {
-        notifications.pushNotification(error?.toString() ?? "Unknown Error", {
-          type: "Error",
-        });
-        setIsBroadcasting(false);
-        setIsLoading(false);
+    signAndSend(
+      extrinsic,
+      signer,
+      extrinsicCallback(extrinsicCallbackParams),
+      IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
+    ).catch((error) => {
+      notifications.pushNotification(error?.toString() ?? "Unknown Error", {
+        type: "Error",
       });
-    }
+      setIsBroadcasting(false);
+      setIsLoading(false);
+    });
   };
 
   return {

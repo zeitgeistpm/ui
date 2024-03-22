@@ -18,7 +18,7 @@ import { atom, getDefaultStore, useAtom } from "jotai";
 import { isPresent } from "lib/types";
 import { PollingTimeout, poll } from "lib/util/poll";
 import { isString } from "lodash-es";
-import { use, useMemo } from "react";
+import { useMemo } from "react";
 import { persistentAtom } from "./util/persistent-atom";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import {
@@ -110,7 +110,7 @@ export type WalletState = {
   /**
    * Instance of the current wallet.
    */
-  wallet?: BaseDotsamaWallet | KeyringPairOrExtSigner | string[];
+  wallet?: BaseDotsamaWallet | KeyringPairOrExtSigner | WalletConnect;
   /**
    * The accounts of the current wallet.
    */
@@ -227,13 +227,11 @@ export type WalletError = {
  * List of supported wallets.
  */
 
-const walletConnect = new WalletConnect();
-
 export const supportedWallets = [
   new PolkadotjsWallet(),
   new SubWallet(),
   new TalismanWallet(),
-  walletConnect,
+  new WalletConnect(),
   web3AuthWalletInstance,
 ];
 
@@ -249,33 +247,24 @@ let currentErrorNotification: Readonly<Notification> | null = null;
  * @returns Promise<boolean> - whether the wallet was enabled
  */
 
-const enableWallet = async (
-  walletId: string,
-  keyPair?: KeyringPair | string[],
-) => {
+const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
-  console.log(walletId, accountsSubscriptionUnsub);
+
   if (walletId === "web3auth" && keyPair) {
     store.set(walletAtom, (state) => {
-      let address;
-      if (keyPair instanceof Array) {
-        address = keyPair;
-      } else {
-        address = [keyPair?.address];
-      }
       return {
         ...state,
         wallet: { ...keyPair },
         connected: true,
         walletId: walletId,
         accounts:
-          address.map((account) => {
+          [keyPair?.address].map((account) => {
             return {
               address: encodeAddress(account, 73),
             };
           }) ?? [],
         errors:
-          [address].length === 0
+          [keyPair?.address].length === 0
             ? [
                 {
                   extensionName: walletId,
@@ -289,7 +278,7 @@ const enableWallet = async (
   }
 
   const wallet = supportedWallets.find((w) => w.extensionName === walletId);
-  console.log(wallet, "wallet", isPresent(wallet));
+
   if (!isPresent(wallet)) {
     return;
   }
@@ -299,7 +288,6 @@ const enableWallet = async (
       const extension = await poll(
         async () => {
           await cryptoWaitReady();
-          console.log(wallet);
           await wallet.enable(DAPP_NAME);
           return wallet;
         },
@@ -334,7 +322,6 @@ const enableWallet = async (
     });
 
     accountsSubscriptionUnsub = await wallet?.subscribeAccounts((accounts) => {
-      console.log(accounts, "accounts");
       store.set(walletAtom, (state) => {
         const hasConnectedEthereumAccount = accounts?.some((account) => {
           if ((account as any).type?.toLowerCase() === "ethereum") {
@@ -425,7 +412,7 @@ export const useWallet = (): UseWallet => {
   const [walletState, setWalletState] = useAtom(walletAtom);
 
   const selectWallet = (
-    wallet: BaseDotsamaWallet | string,
+    wallet: BaseDotsamaWallet | WalletConnect | string,
     keyPair?: KeyringPair,
   ) => {
     console.log(wallet);
@@ -451,19 +438,21 @@ export const useWallet = (): UseWallet => {
     if (!walletState.wallet) {
       return;
     }
-    if (walletState.wallet instanceof BaseDotsamaWallet) {
+    if (
+      walletState.wallet instanceof BaseDotsamaWallet ||
+      walletState.wallet instanceof WalletConnect
+    ) {
+      if (!walletState.wallet.signer) return;
       return {
         address: activeAccount?.address,
         signer: walletState.wallet.signer,
       };
     }
-    console.log(walletState, "no wallet");
     return walletState.wallet;
   };
 
   const selectAccount = (account: InjectedAccount | string) => {
     const selectedAddress = isString(account) ? account : account.address;
-    console.log(selectAccount, "selectAccount");
     try {
       encodeAddress(selectedAddress, 73);
       setUserConfig({

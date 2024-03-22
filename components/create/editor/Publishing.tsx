@@ -75,8 +75,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
       enabled: feesEnabled,
     },
   );
-  console.log(creationParams, "creation");
-  console.log(baseFee.toNumber(), "baseFee");
+
   const { data: feeDetails } = useFeePayingAsset(baseFee);
 
   const firstInvalidStep = editor.steps.find((step) => !step.isValid);
@@ -152,32 +151,17 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
           type: "Info",
           lifetime: 60,
         });
-        console.log(creationParams, wallet.activeAccount?.address!);
+
         const result = await sdk.model.markets.create(
-          {
-            ...creationParams,
-            signer: {
-              address: wallet.activeAccount?.address!,
-              handle: async (extrinsic) => {
-                console.log("test");
-                return await sendUnsigned(
-                  sdk.api,
-                  extrinsic,
-                  wallet.activeAccount?.address!,
-                  provider,
-                  topic,
-                );
-              },
-            },
-          },
+          creationParams,
           IOForeignAssetId.is(feeDetails?.assetId)
             ? feeDetails?.assetId
             : undefined,
         );
-        console.log(result);
+
         const { market } = result.saturate().unwrap();
         const marketId = market.marketId;
-        console.log(marketId);
+
         editor.published(marketId);
 
         notifications.pushNotification(
@@ -198,7 +182,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
             timeout: 6 * 1000,
           },
         );
-        console.log(indexedStatus);
+
         if (indexedStatus === PollingTimeout) {
           router.push(`/markets/await/${marketId}`);
         } else {

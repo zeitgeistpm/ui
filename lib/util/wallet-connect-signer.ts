@@ -36,7 +36,6 @@ export class WalletConnectSigner implements Signer {
     this.chainId = chainId;
   }
 
-  // this method is set this way to be bound to this class.
   signPayload = async (payload: SignerPayloadJSON): Promise<SignerResult> => {
     let request = {
       topic: this.session.topic,
@@ -52,8 +51,6 @@ export class WalletConnectSigner implements Signer {
     return { id: ++this.id, signature };
   };
 
-  // this method is set this way to be bound to this class.
-  // It might be used outside of the object context to sign messages.
   // ref: https://polkadot.js.org/docs/extension/cookbook#sign-a-message
   signRaw = async (raw: SignerPayloadRaw): Promise<SignerResult> => {
     let request = {
