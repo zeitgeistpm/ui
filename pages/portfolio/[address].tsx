@@ -85,6 +85,7 @@ const Portfolio: NextPageWithLayout = () => {
       {address && <PortfolioIdentity address={address} />}
       <div className="mb-12">
         <PortfolioBreakdown
+          address={address}
           {...(breakdown ?? {
             loading: true,
           })}
@@ -137,9 +138,9 @@ const Portfolio: NextPageWithLayout = () => {
                   (marketPositions) => {
                     const market = marketPositions[0].market;
 
-                    // marketPositions = marketPositions.filter((position) =>
-                    //   position.userBalance.gt(0),
-                    // );
+                    marketPositions = marketPositions.filter((position) =>
+                      position.userBalance.gt(0),
+                    );
 
                     if (
                       market.status === "Resolved" &&
@@ -160,7 +161,9 @@ const Portfolio: NextPageWithLayout = () => {
                         className="mb-8"
                         market={market}
                         usdZtgPrice={ztgPrice}
-                        positions={marketPositions}
+                        positions={marketPositions.filter((position) =>
+                          position.userBalance.gt(0),
+                        )}
                       />
                     );
                   },

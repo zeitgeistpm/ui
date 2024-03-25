@@ -21,7 +21,7 @@ const columns: TableColumn[] = [
   {
     header: "Value",
     accessor: "value",
-    type: "text",
+    type: "currency",
   },
   {
     header: "Fees available",
@@ -35,6 +35,44 @@ const columns: TableColumn[] = [
     width: "330px",
   },
 ];
+
+const AccountPoolsTable = ({ address }: { address: string }) => {
+  const { data: pools, isLoading } = useAccountAmm2Pool(address);
+
+  const tableData: TableData[] | undefined = pools?.map((pool) => {
+    return {
+      question: (
+        <Link
+          href={`/markets/${pool.marketId}`}
+          className="line-clamp-1 text-[14px]"
+        >
+          {pool.question}
+        </Link>
+      ),
+      value: {
+        value: pool.addressValue?.toNumber(),
+        usdValue: pool.addressUsdValue?.toNumber(),
+      },
+      fees: new Decimal(pool.account?.fees ?? 0).div(ZTG).toFixed(3),
+      buttons: <PoolButtons marketId={pool.marketId} />,
+    };
+  });
+
+  return (
+    <div>
+      {pools?.length === 0 && isLoading === false ? (
+        <EmptyPortfolio
+          headerText="You don't have any liquidity"
+          bodyText="View liquidity pools to find places to provide liquidity"
+          buttonText="View Pools"
+          buttonLink="/liquidity"
+        />
+      ) : (
+        <Table columns={columns} data={tableData} showHighlight={false} />
+      )}
+    </div>
+  );
+};
 
 const PoolButtons = ({ marketId }: { marketId: number }) => {
   const [sdk] = useSdkv2();
@@ -82,46 +120,6 @@ const PoolButtons = ({ marketId }: { marketId: number }) => {
       >
         Collect fees
       </SecondaryButton>
-    </div>
-  );
-};
-
-const AccountPoolsTable = ({ address }: { address: string }) => {
-  const { data: pools, isLoading } = useAccountAmm2Pool(address);
-
-  const tableData: TableData[] =
-    pools?.map((pool) => {
-      const percentageOwnership = new Decimal(pool.account?.stake ?? 0).div(
-        pool.totalStake,
-      );
-
-      return {
-        question: (
-          <Link
-            href={`/markets/${pool.marketId}`}
-            className="line-clamp-1 text-[14px]"
-          >
-            {pool.question}
-          </Link>
-        ),
-        value: pool.value.mul(percentageOwnership).div(ZTG).toFixed(3),
-        fees: new Decimal(pool.account?.fees ?? 0).div(ZTG).toFixed(3),
-        buttons: <PoolButtons marketId={pool.marketId} />,
-      };
-    }) ?? [];
-
-  return (
-    <div>
-      {pools?.length === 0 && isLoading === false ? (
-        <EmptyPortfolio
-          headerText="You don't have any liquidity"
-          bodyText="View liquidity pools to find places to provide liquidity"
-          buttonText="View Pools"
-          buttonLink="/liquidity"
-        />
-      ) : (
-        <Table columns={columns} data={tableData} showHighlight={false} />
-      )}
     </div>
   );
 };

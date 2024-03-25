@@ -1,16 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
-import { isIndexedSdk } from "@zeitgeistpm/sdk";
+import { ZTG, isIndexedSdk } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { calculateSpotPrice } from "lib/util/amm2";
 import { useSdkv2 } from "../useSdkv2";
 import { getMarketHeaders } from "lib/gql/market-header";
+import { useAllForeignAssetUsdPrices } from "./useAssetUsdPrice";
+import { lookUpAssetPrice } from "lib/util/lookup-price";
+import { useZtgPrice } from "./useZtgPrice";
 
 export const accountAmm2PoolsKey = "account-amm2-pools";
 
 export const useAccountAmm2Pool = (address?: string) => {
   const [sdk, id] = useSdkv2();
+  const { data: foreignAssetPrices, isLoading: assetPricesLoading } =
+    useAllForeignAssetUsdPrices();
+  const { data: ztgPrice, isLoading: ztgLoading } = useZtgPrice();
 
-  const enabled = !!sdk && !!isIndexedSdk(sdk) && !!address;
+  const enabled =
+    !!sdk &&
+    !!isIndexedSdk(sdk) &&
+    !!address &&
+    !!ztgPrice &&
+    !!foreignAssetPrices &&
+    assetPricesLoading === false &&
+    ztgLoading === false;
   const query = useQuery(
     [id, accountAmm2PoolsKey, address],
     async () => {
@@ -51,13 +64,35 @@ export const useAccountAmm2Pool = (address?: string) => {
         const account = pool.liquiditySharesManager.find(
           (l) => l.account === address,
         );
+
+        const baseAssetUsdPrice = lookUpAssetPrice(
+          pool.collateral,
+          foreignAssetPrices,
+          ztgPrice,
+        );
+
         const totalShares = pool.totalStake;
+        const totalValue = valuations[index];
+
+        const percentageOwnership = new Decimal(account?.stake ?? 0).div(
+          pool.totalStake,
+        );
+
+        const addressValue = totalValue.mul(percentageOwnership).div(ZTG);
+
+        const addressUsdValue = addressValue.mul(baseAssetUsdPrice);
+        const addressZtgValue = addressUsdValue.div(ztgPrice);
+
         return {
           ...pool,
-          value: valuations[index],
+          totalValue,
+          addressValue,
+          addressUsdValue,
+          addressZtgValue,
           question: market?.question,
           account,
           totalShares,
+          baseAsset: pool.collateral,
         };
       });
     },
