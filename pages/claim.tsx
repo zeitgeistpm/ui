@@ -43,15 +43,14 @@ const ClaimPage: NextPage = () => {
         </div>
         <div className="w-full whitespace-pre-wrap text-lg">
           This airdrop is designed for those who have actively participated in
-          Polkadot's OpenGov by voting before the start of Referendum 502.{"\n"}
-          {"\n"}
+          Polkadot's OpenGov by voting before the start of Referendum 502.
           OpenGov users will be able to connect their Polkadot wallet that has
           been used to vote on referenda in Polkadot’s OpenGov before the
-          snapshot on February 14th, 2024 (22:14:54 UTC) {"\n"}
-          {"\n"}After connecting their wallet, users will then submit a
-          Zeitgeist address and sign a transaction that designates that
-          Zeitgeist address, on-chain, as the address they would like to receive
-          their share of the 1,000,000 ZTG airdrop on.
+          snapshot on February 14th, 2024 (22:14:54 UTC) After connecting their
+          wallet, users will then submit a Zeitgeist address and sign a
+          transaction that designates that Zeitgeist address, on-chain, as the
+          address they would like to receive their share of the 1,000,000 ZTG
+          airdrop on.
         </div>
         {showEligibility === false ? (
           <>
