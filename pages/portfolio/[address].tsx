@@ -85,6 +85,7 @@ const Portfolio: NextPageWithLayout = () => {
       {address && <PortfolioIdentity address={address} />}
       <div className="mb-12">
         <PortfolioBreakdown
+          address={address}
           {...(breakdown ?? {
             loading: true,
           })}

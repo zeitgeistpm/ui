@@ -81,7 +81,8 @@ export const useAccountAmm2Pool = (address?: string) => {
         const addressValue = totalValue.mul(percentageOwnership).div(ZTG);
 
         const addressUsdValue = addressValue.mul(baseAssetUsdPrice);
-        const addressZtgValue = addressUsdValue.mul(ztgPrice);
+        const addressZtgValue = addressUsdValue.div(ztgPrice);
+
         return {
           ...pool,
           totalValue,

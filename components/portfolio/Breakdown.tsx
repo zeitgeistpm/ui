@@ -23,7 +23,12 @@ export type PortfolioBreakdownProps =
  * @returns JSX.Element
  */
 export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
-  const { data: pools } = useAccountAmm2Pool(props.address);
+  const { data: pools, isLoading: poolIsLoading } = useAccountAmm2Pool(
+    props.address,
+  );
+  const poolZtgTotal = pools?.reduce<Decimal>((total, pool) => {
+    return total.plus(pool.addressZtgValue);
+  }, new Decimal(0));
 
   return (
     <div className="flex flex-col gap-y-[30px] md:flex-row">
@@ -56,12 +61,12 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
 
       <div className="flex w-full max-w-[600px] md:pl-4">
         <div className="flex-1 border-r-2 border-gray-200">
-          {"loading" in props ? (
+          {"loading" in props || poolIsLoading ? (
             <BreakdownSlotSkeleton />
           ) : (
             <BreakdownSlot
               title="Liquidity"
-              value={props.subsidy.value}
+              value={poolZtgTotal?.mul(ZTG) ?? new Decimal(0)}
               usdZtgPrice={props.usdZtgPrice}
               changePercentage={props.subsidy.changePercentage}
             />
