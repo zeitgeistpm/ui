@@ -68,7 +68,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
               title="Liquidity"
               value={poolZtgTotal?.mul(ZTG) ?? new Decimal(0)}
               usdZtgPrice={props.usdZtgPrice}
-              changePercentage={props.subsidy.changePercentage}
+              changePercentage={0}
             />
           )}
         </div>
