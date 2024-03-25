@@ -2949,10 +2949,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subsocial/grill-widget@npm:^0.0.5":
-  version: 0.0.5
-  resolution: "@subsocial/grill-widget@npm:0.0.5"
-  checksum: 077c11cb35ffd796637224fc88292a13cee73e6c471ae801318b81af6996d79ce3c58b3b640bff10b7ccd6f1e64cef06f3437d04517850fe6c71b00556a2a571
+"@subsocial/grill-widget@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "@subsocial/grill-widget@npm:0.1.3"
+  checksum: 84a6fcbd1fb559d2c63b810a693c1f76218f8bde10a6c75eefc6019fc05e3f6cb2de185b4f4dee2be3f6a7e9d293d884d359cd5307d7b2e103f8b88fe9d93b6d
   languageName: node
   linkType: hard
 
@@ -4345,7 +4345,7 @@ __metadata:
     "@polkadot/wasm-crypto": ^6.3.1
     "@portabletext/react": ^3.0.11
     "@sanity/client": ^6.10.0
-    "@subsocial/grill-widget": ^0.0.5
+    "@subsocial/grill-widget": ^0.1.3
     "@tailwindcss/container-queries": ^0.1.1
     "@tailwindcss/line-clamp": ^0.4.2
     "@talismn/connect-wallets": ^1.2.3
