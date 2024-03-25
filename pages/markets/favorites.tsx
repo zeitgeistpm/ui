@@ -1,6 +1,6 @@
 import { QueryClient, dehydrate } from "@tanstack/query-core";
 import FavoriteMarketsList from "components/markets/FavoriteMarketsList";
-import { getCmsMarketMetadataForAllMarkets } from "lib/cms/markets";
+import { getCmsMarketCardMetadataForAllMarkets } from "lib/cms/markets";
 import { environment } from "lib/constants";
 import { marketCmsDatakeyForMarket } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { NextPage } from "next";
@@ -11,7 +11,7 @@ const FavoriteMarketsPage: NextPage = () => {
 
 export async function getStaticProps() {
   const queryClient = new QueryClient();
-  const cmsData = await getCmsMarketMetadataForAllMarkets();
+  const cmsData = await getCmsMarketCardMetadataForAllMarkets();
 
   for (const marketCmsData of cmsData) {
     if (marketCmsData.marketId) {
