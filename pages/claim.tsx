@@ -43,14 +43,10 @@ const ClaimPage: NextPage = () => {
         </div>
         <div className="w-full whitespace-pre-wrap text-lg">
           This airdrop is designed for those who have actively participated in
-          Polkadot's OpenGov by voting before the start of Referendum 502.
-          OpenGov users will be able to connect their Polkadot wallet that has
-          been used to vote on referenda in Polkadot’s OpenGov before the
-          snapshot on February 14th, 2024 (22:14:54 UTC) After connecting their
-          wallet, users will then submit a Zeitgeist address and sign a
-          transaction that designates that Zeitgeist address, on-chain, as the
-          address they would like to receive their share of the 1,000,000 ZTG
-          airdrop on.
+          Polkadot's OpenGov by voting before the start of Referendum 502. The
+          the snapshot was taken February 14th, 2024 (22:14:54 UTC). Only
+          wallets that voted on Polkadot's OpenGov before the snapshot will be
+          eligible. Claims will be open until July 1st, 2024.
         </div>
         {showEligibility === false ? (
           <>
