@@ -35,6 +35,7 @@ import { TradeTabType } from "components/trade-form/TradeTab";
 import ReferendumSummary from "components/ui/ReferendumSummary";
 import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
+import Toggle from "components/ui/Toggle";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
@@ -80,6 +81,7 @@ import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
+import { BsFillChatSquareTextFill } from "react-icons/bs";
 import { CgLivePhoto } from "react-icons/cg";
 import { FaChevronUp, FaTwitch } from "react-icons/fa";
 
@@ -254,6 +256,8 @@ const Market: NextPage<MarketPageProps> = ({
   const baseAsset = parseAssetIdString(indexedMarket?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAsset);
 
+  const [showTwitchChat, setShowTwitchChat] = useState(true);
+
   const wallet = useWallet();
 
   const handlePoolDeployed = () => {
@@ -404,6 +408,24 @@ const Market: NextPage<MarketPageProps> = ({
                     </div>
                   )}
                 </Tab>
+                <div className="flex flex-1 items-center">
+                  <button className="ml-auto flex items-center gap-1">
+                    <Toggle
+                      className="w-6"
+                      checked={showTwitchChat}
+                      onChange={(checked) => {
+                        setShowTwitchChat(checked);
+                      }}
+                      activeClassName="bg-twitch-purple"
+                    />
+                    <BsFillChatSquareTextFill
+                      size={16}
+                      className={
+                        showTwitchChat ? "text-twitch-purple" : "text-gray-400"
+                      }
+                    />
+                  </button>
+                </div>
               </Tab.List>
 
               <Tab.Panels className="mt-2">
@@ -441,7 +463,7 @@ const Market: NextPage<MarketPageProps> = ({
                         channel={twitchStreamChannelName}
                         autoplay
                         muted
-                        withChat={true}
+                        withChat={showTwitchChat}
                         darkMode={false}
                         hideControls={false}
                         width={"100%"}
