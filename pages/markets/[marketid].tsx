@@ -1,4 +1,5 @@
 import { Disclosure, Tab, Transition } from "@headlessui/react";
+import { useQuery } from "@tanstack/react-query";
 import {
   FullMarketFragment,
   MarketStatus,
@@ -9,6 +10,7 @@ import {
   ScalarRangeType,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import { from } from "@zeitgeistpm/utility/dist/aeither";
 import LatestTrades from "components/front-page/LatestTrades";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import DisputeResult from "components/markets/DisputeResult";
@@ -35,11 +37,11 @@ import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
+import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import {
   FullCmsMarketMetadata,
   getCmsFullMarketMetadataForMarket,
 } from "lib/cms/markets";
-import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
   MarketPageIndexedData,
@@ -59,6 +61,7 @@ import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useTradeItem } from "lib/hooks/trade";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useWallet } from "lib/state/wallet";
+import { extractChannelName, isLive } from "lib/twitch";
 import {
   MarketCategoricalOutcome,
   MarketReport,
@@ -77,10 +80,8 @@ import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
+import { CgLivePhoto } from "react-icons/cg";
 import { FaChevronUp, FaTwitch } from "react-icons/fa";
-import { useQuery } from "@tanstack/react-query";
-import { extractChannelName, isLive } from "lib/twitch";
-import { from } from "@zeitgeistpm/utility/dist/aeither";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -396,6 +397,14 @@ const Market: NextPage<MarketPageProps> = ({
                 >
                   <FaTwitch size={16} />
                   Twitch Stream
+                  {hasLiveTwitchStream && (
+                    <div className="flex items-center gap-1 text-orange-400">
+                      <div className="animate-pulse-scale">
+                        <CgLivePhoto />
+                      </div>
+                      Live!
+                    </div>
+                  )}
                 </Tab>
               </Tab.List>
 
