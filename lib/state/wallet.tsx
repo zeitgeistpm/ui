@@ -1,11 +1,7 @@
 import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { KeyringPair } from "@polkadot/keyring/types";
-import { stringToHex, u8aToHex, isHex, hexToU8a } from "@polkadot/util";
-import {
-  cryptoWaitReady,
-  encodeAddress,
-  decodeAddress,
-} from "@polkadot/util-crypto";
+import { stringToHex, u8aToHex } from "@polkadot/util";
+import { cryptoWaitReady, encodeAddress } from "@polkadot/util-crypto";
 import {
   BaseDotsamaWallet,
   PolkadotjsWallet,
@@ -247,7 +243,11 @@ let currentErrorNotification: Readonly<Notification> | null = null;
  * @returns Promise<boolean> - whether the wallet was enabled
  */
 
-const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
+const enableWallet = async (
+  walletId: string,
+  keyPair?: KeyringPair,
+  initLoad?: boolean,
+) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
 
   if (walletId === "web3auth" && keyPair) {
@@ -288,7 +288,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
       const extension = await poll(
         async () => {
           await cryptoWaitReady();
-          await wallet.enable(DAPP_NAME);
+          await wallet.enable(DAPP_NAME, initLoad);
           return wallet;
         },
         {
@@ -400,7 +400,11 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
  */
 const initialWalletId = store.get(userConfigAtom).walletId;
 if (initialWalletId) {
-  enableWallet(initialWalletId);
+  enableWallet(
+    initialWalletId,
+    undefined,
+    initialWalletId === "walletconnect" ? true : false,
+  );
 }
 
 /**
@@ -415,7 +419,6 @@ export const useWallet = (): UseWallet => {
     wallet: BaseDotsamaWallet | WalletConnect | string,
     keyPair?: KeyringPair,
   ) => {
-    console.log(wallet);
     setUserConfig({
       ...userConfig,
       walletId: isString(wallet) ? wallet : wallet.extensionName,

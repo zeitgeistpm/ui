@@ -94,7 +94,7 @@ export class WalletConnect implements Wallet {
     return err;
   };
 
-  enable = async (dappName: string) => {
+  enable = async (dappName: string, initLoad?: boolean) => {
     if (!dappName) {
       throw new Error("MissingParamsError: Dapp name is required.");
     }
@@ -104,16 +104,21 @@ export class WalletConnect implements Wallet {
         requiredNamespaces,
       });
 
-      if (uri) {
-        await modal.openModal({ uri, chains });
-      }
-
-      const session = await approval();
-
       const client = this.rawExtension.client;
+
+      //checks if user was previously connect and restores session
+      const lastKeyIndex = client.session.getAll().length - 1;
+      let session = client.session.getAll()[lastKeyIndex];
+
+      //skips modal if user was previously connected or if it's the first load
+      if (uri && lastKeyIndex < 0 && !initLoad) {
+        await modal.openModal({ uri, chains });
+        session = await approval();
+      }
 
       this._extension = this.rawExtension;
       this._session = session;
+
       this._signer = new WalletConnectSigner(client, session, ZTG_CHAIN_ID);
     } finally {
       modal.closeModal();

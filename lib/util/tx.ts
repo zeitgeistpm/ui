@@ -1,9 +1,7 @@
-import { AddressOrPair, SubmittableExtrinsic } from "@polkadot/api/types";
+import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
 import { KeyringPairOrExtSigner, isExtSigner } from "@zeitgeistpm/rpc";
-import IUniversalProvider from "@walletconnect/universal-provider";
 import type { ApiPromise } from "@polkadot/api";
-import { GenericExtrinsicPayload } from "@polkadot/types/extrinsic";
 import { UseNotifications } from "lib/state/notifications";
 import { unsubOrWarns } from "./unsub-or-warns";
 
@@ -146,18 +144,15 @@ export const signAndSend = async (
               : {}),
           },
           (result) => {
-            console.log(result);
             cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
           },
         );
       } else {
         const unsub = await tx.signAndSend(signer, (result) => {
-          console.log(result);
           cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
         });
       }
     } catch (error) {
-      console.log(error);
       reject(error);
     }
   });
