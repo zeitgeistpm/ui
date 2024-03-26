@@ -75,19 +75,19 @@ const loginConfig: LoginConfig = {
   ...(auth0ClientID
     ? {
         auth0google: {
-          verifier: "auth-aggregate",
+          verifier: "auth-aggregate-wsx",
           verifierSubIdentifier: "auth0-google",
           typeOfLogin: "jwt",
           clientId: auth0ClientID,
         },
         auth0twitter: {
-          verifier: "auth-aggregate",
+          verifier: "auth-aggregate-wsx",
           verifierSubIdentifier: "auth0-twitter",
           typeOfLogin: "jwt",
           clientId: auth0ClientID,
         },
         auth0emailpasswordless: {
-          verifier: "auth-aggregate",
+          verifier: "auth-aggregate-wsx",
           verifierSubIdentifier: "auth0-passwordless",
           typeOfLogin: "jwt",
           clientId: auth0ClientID,
