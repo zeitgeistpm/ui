@@ -1,4 +1,4 @@
-import { Disclosure, Transition } from "@headlessui/react";
+import { Disclosure, Tab, Transition } from "@headlessui/react";
 import {
   FullMarketFragment,
   MarketStatus,
@@ -77,12 +77,22 @@ import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
-import { FaChevronUp } from "react-icons/fa";
+import { FaChevronUp, FaTwitch } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
+import { extractChannelName, isLive } from "lib/twitch";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
   loading: () => <div style={{ width: "100%", height: "606px" }} />,
 });
+
+const TwitchPlayer = dynamic(
+  () => import("../../components/twitch/TwitchPlayer"),
+  {
+    ssr: false,
+    loading: () => <div style={{ width: "100%", height: "606px" }} />,
+  },
+);
 
 const SimilarMarketsSection = dynamic(
   () => import("../../components/markets/SimilarMarketsSection"),
@@ -247,6 +257,8 @@ const Market: NextPage<MarketPageProps> = ({
     }
   };
 
+  cmsMetadata?.twitchStreamUrl;
+
   const token = metadata?.symbol;
 
   const isOracle = market?.oracle === wallet.realAddress;
@@ -286,6 +298,33 @@ const Market: NextPage<MarketPageProps> = ({
     }
   }, [market?.report, disputes]);
 
+  const hasChart = Boolean(
+    chartSeries && (indexedMarket?.pool || indexedMarket.neoPool),
+  );
+
+  const twitchStreamChannelName = extractChannelName(
+    cmsMetadata?.twitchStreamUrl,
+  );
+
+  const hasTwitchStream = twitchStreamChannelName;
+
+  const { data: twichStreamStatus } = useQuery(
+    [],
+    async () => {
+      if (!hasTwitchStream) return undefined;
+      return {
+        isLive: await isLive(twitchStreamChannelName),
+      };
+    },
+    {
+      enabled: Boolean(hasTwitchStream),
+      refetchInterval: 1000 * 30,
+      refetchOnWindowFocus: false,
+    },
+  );
+
+  console.log("isLive", twichStreamStatus);
+
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
@@ -299,6 +338,7 @@ const Market: NextPage<MarketPageProps> = ({
   const poolCreationDate = new Date(
     indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
   );
+
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -322,32 +362,83 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           )}
 
-          {chartSeries && (indexedMarket?.pool || indexedMarket.neoPool) ? (
-            <div className="mt-4">
-              {indexedMarket.scalarType === "number" ? (
-                <ScalarMarketChart
-                  marketId={indexedMarket.marketId}
-                  poolCreationDate={poolCreationDate}
-                  marketStatus={indexedMarket.status}
-                  resolutionDate={new Date(resolutionTimestamp)}
-                />
-              ) : (
-                <CategoricalMarketChart
-                  marketId={indexedMarket.marketId}
-                  chartSeries={chartSeries}
-                  baseAsset={
-                    indexedMarket.pool?.baseAsset ??
-                    indexedMarket.neoPool?.collateral
-                  }
-                  poolCreationDate={poolCreationDate}
-                  marketStatus={indexedMarket.status}
-                  resolutionDate={new Date(resolutionTimestamp)}
-                />
-              )}
-            </div>
-          ) : (
-            <></>
-          )}
+          <div className="mt-4">
+            <Tab.Group>
+              <Tab.List className="flex gap-2 text-sm">
+                {hasChart ? (
+                  <Tab
+                    key="chart"
+                    className="rounded-md border-1 border-gray-400 px-2 py-1 ui-selected:border-transparent ui-selected:bg-gray-300"
+                  >
+                    Chart
+                  </Tab>
+                ) : (
+                  <></>
+                )}
+
+                {hasTwitchStream ? (
+                  <Tab
+                    key="twitch"
+                    className="ui-selected:bg-twitch-purple text-twitch-purple ui-selected:text-twitch-gray border-twitch-purple flex items-center gap-2 rounded-md border-1 px-2 py-1 ui-selected:border-transparent"
+                  >
+                    <FaTwitch size={16} />
+                    Twitch Stream
+                  </Tab>
+                ) : (
+                  <></>
+                )}
+              </Tab.List>
+
+              <Tab.Panels className="mt-2">
+                {hasChart ? (
+                  <Tab.Panel key="chart">
+                    {indexedMarket.scalarType === "number" ? (
+                      <ScalarMarketChart
+                        marketId={indexedMarket.marketId}
+                        poolCreationDate={poolCreationDate}
+                        marketStatus={indexedMarket.status}
+                        resolutionDate={new Date(resolutionTimestamp)}
+                      />
+                    ) : (
+                      <CategoricalMarketChart
+                        marketId={indexedMarket.marketId}
+                        chartSeries={chartSeries}
+                        baseAsset={
+                          indexedMarket.pool?.baseAsset ??
+                          indexedMarket.neoPool?.collateral
+                        }
+                        poolCreationDate={poolCreationDate}
+                        marketStatus={indexedMarket.status}
+                        resolutionDate={new Date(resolutionTimestamp)}
+                      />
+                    )}
+                  </Tab.Panel>
+                ) : (
+                  <></>
+                )}
+
+                {hasTwitchStream && twitchStreamChannelName ? (
+                  <Tab.Panel key="twitch">
+                    <div className="h-[500px]">
+                      <TwitchPlayer
+                        channel={twitchStreamChannelName}
+                        autoplay
+                        muted
+                        withChat={false}
+                        darkMode={false}
+                        hideControls={false}
+                        width={"100%"}
+                        height={"100%"}
+                      />
+                    </div>
+                  </Tab.Panel>
+                ) : (
+                  <></>
+                )}
+              </Tab.Panels>
+            </Tab.Group>
+          </div>
+
           {marketIsLoading === false && marketHasPool === false && (
             <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
               <div className="h-ztg-20 w-ztg-20">
