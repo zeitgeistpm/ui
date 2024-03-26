@@ -441,7 +441,7 @@ const Market: NextPage<MarketPageProps> = ({
                         channel={twitchStreamChannelName}
                         autoplay
                         muted
-                        withChat={false}
+                        withChat={true}
                         darkMode={false}
                         hideControls={false}
                         width={"100%"}
