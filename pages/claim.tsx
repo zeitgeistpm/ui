@@ -6,6 +6,7 @@ import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { NextPage } from "next";
 import { ChangeEvent, useState } from "react";
 import airdrop from "../public/airdrop-mock.json";
+import { environment } from "lib/constants";
 
 const TOTAL_AIRDROP_ZTG = 1_000_000;
 const ZTG_PER_ADDRESS = TOTAL_AIRDROP_ZTG / airdrop.length;
@@ -209,7 +210,11 @@ const Eligibility = ({
               </button>
             </div>
             <a
-              href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frococo-rpc.polkadot.io#/extrinsics/decode/${txHex}`}
+              href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2F${
+                environment === "production"
+                  ? "rpc.polkadot.io"
+                  : "rococo-rpc.polkadot.io"
+              }#/extrinsics/decode/${txHex}`}
               target="_blank"
               rel="noreferrer"
               className="mt-3 text-sm text-blue-700"
