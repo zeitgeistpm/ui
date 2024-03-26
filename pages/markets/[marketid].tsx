@@ -80,6 +80,7 @@ import { AiOutlineFileAdd } from "react-icons/ai";
 import { FaChevronUp, FaTwitch } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import { extractChannelName, isLive } from "lib/twitch";
+import { from } from "@zeitgeistpm/utility/dist/aeither";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -166,6 +167,14 @@ export async function getStaticProps({ params }) {
     }
   }
 
+  const hasLiveTwitchStream = await from(async () => {
+    const channelName = extractChannelName(cmsMetadata?.twitchStreamUrl);
+    if (channelName) {
+      return await isLive(channelName);
+    }
+    return false;
+  });
+
   return {
     props: {
       indexedMarket: market ?? null,
@@ -173,6 +182,7 @@ export async function getStaticProps({ params }) {
       resolutionTimestamp: resolutionTimestamp ?? null,
       promotionData: null,
       cmsMetadata: cmsMetadata ?? null,
+      hasLiveTwitchStream: hasLiveTwitchStream,
     },
     revalidate:
       environment === "production"
@@ -187,6 +197,7 @@ type MarketPageProps = {
   resolutionTimestamp: string;
   promotionData: PromotedMarket | null;
   cmsMetadata: FullCmsMarketMetadata | null;
+  hasLiveTwitchStream: boolean;
 };
 
 const Market: NextPage<MarketPageProps> = ({
@@ -195,6 +206,7 @@ const Market: NextPage<MarketPageProps> = ({
   resolutionTimestamp,
   promotionData,
   cmsMetadata,
+  hasLiveTwitchStream: hasLiveTwitchStreamServer,
 }) => {
   const router = useRouter();
   const { marketid } = router.query;
@@ -306,24 +318,26 @@ const Market: NextPage<MarketPageProps> = ({
     cmsMetadata?.twitchStreamUrl,
   );
 
-  const hasTwitchStream = twitchStreamChannelName;
+  const hasTwitchStream = Boolean(twitchStreamChannelName);
 
-  const { data: twichStreamStatus } = useQuery(
+  const activeTabsCount = [hasChart, hasTwitchStream].filter(Boolean).length;
+
+  const { data: hasLiveTwitchStreamClient } = useQuery(
     [],
     async () => {
-      if (!hasTwitchStream) return undefined;
-      return {
-        isLive: await isLive(twitchStreamChannelName),
-      };
+      if (!twitchStreamChannelName) return undefined;
+      return isLive(twitchStreamChannelName);
     },
     {
       enabled: Boolean(hasTwitchStream),
       refetchInterval: 1000 * 30,
       refetchOnWindowFocus: false,
+      initialData: hasLiveTwitchStreamServer,
     },
   );
 
-  console.log("isLive", twichStreamStatus);
+  const hasLiveTwitchStream =
+    hasLiveTwitchStreamClient || hasLiveTwitchStreamServer;
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
@@ -363,30 +377,26 @@ const Market: NextPage<MarketPageProps> = ({
           )}
 
           <div className="mt-4">
-            <Tab.Group>
-              <Tab.List className="flex gap-2 text-sm">
-                {hasChart ? (
-                  <Tab
-                    key="chart"
-                    className="rounded-md border-1 border-gray-400 px-2 py-1 ui-selected:border-transparent ui-selected:bg-gray-300"
-                  >
-                    Chart
-                  </Tab>
-                ) : (
-                  <></>
-                )}
+            <Tab.Group defaultIndex={hasLiveTwitchStream ? 1 : 0}>
+              <Tab.List
+                className={`flex gap-2 text-sm ${
+                  activeTabsCount < 2 ? "hidden" : ""
+                }`}
+              >
+                <Tab
+                  key="chart"
+                  className="rounded-md border-1 border-gray-400 px-2 py-1 ui-selected:border-transparent ui-selected:bg-gray-300"
+                >
+                  Chart
+                </Tab>
 
-                {hasTwitchStream ? (
-                  <Tab
-                    key="twitch"
-                    className="ui-selected:bg-twitch-purple text-twitch-purple ui-selected:text-twitch-gray border-twitch-purple flex items-center gap-2 rounded-md border-1 px-2 py-1 ui-selected:border-transparent"
-                  >
-                    <FaTwitch size={16} />
-                    Twitch Stream
-                  </Tab>
-                ) : (
-                  <></>
-                )}
+                <Tab
+                  key="twitch"
+                  className="ui-selected:bg-twitch-purple text-twitch-purple ui-selected:text-twitch-gray border-twitch-purple flex items-center gap-2 rounded-md border-1 px-2 py-1 ui-selected:border-transparent"
+                >
+                  <FaTwitch size={16} />
+                  Twitch Stream
+                </Tab>
               </Tab.List>
 
               <Tab.Panels className="mt-2">
