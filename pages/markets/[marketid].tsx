@@ -419,7 +419,7 @@ const Market: NextPage<MarketPageProps> = ({
                       activeClassName="bg-twitch-purple"
                     />
                     <BsFillChatSquareTextFill
-                      size={16}
+                      size={18}
                       className={
                         showTwitchChat ? "text-twitch-purple" : "text-gray-400"
                       }
