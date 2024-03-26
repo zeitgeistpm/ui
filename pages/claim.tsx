@@ -11,6 +11,7 @@ import NotFoundPage from "./404";
 
 const TOTAL_AIRDROP_ZTG = 1_000_000;
 const ZTG_PER_ADDRESS = TOTAL_AIRDROP_ZTG / airdrop.length;
+const AIRDROP_REMARK_PREFIX = "zeitgeist.airdrop-1";
 
 const ClaimPage: NextPage = () => {
   if (process.env.NEXT_PUBLIC_SHOW_AIRDROP !== "true") {
@@ -38,10 +39,6 @@ const ClaimPage: NextPage = () => {
           </div>
           <img
             className="relative mr-auto hidden w-2/5 scale-110 sm:block"
-            // width={500}
-            // height={100}
-            // fill={true}
-            // style={{ objectFit: "contain", position: "relative" }}
             src="/airdrop.svg"
             alt="Airdrop"
           />
@@ -117,13 +114,12 @@ const Eligibility = ({
   const [claimAddress, setClaimAddress] = useState<string | null>(null);
   const { api } = usePolkadotApi();
 
-  //todo: formatting
-  const claim = airdrop.some(
+  const isEligible = airdrop.some(
     (airdropAddress) => airdropAddress === polkadotAddress,
   );
 
   const isValid = claimAddress === null || validateAddress(claimAddress, 73);
-  const tx = api?.tx.system.remark(`zeitgeistairdrop-1-${claimAddress}`);
+  const tx = api?.tx.system.remark(`${AIRDROP_REMARK_PREFIX}-${claimAddress}`);
 
   const connectedWalletMatchesPolkadotAddress = addressesMatch(
     polkadotAddress,
@@ -169,7 +165,7 @@ const Eligibility = ({
 
   return (
     <>
-      {claim ? (
+      {isEligible ? (
         <>
           {connectedWalletMatchesPolkadotAddress ? (
             <div className="w-full text-xl font-bold">
