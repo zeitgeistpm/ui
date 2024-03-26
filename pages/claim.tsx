@@ -7,11 +7,15 @@ import { NextPage } from "next";
 import { ChangeEvent, useState } from "react";
 import airdrop from "../public/airdrop-mock.json";
 import { environment } from "lib/constants";
+import NotFoundPage from "./404";
 
 const TOTAL_AIRDROP_ZTG = 1_000_000;
 const ZTG_PER_ADDRESS = TOTAL_AIRDROP_ZTG / airdrop.length;
 
 const ClaimPage: NextPage = () => {
+  if (process.env.NEXT_PUBLIC_SHOW_AIRDROP !== "true") {
+    return <NotFoundPage />;
+  }
   const [showEligibility, setShowEligibility] = useState(false);
   const [polkadotAddress, setPolkadotAddress] = useState("");
 
