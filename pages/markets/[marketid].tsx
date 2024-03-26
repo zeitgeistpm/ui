@@ -270,8 +270,6 @@ const Market: NextPage<MarketPageProps> = ({
     }
   };
 
-  cmsMetadata?.twitchStreamUrl;
-
   const token = metadata?.symbol;
 
   const isOracle = market?.oracle === wallet.realAddress;
