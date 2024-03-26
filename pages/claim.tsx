@@ -5,7 +5,7 @@ import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { NextPage } from "next";
 import { ChangeEvent, useState } from "react";
-import airdrop from "../public/airdrop-mock.json";
+import airdrop from "../public/airdrop.json";
 import { environment } from "lib/constants";
 import NotFoundPage from "./404";
 
