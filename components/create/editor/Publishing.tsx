@@ -55,7 +55,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
   );
 
   const { data: baseFee } = useQuery(
-    [creationParams, wallet.activeAccount],
+    [creationParams?.metadata, wallet.activeAccount?.address],
     async () => {
       if (!feesEnabled) {
         return new Decimal(0);
