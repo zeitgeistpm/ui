@@ -12,9 +12,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { currencyBalanceRootKey } from "./queries/useCurrencyBalances";
 import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import { useExtrinsicFee } from "./queries/useExtrinsicFee";
-import { useAtom } from "jotai";
-import { providerAtom, topicAtom } from "lib/state/util/web3auth-config";
-import { sendUnsigned } from "lib/util/tx";
 
 export const useCrossChainExtrinsic = <T>(
   extrinsicFn: (
@@ -36,8 +33,6 @@ export const useCrossChainExtrinsic = <T>(
   const [isLoading, setIsLoading] = useState(false);
   const { api: sourceChainApi } = useChain(sourceChain);
   const { api: destinationChainApi } = useChain(destinationChain);
-  const [provider] = useAtom(providerAtom);
-  const [topic] = useAtom(topicAtom);
 
   const extrinsic = useMemo(() => {
     const ext = extrinsicFn();
@@ -122,37 +117,20 @@ export const useCrossChainExtrinsic = <T>(
       },
     };
 
-    if (wallet.walletId === "walletconnect") {
-      if (!wallet.activeAccount?.address) return;
-      sendUnsigned(
-        sdk.api,
-        extrinsic,
-        wallet.activeAccount?.address,
-        extrinsicCallback(extrinsicCallbackParams),
-      ).catch((error) => {
-        notifications.pushNotification(error?.toString() ?? "Unknown Error", {
-          type: "Error",
-        });
-        setIsLoading(false);
-      });
-    } else {
-      let signer = wallet.getSigner();
-      if (!signer) return;
+    let signer = wallet.getSigner();
+    if (!signer) return;
 
-      signAndSend(
-        extrinsic,
-        signer,
-        extrinsicCallback(extrinsicCallbackParams),
-        IOForeignAssetId.is(fee?.assetId)
-          ? fee?.assetId.ForeignAsset
-          : undefined,
-      ).catch((error) => {
-        notifications.pushNotification(error?.toString() ?? "Unknown Error", {
-          type: "Error",
-        });
-        setIsLoading(false);
+    signAndSend(
+      extrinsic,
+      signer,
+      extrinsicCallback(extrinsicCallbackParams),
+      IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
+    ).catch((error) => {
+      notifications.pushNotification(error?.toString() ?? "Unknown Error", {
+        type: "Error",
       });
-    }
+      setIsLoading(false);
+    });
   };
 
   return { send, isError, isSuccess, isLoading };

@@ -55,7 +55,7 @@ export type UseWallet = WalletState & {
    * @param wallet the selected wallet id or instance
    * @returns void
    */
-  selectWallet: (wallet: string, keyPair?: KeyringPair | string[]) => void;
+  selectWallet: (wallet: string, keyPair?: KeyringPair) => void;
   /**
    * Select an address.
    * @param account the address to select
@@ -115,10 +115,6 @@ export type WalletState = {
    * Error messages of the wallet.
    */
   errors: WalletError[];
-  /**
-   * Name of wallet.
-   */
-  walletId: string | undefined;
 };
 
 /**
@@ -161,7 +157,6 @@ export const walletAtom = atom<WalletState>({
   wallet: undefined,
   accounts: [],
   errors: [],
-  walletId: undefined,
 });
 
 /**
@@ -246,7 +241,7 @@ let currentErrorNotification: Readonly<Notification> | null = null;
 const enableWallet = async (
   walletId: string,
   keyPair?: KeyringPair,
-  initLoad?: boolean,
+  skipModal?: boolean,
 ) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
 
@@ -288,7 +283,7 @@ const enableWallet = async (
       const extension = await poll(
         async () => {
           await cryptoWaitReady();
-          await wallet.enable(DAPP_NAME, initLoad);
+          await wallet.enable(DAPP_NAME, skipModal);
           return wallet;
         },
         {
@@ -493,6 +488,7 @@ export const useWallet = (): UseWallet => {
     if (!userSelectedAddress) {
       return walletState.accounts[0];
     }
+
     return userSelectedAddress;
   }, [userConfig.selectedAddress, walletState.accounts]);
 

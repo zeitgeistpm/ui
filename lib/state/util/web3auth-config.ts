@@ -47,7 +47,7 @@ export const web3AuthWalletInstance = new Web3AuthWallet({
   },
 });
 
-export const chainConfig = {
+const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.OTHER,
   chainId: "0x1",
   rpcTarget: "https://rpc.polkadot.io/",

@@ -130,6 +130,7 @@ const AccountButton: FC<{
           (walletName) => walletName === wallet.extensionName,
         ),
     );
+
   return (
     <>
       {!connected ? (

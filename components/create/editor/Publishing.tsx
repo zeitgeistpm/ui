@@ -1,6 +1,5 @@
 import { Dialog } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
 import { PollingTimeout, poll } from "@zeitgeistpm/avatara-util";
 import {
   CreateMarketParams,
@@ -33,7 +32,6 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import { RiSendPlaneLine } from "react-icons/ri";
-import { s } from "vitest/dist/reporters-5f784f42";
 
 export type PublishingProps = {
   editor: MarketDraftEditor;
@@ -57,7 +55,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
   );
 
   const { data: baseFee } = useQuery(
-    [creationParams?.metadata, feesEnabled],
+    [creationParams?.metadata, wallet.activeAccount?.address],
     async () => {
       if (!feesEnabled) {
         return new Decimal(0);

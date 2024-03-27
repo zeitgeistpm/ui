@@ -96,6 +96,7 @@ const AccountSelect: FC<AccountSelectProps> = ({
   onChange,
 }) => {
   const wallet = useWallet();
+
   return (
     <div className="flex h-ztg-50 w-full items-center rounded-ztg-10 bg-sky-100 dark:bg-black">
       <div className="flex-1">

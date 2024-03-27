@@ -94,7 +94,7 @@ export class WalletConnect implements Wallet {
     return err;
   };
 
-  enable = async (dappName: string, initLoad?: boolean) => {
+  enable = async (dappName: string, skipModal?: boolean) => {
     if (!dappName) {
       throw new Error("MissingParamsError: Dapp name is required.");
     }
@@ -111,7 +111,7 @@ export class WalletConnect implements Wallet {
       let session = client.session.getAll()[lastKeyIndex];
 
       //skips modal if user was previously connected or if it's the first load
-      if (uri && lastKeyIndex < 0 && !initLoad) {
+      if (uri && lastKeyIndex < 0 && !skipModal) {
         await modal.openModal({ uri, chains });
         session = await approval();
       }
