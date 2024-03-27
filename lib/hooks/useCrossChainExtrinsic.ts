@@ -52,6 +52,7 @@ export const useCrossChainExtrinsic = <T>(
     let extrinsic = extrinsicFn(params);
 
     const proxy = wallet?.getProxyFor(wallet.activeAccount?.address);
+    let signer = wallet.getSigner();
 
     if (extrinsic && proxy?.enabled && proxy?.address) {
       console.info("Proxying cross chain transaction");
@@ -64,7 +65,8 @@ export const useCrossChainExtrinsic = <T>(
       );
     }
 
-    if (!extrinsic || !sourceChainApi || !destinationChainApi) return;
+    if (!signer || !extrinsic || !sourceChainApi || !destinationChainApi)
+      return;
 
     const extrinsicCallbackParams = {
       api: sourceChainApi,
@@ -116,9 +118,6 @@ export const useCrossChainExtrinsic = <T>(
         notifications.pushNotification(error, { type: "Error" });
       },
     };
-
-    let signer = wallet.getSigner();
-    if (!signer) return;
 
     signAndSend(
       extrinsic,

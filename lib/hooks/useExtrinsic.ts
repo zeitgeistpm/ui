@@ -51,6 +51,7 @@ export const useExtrinsic = <T>(
     }
 
     const signer = wallet.getSigner();
+
     if (!signer) return;
 
     let extrinsic = extrinsicFn(params);

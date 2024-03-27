@@ -395,11 +395,9 @@ const enableWallet = async (
  */
 const initialWalletId = store.get(userConfigAtom).walletId;
 if (initialWalletId) {
-  enableWallet(
-    initialWalletId,
-    undefined,
-    initialWalletId === "walletconnect" ? true : false,
-  );
+  //used to stop wallet connect modal from appearing on initial load
+  const skipModal = initialWalletId === "walletconnect" ? true : false;
+  enableWallet(initialWalletId, undefined, skipModal);
 }
 
 /**

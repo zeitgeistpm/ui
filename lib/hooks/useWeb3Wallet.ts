@@ -6,9 +6,6 @@ import { web3authAtom } from "lib/state/util/web3auth-config";
 import { useAtom } from "jotai";
 import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
 import { useNotifications } from "lib/state/notifications";
-import { useState } from "react";
-import IUniversalProvider from "@walletconnect/universal-provider";
-
 interface loginOptions {
   loginProvider: string;
   extraLoginOptions: {
@@ -24,7 +21,6 @@ const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
 
 const useWeb3Wallet = () => {
   const [web3auth] = useAtom(web3authAtom);
-  useState<IUniversalProvider>();
   const notificationStore = useNotifications();
   const { selectWallet, disconnectWallet, walletId } = useWallet();
 
