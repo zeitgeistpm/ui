@@ -1,4 +1,4 @@
-import { BaseDotsamaWallet } from "@talismn/connect-wallets";
+import { BaseDotsamaWallet, Wallet } from "@talismn/connect-wallets";
 import { useAccountModals } from "lib/state/account";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
@@ -18,11 +18,10 @@ const WalletSelect = () => {
 
   const wasConnected = usePrevious(connected);
 
-  const handleSelectWallet = async (wallet: BaseDotsamaWallet) => {
+  const handleSelectWallet = async (wallet: BaseDotsamaWallet | Wallet) => {
     if (!wallet.installed && wallet.extensionName !== "web3auth") {
       window.open(wallet.installUrl);
     } else {
-      console.log(wallet.extensionName, "wallet.extensionName");
       selectWallet(wallet.extensionName);
       accountModals.closeWalletSelect();
     }
