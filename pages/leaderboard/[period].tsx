@@ -5,6 +5,7 @@ import {
   HistoricalAccountBalanceOrderByInput,
   HistoricalSwapOrderByInput,
   MarketOrderByInput,
+  OrderOrderByInput,
 } from "@zeitgeistpm/indexer";
 import {
   BaseAssetId,
@@ -47,8 +48,8 @@ import { getPlaiceholder } from "plaiceholder";
 import { useMemo, useState } from "react";
 
 // Approach: aggregate base asset movements in and out of a market
-// "In events": swaps, buy full set
-// "Out events": swaps, sell full set, redeem
+// "In events": swaps, buy full set, maker order fills
+// "Out events": swaps, sell full set, redeem, maker order fills
 
 const TimePeriodItems = ["month", "year", "all"] as const;
 type TimePeriod = (typeof TimePeriodItems)[number];
@@ -256,6 +257,19 @@ export async function getStaticProps({ params }) {
         order: HistoricalAccountBalanceOrderByInput.IdAsc,
       });
     return historicalAccountBalances;
+  });
+
+  const orders = await fetchAllPages(async (pageNumber, limit) => {
+    const { orders } = await sdk.indexer.orders({
+      where: {
+        // todo: this could cause strange results with orders that get partially filled over long periods of time
+        updatedAt_gt: periodStart.toISOString(),
+      },
+      limit: limit,
+      offset: pageNumber * limit,
+      order: OrderOrderByInput.IdAsc,
+    });
+    return orders;
   });
 
   const buyFullSetEvents = await fetchAllPages(async (pageNumber, limit) => {
