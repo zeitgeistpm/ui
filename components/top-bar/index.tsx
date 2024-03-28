@@ -219,7 +219,11 @@ const TopBar = () => {
         </div>
         <MarketSearch />
         <div className="center relative ml-auto gap-3">
-          <GetTokensButton />
+          {process.env.NEXT_PUBLIC_SHOW_AIRDROP !== "true" ? (
+            <GetTokensButton />
+          ) : (
+            <AirdropButton />
+          )}
           <AccountButton />
           <Alerts />
         </div>
@@ -262,6 +266,39 @@ const GetTokensButton = () => {
         </Link>
       </Transition>
     </>
+  );
+};
+
+const AirdropButton = () => {
+  return (
+    <Transition
+      as={Fragment}
+      show={true}
+      enter="transition-all duration-250"
+      enterFrom="opacity-0 scale-90"
+      enterTo="opacity-100 scale-100"
+      leave="transition-all duration-250"
+      leaveFrom="opacity-100 scale-100"
+      leaveTo="opacity-0 scale-90"
+    >
+      <Link
+        className="group relative hidden h-11 overflow-hidden rounded-md p-0.5 sm:block"
+        href="/claim"
+      >
+        <div
+          className="absolute left-0 top-0 z-10 h-full w-full group-hover:-left-6 group-hover:-top-6 group-hover:h-[150%] group-hover:w-[150%] group-hover:animate-spin"
+          style={{
+            background:
+              "linear-gradient(180deg, #FF00E6 0%, #F36464 50%, #04C3FF 100%)",
+          }}
+        />
+        <div className="relative z-20 block h-full sm:w-[100px] ">
+          <button className="center h-full w-full rounded-md bg-black text-white">
+            Airdrop!
+          </button>
+        </div>
+      </Link>
+    </Transition>
   );
 };
 
