@@ -5,7 +5,7 @@ import {
   HistoricalAccountBalanceOrderByInput,
   HistoricalSwapOrderByInput,
   MarketOrderByInput,
-  OrderOrderByInput,
+  HistoricalOrderOrderByInput,
 } from "@zeitgeistpm/indexer";
 import {
   BaseAssetId,
@@ -205,7 +205,23 @@ export async function getStaticProps({ params }) {
     return historicalSwaps;
   });
 
-  const tradersWithSwaps = historicalSwaps.reduce<Traders>((traders, swap) => {
+  //accountId is maker
+  const makerOrderFills = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalOrders } = await sdk.indexer.historicalOrders({
+      where: {
+        timestamp_gt: periodStart.toISOString(),
+      },
+      limit: limit,
+      offset: pageNumber * limit,
+      order: HistoricalOrderOrderByInput.IdAsc,
+    });
+    return historicalOrders;
+  });
+
+  const tradersWithSwaps = [
+    ...makerOrderFills,
+    ...historicalSwaps,
+  ].reduce<Traders>((traders, swap) => {
     const trades = traders[swap.accountId];
 
     const assetInId = parseAssetId(swap.assetIn).unwrap();
@@ -257,19 +273,6 @@ export async function getStaticProps({ params }) {
         order: HistoricalAccountBalanceOrderByInput.IdAsc,
       });
     return historicalAccountBalances;
-  });
-
-  const orders = await fetchAllPages(async (pageNumber, limit) => {
-    const { orders } = await sdk.indexer.orders({
-      where: {
-        // todo: this could cause strange results with orders that get partially filled over long periods of time
-        updatedAt_gt: periodStart.toISOString(),
-      },
-      limit: limit,
-      offset: pageNumber * limit,
-      order: OrderOrderByInput.IdAsc,
-    });
-    return orders;
   });
 
   const buyFullSetEvents = await fetchAllPages(async (pageNumber, limit) => {
