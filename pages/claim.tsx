@@ -45,15 +45,18 @@ const ClaimPage: NextPage = () => {
         </div>
         <div className="w-full whitespace-pre-wrap text-lg">
           This airdrop is designed for those who have actively participated in
-          Polkadot's OpenGov by voting before the start of Referendum 502. The
-          the snapshot was taken February 14th, 2024 (22:14:54 UTC). Only
+          Polkadot's OpenGov by voting before the start of{" "}
+          <a href="https://polkadot.polkassembly.io/referenda/502">
+            Referendum 502
+          </a>
+          . The snapshot was taken February 14th, 2024 (22:14:54 UTC). Only
           wallets that voted on Polkadot's OpenGov before the snapshot will be
           eligible. Claims will be open until July 1st, 2024.
         </div>
         {showEligibility === false ? (
           <>
             <div className="w-full text-xl font-bold">
-              Enter Your Polkadot address below to check your eligibility:
+              Enter your Polkadot address below to check your eligibility:
             </div>
             <div className="flex w-full flex-col gap-4 rounded-md bg-[#DFE5ED] p-7 sm:flex-row">
               <div className="relative flex w-full flex-col">
@@ -195,6 +198,13 @@ const Eligibility = ({
                     Invalid Zeitgeist address
                   </div>
                 )}
+                {isValid === true &&
+                  claimAddress != null &&
+                  connectedWalletMatchesPolkadotAddress === false && (
+                    <div className="absolute top-10 text-xs text-red-600">
+                      Connected wallet doesn't match Polkadot address
+                    </div>
+                  )}
               </div>
               <button
                 className="h-[40px] w-full rounded-md bg-[#2468E2] text-white disabled:opacity-50 sm:w-[200px]"
