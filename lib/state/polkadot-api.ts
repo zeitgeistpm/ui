@@ -1,16 +1,18 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { atom, useAtom } from "jotai";
 import { loadable } from "jotai/utils";
-import { ChainName, CHAINS } from "lib/constants/chains";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { environment } from "lib/constants";
 
-const endpoints = [
-  "wss://rpc.polkadot.io",
-  "wss://polkadot-rpc.dwellir.com",
-  "wss://polkadot.public.curie.radiumblock.co/ws",
-  "wss://1rpc.io/dot",
-  "wss://rpc-polkadot.luckyfriday.io",
-];
+const endpoints =
+  environment === "production"
+    ? [
+        "wss://rpc.polkadot.io",
+        "wss://polkadot-rpc.dwellir.com",
+        "wss://polkadot.public.curie.radiumblock.co/ws",
+        "wss://1rpc.io/dot",
+        "wss://rpc-polkadot.luckyfriday.io",
+      ]
+    : ["wss://rococo-rpc.polkadot.io"];
 
 const polkadotApiAtom = loadable(
   atom(async () => {
