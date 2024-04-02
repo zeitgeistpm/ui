@@ -2,7 +2,7 @@ import type { PortableTextBlock } from "@portabletext/types";
 import groq from "groq";
 import { sanity } from "./sanity";
 
-export type CmsMarketMetadata = {
+export type FullCmsMarketMetadata = {
   marketId?: number | null;
   question?: string;
   description?: PortableTextBlock[];
@@ -11,43 +11,56 @@ export type CmsMarketMetadata = {
     chain?: "polkadot" | "kusama";
     referendumIndex?: number;
   };
+  twitchStreamUrl?: string;
+};
+export type CmsMarketCardMetadata = {
+  marketId?: number | null;
+  question?: string;
+  imageUrl?: string | null;
 };
 
-const fields = groq`{
+const fullFields = groq`{
   "marketId": market.marketId,
   question,
   description,
   "imageUrl": img.asset->url,
   referendumRef,
+  twitchStreamUrl
 }`;
 
-export const getCmsMarketMetadataForMarket = async (
+const cardFields = groq`{
+  "marketId": market.marketId,
+  question,
+  "imageUrl": img.asset->url,
+}`;
+
+export const getCmsFullMarketMetadataForMarket = async (
   marketId: number,
-): Promise<CmsMarketMetadata | null> => {
-  const data = await sanity.fetch<CmsMarketMetadata>(
-    groq`*[_type == "marketMetadata" && market.marketId == ${marketId}]${fields}`,
+): Promise<FullCmsMarketMetadata | null> => {
+  const data = await sanity.fetch<FullCmsMarketMetadata>(
+    groq`*[_type == "marketMetadata" && market.marketId == ${marketId}]${fullFields}`,
   );
 
   return data?.[0];
 };
 
-export const getCmsMarketMetadataForMarkets = async (
+export const getCmsFullMarketMetadataForMarkets = async (
   marketIds: number[],
-): Promise<CmsMarketMetadata[]> => {
-  const data = await sanity.fetch<CmsMarketMetadata[]>(
+): Promise<FullCmsMarketMetadata[]> => {
+  const data = await sanity.fetch<FullCmsMarketMetadata[]>(
     groq`*[_type == "marketMetadata" && market.marketId in ${JSON.stringify(
       marketIds,
-    )}]${fields}`,
+    )}]${fullFields}`,
   );
 
   return data;
 };
 
-export const getCmsMarketMetadataForAllMarkets = async (): Promise<
-  CmsMarketMetadata[]
+export const getCmsMarketCardMetadataForAllMarkets = async (): Promise<
+  CmsMarketCardMetadata[]
 > => {
-  const data = await sanity.fetch<CmsMarketMetadata[]>(
-    groq`*[_type == "marketMetadata"]${fields}`,
+  const data = await sanity.fetch<FullCmsMarketMetadata[]>(
+    groq`*[_type == "marketMetadata"]${cardFields}`,
   );
 
   return data;

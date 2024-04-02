@@ -1,4 +1,4 @@
-import { getCmsMarketMetadataForMarkets } from "lib/cms/markets";
+import { getCmsFullMarketMetadataForMarkets } from "lib/cms/markets";
 import { PageConfig } from "next";
 import { NextRequest } from "next/server";
 
@@ -23,7 +23,7 @@ export default async function handler(request: NextRequest) {
       });
     }
 
-    const metadata = await getCmsMarketMetadataForMarkets(
+    const metadata = await getCmsFullMarketMetadataForMarkets(
       marketIds.map((m) => Number(m)),
     );
 

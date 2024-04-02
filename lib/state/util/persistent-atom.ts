@@ -1,6 +1,7 @@
 import { atom, getDefaultStore, createStore } from "jotai";
 import { RESET, atomWithStorage } from "jotai/utils";
 import { tryCatch, fromNullable } from "@zeitgeistpm/utility/dist/option";
+import { isBrowser } from "framer-motion";
 
 export type PersistentAtomConfig<T> = {
   /**
@@ -66,8 +67,10 @@ export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
     const migrations = opts.migrations?.slice(initialVersion);
 
     if (migrations) {
-      console.group(`state-migration:${opts.key}`);
-      console.info(`initial [version: ${initialVersion}]`, initialState);
+      if (isBrowser) {
+        console.group(`state-migration:${opts.key}`);
+        console.info(`initial [version: ${initialVersion}]`, initialState);
+      }
 
       newState = migrations.reduce((acc, migration, version) => {
         const nextVersion = initialVersion + version + 1;
@@ -75,13 +78,17 @@ export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
 
         if (migrations.length == 1 || nextVersion !== 1) {
           const step = version == migrations.length - 1 ? "final" : "next";
-          console.info(`${step} [version: ${nextVersion}]`, nextState);
+          if (isBrowser) {
+            console.info(`${step} [version: ${nextVersion}]`, nextState);
+          }
         }
 
         return nextState;
       }, initialState);
 
-      console.groupEnd();
+      if (isBrowser) {
+        console.groupEnd();
+      }
     }
 
     newState && store.set(storageAtom, { ...newState, __version: nextVersion });

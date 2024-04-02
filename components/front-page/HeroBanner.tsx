@@ -15,12 +15,12 @@ export const HeroBanner = ({
   bannerPlaceholder: string;
   chainProperties: GenericChainProperties;
 }) => {
-  const chartData = ztgHistory.prices.map(([timestamp, price]) => {
+  const chartData = ztgHistory.prices?.map(([timestamp, price]) => {
     return { v: price, t: 1 };
   });
 
-  const firstPrice = ztgHistory.prices[0][1];
-  const latestPrice = ztgHistory.prices[ztgHistory.prices.length - 1][1];
+  const firstPrice = ztgHistory.prices?.[0]?.[1];
+  const latestPrice = ztgHistory.prices?.[ztgHistory.prices.length - 1]?.[1];
   const prctChange = ((latestPrice - firstPrice) / firstPrice) * 100;
 
   return (
@@ -76,24 +76,26 @@ export const HeroBanner = ({
                       dot={false}
                       strokeWidth={2}
                       stroke={getColour(
-                        chartData[0].v,
-                        chartData[chartData.length - 1].v,
+                        chartData?.[0].v,
+                        chartData?.[chartData.length - 1].v,
                       )}
                     />
                     <YAxis hide={true} domain={["dataMin", "dataMax"]} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              <div className="flex flex-1 items-center justify-end gap-2">
-                <div>
-                  <div className="text-md text-center font-semibold">
-                    ${latestPrice.toFixed(3)}
-                  </div>
-                  <div className="text-center text-sm">
-                    {!isNaN(prctChange) ? prctChange.toFixed(1) : 0}%
+              {latestPrice && (
+                <div className="flex flex-1 items-center justify-end gap-2">
+                  <div>
+                    <div className="text-md text-center font-semibold">
+                      ${latestPrice.toFixed(3)}
+                    </div>
+                    <div className="text-center text-sm">
+                      {!isNaN(prctChange) ? prctChange.toFixed(1) : 0}%
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </a>
         </div>
