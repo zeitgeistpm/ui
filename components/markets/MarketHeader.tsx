@@ -377,8 +377,8 @@ const MarketHeader: FC<{
     market.marketId,
   ]);
   console.log(stats);
-  const liquidity = stats?.[0].liquidity;
-  const participants = stats?.[0].participants;
+  const liquidity = stats?.[0]?.liquidity;
+  const participants = stats?.[0]?.participants;
 
   const oracleReported = marketHistory?.reported?.by === market.oracle;
 
