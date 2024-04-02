@@ -376,7 +376,7 @@ const MarketHeader: FC<{
   const { data: stats, isLoading: isStatsLoading } = useMarketsStats([
     market.marketId,
   ]);
-  console.log(stats);
+
   const liquidity = stats?.[0]?.liquidity;
   const participants = stats?.[0]?.participants;
 
