@@ -1,9 +1,9 @@
-import { Context, create$, Sdk, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
+import { Context, create$, Sdk, ZeitgeistIpfsApi } from "@zeitgeistpm/sdk";
+import { atom, useAtom } from "jotai";
 import { endpointOptions as endpoints, graphQlEndpoint } from "lib/constants";
 import { memoize } from "lodash-es";
 import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
-import { atom, useAtom } from "jotai";
 import { usePrevious } from "./usePrevious";
 
 export type UseSdkv2 = [
@@ -77,7 +77,9 @@ const init = memoize(
     return create$({
       provider: endpoints,
       indexer: graphQlEndpoint,
-      storage: ZeitgeistIpfs(),
+      storage: ZeitgeistIpfsApi({
+        apiUrl: "./",
+      }),
     });
   },
   (endpoints, graphQlEndpoint) => identify(endpoints, graphQlEndpoint) ?? "--",

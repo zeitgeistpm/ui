@@ -36,8 +36,8 @@ import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
 import {
-  CmsMarketMetadata,
-  getCmsMarketMetadataForMarket,
+  FullCmsMarketMetadata,
+  getCmsFullMarketMetadataForMarket,
 } from "lib/cms/markets";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { ZTG, environment, graphQlEndpoint } from "lib/constants";
@@ -113,14 +113,9 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const client = new GraphQLClient(graphQlEndpoint);
 
-  const [
-    market,
-    cmsMetadata,
-    // promotionData
-  ] = await Promise.all([
+  const [market, cmsMetadata] = await Promise.all([
     getMarket(client, params.marketid),
-    getCmsMarketMetadataForMarket(params.marketid),
-    // getMarketPromotion(Number(params.marketid)),
+    getCmsFullMarketMetadataForMarket(params.marketid),
   ]);
 
   const chartSeries: ChartSeries[] = market?.categories?.map(
@@ -182,7 +177,7 @@ type MarketPageProps = {
   chartSeries: ChartSeries[];
   resolutionTimestamp: string;
   promotionData: PromotedMarket | null;
-  cmsMetadata: CmsMarketMetadata | null;
+  cmsMetadata: FullCmsMarketMetadata | null;
 };
 
 const Market: NextPage<MarketPageProps> = ({

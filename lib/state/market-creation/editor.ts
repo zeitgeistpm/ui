@@ -367,7 +367,7 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
         ...draft.form,
         liquidity: {
           ...draft.form.liquidity,
-          amount: draft.form.liquidity.amount ?? liquidity,
+          amount: draft.form.liquidity.amount || liquidity,
           rows,
         },
       },
