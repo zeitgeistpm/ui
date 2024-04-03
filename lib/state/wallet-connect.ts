@@ -18,7 +18,7 @@ const walletConnectParams = {
     name: "Zeitgeist",
     description: "Zeitgeist",
     url: DOMAIN_URL,
-    icons: ["https://walletconnect.com/walletconnect-logo.png"],
+    icons: ["https://docs.zeitgeist.pm/img/Moon_White.png"],
   },
 };
 
@@ -26,7 +26,7 @@ const requiredNamespaces = {
   polkadot: {
     methods: ["polkadot_signTransaction", "polkadot_signMessage"],
     chains: [ZTG_CHAIN_ID],
-    events: ["accountsChanged", "disconnect"],
+    events: ["accountsChanged"],
   },
 };
 
