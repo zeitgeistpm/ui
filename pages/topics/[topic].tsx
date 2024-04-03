@@ -44,7 +44,7 @@ export async function getStaticProps({
   return {
     props: {
       cmsTopic: cmsTopic ?? null,
-      markets: marketCardsData ?? null,
+      markets: marketCardsData,
     },
     revalidate:
       environment === "production"
