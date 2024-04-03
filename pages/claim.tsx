@@ -9,7 +9,7 @@ import airdrop from "../public/airdrop.json";
 import { environment } from "lib/constants";
 import NotFoundPage from "./404";
 
-const TOTAL_AIRDROP_ZTG = 1_000_000;
+const TOTAL_AIRDROP_ZTG = 2_000_000;
 const ZTG_PER_ADDRESS = TOTAL_AIRDROP_ZTG / airdrop.length;
 const AIRDROP_REMARK_PREFIX = "zeitgeist.airdrop-1";
 
