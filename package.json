@@ -126,7 +126,7 @@
     "autoprefixer": "10.2.5",
     "commander": "^8.3.0",
     "cross-env": "^7.0.3",
-    "moment": "^2.29.1",
+    "moment": "^2.30.1",
     "next-transpile-modules": "^9.1.0",
     "postcss": "8.2.13",
     "prettier": "^3.1.0",

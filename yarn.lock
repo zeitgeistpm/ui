@@ -4769,7 +4769,7 @@ __metadata:
     jotai-tanstack-query: ^0.7.0
     lodash.merge: ^4.6.2
     median-range: ^0.0.11
-    moment: ^2.29.1
+    moment: ^2.30.1
     moment-timezone: ^0.5.43
     multiformats: ^13.0.1
     next: ^13.4.19
@@ -10373,7 +10373,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.29.1, moment@npm:^2.29.4":
+"moment@npm:^2.29.4, moment@npm:^2.30.1":
   version: 2.30.1
   resolution: "moment@npm:2.30.1"
   checksum: 859236bab1e88c3e5802afcf797fc801acdbd0ee509d34ea3df6eea21eb6bcc2abd4ae4e4e64aa7c986aa6cba563c6e62806218e6412a765010712e5fa121ba6
