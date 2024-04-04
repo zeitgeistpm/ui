@@ -4513,6 +4513,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@zeitgeistpm/augment-api@npm:^3.2.3":
+  version: 3.5.1
+  resolution: "@zeitgeistpm/augment-api@npm:3.5.1"
+  peerDependencies:
+    "@polkadot/api-base": "*"
+    "@polkadot/rpc-core": "*"
+    "@polkadot/types": "*"
+  checksum: 182d96a3635befda21b1e565b1bab8557df5917c8da94cdf33bede2e048d87fe70ed30c8726e73c6536c571f3d7107be48cba17c6e0e6360a84647fc6cf36c5a
+  languageName: node
+  linkType: hard
+
 "@zeitgeistpm/augment-api@npm:^3.5.0":
   version: 3.5.0
   resolution: "@zeitgeistpm/augment-api@npm:3.5.0"
@@ -4590,18 +4601,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^4.5.1":
-  version: 4.5.1
-  resolution: "@zeitgeistpm/indexer@npm:4.5.1"
+"@zeitgeistpm/indexer@npm:^4.2.3":
+  version: 4.5.2
+  resolution: "@zeitgeistpm/indexer@npm:4.5.2"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: 37abeb5ab5ccaab7bb526186b59279dee227a4d560265238139284df132d19188bcfdf9fb3351ee7e380d7a5d6d23b39d8bd42133e6a9008af2d7a162b733882
+  checksum: 4735fb988cfd74658ff77e58a86aef941286ca92fc8fffc170c22c7f7621148e0a6d6ecda662bb8737512cebe66df2c9c857f6d86d70d42a199b287b4e844ed9
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/rpc@npm:^3.5.0":
+"@zeitgeistpm/rpc@npm:^3.2.3":
   version: 3.5.0
   resolution: "@zeitgeistpm/rpc@npm:3.5.0"
   dependencies:
@@ -4615,15 +4626,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk@npm:^3.4.1":
-  version: 3.5.1
-  resolution: "@zeitgeistpm/sdk@npm:3.5.1"
+"@zeitgeistpm/sdk@npm:3.2.3":
+  version: 3.2.3
+  resolution: "@zeitgeistpm/sdk@npm:3.2.3"
   dependencies:
-    "@zeitgeistpm/augment-api": ^3.5.0
-    "@zeitgeistpm/indexer": ^4.5.1
-    "@zeitgeistpm/rpc": ^3.5.0
-    "@zeitgeistpm/utility": ^3.5.0
-    "@zeitgeistpm/web3.storage": ^3.5.0
+    "@zeitgeistpm/augment-api": ^3.2.3
+    "@zeitgeistpm/indexer": ^4.2.3
+    "@zeitgeistpm/rpc": ^3.2.3
+    "@zeitgeistpm/utility": ^3.2.3
+    "@zeitgeistpm/web3.storage": ^3.2.3
     cids: ^1.1.9
     decimal.js: ^10.4.3
     human-object-diff: ^3.0.0
@@ -4637,7 +4648,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: a4154e9468f2c2a33997b56ab96ad3b72b30bc68f67960a5a0611f3550293f53a1ae4e1885b3630a1d5ad9826ee0f0bb3dc6c0f2dc65ecf8e3ae4d6d21f75aae
+  checksum: d67a53371011de79748dc129065751860dff59f9d17d0cd75632e5f9deb093708c2566117af2105db4f6328f9d3bdbe58ae005bd8460261a09070259c7a5432e
   languageName: node
   linkType: hard
 
@@ -4705,7 +4716,7 @@ __metadata:
     "@zeitgeistpm/avatara-nft-sdk": ^1.3.1
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
-    "@zeitgeistpm/sdk": ^3.4.1
+    "@zeitgeistpm/sdk": 3.2.3
     "@zeitgeistpm/utility": 3.2.3
     autoprefixer: 10.2.5
     axios: ^0.21.4
@@ -4729,7 +4740,7 @@ __metadata:
     jotai-tanstack-query: ^0.7.0
     lodash.merge: ^4.6.2
     median-range: ^0.0.11
-    moment: ^2.30.1
+    moment: 2.29.1
     moment-timezone: ^0.5.43
     multiformats: ^13.0.1
     next: ^13.4.19
@@ -4797,7 +4808,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/utility@npm:^3.5.0":
+"@zeitgeistpm/utility@npm:^3.2.3, @zeitgeistpm/utility@npm:^3.5.0":
   version: 3.5.0
   resolution: "@zeitgeistpm/utility@npm:3.5.0"
   dependencies:
@@ -4813,7 +4824,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/web3.storage@npm:^3.5.0":
+"@zeitgeistpm/web3.storage@npm:^3.2.3":
   version: 3.5.0
   resolution: "@zeitgeistpm/web3.storage@npm:3.5.0"
   dependencies:
@@ -10377,17 +10388,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"moment@npm:2.29.1":
+  version: 2.29.1
+  resolution: "moment@npm:2.29.1"
+  checksum: 1e14d5f422a2687996be11dd2d50c8de3bd577c4a4ca79ba5d02c397242a933e5b941655de6c8cb90ac18f01cc4127e55b4a12ae3c527a6c0a274e455979345e
+  languageName: node
+  linkType: hard
+
 "moment@npm:^2.29.4":
   version: 2.29.4
   resolution: "moment@npm:2.29.4"
   checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e
-  languageName: node
-  linkType: hard
-
-"moment@npm:^2.30.1":
-  version: 2.30.1
-  resolution: "moment@npm:2.30.1"
-  checksum: 859236bab1e88c3e5802afcf797fc801acdbd0ee509d34ea3df6eea21eb6bcc2abd4ae4e4e64aa7c986aa6cba563c6e62806218e6412a765010712e5fa121ba6
   languageName: node
   linkType: hard
 
