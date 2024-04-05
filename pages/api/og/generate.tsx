@@ -1,5 +1,5 @@
 import { ImageResponse } from "@vercel/og";
-import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { getFallbackImage } from "lib/hooks/useMarketImage";
 import { formatNumberCompact } from "lib/util/format-compact";
 import type { PageConfig } from "next";
 import { NextRequest } from "next/server";
@@ -18,10 +18,15 @@ export default async function GenerateOgImage(request: NextRequest) {
     });
   }
 
-  const marketId = searchParams.get("marketId");
+  const urlBase = request.nextUrl.origin;
 
-  const url = request.nextUrl.clone();
-  url.pathname = `/api/og/${marketId}`;
+  const marketId = searchParams.get("marketId");
+  const marketUrl = request.nextUrl.clone();
+  marketUrl.pathname = `/api/og/${marketId}`;
+
+  const cmsUrl = `${urlBase}/api/cms/market-metadata/batch?marketIds=${JSON.stringify(
+    [Number(marketId)],
+  )}`;
 
   const {
     market,
@@ -29,11 +34,22 @@ export default async function GenerateOgImage(request: NextRequest) {
     prediction,
     ends,
     currencyMetadata,
-  }: MarketImageData = await fetch(url.href).then((r) => r.json());
+  }: MarketImageData = await fetch(marketUrl.href).then((r) => r.json());
 
-  if (!market?.question) return;
+  const cmsRes = await fetch(cmsUrl).then((r) => r.json());
+  const cmsImageUrl = cmsRes?.[0]?.imageUrl;
+  const cmsQuestion = cmsRes?.[0]?.question;
 
-  const questionClass = market.question.length > 90 ? "text-4xl" : "text-5xl";
+  const fallbackImagePath = `${urlBase}${getFallbackImage(
+    market.tags,
+    Number(marketId),
+  )}`;
+
+  const question = cmsQuestion ?? market?.question;
+
+  if (!question) return;
+
+  const questionClass = question.length > 90 ? "text-4xl" : "text-5xl";
 
   const [boldFont, regularFont, bg, zeitgeistBadge] = await Promise.all([
     fetch(
@@ -55,10 +71,9 @@ export default async function GenerateOgImage(request: NextRequest) {
       new URL("../../../public/og/zeitgeist_badge.png", import.meta.url),
     ).then((res) => res.arrayBuffer()),
   ]);
-
   const image = (
     <div
-      tw="p-16 text-white"
+      tw="px-16 pt-16 pb-24 text-white"
       style={{
         width: "100%",
         height: "100%",
@@ -75,10 +90,21 @@ export default async function GenerateOgImage(request: NextRequest) {
         }}
       />
       <div tw="flex flex-col h-full w-full">
-        <h1 tw={`${questionClass}`} style={{ lineHeight: "1.3em" }}>
-          {market.question}
-        </h1>
-        <div tw="flex flex-col mt-20">
+        <div tw="flex">
+          <img
+            style={{
+              width: 150,
+              height: 150,
+              objectFit: "cover",
+            }}
+            src={cmsImageUrl ?? fallbackImagePath}
+            tw="rounded-[5px]"
+          />
+          <h1 tw={`${questionClass} ml-6`} style={{ lineHeight: "1.3em" }}>
+            {question}
+          </h1>
+        </div>
+        <div tw="flex flex-col mt-10">
           <h2 tw={`font-bold text-4xl font-sans`}>
             {market.status === "Reported" || market.status === "Resolved"
               ? "Winning Outcome:"
@@ -101,12 +127,17 @@ export default async function GenerateOgImage(request: NextRequest) {
               {ends}
             </div>
           </div>
-          <div tw="flex flex-col">
-            <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Volume:</h2>
-            <div tw={`flex ${"text-4xl"}  -mt-1`} style={{ color: "#ABC1F9" }}>
-              {formatNumberCompact(Number(volume))} {currencyMetadata?.name}
+          {Number(volume) > 0 && (
+            <div tw="flex flex-col">
+              <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Volume:</h2>
+              <div
+                tw={`flex ${"text-4xl"}  -mt-1`}
+                style={{ color: "#ABC1F9" }}
+              >
+                {formatNumberCompact(Number(volume))} {currencyMetadata?.name}
+              </div>
             </div>
-          </div>
+          )}
           <div tw="flex ml-auto mt-4">
             <img
               style={{
