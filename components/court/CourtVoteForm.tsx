@@ -32,9 +32,8 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
   const [sdk, id] = useSdkv2();
   const queryClient = useQueryClient();
 
-  const outcomeAssets = market.outcomeAssets.map(
-    (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
+  const outcomeAssets = market.assets.map(
+    (asset) => parseAssetId(asset.assetId).unwrap() as CategoricalAssetId,
   );
 
   const { vote, setVote, committed, commitVote } = useCourtVote({

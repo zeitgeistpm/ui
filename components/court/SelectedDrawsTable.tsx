@@ -239,7 +239,7 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  const outcomeAssets = market.outcomeAssets.map(
+  const outcomeAssets = market.assets.map(
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
   );

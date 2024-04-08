@@ -16,6 +16,7 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { findAsset } from "lib/util/assets";
 import { useState } from "react";
 
 const ReportButton = ({
@@ -57,9 +58,7 @@ const ReportButton = ({
 
   const { data: stage } = useMarketStage(market);
 
-  const outcomeName = assetId
-    ? market.categories?.[getIndexOf(assetId)]?.name
-    : "";
+  const outcomeName = assetId && findAsset(assetId, market.assets);
 
   const connectedWalletIsOracle =
     market.oracle === wallet.activeAccount?.address;

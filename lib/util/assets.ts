@@ -1,6 +1,14 @@
-import { getIndexOf, ZTG, MarketOutcomeAssetId } from "@zeitgeistpm/sdk";
+import {
+  getIndexOf,
+  ZTG,
+  MarketOutcomeAssetId,
+  AssetId,
+} from "@zeitgeistpm/sdk";
+import { FullAssetFragment, FullMarketFragment } from "@zeitgeistpm/indexer";
+
 import Decimal from "decimal.js";
 import { parseAssetIdString } from "./parse-asset-id";
+import { assetsAreEqual } from "./assets-are-equal";
 
 export const getCurrentPrediction = (
   assets: { price: number; assetId?: string }[],
@@ -64,4 +72,16 @@ export const getCurrentPrediction = (
       percentage,
     };
   }
+};
+
+export const findAsset = (
+  assetId: AssetId,
+  assets: FullMarketFragment["assets"],
+) => {
+  const asset = assets.find((asset) => {
+    const a = parseAssetIdString(asset.assetId);
+    assetsAreEqual(a, assetId);
+  });
+
+  return asset;
 };

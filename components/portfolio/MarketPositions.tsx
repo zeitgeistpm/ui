@@ -19,7 +19,6 @@ import MarketPositionHeader from "./MarketPositionHeader";
 import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
 import { lookUpAssetPrice } from "lib/util/lookup-price";
 import { MIN_USD_DISPLAY_AMOUNT } from "lib/constants";
-import PoolShareButtons from "components/assets/AssetActionButtons/PoolShareButtons";
 
 const COLUMNS: TableColumn[] = [
   {
@@ -238,13 +237,8 @@ export const MarketPositions = ({
                     : changePercentage.toFixed(1),
                   actions: (
                     <div className="text-right">
-                      {IOPoolShareAssetId.is(assetId) ? (
-                        <PoolShareButtons
-                          poolId={assetId.PoolShare}
-                          market={market}
-                        />
-                      ) : marketStage?.type === "Trading" &&
-                        IOMarketOutcomeAssetId.is(assetId) ? (
+                      {marketStage?.type === "Trading" &&
+                      IOMarketOutcomeAssetId.is(assetId) ? (
                         <AssetTradingButtons assetId={assetId} />
                       ) : marketStage?.type === "Resolved" ? (
                         <RedeemButton market={market} assetId={assetId} />
