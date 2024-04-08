@@ -41,7 +41,7 @@ const useWeb3Wallet = () => {
     }
   };
 
-  const onBoardUser = async () => {
+  const onboardUser = async () => {
     if (!web3auth) {
       return;
     }
@@ -93,7 +93,7 @@ const useWeb3Wallet = () => {
       );
       if (web3authProvider) {
         await getKeypair(web3authProvider);
-        await onBoardUser();
+        await onboardUser();
       }
     } catch (e) {
       notificationStore.pushNotification(
