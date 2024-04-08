@@ -124,6 +124,7 @@
     "autoprefixer": "10.2.5",
     "commander": "^8.3.0",
     "cross-env": "^7.0.3",
+    "jose": "^5.2.4",
     "moment": "^2.29.1",
     "next-transpile-modules": "^9.1.0",
     "postcss": "8.2.13",

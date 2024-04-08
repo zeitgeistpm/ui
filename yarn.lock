@@ -4380,6 +4380,7 @@ __metadata:
     groq: ^3.23.4
     ipfs-http-client: ^60.0.1
     ipfs-utils: ^9.0.14
+    jose: ^5.2.4
     jotai: ^2.0.4
     jotai-tanstack-query: ^0.7.0
     lodash.merge: ^4.6.2
@@ -8793,6 +8794,13 @@ __metadata:
     "@sideway/formula": ^3.0.1
     "@sideway/pinpoint": ^2.0.0
   checksum: 3a4e9ecba345cdafe585e7ed8270a44b39718e11dff3749aa27e0001a63d578b75100c062be28e6f48f960b594864034e7a13833f33fbd7ad56d5ce6b617f9bf
+  languageName: node
+  linkType: hard
+
+"jose@npm:^5.2.4":
+  version: 5.2.4
+  resolution: "jose@npm:5.2.4"
+  checksum: 81e1f4494f406debd14392975327f0daa8b88ff09c83f2fe94754dcd7cfdefdb1adf785b2ec7481751927e609d342581cd41cb444628ef62fca423facebcd280
   languageName: node
   linkType: hard
 
