@@ -78,9 +78,8 @@ const BuyForm = ({
   const swapFee = pool?.swapFee.div(ZTG);
   const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
 
-  const outcomeAssets = market?.outcomeAssets.map(
-    (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+  const outcomeAssets = market?.assets.map(
+    ({ assetId }) => parseAssetId(assetId).unwrap() as MarketOutcomeAssetId,
   );
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | undefined
@@ -170,7 +169,7 @@ const BuyForm = ({
         !isRpcSdk(sdk) ||
         !amount ||
         amount === "" ||
-        market?.categories?.length == null ||
+        market?.assets?.length == null ||
         !selectedAsset
       ) {
         return;
@@ -178,7 +177,7 @@ const BuyForm = ({
 
       return sdk.api.tx.neoSwaps.buy(
         marketId,
-        market?.categories?.length,
+        market?.assets?.length,
         selectedAsset,
         new Decimal(amount).abs().mul(ZTG).toFixed(0),
         minAmountOut.toFixed(0),

@@ -17,6 +17,7 @@ import {
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
+import { findAsset } from "lib/util/assets";
 
 const CategoricalDisputeBox = ({
   market,

@@ -12,6 +12,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useCourtCommitmentHash } from "lib/state/court/useCourtCommitmentHash";
 import { useCourtSalt } from "lib/state/court/useCourtSalt";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
+import { findAsset } from "lib/util/assets";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
@@ -145,9 +146,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
                   <span>
                     vote_item = VoteItem::Outcome(OutcomeReport::Categorical(
                     {vote?.CategoricalOutcome[1] ?? "null"})) {"->"}{" "}
-                    {vote
-                      ? market.categories?.[vote.CategoricalOutcome[1]]?.ticker
-                      : "--"}
+                    {vote ? findAsset(vote, market.assets)?.ticker : "--"}
                   </span>
                   <br />
                   <span className="text-black">salt</span> ={" "}

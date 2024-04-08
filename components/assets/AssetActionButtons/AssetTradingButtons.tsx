@@ -4,7 +4,6 @@ import {
   ScalarAssetId,
   getMarketIdOf,
 } from "@zeitgeistpm/sdk";
-import TradeForm from "components/trade-form";
 import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
 import { TradeTabType } from "components/trade-form/TradeTab";
 import Modal from "components/ui/Modal";

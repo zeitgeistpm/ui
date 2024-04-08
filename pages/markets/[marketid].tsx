@@ -79,11 +79,6 @@ import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { FaChevronUp } from "react-icons/fa";
 
-const TradeForm = dynamic(() => import("../../components/trade-form"), {
-  ssr: false,
-  loading: () => <div style={{ width: "100%", height: "606px" }} />,
-});
-
 const SimilarMarketsSection = dynamic(
   () => import("../../components/markets/SimilarMarketsSection"),
   {

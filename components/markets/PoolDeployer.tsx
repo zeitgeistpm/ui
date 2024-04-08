@@ -106,15 +106,15 @@ const PoolDeployer = ({
 
   const handleDeployClick = () => {
     const amountNum = minBaseLiquidity[currencyMetadata?.name ?? "ZTG"];
-    const outcomes = market?.categories ?? [];
-    const numOutcomes = outcomes.length ?? 0;
+    const assets = market?.assets ?? [];
+    const numOutcomes = assets.length ?? 0;
 
     const ratio = 1 / numOutcomes;
 
     const rows: Liquidity["rows"] = [
-      ...outcomes.map((outcome) => {
+      ...assets.map((asset) => {
         return {
-          asset: outcome.name ?? "unknown",
+          asset: asset.name ?? "unknown",
           amount: `${amountNum}`,
           price: {
             price: ratio.toString(),

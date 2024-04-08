@@ -13,8 +13,9 @@ const marketHeaderQuery = gql`
     ) {
       marketId
       question
-      categories {
+      assets {
         name
+        assetId
       }
     }
   }
@@ -23,7 +24,7 @@ const marketHeaderQuery = gql`
 export type MarketHeader = {
   marketId: number;
   question: string;
-  categories: { name: string }[];
+  assets: { name: string; assetId: string }[];
 };
 
 export const getMarketHeaders = async (

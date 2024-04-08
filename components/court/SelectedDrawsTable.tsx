@@ -30,6 +30,7 @@ import { shortenAddress } from "lib/util";
 import { useEffect, useMemo, useState } from "react";
 import { BsShieldFillExclamation } from "react-icons/bs";
 import { create } from "ts-opaque";
+import { findAsset } from "lib/util/assets";
 
 export type SelectedDrawsTableProps = {
   caseId: number;
@@ -119,9 +120,13 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
                 <div className="center gap-1">
                   {draw.vote.asRevealed.voteItem.isOutcome &&
                   draw.vote.asRevealed.voteItem.asOutcome.isCategorical
-                    ? market.categories?.[
-                        draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber()
-                      ].ticker
+                    ? // market.categories?.[
+                      //     draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber()
+                      //   ].ticker
+                      findAsset(
+                        draw.vote.asRevealed.voteItem.asOutcome, //todo: does this overlap assetId?
+                        market.assets,
+                      )?.ticker
                     : "Voted"}
                   <InfoPopover>
                     <div className="mb-2">

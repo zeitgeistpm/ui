@@ -156,7 +156,7 @@ const SellForm = ({
         !isRpcSdk(sdk) ||
         !amount ||
         amount === "" ||
-        market?.categories?.length == null ||
+        market?.assets?.length == null ||
         !selectedAsset
       ) {
         return;
@@ -164,7 +164,7 @@ const SellForm = ({
 
       return sdk.api.tx.neoSwaps.sell(
         marketId,
-        market?.categories?.length,
+        market?.assets?.length,
         selectedAsset,
         new Decimal(amount).mul(ZTG).toFixed(0),
         minAmountOut.toFixed(0),

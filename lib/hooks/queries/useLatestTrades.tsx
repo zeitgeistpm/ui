@@ -16,6 +16,7 @@ import { getMarketHeaders, MarketHeader } from "lib/gql/market-header";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useSdkv2 } from "../useSdkv2";
 import { swapsMetaFilter } from "./constants";
+import { findAsset } from "lib/util/assets";
 
 export const transactionHistoryKey = "latest-trades";
 
@@ -95,7 +96,7 @@ export const useLatestTrades = (limit?: number, marketId?: number) => {
               traderAddress: swap.accountId,
               marketId: market.marketId,
               question: market.question,
-              outcomeName: outcome,
+              outcomeName: outcome ?? "",
               type: assetInIsBaseAsset === true ? "buy" : "sell",
               time: new Date(swap.timestamp),
               cost:
@@ -134,8 +135,7 @@ const lookupOutcomeAsset = (asset: string, markets: MarketHeader[]) => {
   const market = lookupMarket(asset, markets);
 
   if (IOMarketOutcomeAssetId.is(assetId)) {
-    const index = getIndexOf(assetId);
-    return market && market.categories[index].name;
+    return market && findAsset(assetId, market.assets);
   }
 };
 
