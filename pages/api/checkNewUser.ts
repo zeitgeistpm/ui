@@ -2,52 +2,75 @@ import { createClient } from "@supabase/supabase-js";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Keyring } from "@polkadot/keyring";
 import { wsxID } from "lib/constants";
+import * as jose from "jose";
 
 export default async function checkNewUser(req, res) {
-  if (!process.env.SUPABASE_URL_WSX || !process.env.SUPABASE_SERVICE_KEY_WSX) {
-    return;
-  }
-  const supabase = createClient(
-    process.env.SUPABASE_URL_WSX,
-    process.env.SUPABASE_SERVICE_KEY_WSX,
-    { auth: { persistSession: false } },
-  );
+  try {
+    const idToken = req.headers.authorization?.split(" ")[1] || "";
+    const app_pub_key = req.body.appPubKey;
+    const jwks = jose.createRemoteJWKSet(
+      new URL("https://api.openlogin.com/jwks"),
+    );
+    const jwtDecoded = await jose.jwtVerify(idToken, jwks, {
+      algorithms: ["ES256"],
+    });
 
-  if (req.method !== "POST") {
-    return res.status(405).end();
-  }
-
-  const { userAddress: wallet } = req.body;
-
-  const { data, error } = await supabase
-    .from("users")
-    .select("wallet")
-    .eq("wallet", wallet)
-    .single();
-
-  if (data === null) {
-    const response = await supabase.from("users").insert({ wallet: wallet });
-    if (response.statusText === "Created") {
-      const fundResponse = await fundUser(wallet);
-
-      if (fundResponse.success) {
-        return res.status(200).json({
-          success: true,
-          data: response.data,
-          txHash: fundResponse.txHash,
-        });
-      } else {
-        return res.status(500).json({ error: fundResponse.error });
+    if ((jwtDecoded.payload as any).wallets[0].public_key == app_pub_key) {
+      // verified
+      if (
+        !process.env.SUPABASE_URL_WSX ||
+        !process.env.SUPABASE_SERVICE_KEY_WSX
+      ) {
+        return;
       }
-    }
+      const supabase = createClient(
+        process.env.SUPABASE_URL_WSX,
+        process.env.SUPABASE_SERVICE_KEY_WSX,
+        { auth: { persistSession: false } },
+      );
 
-    if (response.error) {
-      return res
-        .status(500)
-        .json({ error: "Error inserting account into database." });
+      if (req.method !== "POST") {
+        return res.status(405).end();
+      }
+      const { userAddress: wallet } = req.body;
+      const { data, error } = await supabase
+        .from("users")
+        .select("wallet")
+        .eq("wallet", wallet)
+        .single();
+
+      if (data === null) {
+        const response = await supabase
+          .from("users")
+          .insert({ wallet: wallet });
+        if (response.statusText === "Created") {
+          const fundResponse = await fundUser(wallet);
+
+          if (fundResponse.success) {
+            return res.status(200).json({
+              success: true,
+              data: response.data,
+              txHash: fundResponse.txHash,
+            });
+          } else {
+            return res.status(500).json({ error: fundResponse.error });
+          }
+        }
+
+        if (response.error) {
+          return res
+            .status(500)
+            .json({ error: "Error inserting account into database." });
+        }
+      } else {
+        return res.status(200).json({ error: "Account already exists." });
+      }
+    } else {
+      // verification failed
+      res.status(401).json({ name: "Validation Failed" });
     }
-  } else {
-    return res.status(200).json({ error: "Account already exists." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 }
 

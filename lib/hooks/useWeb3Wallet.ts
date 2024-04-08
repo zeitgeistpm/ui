@@ -6,6 +6,7 @@ import { web3authAtom } from "lib/state/util/web3auth-config";
 import { useAtom } from "jotai";
 import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
 import { useNotifications } from "lib/state/notifications";
+import { checkNewUser } from "lib/state/wsx";
 interface loginOptions {
   loginProvider: string;
   extraLoginOptions: {
@@ -150,6 +151,24 @@ const useWeb3Wallet = () => {
     });
   };
 
+  const fundNewUser = async (address: string) => {
+    if (!web3auth) {
+      return;
+    }
+    const user = await web3auth?.getUserInfo();
+
+    if (!user?.idToken) {
+      return;
+    }
+    const base64Url = user?.idToken.split(".")[1];
+    const base64 = base64Url.replace("-", "+").replace("_", "/");
+    const parsedToken = JSON.parse(window.atob(base64));
+    const appPubKey = parsedToken.wallets[0].public_key;
+
+    const resp = await checkNewUser(address, user.idToken, appPubKey);
+    console.log(resp);
+  };
+
   const getKeypair = async (provider: IProvider) => {
     if (!provider) {
       return;
@@ -162,6 +181,7 @@ const useWeb3Wallet = () => {
     const keyPair = keyring.addFromUri("0x" + privateKey);
     if (keyPair) {
       selectWallet("web3auth", keyPair);
+      await fundNewUser(keyPair.address);
     }
   };
 
