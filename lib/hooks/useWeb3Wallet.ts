@@ -65,19 +65,6 @@ const useWeb3Wallet = () => {
       );
       if (web3authProvider) {
         await getKeypair(web3authProvider);
-        // TODO: refactor user onboarding
-        // const user = await web3auth.getUserInfo();
-        // try {
-        //   const res = await fetch("/api/onboardUser", {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({ email: user.email, name: user.name }),
-        //   });
-        // } catch (e) {
-        //   return;
-        // }
       }
     } catch (e) {
       notificationStore.pushNotification(
@@ -166,7 +153,10 @@ const useWeb3Wallet = () => {
     const appPubKey = parsedToken.wallets[0].public_key;
 
     const resp = await checkNewUser(address, user.idToken, appPubKey);
-    console.log(resp);
+    if (resp.success) {
+      //TODO
+      //notify user of tokens being sent
+    }
   };
 
   const getKeypair = async (provider: IProvider) => {
