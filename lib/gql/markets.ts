@@ -38,7 +38,6 @@ const marketQuery = gql`
       question
       slug
       status
-      outcomeAssets
       scalarType
       creator
       oracle
@@ -74,7 +73,8 @@ const marketQuery = gql`
         gracePeriod
         oracleDuration
       }
-      categories {
+      assets {
+        assetId
         name
         color
       }
@@ -100,8 +100,7 @@ export type MarketPageIndexedData = {
     gracePeriod: string;
     oracleDuration: string;
   } | null;
-  categories: { name: string; color: string }[];
-  outcomeAssets: string[];
+  assets: { name: string; color: string; assetId: string }[];
   resolvedOutcome: string;
   pool?: {
     poolId: number;

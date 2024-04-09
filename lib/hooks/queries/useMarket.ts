@@ -11,6 +11,7 @@ import { memoize } from "lodash-es";
 import * as batshit from "@yornaath/batshit";
 import { useSdkv2 } from "../useSdkv2";
 import { marketMetaFilter } from "./constants";
+import { findAsset } from "lib/util/assets";
 
 export const marketsRootQuery = "markets";
 
@@ -96,10 +97,6 @@ export const lookupAssetMetadata = (
   market: FullMarketFragment,
   assetId: MarketOutcomeAssetId,
 ) => {
-  if (IOCategoricalAssetId.is(assetId)) {
-    return market.categories?.[assetId.CategoricalOutcome[1]];
-  } else {
-    const scalarIndex = assetId.ScalarOutcome[1] === "Long" ? 0 : 1;
-    return market.categories?.[scalarIndex];
-  }
+  const asset = findAsset(assetId, market.assets);
+  return asset;
 };

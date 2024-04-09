@@ -5,7 +5,6 @@ import { accountAssetBalanceRootKey } from "./queries/useAccountAssetBalances";
 import { accountPoolAssetBalancesRootKey } from "./queries/useAccountPoolAssetBalances";
 import { balanceRootKey } from "./queries/useBalance";
 import { currencyBalanceRootKey } from "./queries/useCurrencyBalances";
-import { tradeItemStateRootQueryKey } from "./queries/useTradeItemState";
 import { useSdkv2 } from "./useSdkv2";
 import { amm2PoolKey } from "./queries/amm2/useAmm2Pool";
 
@@ -49,11 +48,6 @@ export const useSubscribeBlockEvents = () => {
             account,
           ]);
           queryClient.invalidateQueries([id, balanceRootKey, account]);
-          queryClient.invalidateQueries([
-            id,
-            tradeItemStateRootQueryKey,
-            account,
-          ]);
           queryClient.invalidateQueries([id, currencyBalanceRootKey, account]);
         });
 

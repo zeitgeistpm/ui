@@ -35,11 +35,8 @@ const CategoricalDisputeBox = ({
   const { data: constants, isLoading: isConstantsLoading } =
     useChainConstants();
 
-  const outcomeAssets = market.outcomeAssets
-    .map(
-      (assetIdString) =>
-        parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
-    )
+  const outcomeAssets = market.assets
+    .map(({ assetId }) => parseAssetId(assetId).unwrap() as CategoricalAssetId)
     .filter(
       (asset) => market.report?.outcome?.categorical !== getIndexOf(asset),
     );

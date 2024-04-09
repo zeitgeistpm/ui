@@ -1,11 +1,5 @@
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { ScalarRangeType } from "@zeitgeistpm/sdk";
 import { TwitterBird } from "components/markets/TradeResult";
-import {
-  MarketCategoricalOutcome,
-  MarketScalarOutcome,
-  displayOutcome,
-} from "lib/types";
 import { AiOutlineFileDone } from "react-icons/ai";
 
 export const DisputeResult = ({ market }: { market: FullMarketFragment }) => {

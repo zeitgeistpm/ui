@@ -17,6 +17,8 @@ import {
 import Decimal from "decimal.js";
 import { getMarketHeaders, MarketHeader } from "lib/gql/market-header";
 import { useSdkv2 } from "../useSdkv2";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { assetsAreEqual } from "lib/util/assets-are-equal";
 
 export const transactionHistoryKey = "trade-history";
 
@@ -29,9 +31,14 @@ const lookupAssetName = (
 
   if (IOMarketOutcomeAssetId.is(assetId)) {
     const marketId = getMarketIdOf(assetId);
-    const index = getIndexOf(assetId);
     const market = marketsMap.get(marketId);
-    return market && market.categories[index].name;
+
+    const asset = market?.assets.find((asset) => {
+      const a = parseAssetIdString(asset.assetId);
+      return assetsAreEqual(a, assetId);
+    });
+
+    return asset?.name;
   } else if (IOForeignAssetId.is(assetId)) {
     return foreignAssetMap.get(assetId.ForeignAsset);
   } else {

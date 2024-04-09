@@ -32,9 +32,8 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
   const [sdk, id] = useSdkv2();
   const queryClient = useQueryClient();
 
-  const outcomeAssets = market.outcomeAssets.map(
-    (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
+  const outcomeAssets = market.assets.map(
+    ({ assetId }) => parseAssetId(assetId).unwrap() as CategoricalAssetId,
   );
 
   const { vote, setVote, committed } = useCourtVote({

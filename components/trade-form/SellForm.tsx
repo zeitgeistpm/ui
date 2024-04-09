@@ -76,9 +76,8 @@ const SellForm = ({
   const swapFee = pool?.swapFee.div(ZTG);
   const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
 
-  const outcomeAssets = market?.outcomeAssets.map(
-    (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+  const outcomeAssets = market?.assets.map(
+    ({ assetId }) => parseAssetId(assetId).unwrap() as MarketOutcomeAssetId,
   );
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | undefined
