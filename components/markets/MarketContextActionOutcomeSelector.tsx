@@ -1,11 +1,10 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { MarketOutcomeAssetId, getIndexOf } from "@zeitgeistpm/sdk";
+import { MarketOutcomeAssetId } from "@zeitgeistpm/sdk";
 import Input from "components/ui/Input";
 import TruncatedText from "components/ui/TruncatedText";
 import Fuse from "fuse.js";
-import { calcMarketColors } from "lib/util/color-calc";
-import { omit } from "lodash-es";
+import { findAsset } from "lib/util/assets";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
@@ -34,39 +33,19 @@ const MarketContextActionOutcomeSelector = ({
   const [search, setSearch] = useState<string | undefined>();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const assetOptions = useMemo(() => {
-    if (!options) return [];
-    const colors = calcMarketColors(market?.marketId!, options.length);
-
-    return options.map((asset, index) => {
-      const assetIndex = getIndexOf(asset);
-      const category = market?.categories?.[assetIndex];
-      return {
-        asset,
-        assetIndex,
-        category,
-        color: colors[index],
-      };
-    });
-  }, [options]);
+  const assetOptions = market.assets;
 
   const searchResults = useMemo(() => {
     if (!search) return null;
     if (!options) return [];
-    const fuse = new Fuse(
-      assetOptions.map((option) => {
-        const name = market.categories?.[getIndexOf(option.asset)].name ?? "";
-        return { ...option, name };
-      }),
-      {
-        includeScore: true,
-        keys: ["name"],
-      },
-    );
+    const fuse = new Fuse(assetOptions, {
+      includeScore: true,
+      keys: ["name"],
+    });
 
     const results = fuse.search(search);
 
-    return results.map((result) => omit(result.item, "name"));
+    return results;
   }, [assetOptions, search]);
 
   useEffect(() => {
@@ -100,12 +79,12 @@ const MarketContextActionOutcomeSelector = ({
             <div className="center gap-2 text-2xl md:text-xl lg:text-2xl">
               <TruncatedText
                 length={24}
-                text={market.categories?.[getIndexOf(selected)].name ?? ""}
+                text={
+                  selected ? findAsset(selected, market.assets)?.name ?? "" : ""
+                }
               >
                 {(text) => {
-                  const option = assetOptions.find(
-                    (a) => getIndexOf(a.asset) === getIndexOf(selected),
-                  );
+                  const option = findAsset(selected, market.assets);
 
                   return (
                     <>
@@ -117,7 +96,9 @@ const MarketContextActionOutcomeSelector = ({
                         <div className="center gap-2">
                           <div
                             className="h-3 w-3 rounded-full "
-                            style={{ backgroundColor: option?.color }}
+                            style={{
+                              backgroundColor: option?.color ?? "#ffffff",
+                            }}
                           ></div>
                           {text}
                         </div>
@@ -185,16 +166,16 @@ const MarketContextActionOutcomeSelector = ({
               {(searchResults ?? assetOptions)?.map((option, index) => {
                 return (
                   <Listbox.Option
-                    key={option.assetIndex}
-                    value={option.asset}
+                    key={index}
+                    value={option}
                     className=" cursor-pointer px-5 py-1 hover:bg-opacity-10"
                   >
                     <div className="flex items-center gap-3 rounded-md px-3 py-4 hover:bg-slate-100 md:text-sm lg:text-base">
                       <div
                         className="h-4 w-4 rounded-full "
-                        style={{ backgroundColor: option.color }}
+                        style={{ backgroundColor: option.color ?? "#ffffff" }}
                       ></div>
-                      {option.category?.name || option.assetIndex}
+                      {option?.name || index}
                     </div>
                   </Listbox.Option>
                 );
