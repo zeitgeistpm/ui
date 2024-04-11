@@ -88,7 +88,6 @@ const MoveButton = ({
   const destinationAsset = allBalanceDetails.find(
     (detail) => detail.chain === sourceChain,
   );
-  console.log(chain, sourceChain, destinationAsset, transferAssetId);
 
   return (
     <>

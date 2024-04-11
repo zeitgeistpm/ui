@@ -60,10 +60,11 @@ export const endpoints: EndpointOption[] = [
     label: "Battery Station",
     environment: "staging",
   },
-  // {
-  //   value: "ws://127.0.0.1:9944",
-  //   label: "Custom",
-  // },
+  {
+    value: "ws://zeitgeist-blockchain:9944",
+    label: "Local",
+    environment: "local",
+  },
 ];
 
 export const graphQlEndpoints: EndpointOption[] = [
@@ -77,16 +78,18 @@ export const graphQlEndpoints: EndpointOption[] = [
     label: "Polkadot (Live)",
     environment: "production",
   },
-  // {
-  //   value: "http://localhost:4350/graphql",
-  //   label: "Custom",
-  // },
+  {
+    value: "http://subsquid-api:4350/graphql",
+    label: "Local",
+    environment: "local",
+  },
 ];
 
 const getEnvironment = (): Environment => {
-  const environments = ["production", "staging"];
+  const environments = ["production", "staging", "local"];
   const env = process.env.NEXT_PUBLIC_VERCEL_ENV;
-  if (env == null || !["production", "staging"].includes(env)) {
+
+  if (env == null || !environments.includes(env)) {
     throw Error(
       `Invalid environment, please set NEXT_PUBLIC_VERCEL_ENV environment variable to one of ${environments.join(
         ",",
@@ -99,18 +102,25 @@ const getEnvironment = (): Environment => {
 export const environment = getEnvironment();
 
 const getGraphQlEndpoint = (): string => {
-  const endpoint = graphQlEndpoints.find((e) => e.environment === environment);
-  return endpoint!.value;
+  return (
+    process.env.SUBSQUID_ENDPOINT ??
+    process.env.NEXT_PUBLIC_SUBSQUID_ENDPOINT ??
+    graphQlEndpoints.find((e) => e.environment === environment)!.value
+  );
 };
 
 export const graphQlEndpoint = getGraphQlEndpoint();
 
-const getEndpointOptions = (env: Environment): EndpointOption[] => {
-  return endpoints.filter((e) => e.environment === env);
+const getEndpointOptions = (env: Environment): string[] => {
+  const overrideEndpoint: string | undefined =
+    process.env.WS_ENDPOINT ?? process.env.NEXT_PUBLIC_WS_ENDPOINT;
+
+  return overrideEndpoint
+    ? [overrideEndpoint]
+    : endpoints.filter((e) => e.environment === env).map((e) => e.value);
 };
 
 export const endpointsProduction = getEndpointOptions("production");
 export const endpointsStaging = getEndpointOptions("staging");
 
-export const endpointOptions =
-  environment === "production" ? endpointsProduction : endpointsStaging;
+export const endpointOptions = getEndpointOptions(environment);
