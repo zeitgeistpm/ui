@@ -1,3 +1,4 @@
+import { COIN_GECKO_API_KEY } from "lib/constants";
 import { NextApiRequest, NextApiResponse } from "next";
 
 //discourage others from using this endpoint as proxy for coingecko
@@ -21,10 +22,12 @@ export default async function handler(
     });
   }
 
-  const res = await fetch(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${asset}&vs_currencies=usd`,
-  );
-  const json = await res.json();
+  const url = COIN_GECKO_API_KEY
+    ? `https://pro-api.coingecko.com/api/v3/simple/price?ids=${asset}&vs_currencies=usd&x_cg_pro_api_key=${COIN_GECKO_API_KEY}`
+    : `https://api.coingecko.com/api/v3/simple/price?ids=${asset}&vs_currencies=usd`;
+
+  const res = await fetch(url);
+  const json = await res?.json();
 
   const price = asset ? json[asset]?.usd : null;
 
