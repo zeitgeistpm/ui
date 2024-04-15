@@ -3,6 +3,8 @@ import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import {
   IOBaseAssetId,
   IOForeignAssetId,
+  IOZtgAssetId,
+  MarketId,
   ZeitgeistIpfs,
   create,
   parseAssetId,
@@ -35,6 +37,7 @@ import { useCourtVote } from "lib/state/court/useVoteOutcome";
 import { useWallet } from "lib/state/wallet";
 import { isMarketCategoricalOutcome } from "lib/types";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { findAsset } from "lib/util/assets";
 import { calculateSlashableStake } from "lib/util/court/calculateSlashableStake";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { sortBy } from "lodash-es";
@@ -170,7 +173,7 @@ const CasePage: NextPage = ({
 
   const imagePath = IOForeignAssetId.is(baseAsset)
     ? lookupAssetImagePath(baseAsset.ForeignAsset)
-    : IOBaseAssetId.is(baseAsset)
+    : IOZtgAssetId.is(baseAsset)
       ? lookupAssetImagePath(baseAsset.Ztg)
       : "";
 
@@ -300,9 +303,15 @@ const CasePage: NextPage = ({
                 <h3 className="text mb-2">Your vote is revealed</h3>
                 <h3 className="text mb-2 text-base text-purple-500">
                   {
-                    market?.categories?.[
-                      connectedParticipantDraw?.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber()
-                    ].ticker
+                    findAsset(
+                      {
+                        CategoricalOutcome: [
+                          market.marketId as MarketId,
+                          connectedParticipantDraw?.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber(),
+                        ],
+                      },
+                      market.assets,
+                    )?.ticker
                   }
                 </h3>
                 <p className="text-center text-sm text-gray-500">
@@ -376,7 +385,15 @@ const CasePage: NextPage = ({
                 </HeaderStat>
                 <HeaderStat label="Reported Outcome">
                   {reportedOutcome !== undefined
-                    ? market.categories?.[reportedOutcome].name
+                    ? findAsset(
+                        {
+                          CategoricalOutcome: [
+                            market.marketId as MarketId,
+                            reportedOutcome,
+                          ],
+                        },
+                        market.assets,
+                      )?.name
                     : "-"}
                 </HeaderStat>
                 <HeaderStat
@@ -439,7 +456,17 @@ const CasePage: NextPage = ({
             {stage?.type === "reassigned" && market.resolvedOutcome && (
               <div className="inline-block min-w-[200px] rounded-lg bg-blue-500 px-5 py-3 text-white">
                 <h3 className="mb-3 text-white">Outcome</h3>
-                {market.categories?.[market.resolvedOutcome].name}
+                {
+                  findAsset(
+                    {
+                      CategoricalOutcome: [
+                        market.marketId as MarketId,
+                        Number(market.resolvedOutcome),
+                      ],
+                    },
+                    market.assets,
+                  )?.name
+                }
               </div>
             )}
           </div>
@@ -493,8 +520,6 @@ const CasePage: NextPage = ({
   );
 };
 
-const CaseSkeleton = () => {};
-
 const Votes = ({
   market,
   selectedDraws,
@@ -504,14 +529,21 @@ const Votes = ({
   selectedDraws: ZrmlCourtDraw[] | undefined;
   isRevealed: boolean;
 }) => {
-  const votes = market.categories
-    ?.map((category, index) => {
+  const votes = market.assets
+    ?.map((category) => {
       const draws = selectedDraws?.filter(
         (draw) =>
           draw.vote.isRevealed &&
           draw.vote.asRevealed.voteItem.isOutcome &&
-          draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber() ===
-            index,
+          findAsset(
+            {
+              CategoricalOutcome: [
+                market.marketId as MarketId,
+                draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber(),
+              ],
+            },
+            market.assets,
+          ),
       );
 
       const weight =

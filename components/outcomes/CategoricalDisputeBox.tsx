@@ -5,6 +5,7 @@ import {
   IndexerContext,
   isRpcSdk,
   Market,
+  MarketId,
   MarketOutcomeAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
@@ -80,8 +81,11 @@ const CategoricalDisputeBox = ({
     const reportIndex = market.report?.outcome?.categorical;
 
     if (reportIndex == null) return;
-
-    return market?.categories?.[reportIndex]?.name;
+    const asset = findAsset(
+      { CategoricalOutcome: [market.marketId as MarketId, reportIndex] },
+      market.assets,
+    );
+    return asset?.name;
   };
 
   return (

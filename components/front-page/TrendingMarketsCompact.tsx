@@ -3,7 +3,6 @@ import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 import { useMarketImage } from "lib/hooks/useMarketImage";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
-import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import Image from "next/image";

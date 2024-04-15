@@ -41,6 +41,7 @@ import {
   lookupAssetPrice,
   useAmm2MarketSpotPrices,
 } from "./useAmm2MarketSpotPrices";
+import { findAsset } from "lib/util/assets";
 
 export type UsePortfolioPositions = {
   /**
@@ -329,22 +330,10 @@ export const usePortfolioPositions = (
         }
       }
 
-      let outcome = IOCategoricalAssetId.is(assetId)
-        ? market.categories?.[getIndexOf(assetId)]?.name ??
-          JSON.stringify(assetId.CategoricalOutcome)
-        : IOScalarAssetId.is(assetId)
-          ? getIndexOf(assetId) == 1
-            ? "Short"
-            : "Long"
-          : "unknown";
+      const asset = findAsset(assetId, market.assets);
+      let outcome = asset?.name ?? "Unknown";
 
-      let color = IOScalarAssetId.is(assetId)
-        ? market.categories?.[getIndexOf(assetId)]?.color ?? "#ffffff"
-        : IOScalarAssetId.is(assetId)
-          ? getIndexOf(assetId) == 1
-            ? "rgb(255, 0, 0)"
-            : "rgb(36, 255, 0)"
-          : "unknown";
+      let color = asset?.color ?? "#ffffff";
 
       if (IOPoolShareAssetId.is(assetId)) {
         outcome = "Pool Share";

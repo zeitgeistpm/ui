@@ -14,6 +14,7 @@ import {
 import { useCourtVote } from "./useVoteOutcome";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { getIndexOf } from "@zeitgeistpm/sdk";
+import { findAsset } from "lib/util/assets";
 
 export type UseCourtSaltParams = {
   marketId: number;
@@ -145,13 +146,13 @@ export const useCourtSalt = ({
   const isBackedUp = backupDownloads[id];
 
   const downloadBackup = () => {
-    const outcome =
-      vote && market ? market?.categories?.[getIndexOf(vote)].name : vote;
+    const asset = findAsset(vote, market?.assets ?? []);
+
     downloadText(
       `zeitgeist-court-case[${caseId}]-juror[${shortenAddress(
         wallet.realAddress!,
       )}].txt`,
-      JSON.stringify({ ...phraseStorage, vote: outcome }, undefined, 2),
+      JSON.stringify({ ...phraseStorage, vote: asset }, undefined, 2),
     );
     setBackupDownloads((state) => ({
       ...state,

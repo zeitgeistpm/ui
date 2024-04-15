@@ -12,6 +12,8 @@ import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import {
   IOBaseAssetId,
   IOForeignAssetId,
+  IOZtgAssetId,
+  MarketId,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
@@ -21,7 +23,7 @@ import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { getCurrentPrediction } from "lib/util/assets";
+import { findAsset, getCurrentPrediction } from "lib/util/assets";
 
 const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
   ssr: false,
@@ -48,9 +50,7 @@ export const MarketCard = ({
   disableLink,
 }: MarketCardProps) => {
   const {
-    categories,
     assets,
-    outcomeAssets,
     marketType,
     baseAsset,
     marketId,
@@ -63,23 +63,10 @@ export const MarketCard = ({
     resolvedOutcome,
   } = market;
 
-  const marketCategories: MarketOutcomes =
-    categories?.map((category, index) => {
-      const asset = assets[index];
-
-      const marketCategory: MarketOutcome = {
-        name: category.name ?? "",
-        assetId: outcomeAssets[index],
-        price: asset?.price,
-      };
-
-      return marketCategory;
-    }) ?? [];
-
   const isYesNoMarket =
-    marketCategories.length === 2 &&
-    marketCategories.some((outcome) => outcome.name.toLowerCase() === "yes") &&
-    marketCategories.some((outcome) => outcome.name.toLowerCase() === "no");
+    assets.length === 2 &&
+    assets.some((asset) => asset.name?.toLowerCase() === "yes") &&
+    assets.some((asset) => asset.name?.toLowerCase() === "no");
 
   const prediction = getCurrentPrediction(assets, market);
 
@@ -153,7 +140,15 @@ export const MarketCard = ({
                 Resolved:{" "}
                 <span className="font-semibold">
                   {marketType?.categorical
-                    ? marketCategories[resolvedOutcome].name
+                    ? findAsset(
+                        {
+                          CategoricalOutcome: [
+                            marketId as MarketId,
+                            Number(resolvedOutcome),
+                          ],
+                        },
+                        assets,
+                      )?.name
                     : formatNumberCompact(Number(resolvedOutcome) / ZTG)}
                 </span>
               </span>
@@ -166,8 +161,18 @@ export const MarketCard = ({
                 scalarType={(scalarType ?? "number") as "number" | "date"}
                 lowerBound={lower}
                 upperBound={upper}
-                shortPrice={marketCategories[1]?.price}
-                longPrice={marketCategories[0]?.price}
+                shortPrice={
+                  findAsset(
+                    { ScalarOutcome: [marketId as MarketId, "Short"] },
+                    assets,
+                  )?.price
+                }
+                longPrice={
+                  findAsset(
+                    { ScalarOutcome: [marketId as MarketId, "Long"] },
+                    assets,
+                  )?.price
+                }
                 status={status}
               />
             ) : (
@@ -244,7 +249,7 @@ const MarketCardDetails = ({
   liquidity?: string;
   numParticipants?: number;
 }) => {
-  const { period, baseAsset, outcomeAssets, volume } = market;
+  const { period, baseAsset, assets, volume } = market;
   const isEnding = () => {
     const currentTime = new Date();
     const endTime = Number(period.end);
@@ -258,7 +263,7 @@ const MarketCardDetails = ({
   const assetId = parseAssetId(baseAsset).unwrap();
   const imagePath = IOForeignAssetId.is(assetId)
     ? lookupAssetImagePath(assetId.ForeignAsset)
-    : IOBaseAssetId.is(assetId)
+    : IOZtgAssetId.is(assetId)
       ? lookupAssetImagePath(assetId.Ztg)
       : "";
 
@@ -276,7 +281,7 @@ const MarketCardDetails = ({
         </span>
         {isEnding() && <span className="ml-1 text-red">Ends Soon</span>}
         <span className="ml-1 border-l-1 border-l-black pl-1 font-semibold ">
-          {outcomeAssets.length} outcomes{" "}
+          {assets.length} outcomes{" "}
         </span>
       </div>
       <div className="ml-auto flex items-center justify-center gap-1.5">
