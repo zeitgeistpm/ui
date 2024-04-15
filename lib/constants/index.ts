@@ -38,6 +38,8 @@ export const SUPPORTED_WALLET_NAMES = [
   "web3auth",
 ];
 
+export const ZTG_CHAIN_ID = "polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c";
+
 export const endpoints: EndpointOption[] = [
   {
     value: "wss://zeitgeist-rpc.dwellir.com",

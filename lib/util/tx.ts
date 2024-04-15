@@ -1,10 +1,7 @@
-import { AddressOrPair, SubmittableExtrinsic } from "@polkadot/api/types";
+import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
 import { KeyringPairOrExtSigner, isExtSigner } from "@zeitgeistpm/rpc";
-import { useWallet } from "lib/state/wallet";
-
 import type { ApiPromise } from "@polkadot/api";
-
 import { UseNotifications } from "lib/state/notifications";
 import { unsubOrWarns } from "./unsub-or-warns";
 import { isWSX } from "lib/constants";
@@ -107,35 +104,35 @@ export const extrinsicCallback = ({
   };
 };
 
+const _callback = (
+  result: ISubmittableResult,
+  _resolve: (value: boolean | PromiseLike<boolean>) => void,
+  _reject: (value: boolean | PromiseLike<boolean>) => void,
+  _unsub: any,
+) => {
+  const { events, status } = result;
+  if (status.isInBlock) {
+    events.forEach(({ phase, event: { data, method, section } }) => {
+      console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+
+      if (method == "ExtrinsicSuccess") {
+        unsubOrWarns(_unsub);
+        _reject(true);
+      }
+      if (method == "ExtrinsicFailed") {
+        unsubOrWarns(_unsub);
+        _reject(false);
+      }
+    });
+  }
+};
+
 export const signAndSend = async (
   tx: SubmittableExtrinsic<"promise">,
   signer: KeyringPairOrExtSigner,
   cb?: GenericCallback,
   foreignAssetNumber?: number,
 ) => {
-  const _callback = (
-    result: ISubmittableResult,
-    _resolve: (value: boolean | PromiseLike<boolean>) => void,
-    _reject: (value: boolean | PromiseLike<boolean>) => void,
-    _unsub: any,
-  ) => {
-    const { events, status } = result;
-    if (status.isInBlock) {
-      events.forEach(({ phase, event: { data, method, section } }) => {
-        console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
-
-        if (method == "ExtrinsicSuccess") {
-          unsubOrWarns(_unsub);
-          _reject(true);
-        }
-        if (method == "ExtrinsicFailed") {
-          unsubOrWarns(_unsub);
-          _reject(false);
-        }
-      });
-    }
-  };
-
   return new Promise(async (resolve, reject) => {
     try {
       if (isExtSigner(signer)) {
