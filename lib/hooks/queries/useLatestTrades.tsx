@@ -96,7 +96,7 @@ export const useLatestTrades = (limit?: number, marketId?: number) => {
               traderAddress: swap.accountId,
               marketId: market.marketId,
               question: market.question,
-              outcomeName: outcome ?? "",
+              outcomeName: outcome.name ?? "",
               type: assetInIsBaseAsset === true ? "buy" : "sell",
               time: new Date(swap.timestamp),
               cost:

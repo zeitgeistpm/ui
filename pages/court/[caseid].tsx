@@ -311,7 +311,7 @@ const CasePage: NextPage = ({
                         ],
                       },
                       market.assets,
-                    )?.ticker
+                    )?.name
                   }
                 </h3>
                 <p className="text-center text-sm text-gray-500">

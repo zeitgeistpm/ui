@@ -32,7 +32,7 @@ export const ReportResult = ({
       <p className="text">Successfully reported!</p>
       <div className="mb-4 text-2xl font-semibold">
         {"scalar" in outcome && "Value: "}
-        {outcomeName}
+        {outcomeName as string}
       </div>
       <a
         target="_blank"

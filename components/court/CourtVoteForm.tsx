@@ -146,7 +146,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
                   <span>
                     vote_item = VoteItem::Outcome(OutcomeReport::Categorical(
                     {vote?.CategoricalOutcome[1] ?? "null"})) {"->"}{" "}
-                    {vote ? findAsset(vote, market.assets)?.ticker : "--"}
+                    {vote ? findAsset(vote, market.assets)?.name : "--"}
                   </span>
                   <br />
                   <span className="text-black">salt</span> ={" "}

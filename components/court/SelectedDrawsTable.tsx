@@ -129,7 +129,7 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
                           ],
                         },
                         market.assets,
-                      )?.ticker
+                      )?.name
                     : "Voted"}
                   <InfoPopover>
                     <div className="mb-2">
