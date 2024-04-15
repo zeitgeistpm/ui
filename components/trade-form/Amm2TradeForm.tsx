@@ -10,6 +10,7 @@ import Decimal from "decimal.js";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { findAsset } from "lib/util/assets";
 
 const Amm2TradeForm = ({
   marketId,
@@ -64,8 +65,8 @@ const Amm2TradeForm = ({
               : amountIn?.div(ZTG)
           }
           tokenName={
-            outcomeAsset && market?.categories
-              ? market.categories[getIndexOf(outcomeAsset)].name ?? ""
+            outcomeAsset && market?.assets
+              ? findAsset(outcomeAsset, market.assets)?.name ?? ""
               : ""
           }
           baseTokenAmount={

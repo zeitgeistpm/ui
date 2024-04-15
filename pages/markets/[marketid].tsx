@@ -79,11 +79,6 @@ import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { FaChevronUp } from "react-icons/fa";
 
-const TradeForm = dynamic(() => import("../../components/trade-form"), {
-  ssr: false,
-  loading: () => <div style={{ width: "100%", height: "606px" }} />,
-});
-
 const SimilarMarketsSection = dynamic(
   () => import("../../components/markets/SimilarMarketsSection"),
   {
@@ -117,15 +112,13 @@ export async function getStaticProps({ params }) {
     getCmsFullMarketMetadataForMarket(params.marketid),
   ]);
 
-  const chartSeries: ChartSeries[] = market?.categories?.map(
-    (category, index) => {
-      return {
-        accessor: `v${index}`,
-        label: category.name,
-        color: category.color,
-      };
-    },
-  );
+  const chartSeries: ChartSeries[] = market?.assets?.map((asset, index) => {
+    return {
+      accessor: `v${index}`,
+      label: asset.name,
+      color: asset.color,
+    };
+  });
 
   let resolutionTimestamp: string | undefined;
   if (market) {
@@ -195,9 +188,8 @@ const Market: NextPage<MarketPageProps> = ({
 
   const tradeItem = useTradeItem();
 
-  const outcomeAssets = indexedMarket?.outcomeAssets?.map(
-    (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+  const outcomeAssets = indexedMarket?.assets?.map(
+    ({ assetId }) => parseAssetId(assetId).unwrap() as MarketOutcomeAssetId,
   );
 
   useEffect(() => {
@@ -388,7 +380,7 @@ const Market: NextPage<MarketPageProps> = ({
             )}
             <MarketAssetDetails
               marketId={Number(marketid)}
-              categories={indexedMarket.categories}
+              categories={indexedMarket.assets}
             />
           </div>
 
@@ -493,9 +485,8 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
     marketStage?.type === "OpenReportingPeriod" ||
     (marketStage?.type === "OracleReportingPeriod" && isOracle);
 
-  const outcomeAssets = market.outcomeAssets.map(
-    (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+  const outcomeAssets = market.assets.map(
+    ({ assetId }) => parseAssetId(assetId).unwrap() as MarketOutcomeAssetId,
   );
 
   const { data: tradeItem, set: setTradeItem } = useTradeItem();

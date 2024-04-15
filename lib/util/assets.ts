@@ -1,15 +1,22 @@
-import { getIndexOf, ZTG, MarketOutcomeAssetId } from "@zeitgeistpm/sdk";
+import {
+  getIndexOf,
+  ZTG,
+  MarketOutcomeAssetId,
+  AssetId,
+} from "@zeitgeistpm/sdk";
+import { FullAssetFragment, FullMarketFragment } from "@zeitgeistpm/indexer";
+
 import Decimal from "decimal.js";
 import { parseAssetIdString } from "./parse-asset-id";
+import { assetsAreEqual } from "./assets-are-equal";
 
 export const getCurrentPrediction = (
-  assets: { price: number; assetId?: string }[],
+  assets: { price: number; assetId?: string | null; name?: string | null }[],
   market: {
     marketType: {
       categorical?: string | null;
       scalar?: (string | null)[] | null;
     };
-    categories?: ({ name?: string | null } | null)[] | null;
   },
 ): { name: string; price: number; percentage: number } => {
   const totalPrice = assets.reduce((acc, asset) => acc + asset.price, 0);
@@ -20,11 +27,6 @@ export const getCurrentPrediction = (
 
   if (market?.marketType?.categorical) {
     let [highestPrice, highestPriceIndex] = [0, 0];
-    assets.sort(
-      (a, b) =>
-        getIndexOf(parseAssetIdString(a?.assetId) as MarketOutcomeAssetId) -
-        getIndexOf(parseAssetIdString(b?.assetId) as MarketOutcomeAssetId),
-    );
 
     assets.forEach((asset, index) => {
       if (asset.price > highestPrice) {
@@ -36,10 +38,7 @@ export const getCurrentPrediction = (
     const percentage = Math.round((highestPrice / totalPrice) * 100);
 
     return {
-      name:
-        market.categories == null
-          ? ""
-          : market.categories[highestPriceIndex]?.name ?? "",
+      name: assets[highestPriceIndex].name ?? "",
       price: highestPrice,
       percentage,
     };
@@ -64,4 +63,16 @@ export const getCurrentPrediction = (
       percentage,
     };
   }
+};
+
+export const findAsset = (
+  assetId: AssetId | undefined,
+  assets: FullMarketFragment["assets"],
+) => {
+  const asset = assets.find((asset) => {
+    const a = parseAssetIdString(asset.assetId);
+    assetsAreEqual(a, assetId);
+  });
+
+  return asset;
 };

@@ -5,6 +5,7 @@ import {
   IndexerContext,
   isRpcSdk,
   Market,
+  MarketId,
   MarketOutcomeAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
@@ -17,6 +18,7 @@ import {
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
+import { findAsset } from "lib/util/assets";
 
 const CategoricalDisputeBox = ({
   market,
@@ -34,11 +36,8 @@ const CategoricalDisputeBox = ({
   const { data: constants, isLoading: isConstantsLoading } =
     useChainConstants();
 
-  const outcomeAssets = market.outcomeAssets
-    .map(
-      (assetIdString) =>
-        parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
-    )
+  const outcomeAssets = market.assets
+    .map(({ assetId }) => parseAssetId(assetId).unwrap() as CategoricalAssetId)
     .filter(
       (asset) => market.report?.outcome?.categorical !== getIndexOf(asset),
     );
@@ -82,8 +81,11 @@ const CategoricalDisputeBox = ({
     const reportIndex = market.report?.outcome?.categorical;
 
     if (reportIndex == null) return;
-
-    return market?.categories?.[reportIndex]?.name;
+    const asset = findAsset(
+      { CategoricalOutcome: [market.marketId as MarketId, reportIndex] },
+      market.assets,
+    );
+    return asset?.name;
   };
 
   return (

@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import {
   CategoricalAssetId,
+  MarketId,
   ZTG,
   isRpcSdk,
   parseAssetId,
@@ -30,6 +31,7 @@ import { shortenAddress } from "lib/util";
 import { useEffect, useMemo, useState } from "react";
 import { BsShieldFillExclamation } from "react-icons/bs";
 import { create } from "ts-opaque";
+import { findAsset } from "lib/util/assets";
 
 export type SelectedDrawsTableProps = {
   caseId: number;
@@ -119,9 +121,15 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
                 <div className="center gap-1">
                   {draw.vote.asRevealed.voteItem.isOutcome &&
                   draw.vote.asRevealed.voteItem.asOutcome.isCategorical
-                    ? market.categories?.[
-                        draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber()
-                      ].ticker
+                    ? findAsset(
+                        {
+                          CategoricalOutcome: [
+                            market.marketId as MarketId,
+                            draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber(),
+                          ],
+                        },
+                        market.assets,
+                      )?.name
                     : "Voted"}
                   <InfoPopover>
                     <div className="mb-2">
@@ -239,7 +247,7 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  const outcomeAssets = market.outcomeAssets.map(
+  const outcomeAssets = market.assets.map(
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
   );

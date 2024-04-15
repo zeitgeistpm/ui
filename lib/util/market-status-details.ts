@@ -1,18 +1,16 @@
-import type { ScalarRangeType } from "@zeitgeistpm/sdk";
+import type { MarketId, ScalarRangeType } from "@zeitgeistpm/sdk";
 import { MarketStatus } from "@zeitgeistpm/sdk";
 import { formatScalarOutcome } from "./format-scalar-outcome";
-import {
-  MarketReport,
-  isMarketCategoricalOutcome,
-  isMarketScalarOutcome,
-} from "lib/types";
+import { MarketReport, isMarketScalarOutcome } from "lib/types";
 import { MarketDispute, MarketTypeOf } from "lib/types/markets";
+import { findAsset } from "./assets";
 
 export const getMarketStatusDetails = (
   marketType: MarketTypeOf,
-  categories: { name: string }[],
+  assets: { name: string; assetId: string }[],
   status: MarketStatus,
   scalarType: ScalarRangeType,
+  marketId: MarketId,
   dispute?: MarketDispute,
   report?: MarketReport,
   resolvedOutcome?: string,
@@ -31,7 +29,13 @@ export const getMarketStatusDetails = (
       //categorical market
     } else {
       return {
-        outcome: categories[report.outcome.categorical].name,
+        outcome:
+          findAsset(
+            {
+              CategoricalOutcome: [marketId, report.outcome.categorical],
+            },
+            assets,
+          )?.name ?? "",
         by: report.by,
       };
     }
@@ -44,7 +48,13 @@ export const getMarketStatusDetails = (
       //categorical market
     } else {
       return {
-        outcome: categories[resolvedOutcome].name,
+        outcome:
+          findAsset(
+            {
+              CategoricalOutcome: [marketId, Number(resolvedOutcome)],
+            },
+            assets,
+          )?.name ?? "",
       };
     }
   } else return {};

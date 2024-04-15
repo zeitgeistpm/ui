@@ -3,6 +3,8 @@ import { OutcomeReport } from "@zeitgeistpm/indexer";
 import {
   IOBaseAssetId,
   IOForeignAssetId,
+  IOZtgAssetId,
+  MarketId,
   MarketStage,
   MarketStatus,
   ScalarRangeType,
@@ -343,16 +345,7 @@ const MarketHeader: FC<{
   rejectReason,
   promotionData,
 }) => {
-  const {
-    categories,
-    status,
-    question,
-    period,
-    marketType,
-    pool,
-    scalarType,
-    neoPool,
-  } = market;
+  const { status, question, period, marketType, scalarType, assets } = market;
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const starts = Number(period.start);
   const ends = Number(period.end);
@@ -360,9 +353,10 @@ const MarketHeader: FC<{
 
   const { outcome, by } = getMarketStatusDetails(
     marketType,
-    categories,
+    assets,
     status,
     scalarType,
+    market.marketId as MarketId,
     disputes,
     report,
     resolvedOutcome,
@@ -395,7 +389,7 @@ const MarketHeader: FC<{
   const assetId = parseAssetId(market.baseAsset).unwrap();
   const imagePath = IOForeignAssetId.is(assetId)
     ? lookupAssetImagePath(assetId.ForeignAsset)
-    : IOBaseAssetId.is(assetId)
+    : IOZtgAssetId.is(assetId)
       ? lookupAssetImagePath(assetId.Ztg)
       : "";
 
@@ -671,7 +665,7 @@ const MarketHeader: FC<{
             ends={ends}
             marketHistory={marketHistory}
             oracleReported={oracleReported}
-            categories={categories}
+            categories={assets}
             marketType={marketType}
             setShowMarketHistory={setShowMarketHistory}
             scalarType={scalarType}

@@ -57,14 +57,15 @@ const MarketAssetDetails = ({
     : new Decimal(0);
 
   const tableData: TableData[] | undefined = (
-    categories ?? market?.categories
-  )?.map((category, index) => {
-    const outcomeName = category?.name;
+    categories ?? market?.assets
+  )?.map((asset, index) => {
+    const outcomeName = asset.name;
+    //todo: lookup without index
     const currentPrice = spotPrices?.get(index)?.toNumber();
     const priceChange = priceChanges?.get(index);
 
     return {
-      assetId: market?.pool?.weights[index]?.assetId,
+      assetId: asset.assetId,
       id: index,
       outcome: outcomeName,
       totalValue: {

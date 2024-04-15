@@ -1,6 +1,7 @@
 import {
   IOBaseAssetId,
   IOForeignAssetId,
+  IOZtgAssetId,
   isRpcSdk,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
@@ -115,7 +116,7 @@ const BuyFullSetForm = ({
 
   const imagePath = IOForeignAssetId.is(baseAssetId)
     ? lookupAssetImagePath(baseAssetId.ForeignAsset)
-    : IOBaseAssetId.is(baseAssetId)
+    : IOZtgAssetId.is(baseAssetId)
       ? lookupAssetImagePath(baseAssetId.Ztg)
       : "";
 

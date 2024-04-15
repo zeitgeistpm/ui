@@ -1,6 +1,7 @@
-import { ScalarRangeType } from "@zeitgeistpm/sdk";
+import { MarketId, ScalarRangeType } from "@zeitgeistpm/sdk";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
+import { findAsset } from "lib/util/assets";
 
 export type Primitive = null | number | string | boolean;
 export type JSONObject =
@@ -49,7 +50,12 @@ export const displayOutcome = (
   if (isMarketScalarOutcome(outcome)) {
     return formatScalarOutcome(outcome.scalar, outcome.type);
   } else {
-    return market.categories?.[outcome.categorical].name;
+    return findAsset(
+      {
+        CategoricalOutcome: [market.marketId as MarketId, outcome.categorical],
+      },
+      market.assets,
+    );
   }
 };
 

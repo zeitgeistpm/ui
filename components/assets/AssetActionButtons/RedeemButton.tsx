@@ -1,5 +1,6 @@
 import {
   AssetId,
+  CategoricalAssetId,
   getIndexOf,
   getScalarBounds,
   IndexerContext,
@@ -67,15 +68,21 @@ export const RedeemButtonByAssetId = ({
 
   const value = useMemo(() => {
     const zero = new Decimal(0);
-    if (!realAddress || isLoadingAssetBalance) return zero;
+    if (
+      !realAddress ||
+      isLoadingAssetBalance ||
+      !market ||
+      market.resolvedOutcome == null
+    )
+      return zero;
 
     if (market.marketType.categorical && IOCategoricalAssetId.is(assetId)) {
-      const resolvedAssetIdString =
-        market.outcomeAssets[Number(market.resolvedOutcome)];
-
-      const resolvedAssetId = resolvedAssetIdString
-        ? parseAssetId(resolvedAssetIdString).unrightOr(undefined)
-        : undefined;
+      const resolvedAssetId: CategoricalAssetId = {
+        CategoricalOutcome: [
+          market.marketId as MarketId,
+          Number(market.resolvedOutcome),
+        ],
+      };
 
       if (
         !resolvedAssetId ||

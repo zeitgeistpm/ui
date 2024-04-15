@@ -52,8 +52,8 @@ const PoolTable = ({
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: amm2Pool } = useAmm2Pool(marketId);
 
-  const colors = market?.categories
-    ? calcMarketColors(marketId, market.categories.length)
+  const colors = market?.assets
+    ? calcMarketColors(marketId, market.assets.length)
     : [];
 
   const assetIds =
@@ -62,14 +62,14 @@ const PoolTable = ({
       : amm2Pool?.assetIds;
 
   const tableData: TableData[] =
-    assetIds?.map((assetId, index) => {
+    market?.assets?.map((asset, index) => {
       let amount: Decimal | undefined;
       let usdValue: Decimal | undefined;
       let category:
         | { color?: string | null; name?: string | null }
         | undefined
         | null;
-
+      const assetId = parseAssetIdString(asset.assetId);
       if (IOBaseAssetId.is(assetId)) {
         amount = basePoolBalance ?? undefined;
         usdValue = basePoolBalance?.mul(baseAssetUsdPrice ?? 0);
@@ -82,7 +82,7 @@ const PoolTable = ({
         usdValue = amount
           ?.mul(spotPrices?.get(index) ?? 0)
           ?.mul(baseAssetUsdPrice ?? 0);
-        category = market?.categories?.[index];
+        category = asset;
       }
 
       return {

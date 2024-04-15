@@ -1,4 +1,4 @@
-import { IOBaseAssetId, IOForeignAssetId } from "@zeitgeistpm/sdk";
+import { IOForeignAssetId, IOZtgAssetId } from "@zeitgeistpm/sdk";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import Image from "next/image";
@@ -17,7 +17,7 @@ const MarketPositionHeader = ({
   lookupAssetImagePath();
   const imagePath = IOForeignAssetId.is(baseAssetId)
     ? lookupAssetImagePath(baseAssetId.ForeignAsset)
-    : IOBaseAssetId.is(baseAssetId)
+    : IOZtgAssetId.is(baseAssetId)
       ? lookupAssetImagePath(baseAssetId.Ztg)
       : "";
 

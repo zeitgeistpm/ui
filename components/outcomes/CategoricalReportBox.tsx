@@ -16,6 +16,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { MarketCategoricalOutcome } from "lib/types";
+import { findAsset } from "lib/util/assets";
 import { calcMarketColors } from "lib/util/color-calc";
 import { useState } from "react";
 import { RiArrowDownSLine } from "react-icons/ri";
@@ -33,9 +34,8 @@ const CategoricalReportBox = ({
 
   if (!market) return null;
 
-  const outcomeAssets = market.outcomeAssets.map(
-    (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
+  const outcomeAssets = market.assets.map(
+    ({ assetId }) => parseAssetId(assetId).unwrap() as CategoricalAssetId,
   );
 
   const [selectedOutcome, setSelectedOutcome] = useState(outcomeAssets[0]);
@@ -94,7 +94,7 @@ const CategoricalReportBox = ({
         <span className="mr-1">Report Outcome</span>
         <TruncatedText
           length={12}
-          text={market.categories?.[getIndexOf(selectedOutcome)]?.name ?? ""}
+          text={findAsset(selectedOutcome, market.assets)?.name ?? ""}
         >
           {(text) => <>{text}</>}
         </TruncatedText>
