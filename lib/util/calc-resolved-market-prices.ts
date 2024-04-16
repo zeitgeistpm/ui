@@ -13,7 +13,7 @@ export const calcResolvedMarketPrices = (
       ? market.neoPool?.account.balances.map((b) =>
           parseAssetIdString(b.assetId),
         )
-      : market.pool?.assets.map((a) => parseAssetIdString(a.assetId))
+      : market?.assets.map((a) => parseAssetIdString(a.assetId))
   )?.filter((assetId) => IOBaseAssetId.is(assetId) === false);
 
   const spotPrices: MarketPrices = new Map();

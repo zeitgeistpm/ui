@@ -30,6 +30,8 @@ export const TAILWIND = resolveTailwindConfig(tailwindConfig as any);
 export const ZTG_BLUE_COLOR = TAILWIND.theme.colors["ztg-blue"];
 export const COIN_GECKO_API_KEY = process.env["COIN_GECKO_API_KEY"];
 
+export const LAST_MARKET_ID_BEFORE_ASSET_MIGRATION = 100;
+
 export const SUPPORTED_WALLET_NAMES = [
   "talisman",
   "subwallet-js",
