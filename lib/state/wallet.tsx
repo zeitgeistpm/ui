@@ -27,6 +27,7 @@ import { isWSX } from "lib/constants";
 import { WalletConnect } from "./wallet-connect";
 
 const DAPP_NAME = "zeitgeist";
+const WC_PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
 
 export type UseWallet = WalletState & {
   /**
@@ -232,7 +233,7 @@ export const supportedWallets = [
   new PolkadotjsWallet(),
   new SubWallet(),
   new TalismanWallet(),
-  // new WalletConnect(),
+  ...(WC_PROJECT_ID ? [new WalletConnect()] : []),
   web3AuthWalletInstance,
 ];
 
@@ -293,11 +294,7 @@ const enableWallet = async (
       const extension = await poll(
         async () => {
           await cryptoWaitReady();
-<<<<<<< HEAD
-          await wallet?.enable(DAPP_NAME);
-=======
           await wallet.enable(DAPP_NAME, skipModal);
->>>>>>> staging
           return wallet;
         },
         {

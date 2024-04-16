@@ -111,6 +111,7 @@ const _callback = (
   _unsub: any,
 ) => {
   const { events, status } = result;
+  console.log(events, status);
   if (status.isInBlock) {
     events.forEach(({ phase, event: { data, method, section } }) => {
       console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
