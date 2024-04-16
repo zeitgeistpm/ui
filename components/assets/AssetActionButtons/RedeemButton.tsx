@@ -86,7 +86,7 @@ export const RedeemButtonByAssetId = ({
 
       const balance = getAccountAssetBalance(realAddress, resolvedAssetId)?.data
         ?.balance;
-      return new Decimal(balance?.free.toString() ?? 0).div(ZTG);
+      return balance?.div(ZTG);
     } else {
       const shortBalance = getAccountAssetBalance(realAddress, {
         ScalarOutcome: [market.marketId as MarketId, "Short"],
@@ -107,13 +107,15 @@ export const RedeemButtonByAssetId = ({
         lowerBound,
         upperBound,
         new Decimal(resolvedNumber).div(ZTG),
-        new Decimal(shortBalance.free.toNumber()).div(ZTG),
-        new Decimal(longBalance.free.toNumber()).div(ZTG),
+        shortBalance.div(ZTG),
+        longBalance.div(ZTG),
       );
     }
   }, [market, assetId, isLoadingAssetBalance, getAccountAssetBalance]);
 
-  return <RedeemButtonByValue market={market} value={value} />;
+  return (
+    <RedeemButtonByValue market={market} value={value ?? new Decimal(0)} />
+  );
 };
 
 const RedeemButtonByValue = ({
