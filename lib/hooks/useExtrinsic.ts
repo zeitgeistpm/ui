@@ -88,6 +88,7 @@ export const useExtrinsic = <T>(
           ? callbacks.onBroadcast()
           : notifications.pushNotification(`Trade placed`, {
               type: "Success",
+              autoRemove: true,
             });
       },
       successCallback: (data) => {
