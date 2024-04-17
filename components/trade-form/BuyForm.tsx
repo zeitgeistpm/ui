@@ -186,7 +186,7 @@ const BuyForm = ({
     },
     {
       onSuccess: (data) => {
-        notificationStore.pushNotification(`Successfully traded`, {
+        notificationStore.pushNotification(`Trade confirmed`, {
           type: "Success",
         });
         onSuccess(data, selectedAsset!, amountIn);

@@ -86,8 +86,8 @@ export const useExtrinsic = <T>(
         setIsBroadcasting(true);
         callbacks?.onBroadcast
           ? callbacks.onBroadcast()
-          : notifications?.pushNotification("Broadcasting transaction...", {
-              autoRemove: true,
+          : notifications.pushNotification(`Trade placed`, {
+              type: "Success",
             });
       },
       successCallback: (data) => {
