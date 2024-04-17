@@ -12,9 +12,8 @@ export const usePolkadotReferendumVotes = (referendumIndex: number) => {
     [polkadotReferendumVotesRootKey, referendumIndex],
     async () => {
       if (enabled) {
-        const referendum = await api.query.referenda.referendumInfoFor(
-          referendumIndex,
-        );
+        const referendum: any =
+          await api.query.referenda.referendumInfoFor(referendumIndex);
 
         const votes = referendum.unwrapOr(null)?.isOngoing
           ? referendum.unwrap().asOngoing.tally
