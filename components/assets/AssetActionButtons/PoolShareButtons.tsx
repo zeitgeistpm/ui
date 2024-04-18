@@ -1,11 +1,4 @@
-import LiquidityModal from "components/liquidity/LiquidityModal";
-import SecondaryButton from "components/ui/SecondaryButton";
-import { usePool } from "lib/hooks/queries/usePool";
-import { useState } from "react";
-import { MarketStatus, FullMarketFragment } from "@zeitgeistpm/indexer";
-import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { useNotifications } from "lib/state/notifications";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import {
   IOBaseAssetId,
   IOCategoricalAssetId,
@@ -13,14 +6,19 @@ import {
   isRpcSdk,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { useBalance } from "lib/hooks/queries/useBalance";
-import { useWallet } from "lib/state/wallet";
-import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
-import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
-import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
-import { useTotalIssuance } from "lib/hooks/queries/useTotalIssuance";
+import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
+import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
+import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
+import { useBalance } from "lib/hooks/queries/useBalance";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { usePool } from "lib/hooks/queries/usePool";
+import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
+import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 
 const RedeemPoolButton = ({
@@ -43,12 +41,11 @@ const RedeemPoolButton = ({
     pool,
   );
   const { data: poolBaseBalance } = usePoolBaseBalance(poolId);
-  const { data: totalPoolSharesIssuance } = useTotalIssuance({
-    PoolShare: poolId,
-  });
+  const poolsTotalIssuance = useTotalIssuanceForPools([poolId]);
+  const { data: totalPoolSharesIssuance } = poolsTotalIssuance[poolId];
   const userPercentageOwnership =
-    userPoolShares && totalPoolSharesIssuance
-      ? userPoolShares.div(totalPoolSharesIssuance)
+    userPoolShares && totalPoolSharesIssuance?.totalIssuance
+      ? userPoolShares.div(totalPoolSharesIssuance.totalIssuance.toNumber())
       : new Decimal(0);
 
   // filter out non-winning assets as they are deleted on chain
@@ -144,29 +141,7 @@ const PoolShareButtons = ({
   poolId: number;
   market: FullMarketFragment;
 }) => {
-  const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
-
-  return (
-    <>
-      {market.status === MarketStatus.Resolved ? (
-        <RedeemPoolButton poolId={poolId} market={market} />
-      ) : (
-        <>
-          <SecondaryButton
-            onClick={() => setManageLiquidityOpen(true)}
-            className="ml-auto max-w-[160px]"
-          >
-            Manage Liquidity
-          </SecondaryButton>
-          <LiquidityModal
-            poolId={poolId}
-            open={manageLiquidityOpen}
-            onClose={() => setManageLiquidityOpen(false)}
-          />
-        </>
-      )}
-    </>
-  );
+  return <RedeemPoolButton poolId={poolId} market={market} />;
 };
 
 export default PoolShareButtons;
