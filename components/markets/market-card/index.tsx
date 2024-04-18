@@ -256,11 +256,7 @@ const MarketCardDetails = ({
   };
   const hasEnded = hasDatePassed(period.end);
   const assetId = parseAssetId(baseAsset).unwrap();
-  const imagePath = IOForeignAssetId.is(assetId)
-    ? lookupAssetImagePath(assetId.ForeignAsset)
-    : IOBaseAssetId.is(assetId)
-      ? lookupAssetImagePath(assetId.Ztg)
-      : "";
+  const imagePath = lookupAssetImagePath(assetId);
 
   return (
     <div className="flex items-center text-xs">

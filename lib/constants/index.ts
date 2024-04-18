@@ -114,3 +114,6 @@ export const endpointsStaging = getEndpointOptions("staging");
 
 export const endpointOptions =
   environment === "production" ? endpointsProduction : endpointsStaging;
+
+export const LAST_MARKET_ID_BEFORE_ASSET_MIGRATION =
+  environment === "production" ? 9999 : 9999;

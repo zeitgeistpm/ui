@@ -1,9 +1,9 @@
-import { OrmlTokensAccountData } from "@polkadot/types/lookup";
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
-import { AssetId, isRpcSdk, RpcContext } from "@zeitgeistpm/sdk";
+import { AssetId, isRpcSdk } from "@zeitgeistpm/sdk";
+import Decimal from "decimal.js";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
-import { useMemo } from "react";
+import { fetchAssetBalance } from "./useBalance";
 
 export type UseAccountAssetBalances = {
   /**
@@ -16,7 +16,7 @@ export type UseAccountAssetBalances = {
     | UseQueryResult<
         {
           pair: AccountAssetIdPair;
-          balance?: OrmlTokensAccountData;
+          balance?: Decimal;
         },
         unknown
       >
@@ -27,7 +27,7 @@ export type UseAccountAssetBalances = {
   query: UseQueryResult<
     {
       pair: AccountAssetIdPair;
-      balance?: OrmlTokensAccountData;
+      balance?: Decimal;
     },
     unknown
   >[];
@@ -75,13 +75,9 @@ export const useAccountAssetBalances = (
         ],
         queryFn: async () => {
           const api = await getApiAtBlock(sdk!.asRpc().api, blockNumber);
-          let balance;
-          if (pair.account) {
-            balance = await api.query.tokens.accounts(
-              pair.account,
-              pair.assetId,
-            );
-          }
+          const balance = pair.account
+            ? await fetchAssetBalance(api, pair.account, pair.assetId)
+            : new Decimal(0);
 
           return {
             pair,

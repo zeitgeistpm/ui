@@ -302,7 +302,7 @@ export const usePortfolioPositions = (
       const totalIssuanceForPoolQuery = pool && poolsTotalIssuance[pool.poolId];
       const totalIssuanceData = pool && poolsTotalIssuance[pool.poolId]?.data;
 
-      const userBalance = new Decimal(balance?.free.toNumber() ?? 0);
+      const userBalance = balance ?? new Decimal(0);
 
       const totalIssuance =
         totalIssuanceForPoolQuery &&
