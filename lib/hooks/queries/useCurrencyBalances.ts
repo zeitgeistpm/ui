@@ -58,10 +58,14 @@ export const useCurrencyBalances = (address: string) => {
             CHAINS[index].fetchCurrencies(api, address),
           ),
         );
+        console.log(chainBalancesRes);
+
         const chainBalances = chainBalancesRes
           .map((res) => res.status === "fulfilled" && res.value)
           .filter((res) => !!res)
           .flat() as CurrencyBalance[];
+
+        console.log(chainBalances);
 
         const nativeBalanceDetails: CurrencyBalance = {
           balance: nativeBalance,
