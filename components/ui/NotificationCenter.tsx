@@ -58,7 +58,7 @@ const NotificationCard: FC<{
           )} absolute left-0 top-0 z-40 h-full  w-full opacity-10`}
         />
       </div>
-      <div className="flex justify-center py-6 text-white">
+      {/* <div className="flex justify-center py-6 text-white">
         <div className={`center ${getBgColor(type)}`}>
           <Loader
             loading={Boolean(lifetime)}
@@ -67,7 +67,7 @@ const NotificationCard: FC<{
             variant={type}
           />
         </div>
-      </div>
+      </div> */}
       <div className="center flex-1 py-6">
         <div className="w-full text-left text-base font-normal">{content}</div>
       </div>
