@@ -37,6 +37,7 @@ interface Chain {
     address: string,
     amount: string,
     parachainId: number,
+    assetId?: number,
   ) => SubmittableExtrinsic<"promise", ISubmittableResult>;
 }
 const BATTERY_STATION_CHAINS: Chain[] = [
@@ -195,6 +196,7 @@ const PROD_CHAINS: Chain[] = [
             assets[0].unwrapOr(null)?.minBalance.toString() ?? 0,
           ),
           decimals: 6,
+          sourceAssetId: 1337,
         },
         {
           symbol: "USDT",
@@ -208,32 +210,43 @@ const PROD_CHAINS: Chain[] = [
             assets[1].unwrapOr(null)?.minBalance.toString() ?? 0,
           ),
           decimals: 6,
+          sourceAssetId: 1984,
         },
       ];
     },
-    createDepositExtrinsic: (api, address, amount, parachainId) => {
+    createDepositExtrinsic: (api, address, amount, parachainId, assetId) => {
       const accountId = api.createType("AccountId32", address).toHex();
 
       const destination = {
-        parents: 0,
+        parents: 1,
         interior: { X1: { Parachain: parachainId } },
       };
       const account = {
         parents: 0,
-        interior: { X1: { AccountId32: { id: accountId, network: "Any" } } },
+        interior: { X1: { AccountId32: { id: accountId } } },
       };
       const asset = [
         {
-          id: { Concrete: { parents: 0, interior: "Here" } },
-          fun: { Fungible: amount },
+          id: {
+            Concrete: {
+              parents: 0,
+              interior: {
+                X2: [{ PalletInstance: 50 }, { GeneralIndex: assetId }], //usdc token ID on asset hub
+              },
+            },
+          },
+          fun: {
+            Fungible: amount,
+          },
         },
       ];
 
-      const tx = api.tx.xcmPallet.reserveTransferAssets(
-        { V2: destination },
-        { V2: account },
-        { V2: asset },
+      const tx = api.tx.polkadotXcm.limitedReserveTransferAssets(
+        { V3: destination },
+        { V3: account },
+        { V3: asset },
         0,
+        { Unlimited: null },
       );
 
       return tx;

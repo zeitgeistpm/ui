@@ -15,6 +15,7 @@ export type CurrencyBalance = {
   balance: Decimal;
   chain: ChainName;
   foreignAssetId?: number;
+  sourceAssetId?: number;
   sourceChain: ChainName;
   existentialDeposit: Decimal;
   decimals: number;

@@ -113,6 +113,7 @@ const MoveButton = ({
           balance={balance}
           sourceExistentialDeposit={existentialDeposit}
           assetDecimals={assetDecimals}
+          sourceAssetId={destinationAsset?.sourceAssetId}
         />
       )}
     </>
