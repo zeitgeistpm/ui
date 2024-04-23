@@ -77,8 +77,24 @@ const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     image: "/currencies/usdc.svg",
     withdrawSupported: false,
     coinGeckoId: "usd",
+    tokenSymbol: "USDC.wh",
+    subsquidId: "USDC",
+  },
+  4: {
+    originChain: "AssetHub",
+    image: "/currencies/usdc.svg",
+    withdrawSupported: true,
+    coinGeckoId: "usd",
     tokenSymbol: "USDC",
     subsquidId: "USDC",
+  },
+  5: {
+    originChain: "AssetHub",
+    image: "/currencies/usdt.svg",
+    withdrawSupported: true,
+    coinGeckoId: "tether",
+    tokenSymbol: "USDT",
+    subsquidId: "USDT",
   },
 };
 

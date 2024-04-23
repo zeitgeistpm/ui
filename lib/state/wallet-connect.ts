@@ -35,7 +35,7 @@ const chains = Object.values(requiredNamespaces)
   .flat();
 
 if (!WC_PROJECT_ID) {
-  throw new Error("Missing WalletConnect project ID");
+  // throw new Error("Missing WalletConnect project ID");
 }
 
 const modal = new WalletConnectModal({

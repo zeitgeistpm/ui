@@ -24,12 +24,14 @@ const DepositButton = ({
   balance,
   sourceExistentialDeposit,
   assetDecimals,
+  sourceAssetId,
 }: {
   sourceChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
   sourceExistentialDeposit: Decimal;
   assetDecimals: number;
+  sourceAssetId?: number;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -44,6 +46,7 @@ const DepositButton = ({
           assetDecimals={assetDecimals}
           sourceExistentialDeposit={sourceExistentialDeposit}
           onSuccess={() => setIsOpen(false)}
+          sourceAssetId={sourceAssetId}
         />
       </Modal>
     </>
@@ -57,6 +60,7 @@ const DepositModal = ({
   onSuccess,
   sourceExistentialDeposit,
   assetDecimals,
+  sourceAssetId,
 }: {
   sourceChain: ChainName;
   tokenSymbol: string;
@@ -64,6 +68,7 @@ const DepositModal = ({
   sourceExistentialDeposit: Decimal;
   assetDecimals: number;
   onSuccess: () => void;
+  sourceAssetId?: number;
 }) => {
   const {
     register,
@@ -106,6 +111,7 @@ const DepositModal = ({
         wallet.realAddress,
         amountDecimal.toFixed(0),
         constants.parachainId,
+        sourceAssetId,
       );
       return tx;
     },
