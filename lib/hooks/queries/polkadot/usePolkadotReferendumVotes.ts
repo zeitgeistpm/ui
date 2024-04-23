@@ -1,3 +1,4 @@
+import "@polkadot/api-augment";
 import { useQuery } from "@tanstack/react-query";
 import Decimal from "decimal.js";
 import { usePolkadotApi } from "lib/state/polkadot-api";
@@ -12,9 +13,8 @@ export const usePolkadotReferendumVotes = (referendumIndex: number) => {
     [polkadotReferendumVotesRootKey, referendumIndex],
     async () => {
       if (enabled) {
-        const referendum = await api.query.referenda.referendumInfoFor(
-          referendumIndex,
-        );
+        const referendum =
+          await api.query.referenda.referendumInfoFor(referendumIndex);
 
         const votes = referendum.unwrapOr(null)?.isOngoing
           ? referendum.unwrap().asOngoing.tally
