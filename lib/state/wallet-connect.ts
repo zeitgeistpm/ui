@@ -8,7 +8,7 @@ import {
 import { WalletConnectSigner } from "lib/util/wallet-connect-signer";
 import { ZTG_CHAIN_ID } from "lib/constants";
 
-const WC_PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
+const WC_PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID ?? "";
 const DOMAIN_URL = "https://app.zeitgeist.pm/";
 
 const walletConnectParams = {
@@ -34,16 +34,12 @@ const chains = Object.values(requiredNamespaces)
   .map((namespace) => namespace.chains)
   .flat();
 
-if (!WC_PROJECT_ID) {
-  throw new Error("Missing WalletConnect project ID");
-}
+let provider;
+let modal;
 
-const modal = new WalletConnectModal({
-  projectId: WC_PROJECT_ID,
-  chains,
-});
-
-const provider = await UniversalProvider.init(walletConnectParams);
+const setProvider = async () => {
+  provider = await UniversalProvider.init(walletConnectParams);
+};
 
 export class WalletConnect implements Wallet {
   extensionName = "walletconnect";
@@ -65,6 +61,15 @@ export class WalletConnect implements Wallet {
     onModalOpen?: () => void;
     onModalClose?: () => void;
   } = {}) {
+    if (!WC_PROJECT_ID) return;
+
+    setProvider();
+
+    modal = new WalletConnectModal({
+      projectId: WC_PROJECT_ID,
+      chains,
+    });
+
     modal.subscribeModal((state) => {
       state.open ? onModalOpen?.() : onModalClose?.();
     });

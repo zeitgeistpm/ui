@@ -26,6 +26,7 @@ import { web3AuthWalletInstance } from "./util/web3auth-config";
 import { WalletConnect } from "./wallet-connect";
 
 const DAPP_NAME = "zeitgeist";
+const WC_PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
 
 export type UseWallet = WalletState & {
   /**
@@ -222,7 +223,7 @@ export const supportedWallets = [
   new PolkadotjsWallet(),
   new SubWallet(),
   new TalismanWallet(),
-  new WalletConnect(),
+  ...(WC_PROJECT_ID ? [new WalletConnect()] : []),
   web3AuthWalletInstance,
 ];
 
