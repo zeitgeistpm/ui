@@ -84,7 +84,7 @@ const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     originChain: "AssetHub",
     image: "/currencies/usdc.svg",
     withdrawSupported: true,
-    coinGeckoId: "usd",
+    coinGeckoId: "usd", // seems like transfer out fee is about 0.07USDC
     tokenSymbol: "USDC",
     subsquidId: "USDC",
   },
@@ -93,7 +93,7 @@ const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     image: "/currencies/usdt.svg",
     withdrawSupported: true,
     coinGeckoId: "tether",
-    tokenSymbol: "USDT",
+    tokenSymbol: "USDT", // also around 0.07USDT
     subsquidId: "USDT",
   },
 };
