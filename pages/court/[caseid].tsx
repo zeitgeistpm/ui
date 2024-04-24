@@ -17,7 +17,7 @@ import { CourtDocsArticle } from "components/court/learn/CourtDocsArticle";
 import { AddressDetails } from "components/markets/MarketAddresses";
 import { MarketDescription } from "components/markets/MarketDescription";
 import { HeaderStat } from "components/markets/MarketHeader";
-import { getCmsMarketMetadataForMarket } from "lib/cms/markets";
+import { getCmsFullMarketMetadataForMarket } from "lib/cms/markets";
 import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
@@ -73,7 +73,7 @@ export async function getStaticProps({
 
   const marketId = await sdk.api.query.court.courtIdToMarketId(params.caseid);
 
-  const cmsMetadata = await getCmsMarketMetadataForMarket(
+  const cmsMetadata = await getCmsFullMarketMetadataForMarket(
     marketId.unwrap().toNumber(),
   );
 
@@ -168,11 +168,7 @@ const CasePage: NextPage = ({
       ? market.report?.outcome.categorical
       : undefined;
 
-  const imagePath = IOForeignAssetId.is(baseAsset)
-    ? lookupAssetImagePath(baseAsset.ForeignAsset)
-    : IOBaseAssetId.is(baseAsset)
-      ? lookupAssetImagePath(baseAsset.Ztg)
-      : "";
+  const imagePath = lookupAssetImagePath(baseAsset);
 
   const connectedParticipantDraw = selectedDraws?.find(
     (draw) => draw.courtParticipant.toString() === wallet.realAddress,

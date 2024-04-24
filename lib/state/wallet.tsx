@@ -23,8 +23,10 @@ import {
   removeNotification,
 } from "./notifications";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
+import { WalletConnect } from "./wallet-connect";
 
 const DAPP_NAME = "zeitgeist";
+const WC_PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
 
 export type UseWallet = WalletState & {
   /**
@@ -105,7 +107,7 @@ export type WalletState = {
   /**
    * Instance of the current wallet.
    */
-  wallet?: BaseDotsamaWallet | KeyringPairOrExtSigner;
+  wallet?: BaseDotsamaWallet | KeyringPairOrExtSigner | WalletConnect;
   /**
    * The accounts of the current wallet.
    */
@@ -216,10 +218,12 @@ export type WalletError = {
 /**
  * List of supported wallets.
  */
+
 export const supportedWallets = [
   new PolkadotjsWallet(),
   new SubWallet(),
   new TalismanWallet(),
+  ...(WC_PROJECT_ID ? [new WalletConnect()] : []),
   web3AuthWalletInstance,
 ];
 
@@ -235,12 +239,12 @@ let currentErrorNotification: Readonly<Notification> | null = null;
  * @returns Promise<boolean> - whether the wallet was enabled
  */
 
-const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
+const enableWallet = async (
+  walletId: string,
+  keyPair?: KeyringPair,
+  skipModal?: boolean,
+) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
-
-  if (walletId === "web3auth" && !keyPair) {
-    return;
-  }
 
   if (walletId === "web3auth" && keyPair) {
     store.set(walletAtom, (state) => {
@@ -248,7 +252,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
         ...state,
         wallet: { ...keyPair },
         connected: true,
-        walletId: "web3auth",
+        walletId: walletId,
         accounts:
           [keyPair?.address].map((account) => {
             return {
@@ -259,7 +263,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
           [keyPair?.address].length === 0
             ? [
                 {
-                  extensionName: "web3auth",
+                  extensionName: walletId,
                   type: "NoAccounts",
                 },
               ]
@@ -280,7 +284,7 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
       const extension = await poll(
         async () => {
           await cryptoWaitReady();
-          await wallet.enable(DAPP_NAME);
+          await wallet.enable(DAPP_NAME, skipModal);
           return wallet;
         },
         {
@@ -392,7 +396,9 @@ const enableWallet = async (walletId: string, keyPair?: KeyringPair) => {
  */
 const initialWalletId = store.get(userConfigAtom).walletId;
 if (initialWalletId) {
-  enableWallet(initialWalletId);
+  //used to stop wallet connect modal from appearing on initial load
+  const skipModal = initialWalletId === "walletconnect" ? true : false;
+  enableWallet(initialWalletId, undefined, skipModal);
 }
 
 /**
@@ -404,14 +410,14 @@ export const useWallet = (): UseWallet => {
   const [walletState, setWalletState] = useAtom(walletAtom);
 
   const selectWallet = (
-    wallet: BaseDotsamaWallet | string,
+    wallet: BaseDotsamaWallet | WalletConnect | string,
     keyPair?: KeyringPair,
   ) => {
     setUserConfig({
       ...userConfig,
       walletId: isString(wallet) ? wallet : wallet.extensionName,
     });
-    if (wallet === "web3auth") {
+    if (wallet === "web3auth" && keyPair) {
       enableWallet(wallet, keyPair);
     } else {
       enableWallet(isString(wallet) ? wallet : wallet.extensionName);
@@ -429,7 +435,11 @@ export const useWallet = (): UseWallet => {
     if (!walletState.wallet) {
       return;
     }
-    if (walletState.wallet instanceof BaseDotsamaWallet) {
+    if (
+      walletState.wallet instanceof BaseDotsamaWallet ||
+      walletState.wallet instanceof WalletConnect
+    ) {
+      if (!walletState.wallet.signer) return;
       return {
         address: activeAccount?.address,
         signer: walletState.wallet.signer,

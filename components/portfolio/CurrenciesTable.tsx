@@ -88,7 +88,6 @@ const MoveButton = ({
   const destinationAsset = allBalanceDetails.find(
     (detail) => detail.chain === sourceChain,
   );
-  console.log(chain, sourceChain, destinationAsset, transferAssetId);
 
   return (
     <>
@@ -146,7 +145,13 @@ const CurrenciesTable = ({ address }: { address: string }) => {
         asset: (
           <ImageAndText
             name={balance.symbol}
-            imagePath={lookupAssetImagePath(balance.foreignAssetId) ?? ""}
+            imagePath={lookupAssetImagePath(
+              balance.foreignAssetId != null
+                ? {
+                    ForeignAsset: balance.foreignAssetId,
+                  }
+                : null,
+            )}
           />
         ),
         balance: amount.div(ZTG).toFixed(3),

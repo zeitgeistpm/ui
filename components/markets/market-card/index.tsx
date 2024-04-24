@@ -161,9 +161,9 @@ export const MarketCard = ({
               displayPrediction && (
                 <MarketCardPredictionBar prediction={displayPrediction} />
               )
-            ) : (pool || neoPool) && scalarType ? (
+            ) : pool || neoPool ? (
               <ScalarPriceRange
-                scalarType={scalarType as "date" | "number"}
+                scalarType={(scalarType ?? "number") as "number" | "date"}
                 lowerBound={lower}
                 upperBound={upper}
                 shortPrice={marketCategories[1]?.price}
@@ -256,11 +256,7 @@ const MarketCardDetails = ({
   };
   const hasEnded = hasDatePassed(period.end);
   const assetId = parseAssetId(baseAsset).unwrap();
-  const imagePath = IOForeignAssetId.is(assetId)
-    ? lookupAssetImagePath(assetId.ForeignAsset)
-    : IOBaseAssetId.is(assetId)
-      ? lookupAssetImagePath(assetId.Ztg)
-      : "";
+  const imagePath = lookupAssetImagePath(assetId);
 
   return (
     <div className="flex items-center text-xs">

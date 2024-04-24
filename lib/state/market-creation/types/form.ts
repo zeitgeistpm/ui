@@ -1,18 +1,19 @@
+import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import {
-  CreateMarketBaseParams,
   CreateMarketParams,
   MetadataStorage,
+  NoPool,
   RpcContext,
+  WithPool,
   ZTG,
   swapFeeFromFloat,
-  WithPool,
-  NoPool,
 } from "@zeitgeistpm/sdk";
-import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
+import { Fee } from "components/create/editor/inputs/FeeSelect";
 import Decimal from "decimal.js";
 import { BLOCK_TIME_SECONDS } from "lib/constants";
 import { getMetadataForCurrency } from "lib/constants/supported-currencies";
+import { union } from "lib/types/union";
 import moment from "moment";
 import { DeepRequired } from "react-hook-form";
 import * as z from "zod";
@@ -38,8 +39,6 @@ import {
   IOTimeZone,
   IOYesNoAnswers,
 } from "./validation";
-import { Fee } from "components/create/editor/inputs/FeeSelect";
-import { union } from "lib/types/union";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.
@@ -134,25 +133,21 @@ export const marketFormDataToExtrinsicParams = (
 
   const hasPool = form.moderation === "Permissionless" && form.liquidity.deploy;
 
-  let poolParams: WithPool | NoPool;
-
-  if (hasPool) {
-    poolParams = {
-      scoringRule: "Lmsr",
-      pool: {
-        amount: new Decimal(form.liquidity.amount).mul(ZTG).toFixed(0),
-        swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
-        spotPrices: form.liquidity.rows.map((row) =>
-          new Decimal(row.price.price).mul(ZTG).toFixed(0),
-        ),
-      },
-    };
-  } else {
-    poolParams = {
-      scoringRule: "Lmsr",
-      creationType: form.moderation,
-    };
-  }
+  const poolParams: WithPool | NoPool = hasPool
+    ? {
+        scoringRule: "Lmsr",
+        pool: {
+          amount: new Decimal(form.liquidity.amount).mul(ZTG).toFixed(0),
+          swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
+          spotPrices: form.liquidity.rows.map((row) =>
+            new Decimal(row.price.price).mul(ZTG).toFixed(0),
+          ),
+        },
+      }
+    : {
+        scoringRule: "AmmCdaHybrid",
+        creationType: form.moderation,
+      };
 
   let disputeMechanism: CreateMarketParams<RpcContext>["disputeMechanism"] =
     "Authorized";

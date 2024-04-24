@@ -34,7 +34,10 @@ export const SUPPORTED_WALLET_NAMES = [
   "talisman",
   "subwallet-js",
   "polkadot-js",
+  "web3auth",
 ];
+
+export const ZTG_CHAIN_ID = "polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c";
 
 export const endpoints: EndpointOption[] = [
   {
@@ -111,3 +114,6 @@ export const endpointsStaging = getEndpointOptions("staging");
 
 export const endpointOptions =
   environment === "production" ? endpointsProduction : endpointsStaging;
+
+export const LAST_MARKET_ID_BEFORE_ASSET_MIGRATION =
+  environment === "production" ? 9999 : 9999;
