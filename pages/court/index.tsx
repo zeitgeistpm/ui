@@ -460,40 +460,44 @@ const Stats = () => {
       </div>
 
       <Modal open={showPayoutsModal} onClose={() => setShowPayoutsModal(false)}>
-        <Dialog.Panel className="mt-8 w-full max-w-[550px]  rounded-ztg-10 bg-white p-8">
-          <h2 className="mb-2 text-base">Court Reward Payouts</h2>
-          <p className="mb-3 text-sm">
-            All payouts made to{" "}
-            <b>{shortenAddress(wallet?.realAddress ?? "")}</b> as a result of
-            participating in court.{" "}
-          </p>
-          <div className="subtle-scroll-bar flex max-h-[640px] flex-col gap-1 overflow-y-scroll pr-2">
-            {mintedPayouts?.map((payout, index) => (
-              <div className="mb-1 flex gap-2">
-                <div className="flex-1 italic text-gray-500">
-                  {moment(payout?.timestamp).format("yy-mm:HH:mm")}
+        <Dialog.Panel className="mt-8 w-full max-w-[550px] overflow-hidden rounded-ztg-10 bg-white">
+          <div className="bg-[rgb(173,0,254)] px-4 py-6 text-white">
+            <h2 className="mb-2 text-purple-950">Court Reward Payouts</h2>
+            <p className="text-sm text-white/85">
+              All payouts made to{" "}
+              <b>{shortenAddress(wallet?.realAddress ?? "")}</b> as a result of
+              participating in court.{" "}
+            </p>
+          </div>
+          <div className="">
+            <div className="subtle-scroll-bar flex max-h-[340px] flex-col gap-1 overflow-y-scroll px-4 py-4">
+              {mintedPayouts?.map((payout, index) => (
+                <div className="mb-1 flex gap-2">
+                  <div className="flex-1 italic text-gray-500">
+                    {moment(payout?.timestamp).format("yy-mm HH:mm")}
+                  </div>
+                  <div className="">
+                    {formatNumberLocalized(
+                      new Decimal(payout?.dBalance ?? 0).div(ZTG).toNumber(),
+                    )}{" "}
+                    <b>{constants?.tokenSymbol}</b>
+                  </div>
+                  <div>
+                    <a
+                      className="center text-sm"
+                      target="_blank"
+                      referrerPolicy="no-referrer"
+                      rel="noopener"
+                      href={`https://zeitgeist.subscan.io/block/${payout?.blockNumber}?tab=event`}
+                    >
+                      <div className="scale-75">
+                        <SubScanIcon />
+                      </div>
+                    </a>
+                  </div>
                 </div>
-                <div className="">
-                  {formatNumberLocalized(
-                    new Decimal(payout?.dBalance ?? 0).div(ZTG).toNumber(),
-                  )}{" "}
-                  <b>{constants?.tokenSymbol}</b>
-                </div>
-                <div>
-                  <a
-                    className="center text-sm"
-                    target="_blank"
-                    referrerPolicy="no-referrer"
-                    rel="noopener"
-                    href={`https://zeitgeist.subscan.io/block/${payout?.blockNumber}?tab=event`}
-                  >
-                    <div className="scale-75">
-                      <SubScanIcon />
-                    </div>
-                  </a>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </Dialog.Panel>
       </Modal>
