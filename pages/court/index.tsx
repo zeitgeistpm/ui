@@ -31,6 +31,7 @@ import { FaList } from "react-icons/fa";
 import { useState } from "react";
 import Modal from "components/ui/Modal";
 import moment from "moment";
+import SubScanIcon from "components/icons/SubScanIcon";
 
 export async function getStaticProps() {
   const [bannerPlaiceholder] = await Promise.all([
@@ -461,15 +462,28 @@ const Stats = () => {
           </p>
           <div className="subtle-scroll-bar flex max-h-[640px] flex-col gap-1 overflow-y-scroll pr-2">
             {mintedPayouts?.map((payout, index) => (
-              <div className="flex">
-                <div className="flex-1">
-                  {moment(payout?.timestamp).format("YYYY-MM-DDTHH:mm")}
+              <div className="mb-1 flex gap-2">
+                <div className="flex-1 italic text-gray-500">
+                  {moment(payout?.timestamp).format("yy-mm:HH:mm")}
                 </div>
                 <div className="">
                   {formatNumberLocalized(
                     new Decimal(payout?.dBalance ?? 0).div(ZTG).toNumber(),
                   )}{" "}
-                  {constants?.tokenSymbol}
+                  <b>{constants?.tokenSymbol}</b>
+                </div>
+                <div>
+                  <a
+                    className="center text-sm"
+                    target="_blank"
+                    referrerPolicy="no-referrer"
+                    rel="noopener"
+                    href={`https://zeitgeist.subscan.io/block/${payout?.blockNumber}?tab=event`}
+                  >
+                    <div className="scale-75">
+                      <SubScanIcon />
+                    </div>
+                  </a>
                 </div>
               </div>
             ))}
