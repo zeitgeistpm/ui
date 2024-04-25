@@ -231,6 +231,7 @@ const CourtPage: NextPage = ({
 const Stats = () => {
   const wallet = useWallet();
   const { data: courtCases } = useCourtCases();
+  const connectedParticipant = useConnectedCourtParticipant();
   const { data: constants } = useChainConstants();
   const { data: yearlyInflationAmount } = useCourtYearlyInflationAmount();
   const { data: participants } = useCourtParticipants();
@@ -407,48 +408,54 @@ const Stats = () => {
               </InfoPopover>
             </div>
           </div>
-          <div>
-            <IoMdArrowRoundForward />
-          </div>
-          <div
-            className="flex flex-1 items-center gap-2 rounded-md p-4"
-            style={{
-              background:
-                "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgba(240, 206, 135, 0.048) 93.27%)",
-            }}
-          >
-            <div>
-              <label className="font text-sm text-gray-500">
-                <span className="hidden md:inline">Total</span> Payout
-              </label>
 
-              <div className="flex items-center gap-2">
-                <div className="text-md line-clamp-1 font-mono font-semibold">
-                  {formatNumberLocalized(
-                    totalMintedPayout?.div(ZTG).toNumber() ?? 0,
-                  )}{" "}
-                  {constants?.tokenSymbol}
-                </div>
-
-                <InfoPopover
-                  className="text-slate-500"
-                  overlay={false}
-                  position="top-start"
-                  popoverCss="ml-12"
-                >
-                  The total amount of {constants?.tokenSymbol} that has been
-                  paid out to <b>{shortenAddress(wallet?.realAddress ?? "")}</b>{" "}
-                  as a result of participating in court.
-                </InfoPopover>
+          {connectedParticipant ? (
+            <>
+              <div>
+                <IoMdArrowRoundForward />
               </div>
-            </div>
-            <div
-              onClick={() => setShowPayoutsModal(true)}
-              className="flex w-12 cursor-pointer items-center justify-center rounded-md bg-green-400/30 py-4 text-green-900"
-            >
-              <FaList />
-            </div>
-          </div>
+              <div
+                className="flex flex-1 items-center gap-2 rounded-md p-4"
+                style={{
+                  background:
+                    "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgba(240, 206, 135, 0.048) 93.27%)",
+                }}
+              >
+                <div>
+                  <label className="font text-sm text-gray-500">
+                    <span className="hidden md:inline">Total</span> Payout
+                  </label>
+
+                  <div className="flex items-center gap-2">
+                    <div className="text-md line-clamp-1 font-mono font-semibold">
+                      {formatNumberLocalized(
+                        totalMintedPayout?.div(ZTG).toNumber() ?? 0,
+                      )}{" "}
+                      {constants?.tokenSymbol}
+                    </div>
+
+                    <InfoPopover
+                      className="text-slate-500"
+                      overlay={false}
+                      position="top-start"
+                      popoverCss="ml-12"
+                    >
+                      The total amount of {constants?.tokenSymbol} that has been
+                      paid out to{" "}
+                      <b>{shortenAddress(wallet?.realAddress ?? "")}</b> as a
+                      result of participating in court.
+                    </InfoPopover>
+                  </div>
+                </div>
+                <div
+                  onClick={() => setShowPayoutsModal(true)}
+                  className="flex w-12 cursor-pointer items-center justify-center rounded-md bg-green-400/30 py-4 text-green-900"
+                >
+                  <FaList />
+                </div>
+              </div>
+            </>
+          ) : null}
         </div>
       </div>
 

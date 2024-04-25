@@ -18,7 +18,7 @@ export const useMintedInCourt = (
   const enabled = sdk && isIndexedSdk(sdk) && filter.account;
 
   const query = useQuery(
-    [id, mintedInCourtRootKey],
+    [id, mintedInCourtRootKey, filter],
     async () => {
       if (enabled) {
         const response = await sdk.indexer.historicalAccountBalances({
