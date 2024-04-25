@@ -1,4 +1,4 @@
-import { Disclosure, Tab } from "@headlessui/react";
+import { Dialog, Disclosure, Tab } from "@headlessui/react";
 import { ZTG } from "@zeitgeistpm/sdk";
 import { CourtCasesTable } from "components/court/CourtCasesTable";
 import CourtExitButton from "components/court/CourtExitButton";
@@ -7,6 +7,7 @@ import JoinCourtAsJurorButton from "components/court/JoinCourtAsJurorButton";
 import JurorsTable from "components/court/JurorsTable";
 import ManageDelegationButton from "components/court/ManageDelegationButton";
 import InfoPopover from "components/ui/InfoPopover";
+import Decimal from "decimal.js";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
 import { useCourtParticipants } from "lib/hooks/queries/court/useCourtParticipants";
@@ -14,8 +15,10 @@ import { useCourtStakeSharePercentage } from "lib/hooks/queries/court/useCourtSt
 import { useCourtTotalStakedAmount } from "lib/hooks/queries/court/useCourtTotalStakedAmount";
 import { useCourtYearlyInflationAmount } from "lib/hooks/queries/court/useCourtYearlyInflation";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useMintedInCourt } from "lib/hooks/queries/useMintedInCourt";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
-import { formatNumberLocalized } from "lib/util";
+import { useWallet } from "lib/state/wallet";
+import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { isNumber } from "lodash-es";
 import { NextPage } from "next";
 import Image from "next/image";
@@ -24,6 +27,10 @@ import NotFoundPage from "pages/404";
 import { IGetPlaiceholderReturn, getPlaiceholder } from "plaiceholder";
 import { ChevronDown } from "react-feather";
 import { IoMdArrowRoundForward } from "react-icons/io";
+import { FaList } from "react-icons/fa";
+import { useState } from "react";
+import Modal from "components/ui/Modal";
+import moment from "moment";
 
 export async function getStaticProps() {
   const [bannerPlaiceholder] = await Promise.all([
@@ -221,12 +228,20 @@ const CourtPage: NextPage = ({
 };
 
 const Stats = () => {
+  const wallet = useWallet();
   const { data: courtCases } = useCourtCases();
   const { data: constants } = useChainConstants();
   const { data: yearlyInflationAmount } = useCourtYearlyInflationAmount();
   const { data: participants } = useCourtParticipants();
+  const { data: mintedPayouts } = useMintedInCourt({
+    account: wallet.realAddress,
+  });
 
   const totalStake = useCourtTotalStakedAmount();
+
+  const totalMintedPayout = mintedPayouts?.reduce((acc, curr) => {
+    return acc.add(curr.dBalance);
+  }, new Decimal(0));
 
   const activeCaseCount = courtCases?.filter((c) => c.case.status.isOpen)
     .length;
@@ -235,157 +250,233 @@ const Stats = () => {
   const delegatorCount = participants?.filter((p) => p.type === "Delegator")
     .length;
 
+  const [showPayoutsModal, setShowPayoutsModal] = useState(false);
+
   return (
-    <div className="flex flex-1 basis-1 flex-col gap-2">
-      <div className="flex flex-1 basis-1 items-center gap-3">
-        <div
-          className="w-3/5 rounded-md p-4"
-          style={{
-            background:
-              "linear-gradient(115.14deg, rgba(0, 1, 254, 0.46) 2.93%, #AD00FE 89.56%)",
-          }}
-        >
-          <label className="font text-sm text-purple-900">Cases</label>
-          <div className="text-md font-mono font-semibold">
-            {courtCases?.length} /{" "}
-            <span className="text-sm font-medium text-white">
-              {activeCaseCount} active
-            </span>
-          </div>
-        </div>
-
-        <div
-          className="flex-1 rounded-md p-4"
-          style={{
-            background:
-              "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
-          }}
-        >
-          <label className="font text-sm text-gray-500">Jurors</label>
-          <div className="text-md font-mono font-semibold">{jurorCount}</div>
-        </div>
-        <div
-          className="flex-1 rounded-md p-4"
-          style={{
-            background:
-              "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
-          }}
-        >
-          <label className="font text-sm text-gray-500">Delegators</label>
-          <div className="text-md font-mono font-semibold">
-            {delegatorCount}
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-1 basis-1 items-center gap-3">
-        <div
-          className="flex-1 rounded-md p-4"
-          style={{
-            background:
-              "linear-gradient(131.15deg, rgba(240, 206, 135, 0.4) 11.02%, rgba(254, 0, 152, 0.4) 93.27%)",
-          }}
-        >
-          <label className="font text-sm text-yellow-700">
-            Total Court Stake
-          </label>
-          <div className="text-md font-mono font-semibold">
-            {formatNumberLocalized(totalStake.all.toNumber() ?? 0)}{" "}
-            {constants?.tokenSymbol}
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-1 basis-1 items-center gap-3">
-        <div
-          className="flex-1 rounded-md p-4"
-          style={{
-            background:
-              "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
-          }}
-        >
-          <label className="font text-sm text-gray-500">Juror Stake</label>
-          <div className="text-md font-mono font-semibold">
-            {formatNumberLocalized(totalStake.jurorTotal?.toNumber() ?? 0)}{" "}
-            {constants?.tokenSymbol}
-          </div>
-        </div>
-        <div
-          className="flex-1 rounded-md p-4"
-          style={{
-            background:
-              "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
-          }}
-        >
-          <label className="font text-sm text-gray-500">Delegator Stake</label>
-          <div className="text-md font-mono font-semibold">
-            {formatNumberLocalized(totalStake.delegatorTotal?.toNumber() ?? 0)}{" "}
-            {constants?.tokenSymbol}
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-1 basis-1 items-center gap-3">
-        <div
-          className="w-1/4 rounded-md p-4"
-          style={{
-            background:
-              "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
-          }}
-        >
-          <label className="font text-sm text-gray-500">APY</label>
-          <div className="flex items-center gap-2">
+    <>
+      <div className="flex flex-1 basis-1 flex-col gap-2">
+        <div className="flex flex-1 basis-1 items-center gap-3">
+          <div
+            className="w-3/5 rounded-md p-4"
+            style={{
+              background:
+                "linear-gradient(115.14deg, rgba(0, 1, 254, 0.46) 2.93%, #AD00FE 89.56%)",
+            }}
+          >
+            <label className="font text-sm text-purple-900">Cases</label>
             <div className="text-md font-mono font-semibold">
-              {formatNumberLocalized(
-                yearlyInflationAmount
-                  ?.div(totalStake.all)
-                  .mul(100)
-                  .toNumber() ?? 0,
-              )}
-              %
+              {courtCases?.length} /{" "}
+              <span className="text-sm font-medium text-white">
+                {activeCaseCount} active
+              </span>
             </div>
-            <InfoPopover
-              className="text-slate-500"
-              overlay={false}
-              position="top"
-            >
-              The current yearly percentage returns that jurors and delegators
-              will receive on their staked ZTG
-            </InfoPopover>
+          </div>
+
+          <div
+            className="flex-1 rounded-md p-4"
+            style={{
+              background:
+                "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
+            }}
+          >
+            <label className="font text-sm text-gray-500">Jurors</label>
+            <div className="text-md font-mono font-semibold">{jurorCount}</div>
+          </div>
+          <div
+            className="flex-1 rounded-md p-4"
+            style={{
+              background:
+                "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
+            }}
+          >
+            <label className="font text-sm text-gray-500">Delegators</label>
+            <div className="text-md font-mono font-semibold">
+              {delegatorCount}
+            </div>
           </div>
         </div>
-        <div>
-          <IoMdArrowRoundForward />
-        </div>
-        <div
-          className="flex-1 rounded-md p-4"
-          style={{
-            background:
-              "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgba(240, 206, 135, 0.048) 93.27%)",
-          }}
-        >
-          <label className="font text-sm text-gray-500">
-            Yearly Incentives
-          </label>
 
-          <div className="flex items-center gap-2">
+        <div className="flex flex-1 basis-1 items-center gap-3">
+          <div
+            className="flex-1 rounded-md p-4"
+            style={{
+              background:
+                "linear-gradient(131.15deg, rgba(240, 206, 135, 0.4) 11.02%, rgba(254, 0, 152, 0.4) 93.27%)",
+            }}
+          >
+            <label className="font text-sm text-yellow-700">
+              Total Court Stake
+            </label>
             <div className="text-md font-mono font-semibold">
-              {formatNumberLocalized(yearlyInflationAmount?.toNumber() ?? 0)}{" "}
+              {formatNumberLocalized(totalStake.all.toNumber() ?? 0)}{" "}
               {constants?.tokenSymbol}
             </div>
-            <InfoPopover
-              className="text-slate-500"
-              overlay={false}
-              position="top-start"
-              popoverCss="ml-12"
+          </div>
+        </div>
+
+        <div className="flex flex-1 basis-1 items-center gap-3">
+          <div
+            className="flex-1 rounded-md p-4"
+            style={{
+              background:
+                "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
+            }}
+          >
+            <label className="font text-sm text-gray-500">Juror Stake</label>
+            <div className="text-md font-mono font-semibold">
+              {formatNumberLocalized(totalStake.jurorTotal?.toNumber() ?? 0)}{" "}
+              {constants?.tokenSymbol}
+            </div>
+          </div>
+          <div
+            className="flex-1 rounded-md p-4"
+            style={{
+              background:
+                "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
+            }}
+          >
+            <label className="font text-sm text-gray-500">
+              Delegator Stake
+            </label>
+            <div className="text-md font-mono font-semibold">
+              {formatNumberLocalized(
+                totalStake.delegatorTotal?.toNumber() ?? 0,
+              )}{" "}
+              {constants?.tokenSymbol}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-1 basis-1 items-center gap-3">
+          <div
+            className="w-1/4 rounded-md p-4"
+            style={{
+              background:
+                "linear-gradient(131.15deg, rgba(5, 5, 5, 0.11) 11.02%, rgba(5, 5, 5, 0.022) 93.27%)",
+            }}
+          >
+            <label className="font text-sm text-gray-500">APY</label>
+            <div className="flex items-center gap-2">
+              <div className="text-md font-mono font-semibold">
+                {formatNumberLocalized(
+                  yearlyInflationAmount
+                    ?.div(totalStake.all)
+                    .mul(100)
+                    .toNumber() ?? 0,
+                )}
+                %
+              </div>
+              <InfoPopover
+                className="text-slate-500"
+                overlay={false}
+                position="top"
+              >
+                The current yearly percentage returns that jurors and delegators
+                will receive on their staked ZTG
+              </InfoPopover>
+            </div>
+          </div>
+          <div>
+            <IoMdArrowRoundForward />
+          </div>
+          <div
+            className="flex-1 rounded-md p-4"
+            style={{
+              background:
+                "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgba(240, 206, 135, 0.048) 93.27%)",
+            }}
+          >
+            <label className="font text-sm text-gray-500">
+              Yearly<span className="hidden md:inline"> Incentives</span>
+            </label>
+
+            <div className="flex items-center gap-2">
+              <div className="text-md line-clamp-1 font-mono font-semibold">
+                {formatNumberLocalized(yearlyInflationAmount?.toNumber() ?? 0)}{" "}
+                {constants?.tokenSymbol}
+              </div>
+              <InfoPopover
+                className="text-slate-500"
+                overlay={false}
+                position="top-start"
+                popoverCss="ml-12"
+              >
+                The yearly amount of {constants?.tokenSymbol} that will be
+                minted to jurors and delegators as a result of inflation.
+              </InfoPopover>
+            </div>
+          </div>
+          <div>
+            <IoMdArrowRoundForward />
+          </div>
+          <div
+            className="flex flex-1 items-center gap-2 rounded-md p-4"
+            style={{
+              background:
+                "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgba(240, 206, 135, 0.048) 93.27%)",
+            }}
+          >
+            <div>
+              <label className="font text-sm text-gray-500">
+                <span className="hidden md:inline">Total</span> Payout
+              </label>
+
+              <div className="flex items-center gap-2">
+                <div className="text-md line-clamp-1 font-mono font-semibold">
+                  {formatNumberLocalized(
+                    totalMintedPayout?.div(ZTG).toNumber() ?? 0,
+                  )}{" "}
+                  {constants?.tokenSymbol}
+                </div>
+
+                <InfoPopover
+                  className="text-slate-500"
+                  overlay={false}
+                  position="top-start"
+                  popoverCss="ml-12"
+                >
+                  The total amount of {constants?.tokenSymbol} that has been
+                  paid out to <b>{shortenAddress(wallet?.realAddress ?? "")}</b>{" "}
+                  as a result of participating in court.
+                </InfoPopover>
+              </div>
+            </div>
+            <div
+              onClick={() => setShowPayoutsModal(true)}
+              className="flex w-12 cursor-pointer items-center justify-center rounded-md bg-green-400/30 py-4 text-green-900"
             >
-              The yearly amount of {constants?.tokenSymbol} that will be minted
-              to jurors and delegators as a result of inflation.
-            </InfoPopover>
+              <FaList />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <Modal open={showPayoutsModal} onClose={() => setShowPayoutsModal(false)}>
+        <Dialog.Panel className="mt-8 w-full max-w-[550px]  rounded-ztg-10 bg-white p-8">
+          <h2 className="mb-2 text-base">Court Reward Payouts</h2>
+          <p className="mb-3 text-sm">
+            All payouts made to{" "}
+            <b>{shortenAddress(wallet?.realAddress ?? "")}</b> as a result of
+            participating in court.{" "}
+          </p>
+          <div className="subtle-scroll-bar flex max-h-[640px] flex-col gap-1 overflow-y-scroll pr-2">
+            {mintedPayouts?.map((payout, index) => (
+              <div className="flex">
+                <div className="flex-1">
+                  {moment(payout?.timestamp).format("YYYY-MM-DDTHH:mm")}
+                </div>
+                <div className="">
+                  {formatNumberLocalized(
+                    new Decimal(payout?.dBalance ?? 0).div(ZTG).toNumber(),
+                  )}{" "}
+                  {constants?.tokenSymbol}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Dialog.Panel>
+      </Modal>
+    </>
   );
 };
 

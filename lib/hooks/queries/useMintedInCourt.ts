@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { HistoricalAccountBalanceWhereInput } from "@zeitgeistpm/indexer";
+import { HistoricalAccountBalanceOrderByInput } from "@zeitgeistpm/indexer";
 import { isIndexedSdk } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 
@@ -14,7 +15,7 @@ export const useMintedInCourt = (
 ) => {
   const [sdk, id] = useSdkv2();
 
-  const enabled = sdk && isIndexedSdk(sdk);
+  const enabled = sdk && isIndexedSdk(sdk) && filter.account;
 
   const query = useQuery(
     [id, mintedInCourtRootKey],
@@ -25,6 +26,7 @@ export const useMintedInCourt = (
             event_eq: "MintedInCourt",
             accountId_eq: filter.account,
           },
+          order: HistoricalAccountBalanceOrderByInput.TimestampDesc,
           limit: filter.limit,
           offset: filter.offset,
         });
