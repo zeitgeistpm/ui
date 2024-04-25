@@ -2,6 +2,7 @@ import {
   MarketOutcomeAssetId,
   ZTG,
   getIndexOf,
+  isRpcSdk,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
@@ -14,6 +15,7 @@ import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
@@ -64,13 +66,39 @@ export const LimitBuyOrderForm = ({
 
   const maxAmount = baseAssetBalance?.div(price ?? 0) ?? new Decimal(0);
 
+  const { isLoading, send: buy } = useExtrinsic<{
+    price: Decimal;
+    amount: Decimal;
+  }>(
+    (params) => {
+      if (!isRpcSdk(sdk) || !market || !selectedAsset || !params) return;
+      const { price, amount } = params;
+      return sdk.api.tx.hybridRouter.buy(
+        marketId,
+        market.assets.length,
+        selectedAsset,
+        amount.mul(ZTG).toFixed(0),
+        price.mul(ZTG).toFixed(0),
+        [],
+        "LimitOrder",
+      );
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification(`Placed buy order`, {
+          type: "Success",
+        });
+      },
+    },
+  );
+
   return (
     <LimitOrderForm
       marketId={marketId}
       asset={selectedAsset}
       side="buy"
-      onSubmit={() => {
-        // place buy order
+      onSubmit={(price, amount) => {
+        buy({ price, amount });
       }}
       onAssetChange={(asset) => {
         setSelectedAsset(asset);
@@ -113,13 +141,39 @@ export const LimitSellOrderForm = ({
     selectedAsset,
   );
 
+  const { isLoading, send: sell } = useExtrinsic<{
+    price: Decimal;
+    amount: Decimal;
+  }>(
+    (params) => {
+      if (!isRpcSdk(sdk) || !market || !selectedAsset || !params) return;
+      const { price, amount } = params;
+      return sdk.api.tx.hybridRouter.sell(
+        marketId,
+        market.assets.length,
+        selectedAsset,
+        amount.mul(ZTG).toFixed(0),
+        price.mul(ZTG).toFixed(0),
+        [],
+        "LimitOrder",
+      );
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification(`Placed sell order`, {
+          type: "Success",
+        });
+      },
+    },
+  );
+
   return (
     <LimitOrderForm
       marketId={marketId}
       asset={selectedAsset}
       side="sell"
-      onSubmit={() => {
-        // place sell order
+      onSubmit={(price, amount) => {
+        sell({ price, amount });
       }}
       onAssetChange={(asset) => {
         setSelectedAsset(asset);
