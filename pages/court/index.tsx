@@ -260,8 +260,14 @@ const CourtPage: NextPage = ({
       </section>
 
       <Modal open={showPayoutsModal} onClose={() => setShowPayoutsModal(false)}>
-        <Dialog.Panel className="mt-8 w-full max-w-[550px] overflow-hidden rounded-ztg-10 bg-white pb-4">
-          <div className="bg-[rgb(173,0,254)] px-4 py-6 text-white">
+        <Dialog.Panel className="mt-8 w-full max-w-[550px] overflow-hidden rounded-ztg-10 bg-white">
+          <div
+            className=" px-4 py-6 text-white"
+            style={{
+              background:
+                "linear-gradient(115.14deg, rgba(0, 1, 254, 0.46) 2.93%, #AD00FE 89.56%)",
+            }}
+          >
             <h2 className="mb-2 text-purple-950">Court Reward Payouts</h2>
             <p className="text-sm text-purple-900">
               All payouts made to{" "}
@@ -269,7 +275,7 @@ const CourtPage: NextPage = ({
               participating in court.{" "}
             </p>
           </div>
-          <div className="">
+          <div className="pb-4">
             <div className="subtle-scroll-bar flex max-h-[640px] flex-col gap-1 overflow-y-scroll px-4 py-4">
               {mintedPayouts?.map((payout, index) => (
                 <div className="mb-1 flex gap-2">
