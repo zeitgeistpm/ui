@@ -71,7 +71,7 @@ const CourtExitButton = ({ className }: { className?: string }) => {
     <>
       <button
         className={`rounded-md ${
-          canExit ? "bg-[#DC056C]" : "bg-gray-400"
+          canExit ? "bg-[#670031]" : "bg-gray-400"
         }  px-4 py-2 text-white ${className}`}
         onClick={() => setIsOpen(true)}
         disabled={!canExit}

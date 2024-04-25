@@ -260,19 +260,13 @@ const CourtPage: NextPage = ({
       </section>
 
       <Modal open={showPayoutsModal} onClose={() => setShowPayoutsModal(false)}>
-        <Dialog.Panel className="mt-8 w-full max-w-[550px] overflow-hidden rounded-ztg-10 bg-white">
-          <div
-            className=" px-4 py-6 text-white"
-            style={{
-              background:
-                "linear-gradient(115.14deg, rgba(0, 1, 254, 0.46) 2.93%, #AD00FE 89.56%)",
-            }}
-          >
-            <h2 className="mb-2 text-purple-950">Court Reward Payouts</h2>
-            <p className="text-sm text-purple-900">
+        <Dialog.Panel className="mt-8 w-full max-w-[590px] overflow-hidden rounded-ztg-10 bg-white">
+          <div className=" bg-[#DC056C] px-4 py-6 text-white">
+            <h2 className="mb-1 text-purple-950">Court Reward Payouts</h2>
+            <p className="text-sm text-gray-200/80">
               All payouts made to{" "}
               <b>{shortenAddress(wallet?.realAddress ?? "")}</b> as a result of
-              participating in court.{" "}
+              participating in court staking.{" "}
             </p>
           </div>
           <div className="pb-4">
