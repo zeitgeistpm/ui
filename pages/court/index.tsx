@@ -263,14 +263,14 @@ const CourtPage: NextPage = ({
         <Dialog.Panel className="mt-8 w-full max-w-[550px] overflow-hidden rounded-ztg-10 bg-white pb-4">
           <div className="bg-[rgb(173,0,254)] px-4 py-6 text-white">
             <h2 className="mb-2 text-purple-950">Court Reward Payouts</h2>
-            <p className="text-sm text-white/85">
+            <p className="text-sm text-purple-900">
               All payouts made to{" "}
               <b>{shortenAddress(wallet?.realAddress ?? "")}</b> as a result of
               participating in court.{" "}
             </p>
           </div>
           <div className="">
-            <div className="subtle-scroll-bar flex max-h-[340px] flex-col gap-1 overflow-y-scroll px-4 py-4">
+            <div className="subtle-scroll-bar flex max-h-[640px] flex-col gap-1 overflow-y-scroll px-4 py-4">
               {mintedPayouts?.map((payout, index) => (
                 <div className="mb-1 flex gap-2">
                   <div className="flex-1 italic text-gray-500">
