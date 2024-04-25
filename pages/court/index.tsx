@@ -54,10 +54,21 @@ const CourtPage: NextPage = ({
     return <NotFoundPage />;
   }
 
+  const wallet = useWallet();
   const { data: constants } = useChainConstants();
   const connectedParticipant = useConnectedCourtParticipant();
   const { data: ztgPrice } = useZtgPrice();
   const stakeShare = useCourtStakeSharePercentage();
+
+  const { data: mintedPayouts } = useMintedInCourt({
+    account: wallet.realAddress,
+  });
+
+  const totalMintedPayout = mintedPayouts?.reduce((acc, curr) => {
+    return acc.add(curr.dBalance);
+  }, new Decimal(0));
+
+  const [showPayoutsModal, setShowPayoutsModal] = useState(false);
 
   return (
     <div className="mt-4 flex flex-col gap-y-4">
@@ -97,7 +108,7 @@ const CourtPage: NextPage = ({
                 {connectedParticipant && (
                   <div>
                     <div
-                      className={`center gap-1 rounded-md px-2 py-1 text-sm text-gray-600`}
+                      className={`center gap-1 rounded-md py-1 text-sm text-gray-600`}
                     >
                       {connectedParticipant?.type}
                       <InfoPopover overlay={false} position="top">
@@ -110,7 +121,7 @@ const CourtPage: NextPage = ({
                 )}
               </div>
 
-              <div className="mb-6 flex">
+              <div className="mb-6 flex items-center gap-4">
                 <div className="flex-1">
                   <div className="font-mono text-lg font-medium">
                     {formatNumberLocalized(
@@ -151,6 +162,29 @@ const CourtPage: NextPage = ({
                     </div>
                   </div>
                 </div>
+                {connectedParticipant ? (
+                  <div className="text-md line-clamp-1 flex  font-mono font-semibold">
+                    <div className="text-right">
+                      <h3 className="mb-1 flex-1 font-sans text-sm text-gray-800">
+                        Staking Rewards
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <div>
+                          {formatNumberLocalized(
+                            totalMintedPayout?.div(ZTG).toNumber() ?? 0,
+                          )}{" "}
+                          {constants?.tokenSymbol}
+                        </div>
+                        <div
+                          onClick={() => setShowPayoutsModal(true)}
+                          className="flex cursor-pointer rounded-md bg-gray-500/80 p-2 text-gray-300"
+                        >
+                          <FaList size={10} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               <div>
@@ -160,12 +194,12 @@ const CourtPage: NextPage = ({
 
                   {connectedParticipant &&
                     !isNumber(connectedParticipant.prepareExitAt) && (
-                      <CourtUnstakeButton className="h-full w-full md:w-auto" />
+                      <CourtUnstakeButton className="h-full w-full flex-1 md:w-auto" />
                     )}
 
                   {connectedParticipant &&
                     isNumber(connectedParticipant.prepareExitAt) && (
-                      <CourtExitButton className="h-full w-full md:w-auto" />
+                      <CourtExitButton className="h-full w-full flex-1 md:w-auto" />
                     )}
                 </div>
               </div>
@@ -224,6 +258,49 @@ const CourtPage: NextPage = ({
           </Tab.Panels>
         </Tab.Group>
       </section>
+
+      <Modal open={showPayoutsModal} onClose={() => setShowPayoutsModal(false)}>
+        <Dialog.Panel className="mt-8 w-full max-w-[550px] overflow-hidden rounded-ztg-10 bg-white">
+          <div className="bg-[rgb(173,0,254)] px-4 py-6 text-white">
+            <h2 className="mb-2 text-purple-950">Court Reward Payouts</h2>
+            <p className="text-sm text-white/85">
+              All payouts made to{" "}
+              <b>{shortenAddress(wallet?.realAddress ?? "")}</b> as a result of
+              participating in court.{" "}
+            </p>
+          </div>
+          <div className="">
+            <div className="subtle-scroll-bar flex max-h-[340px] flex-col gap-1 overflow-y-scroll px-4 py-4">
+              {mintedPayouts?.map((payout, index) => (
+                <div className="mb-1 flex gap-2">
+                  <div className="flex-1 italic text-gray-500">
+                    {moment(payout?.timestamp).format("yy-mm HH:mm")}
+                  </div>
+                  <div className="">
+                    {formatNumberLocalized(
+                      new Decimal(payout?.dBalance ?? 0).div(ZTG).toNumber(),
+                    )}{" "}
+                    <b>{constants?.tokenSymbol}</b>
+                  </div>
+                  <div>
+                    <a
+                      className="center text-sm"
+                      target="_blank"
+                      referrerPolicy="no-referrer"
+                      rel="noopener"
+                      href={`https://zeitgeist.subscan.io/block/${payout?.blockNumber}?tab=event`}
+                    >
+                      <div className="scale-75">
+                        <SubScanIcon />
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Dialog.Panel>
+      </Modal>
     </div>
   );
 };
@@ -235,15 +312,8 @@ const Stats = () => {
   const { data: constants } = useChainConstants();
   const { data: yearlyInflationAmount } = useCourtYearlyInflationAmount();
   const { data: participants } = useCourtParticipants();
-  const { data: mintedPayouts } = useMintedInCourt({
-    account: wallet.realAddress,
-  });
 
   const totalStake = useCourtTotalStakedAmount();
-
-  const totalMintedPayout = mintedPayouts?.reduce((acc, curr) => {
-    return acc.add(curr.dBalance);
-  }, new Decimal(0));
 
   const activeCaseCount = courtCases?.filter((c) => c.case.status.isOpen)
     .length;
@@ -251,8 +321,6 @@ const Stats = () => {
   const jurorCount = participants?.filter((p) => p.type === "Juror").length;
   const delegatorCount = participants?.filter((p) => p.type === "Delegator")
     .length;
-
-  const [showPayoutsModal, setShowPayoutsModal] = useState(false);
 
   return (
     <>
@@ -408,99 +476,8 @@ const Stats = () => {
               </InfoPopover>
             </div>
           </div>
-
-          {connectedParticipant ? (
-            <>
-              <div>
-                <IoMdArrowRoundForward />
-              </div>
-              <div
-                className="flex flex-1 items-center gap-2 rounded-md p-4"
-                style={{
-                  background:
-                    "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgba(240, 206, 135, 0.048) 93.27%)",
-                }}
-              >
-                <div>
-                  <label className="font text-sm text-gray-500">
-                    <span className="hidden md:inline">Total</span> Payout
-                  </label>
-
-                  <div className="flex items-center gap-2">
-                    <div className="text-md line-clamp-1 font-mono font-semibold">
-                      {formatNumberLocalized(
-                        totalMintedPayout?.div(ZTG).toNumber() ?? 0,
-                      )}{" "}
-                      {constants?.tokenSymbol}
-                    </div>
-
-                    <InfoPopover
-                      className="text-slate-500"
-                      overlay={false}
-                      position="top-start"
-                      popoverCss="ml-12"
-                    >
-                      The total amount of {constants?.tokenSymbol} that has been
-                      paid out to{" "}
-                      <b>{shortenAddress(wallet?.realAddress ?? "")}</b> as a
-                      result of participating in court.
-                    </InfoPopover>
-                  </div>
-                </div>
-                <div
-                  onClick={() => setShowPayoutsModal(true)}
-                  className="flex w-12 cursor-pointer items-center justify-center rounded-md bg-green-400/30 py-4 text-green-900"
-                >
-                  <FaList />
-                </div>
-              </div>
-            </>
-          ) : null}
         </div>
       </div>
-
-      <Modal open={showPayoutsModal} onClose={() => setShowPayoutsModal(false)}>
-        <Dialog.Panel className="mt-8 w-full max-w-[550px] overflow-hidden rounded-ztg-10 bg-white">
-          <div className="bg-[rgb(173,0,254)] px-4 py-6 text-white">
-            <h2 className="mb-2 text-purple-950">Court Reward Payouts</h2>
-            <p className="text-sm text-white/85">
-              All payouts made to{" "}
-              <b>{shortenAddress(wallet?.realAddress ?? "")}</b> as a result of
-              participating in court.{" "}
-            </p>
-          </div>
-          <div className="">
-            <div className="subtle-scroll-bar flex max-h-[340px] flex-col gap-1 overflow-y-scroll px-4 py-4">
-              {mintedPayouts?.map((payout, index) => (
-                <div className="mb-1 flex gap-2">
-                  <div className="flex-1 italic text-gray-500">
-                    {moment(payout?.timestamp).format("yy-mm HH:mm")}
-                  </div>
-                  <div className="">
-                    {formatNumberLocalized(
-                      new Decimal(payout?.dBalance ?? 0).div(ZTG).toNumber(),
-                    )}{" "}
-                    <b>{constants?.tokenSymbol}</b>
-                  </div>
-                  <div>
-                    <a
-                      className="center text-sm"
-                      target="_blank"
-                      referrerPolicy="no-referrer"
-                      rel="noopener"
-                      href={`https://zeitgeist.subscan.io/block/${payout?.blockNumber}?tab=event`}
-                    >
-                      <div className="scale-75">
-                        <SubScanIcon />
-                      </div>
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Dialog.Panel>
-      </Modal>
     </>
   );
 };
