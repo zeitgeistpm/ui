@@ -1,14 +1,12 @@
-import Table, { TableColumn, TableData } from "components/ui/Table";
-import Link from "next/link";
-import EmptyPortfolio from "./EmptyPortfolio";
-import { useTradeHistory } from "lib/hooks/queries/useTradeHistory";
-import { formatNumberLocalized } from "lib/util";
-import { ZTG } from "lib/constants";
 import SubScanIcon from "components/icons/SubScanIcon";
+import Table, { TableColumn, TableData } from "components/ui/Table";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMintedInCourt } from "lib/hooks/queries/useMintedInCourt";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
-import Decimal from "decimal.js";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { formatNumberLocalized } from "lib/util";
+import EmptyPortfolio from "./EmptyPortfolio";
 
 const columns: TableColumn[] = [
   {
@@ -75,40 +73,6 @@ const CourtRewardsTable = ({ address }: { address: string }) => {
           </div>
         </a>
       ),
-      // question: (
-      //   <Link
-      //     href={`/markets/${trade?.marketId}`}
-      //     className="line-clamp-1 text-[14px]"
-      //   >
-      //     {trade?.question}
-      //   </Link>
-      // ),
-      // bought: `${formatNumberLocalized(
-      //   trade?.assetAmountOut.div(ZTG).toNumber() ?? 0,
-      // )} ${trade?.assetOut}`,
-      // sold: `${formatNumberLocalized(
-      //   trade?.assetAmountIn.div(ZTG).toNumber() ?? 0,
-      // )} ${trade?.assetIn}`,
-      // price: `${formatNumberLocalized(
-      //   trade?.price.toNumber() ?? 0,
-      // )} ${trade?.baseAssetName}`,
-      // time: new Intl.DateTimeFormat("default", {
-      //   dateStyle: "medium",
-      //   timeStyle: "medium",
-      // }).format(new Date(trade?.time)),
-      // links: (
-      //   <div className="center">
-      //     <a
-      //       className="center"
-      //       target="_blank"
-      //       referrerPolicy="no-referrer"
-      //       rel="noopener"
-      //       href={`https://zeitgeist.subscan.io/extrinsic/${trade?.extrinsic?.hash}`}
-      //     >
-      //       <SubScanIcon />
-      //     </a>
-      //   </div>
-      // ),
     };
   });
 
