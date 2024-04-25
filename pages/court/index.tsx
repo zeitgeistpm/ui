@@ -274,7 +274,10 @@ const CourtPage: NextPage = ({
               {mintedPayouts?.map((payout, index) => (
                 <div className="mb-1 flex gap-2">
                   <div className="flex-1 italic text-gray-500">
-                    {moment(payout?.timestamp).format("YYYY-MM-DDTHH:mm")}
+                    {Intl.DateTimeFormat("default", {
+                      dateStyle: "medium",
+                      timeStyle: "medium",
+                    }).format(new Date(payout?.timestamp))}
                   </div>
                   <div className="">
                     {formatNumberLocalized(
