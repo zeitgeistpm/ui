@@ -48,13 +48,15 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
           ).unwrap() as unknown as AssetId;
 
           const side = IOBaseAssetId.is(makerAsset) ? "buy" : "sell";
+          const takerInitialAmount = new Decimal(order.taker.filledAmount).plus(
+            order.taker.unfilledAmount,
+          );
+          const makerInitialAmount = new Decimal(order.maker.filledAmount).plus(
+            order.maker.unfilledAmount,
+          );
           const price = IOBaseAssetId.is(makerAsset)
-            ? new Decimal(order.taker.initialAmount).div(
-                order.maker.initialAmount,
-              )
-            : new Decimal(order.maker.initialAmount).div(
-                order.taker.initialAmount,
-              );
+            ? takerInitialAmount.div(makerInitialAmount)
+            : makerInitialAmount.div(takerInitialAmount);
 
           const outcomeAssetId = IOMarketOutcomeAssetId.is(makerAsset)
             ? makerAsset
@@ -63,8 +65,8 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
               : undefined;
 
           const outcomeAmount = IOBaseAssetId.is(makerAsset)
-            ? order.taker.initialAmount
-            : order.maker.initialAmount;
+            ? takerInitialAmount
+            : makerInitialAmount;
 
           const mappedOrder: Order = {
             id: order.id,
@@ -72,7 +74,7 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
             makerAddress: order.makerAccountId,
             side,
             price,
-            outcomeAmount: new Decimal(outcomeAmount),
+            outcomeAmount: outcomeAmount,
             outcomeAssetId: outcomeAssetId!, // one of the assets must be MarketOutcome
           };
 
