@@ -8,31 +8,37 @@ import {
 
 const ordersMock1: MarketOrder[] = [
   {
+    id: 1,
     price: new Decimal(0.8),
     amount: new Decimal(100),
     side: "sell",
   },
   {
+    id: 1,
     price: new Decimal(0.7),
     amount: new Decimal(100),
     side: "sell",
   },
   {
+    id: 1,
     price: new Decimal(0.6),
     amount: new Decimal(100),
     side: "sell",
   },
   {
+    id: 1,
     price: new Decimal(0.4),
     amount: new Decimal(100),
     side: "buy",
   },
   {
+    id: 1,
     price: new Decimal(0.3),
     amount: new Decimal(100),
     side: "buy",
   },
   {
+    id: 1,
     price: new Decimal(0.2),
     amount: new Decimal(100),
     side: "buy",
@@ -43,7 +49,6 @@ describe("order selection", () => {
   describe("selectOrdersForMarketBuy", () => {
     test("should select all orders", () => {
       const orders = selectOrdersForMarketBuy(
-        new Decimal(0.5),
         new Decimal(0.9),
         ordersMock1,
         new Decimal(1000),
@@ -54,7 +59,6 @@ describe("order selection", () => {
 
     test("should select some orders if constrained by price", () => {
       const orders = selectOrdersForMarketBuy(
-        new Decimal(0.5),
         new Decimal(0.7),
         ordersMock1,
         new Decimal(1000),
@@ -65,7 +69,6 @@ describe("order selection", () => {
 
     test("should select some orders if constrained by amount", () => {
       const orders = selectOrdersForMarketBuy(
-        new Decimal(0.5),
         new Decimal(1),
         ordersMock1,
         new Decimal(100),
@@ -81,7 +84,6 @@ describe("order selection", () => {
   describe("selectOrdersForMarketBuy", () => {
     test("should select all orders", () => {
       const orders = selectOrdersForMarketSell(
-        new Decimal(0.5),
         new Decimal(0.1),
         ordersMock1,
         new Decimal(1000),
@@ -92,7 +94,6 @@ describe("order selection", () => {
 
     test("should select some orders if constrained by price", () => {
       const orders = selectOrdersForMarketSell(
-        new Decimal(0.5),
         new Decimal(0.4),
         ordersMock1,
         new Decimal(1000),
@@ -103,7 +104,6 @@ describe("order selection", () => {
 
     test("should select some orders if constrained by amount", () => {
       const orders = selectOrdersForMarketSell(
-        new Decimal(0.5),
         new Decimal(0),
         ordersMock1,
         new Decimal(100),

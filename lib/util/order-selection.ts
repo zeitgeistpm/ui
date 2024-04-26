@@ -1,13 +1,13 @@
 import Decimal from "decimal.js";
 
 export type MarketOrder = {
+  id: number;
   price: Decimal;
   amount: Decimal;
   side: "buy" | "sell";
 };
 
 export const selectOrdersForMarketBuy = (
-  startingPrice: Decimal,
   endingPrice: Decimal,
   assetOrderBook: MarketOrder[], // orders for asset to buy/sell
   amount: Decimal,
@@ -35,7 +35,6 @@ export const selectOrdersForMarketBuy = (
 };
 
 export const selectOrdersForMarketSell = (
-  startingPrice: Decimal,
   endingPrice: Decimal,
   assetOrderBook: MarketOrder[], // orders for asset to buy/sell
   amount: Decimal,
