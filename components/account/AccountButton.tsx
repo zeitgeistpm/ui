@@ -9,7 +9,6 @@ import { useBalance } from "lib/hooks/queries/useBalance";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useAccountModals } from "lib/state/account";
-import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { FaNetworkWired } from "react-icons/fa";
@@ -94,7 +93,6 @@ const AccountButton: FC<{
   const proxy = getProxyFor(activeAccount?.address);
 
   const accountModals = useAccountModals();
-  const { locationAllowed } = useUserLocation();
   const [hovering, setHovering] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
@@ -149,26 +147,18 @@ const AccountButton: FC<{
         >
           {hasWallet === true ? (
             <HeaderActionButton
-              disabled={locationAllowed !== true || !isRpcSdk(sdk)}
+              disabled={!isRpcSdk(sdk)}
               onClick={() => connect()}
             >
               Connect Wallet
             </HeaderActionButton>
           ) : (
             <HeaderActionButton
-              disabled={locationAllowed !== true}
+              disabled={false}
               onClick={() => setShowOnboarding(true)}
             >
               Get Started
             </HeaderActionButton>
-          )}
-
-          {hovering === true && locationAllowed !== true ? (
-            <div className="absolute bottom-0 right-0 rounded bg-white text-sm font-bold text-black">
-              Your jurisdiction is not authorised to trade
-            </div>
-          ) : (
-            <></>
           )}
         </div>
       ) : (

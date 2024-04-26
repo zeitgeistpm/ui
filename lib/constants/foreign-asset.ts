@@ -1,4 +1,4 @@
-import { BaseAssetId, IOForeignAssetId } from "@zeitgeistpm/sdk";
+import { AssetId, BaseAssetId, IOForeignAssetId } from "@zeitgeistpm/sdk";
 import { ChainName } from "./chains";
 
 type ForeignAssetMetadata = {
@@ -13,11 +13,11 @@ type ForeignAssetMetadata = {
   };
 };
 
-export const lookupAssetImagePath = (foreignAssetId?: number | null) => {
-  if (foreignAssetId == null) {
-    return "/currencies/ztg.svg";
+export const lookupAssetImagePath = (assetId?: AssetId | null) => {
+  if (IOForeignAssetId.is(assetId)) {
+    return FOREIGN_ASSET_METADATA[assetId.ForeignAsset].image;
   } else {
-    return FOREIGN_ASSET_METADATA[foreignAssetId].image;
+    return "/currencies/ztg.svg";
   }
 };
 
@@ -94,12 +94,12 @@ export const FOREIGN_ASSET_METADATA: ForeignAssetMetadata =
     : BATTERY_STATION_FOREIGN_ASSET_METADATA;
 
 export const findAssetImageForSymbol = (symbol?: string): string => {
-  if (symbol === undefined) {
-    return lookupAssetImagePath();
-  }
   const foreignAssetId = Object.keys(FOREIGN_ASSET_METADATA).find(
     (foreignAssetId) =>
       FOREIGN_ASSET_METADATA[foreignAssetId].tokenSymbol === symbol,
   );
-  return lookupAssetImagePath(Number(foreignAssetId));
+  if (symbol === undefined || foreignAssetId === undefined) {
+    return lookupAssetImagePath();
+  }
+  return lookupAssetImagePath({ ForeignAsset: Number(foreignAssetId) });
 };

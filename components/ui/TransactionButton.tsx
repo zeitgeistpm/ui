@@ -2,10 +2,8 @@ import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { isRpcSdk } from "@zeitgeistpm/sdk";
 import { ZTG } from "lib/constants";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useAccountModals } from "lib/state/account";
 import { useWallet } from "lib/state/wallet";
 import { FC, PropsWithChildren, useMemo } from "react";
@@ -40,7 +38,6 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   const wallet = useWallet();
   const [sdk] = useSdkv2();
   const accountModals = useAccountModals();
-  const { locationAllowed } = useUserLocation();
 
   const extrinsicBase = useMemo(() => {
     return extrinsic && isRpcSdk(sdk) && wallet.activeAccount?.address
@@ -67,23 +64,18 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   };
 
   const isDisabled = useMemo(() => {
-    if (locationAllowed !== true || !isRpcSdk(sdk) || insufficientFeeBalance) {
+    if (!isRpcSdk(sdk) || insufficientFeeBalance) {
       return true;
     } else if (!wallet.connected) {
       return false;
     }
     return disabled;
-  }, [locationAllowed, sdk, wallet, insufficientFeeBalance]);
+  }, [sdk, wallet, insufficientFeeBalance]);
 
-  const colorClass =
-    locationAllowed !== true || insufficientFeeBalance
-      ? "bg-vermilion"
-      : "bg-ztg-blue";
+  const colorClass = insufficientFeeBalance ? "bg-vermilion" : "bg-ztg-blue";
 
   const getButtonChildren = () => {
-    if (locationAllowed !== true) {
-      return "Location Blocked";
-    } else if (insufficientFeeBalance) {
+    if (insufficientFeeBalance) {
       return `Insufficient ${fee.symbol}`;
     } else if (loading) {
       return (

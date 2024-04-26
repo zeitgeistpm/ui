@@ -8,7 +8,6 @@ export default function Document() {
   return (
     <Html>
       <Head>
-        {/* TODO make dynamic */}
         {useAnalytics && (
           <Script id="google-analytics" strategy="afterInteractive">
             {`
@@ -26,7 +25,6 @@ export default function Document() {
             strategy="afterInteractive"
           />
         )}
-        {/* TODO make dynamic */}
         <meta
           name="description"
           content="The application interface for The Washington Stock Exchange. Built on Polkadot, powered by Zeitgeist, the leader in decentralized prediction markets."
@@ -65,6 +63,14 @@ export default function Document() {
         />
       </Head>
       <body className="overflow-x-hidden">
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-5KVRHBT"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          ></iframe>
+        </noscript>
         <Main />
         <NextScript />
       </body>

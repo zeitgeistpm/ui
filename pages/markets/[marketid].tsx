@@ -483,12 +483,6 @@ const Market: NextPage<MarketPageProps> = ({
           </div>
         </div>
       </div>
-      <script
-        defer
-        src="http://commento.example.com/js/commento.js"
-        data-auto-init="true"
-      ></script>
-      <div id="commento">Comments</div>
       {market && <MobileContextButtons market={market} />}
     </div>
   );

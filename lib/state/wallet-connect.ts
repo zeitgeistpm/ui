@@ -8,7 +8,7 @@ import {
 import { WalletConnectSigner } from "lib/util/wallet-connect-signer";
 import { ZTG_CHAIN_ID } from "lib/constants";
 
-const WC_PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
+const WC_PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID ?? "";
 const DOMAIN_URL = "https://app.zeitgeist.pm/";
 
 const walletConnectParams = {

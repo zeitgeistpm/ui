@@ -76,22 +76,38 @@ const WalletSelect = () => {
       <h3 className="my-4 text-lg font-bold">Crypto Wallet</h3>
       <div className="flex justify-between gap-6">
         {isMobileDevice && !isWSX ? (
-          <Link
-            href="https://novawallet.io/"
-            className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"
-            target="_blank"
-          >
-            <Image
-              src="/icons/nova.png"
-              alt={"wallet.logo.alt"}
-              width={30}
-              height={30}
-              quality={100}
-            />
-            <div className="relative ml-4 font-medium">
-              <span>Nova Wallet</span>
+          <div>
+            <Link
+              href="https://novawallet.io/"
+              className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"
+              target="_blank"
+            >
+              <Image
+                src="/icons/nova.png"
+                alt={"wallet.logo.alt"}
+                width={30}
+                height={30}
+                quality={100}
+              />
+              <div className="relative ml-4 font-medium">
+                <span>Nova Wallet</span>
+              </div>
+            </Link>
+            <div className="mt-2">
+              <span className="mb-2 text-sm font-semibold">
+                Nova Wallet instructions:
+              </span>
+              <ol className="list-decimal pl-4 text-xs">
+                <li>Open Nova Wallet app on your mobile device.</li>
+                <li>Navigate to "Browser" on the bottom menu.</li>
+                <li>Search for and select "Zeitgeist".</li>
+                <li>
+                  Once inside Zeitgeist: press "Connect Wallet" in the top menu
+                  and allow access when prompted.
+                </li>
+              </ol>
             </div>
-          </Link>
+          </div>
         ) : (
           supportedWallets
             .filter((w) => w.extensionName !== "web3auth")

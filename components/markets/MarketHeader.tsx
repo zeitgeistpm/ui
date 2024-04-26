@@ -394,11 +394,7 @@ const MarketHeader: FC<{
   );
 
   const assetId = parseAssetId(market.baseAsset).unwrap();
-  const imagePath = IOForeignAssetId.is(assetId)
-    ? lookupAssetImagePath(assetId.ForeignAsset)
-    : IOBaseAssetId.is(assetId)
-      ? lookupAssetImagePath(assetId.Ztg)
-      : "";
+  const imagePath = lookupAssetImagePath(assetId);
 
   const { data: caseId } = useMarketCaseId(market.marketId);
 
