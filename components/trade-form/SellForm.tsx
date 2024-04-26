@@ -33,6 +33,8 @@ import { useForm } from "react-hook-form";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { perbillToNumber } from "lib/util/perbill-to-number";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
+import { selectOrdersForMarketSell } from "lib/util/order-selection";
 
 const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
@@ -72,6 +74,7 @@ const SellForm = ({
   const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
+  const { data: orders } = useOrders({ marketId_eq: marketId });
 
   const swapFee = pool?.swapFee.div(ZTG);
   const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
@@ -157,17 +160,34 @@ const SellForm = ({
         !amount ||
         amount === "" ||
         market?.categories?.length == null ||
-        !selectedAsset
+        !selectedAsset ||
+        !newSpotPrice ||
+        !orders
       ) {
         return;
       }
 
-      return sdk.api.tx.neoSwaps.sell(
+      const minPrice = newSpotPrice.mul(slippageMultiplier); // adjust by slippage
+
+      const selectedOrders = selectOrdersForMarketSell(
+        minPrice,
+        orders.map(({ id, side, price, outcomeAmount }) => ({
+          id: Number(id),
+          amount: outcomeAmount,
+          price,
+          side,
+        })),
+        new Decimal(amount).abs().mul(ZTG),
+      );
+
+      return sdk.api.tx.hybridRouter.sell(
         marketId,
         market?.categories?.length,
         selectedAsset,
         new Decimal(amount).mul(ZTG).toFixed(0),
-        minAmountOut.toFixed(0),
+        minPrice.mul(ZTG).toFixed(0),
+        selectedOrders.map(({ id }) => id),
+        "ImmediateOrCancel",
       );
     },
     {

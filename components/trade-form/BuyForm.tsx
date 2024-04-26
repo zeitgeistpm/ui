@@ -197,8 +197,8 @@ const BuyForm = ({
         marketId,
         market?.categories?.length,
         selectedAsset,
+        amount.mul(ZTG).toFixed(0),
         maxPrice.mul(ZTG).toFixed(0),
-        minAmountOut.toFixed(0),
         selectedOrders.map(({ id }) => id),
         "ImmediateOrCancel",
       );
