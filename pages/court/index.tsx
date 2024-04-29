@@ -282,11 +282,11 @@ const CourtPage: NextPage = ({
             <p className="text-sm text-gray-200/80">
               All payouts made to{" "}
               <b>{shortenAddress(wallet?.realAddress ?? "")}</b> as a result of
-              participating in court staking.{" "}
+              participating in court.{" "}
             </p>
           </div>
           <div className="pb-4">
-            <div className="subtle-scroll-bar flex max-h-[640px] flex-col gap-1 overflow-y-scroll px-4 py-4">
+            <div className="subtle-scroll-bar flex max-h-[640px] min-h-[200px] flex-col gap-1 overflow-y-scroll px-4 py-4">
               {allRewards?.map((payout, index) => (
                 <div className="mb-1 flex gap-2">
                   <div className="flex items-center">
@@ -341,7 +341,11 @@ const CourtPage: NextPage = ({
                       target="_blank"
                       referrerPolicy="no-referrer"
                       rel="noopener"
-                      href={`https://zeitgeist.subscan.io/block/${payout?.blockNumber}?tab=event`}
+                      href={
+                        payout.extrinsic?.name === "Court.reassign_court_stakes"
+                          ? `https://zeitgeist.subscan.io/extrinsic/${payout.extrinsic?.hash}`
+                          : `https://zeitgeist.subscan.io/block/${payout?.blockNumber}?tab=event`
+                      }
                     >
                       <div className="scale-75">
                         <SubScanIcon />
