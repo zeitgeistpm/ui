@@ -27,11 +27,13 @@ import NotFoundPage from "pages/404";
 import { IGetPlaiceholderReturn, getPlaiceholder } from "plaiceholder";
 import { ChevronDown } from "react-feather";
 import { IoMdArrowRoundForward } from "react-icons/io";
-import { FaList } from "react-icons/fa";
+import { FaList, FaMoneyBillWave } from "react-icons/fa";
 import { useState } from "react";
 import Modal from "components/ui/Modal";
 import moment from "moment";
 import SubScanIcon from "components/icons/SubScanIcon";
+import { useCourtReassignments } from "lib/hooks/queries/useCourtReassignments";
+import { HiCheckCircle, HiChevronDoubleUp, HiXCircle } from "react-icons/hi";
 
 export async function getStaticProps() {
   const [bannerPlaiceholder] = await Promise.all([
@@ -64,9 +66,23 @@ const CourtPage: NextPage = ({
     account: wallet.realAddress,
   });
 
+  const { data: courtReassignments } = useCourtReassignments({
+    account: wallet.realAddress,
+  });
+
+  const allRewards = mintedPayouts
+    ?.concat(courtReassignments ?? [])
+    .sort((a, b) => b.blockNumber - a.blockNumber);
+
   const totalMintedPayout = mintedPayouts?.reduce((acc, curr) => {
     return acc.add(curr.dBalance);
   }, new Decimal(0));
+
+  const totalReassignmentsPayout = courtReassignments?.reduce((acc, curr) => {
+    return acc.add(curr.dBalance);
+  }, new Decimal(0));
+
+  const totalRewards = totalMintedPayout?.add(totalReassignmentsPayout ?? 0);
 
   const [showPayoutsModal, setShowPayoutsModal] = useState(false);
 
@@ -171,7 +187,7 @@ const CourtPage: NextPage = ({
                       <div className="flex items-center gap-2">
                         <div>
                           {formatNumberLocalized(
-                            totalMintedPayout?.div(ZTG).toNumber() ?? 0,
+                            totalRewards?.div(ZTG).toNumber() ?? 0,
                           )}{" "}
                           {constants?.tokenSymbol}
                         </div>
@@ -271,12 +287,45 @@ const CourtPage: NextPage = ({
           </div>
           <div className="pb-4">
             <div className="subtle-scroll-bar flex max-h-[640px] flex-col gap-1 overflow-y-scroll px-4 py-4">
-              {mintedPayouts?.map((payout, index) => (
+              {allRewards?.map((payout, index) => (
                 <div className="mb-1 flex gap-2">
+                  <div className="flex items-center">
+                    {payout.extrinsic?.name ===
+                    "Court.reassign_court_stakes" ? (
+                      <InfoPopover
+                        icon={
+                          new Decimal(payout.dBalance ?? 0).gt(0) ? (
+                            <HiCheckCircle className="text-green-400" />
+                          ) : (
+                            <HiXCircle className="text-red-500" />
+                          )
+                        }
+                        position={index > 1 ? "top-end" : "bottom-end"}
+                        popoverCss="!w-80"
+                      >
+                        {new Decimal(payout.dBalance ?? 0).gt(0)
+                          ? "Reassigned funds by winning a case."
+                          : "Reassigned funds by losing a case."}
+                      </InfoPopover>
+                    ) : (
+                      <div>
+                        <InfoPopover
+                          icon={
+                            <HiChevronDoubleUp className="text-[rgba(0,1,254,0.46)]" />
+                          }
+                          position={index > 1 ? "top-end" : "bottom-end"}
+                          popoverCss="!w-80"
+                          css="text-green-500"
+                        >
+                          Staking reward.
+                        </InfoPopover>
+                      </div>
+                    )}
+                  </div>
                   <div className="flex-1 italic text-gray-500">
                     {Intl.DateTimeFormat("default", {
                       dateStyle: "medium",
-                      timeStyle: "medium",
+                      timeStyle: "short",
                     }).format(new Date(payout?.timestamp))}
                   </div>
                   <div className="">
@@ -285,6 +334,7 @@ const CourtPage: NextPage = ({
                     )}{" "}
                     <b>{constants?.tokenSymbol}</b>
                   </div>
+
                   <div>
                     <a
                       className="center text-sm"
