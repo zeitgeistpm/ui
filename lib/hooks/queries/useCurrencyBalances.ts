@@ -7,8 +7,7 @@ import { calculateFreeBalance } from "lib/util/calc-free-balance";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
 import { useForeignAssetBalances } from "./useForeignAssetBalances";
-
-export const currencyBalanceRootKey = "currency-balances";
+import Opaque from "ts-opaque";
 
 export type CurrencyBalance = {
   symbol: string;
@@ -19,6 +18,20 @@ export type CurrencyBalance = {
   existentialDeposit: Decimal;
   decimals: number;
 };
+
+export type CurrencyBalanceId = Opaque<"CurrencyBalance.Id", string>;
+
+export const currencyBalanceId = (
+  balance: CurrencyBalance,
+): CurrencyBalanceId =>
+  `${balance.sourceChain}-${balance.symbol}-${balance.chain}` as CurrencyBalanceId;
+
+export const matchesCurrencyBalanceId = (
+  id: CurrencyBalanceId,
+  balance: CurrencyBalance,
+) => currencyBalanceId(balance) === id;
+
+export const currencyBalanceRootKey = "currency-balances";
 
 export const useCurrencyBalances = (address: string) => {
   const [sdk, id] = useSdkv2();
