@@ -107,6 +107,7 @@ export const LimitBuyOrderForm = ({
         setPrice(price);
       }}
       maxAmount={maxAmount}
+      isLoading={isLoading}
     />
   );
 };
@@ -179,6 +180,7 @@ export const LimitSellOrderForm = ({
         setSelectedAsset(asset);
       }}
       maxAmount={selectedAssetBalance}
+      isLoading={isLoading}
     />
   );
 };
@@ -188,8 +190,10 @@ const LimitOrderForm = ({
   asset,
   onAssetChange,
   onPriceChange,
+  onSubmit,
   maxAmount,
   side,
+  isLoading,
 }: {
   marketId: number;
   asset?: MarketOutcomeAssetId; // todo: this can just be "asset" driven from parent
@@ -197,7 +201,8 @@ const LimitOrderForm = ({
   minPrice?: Decimal;
   maxAmount?: Decimal;
   side: "buy" | "sell";
-  onSubmit?: (price: Decimal, amount: Decimal) => void;
+  isLoading: boolean;
+  onSubmit: (price: Decimal, amount: Decimal) => void;
   onAssetChange?: (assetId: MarketOutcomeAssetId) => void;
   onPriceChange?: (price: Decimal) => void;
 }) => {
@@ -281,8 +286,6 @@ const LimitOrderForm = ({
     return () => subscription.unsubscribe();
   }, [watch, maxAmount]);
 
-  const onSubmit = () => {};
-
   const amount = new Decimal(getValues("amount") || 0);
   const total = amount.mul(getValues("price") || 0);
   const maxProfit = amount.minus(total);
@@ -290,7 +293,12 @@ const LimitOrderForm = ({
   return (
     <div className="flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit((value) => {
+          onSubmit(
+            new Decimal(value["price"] || 0),
+            new Decimal(value["amount"] || 0),
+          );
+        })}
         className="flex w-full flex-col gap-y-4"
       >
         <div>
@@ -386,7 +394,7 @@ const LimitOrderForm = ({
         <div className="flex w-full items-center justify-center">
           <FormTransactionButton
             className="w-full max-w-[250px]"
-            disabled={formState.isValid === false} //||isLoading
+            disabled={formState.isValid === false || isLoading}
             disableFeeCheck={true}
           >
             <div>
