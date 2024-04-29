@@ -26,7 +26,7 @@ export const currencyBalanceId = (
 ): CurrencyBalanceId =>
   `${balance.sourceChain}-${balance.symbol}-${balance.chain}` as CurrencyBalanceId;
 
-export const matchesCurrencyBalanceId = (
+export const eqCurrencyBalanceId = (
   id: CurrencyBalanceId,
   balance: CurrencyBalance,
 ) => currencyBalanceId(balance) === id;

@@ -5,7 +5,7 @@ import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import {
   CurrencyBalance,
   currencyBalanceId,
-  matchesCurrencyBalanceId,
+  eqCurrencyBalanceId,
   useCurrencyBalances,
 } from "lib/hooks/queries/useCurrencyBalances";
 import DepositButton from "./DepositButton";
@@ -145,7 +145,7 @@ const CurrenciesTable = ({ address }: { address: string }) => {
 
   const tableData: TableData[] | undefined = useMemo(() => {
     return sorting
-      ?.map((id) => balances?.find((b) => matchesCurrencyBalanceId(id, b)))
+      ?.map((id) => balances?.find((b) => eqCurrencyBalanceId(id, b)))
       .filter(isNotNull)
       .map((balance) => {
         const amount =
