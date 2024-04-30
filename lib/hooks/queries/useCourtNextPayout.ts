@@ -16,6 +16,24 @@ import { blockDate } from "@zeitgeistpm/utility/dist/time";
 
 export const courtNextPayoutRootKey = "court-next-payout";
 
+export type CourtPayoutInfo = {
+  inflationPeriod: number;
+  nextPayoutBlock: number;
+  lastPayoutBlock: number;
+  nextPayoutDate: Date;
+  lastPayoutDate: Date;
+};
+
+export type WithPayoutEligibility = CourtPayoutInfo & {
+  nextRewardBlock: number;
+  nextRewardDate: Date;
+};
+
+export const isPayoutEligible = (
+  info?: CourtPayoutInfo | WithPayoutEligibility | null,
+): info is WithPayoutEligibility =>
+  (info as WithPayoutEligibility)?.nextRewardBlock !== undefined;
+
 export const useCourtNextPayout = () => {
   const [sdk, id] = useSdkv2();
   const now = useChainTime();
@@ -24,7 +42,7 @@ export const useCourtNextPayout = () => {
 
   const enabled = isIndexedSdk(sdk) && now && constants && connectedParticipant;
 
-  const query = useQuery(
+  const query = useQuery<CourtPayoutInfo | WithPayoutEligibility | null>(
     [id, courtNextPayoutRootKey, connectedParticipant?.address, now?.block],
     async () => {
       if (enabled) {
@@ -52,22 +70,41 @@ export const useCourtNextPayout = () => {
           connectedParticipant.address,
         );
 
-        if (!participantFirstJoinedAt) return null;
-
-        const nextRewardBlock = currentBlock
-          .sub(participantFirstJoinedAt)
-          .gt(inflationPeriod)
-          ? nextPayoutBlock
-          : nextPayoutBlock.add(inflationPeriod);
-
-        const nextRewardDate = blockDate(now, nextRewardBlock.toNumber());
-
-        return {
-          nextRewardDate,
-          nextRewardBlock: nextRewardBlock.toNumber(),
+        const courtPayoutInfo: CourtPayoutInfo = {
+          inflationPeriod: inflationPeriod.toNumber(),
           nextPayoutBlock: nextPayoutBlock.toNumber(),
           lastPayoutBlock: lastPayoutBlock.toNumber(),
+          nextPayoutDate: blockDate(now, nextPayoutBlock.toNumber()),
+          lastPayoutDate: blockDate(now, lastPayoutBlock.toNumber()),
         };
+
+        if (participantFirstJoinedAt) {
+          const withPayoutEligibility: WithPayoutEligibility = {
+            ...courtPayoutInfo,
+            nextRewardBlock: nextPayoutBlock.toNumber(),
+            nextRewardDate: blockDate(now, nextPayoutBlock.toNumber()),
+          };
+
+          return withPayoutEligibility;
+        }
+
+        return courtPayoutInfo;
+
+        // const nextRewardBlock = participantFirstJoinedAt ? currentBlock
+        //   .sub(participantFirstJoinedAt)
+        //   .gt(inflationPeriod)
+        //   ? nextPayoutBlock
+        //   : nextPayoutBlock.add(inflationPeriod) : null;
+
+        // const nextRewardDate = nextRewardBlock ? blockDate(now, nextRewardBlock.toNumber()) : null;
+
+        // return {
+        //   nextRewardDate,
+        //   inflationPeriod: inflationPeriod.toNumber(),
+        //   nextRewardBlock: nextRewardBlock?.toNumber(),
+        //   nextPayoutBlock: nextPayoutBlock.toNumber(),
+        //   lastPayoutBlock: lastPayoutBlock.toNumber(),
+        // };
       }
 
       return null;

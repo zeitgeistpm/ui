@@ -34,7 +34,10 @@ import moment from "moment";
 import SubScanIcon from "components/icons/SubScanIcon";
 import { useCourtReassignments } from "lib/hooks/queries/useCourtReassignments";
 import { HiCheckCircle, HiChevronDoubleUp, HiXCircle } from "react-icons/hi";
-import { useCourtNextPayout } from "lib/hooks/queries/useCourtNextPayout";
+import {
+  isPayoutEligible,
+  useCourtNextPayout,
+} from "lib/hooks/queries/useCourtNextPayout";
 import { MdMoneyOff } from "react-icons/md";
 import { PiTimer, PiTimerBold } from "react-icons/pi";
 import { blockDate } from "@zeitgeistpm/utility/dist/time";
@@ -94,6 +97,13 @@ const CourtPage: NextPage = ({
   const totalRewards = totalMintedPayout?.add(totalReassignmentsPayout ?? 0);
 
   const [showPayoutsModal, setShowPayoutsModal] = useState(false);
+
+  const nextPayoutProgress =
+    now && courtPayout
+      ? ((now.block - courtPayout.lastPayoutBlock) /
+          courtPayout.inflationPeriod) *
+        100
+      : null;
 
   return (
     <div className="mt-4 flex flex-col gap-y-4">
@@ -212,7 +222,7 @@ const CourtPage: NextPage = ({
                 ) : null}
               </div>
 
-              <div>
+              <div className="mb-4">
                 <div className="mb-3 flex flex-col gap-4 md:flex-row">
                   <JoinCourtAsJurorButton className="h-full w-full md:w-auto" />
                   <ManageDelegationButton className="h-full w-full md:w-auto" />
@@ -228,6 +238,30 @@ const CourtPage: NextPage = ({
                     )}
                 </div>
               </div>
+
+              {courtPayout ? (
+                <div className="mb-1">
+                  <div className="mb-1 flex items-center text-sm text-gray-600">
+                    <h4 className="bold flex-1 text-sm text-gray-600">
+                      Next Staking Payout
+                    </h4>
+                    <div className="text-xs">
+                      {new Intl.DateTimeFormat("default", {
+                        dateStyle: "medium",
+                        timeStyle: "medium",
+                      }).format(courtPayout.nextPayoutDate)}
+                    </div>
+                  </div>
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-black/10">
+                    <div
+                      className="h-full rounded-full bg-purple-500"
+                      style={{
+                        width: `${nextPayoutProgress}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
@@ -296,7 +330,7 @@ const CourtPage: NextPage = ({
           </div>
           <div className="pb-4">
             <div className="subtle-scroll-bar flex max-h-[640px] min-h-[200px] flex-col gap-1 overflow-y-scroll px-4 py-4">
-              {now && courtPayout?.nextRewardBlock ? (
+              {now && isPayoutEligible(courtPayout) ? (
                 <div className="mb-1 flex gap-2">
                   <div className="flex items-center">
                     <InfoPopover

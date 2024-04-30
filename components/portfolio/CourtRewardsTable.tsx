@@ -7,7 +7,10 @@ import { useMintedInCourt } from "lib/hooks/queries/useMintedInCourt";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { formatNumberLocalized } from "lib/util";
 import EmptyPortfolio from "./EmptyPortfolio";
-import { useCourtNextPayout } from "lib/hooks/queries/useCourtNextPayout";
+import {
+  isPayoutEligible,
+  useCourtNextPayout,
+} from "lib/hooks/queries/useCourtNextPayout";
 import { times } from "lodash-es";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import InfoPopover from "components/ui/InfoPopover";
@@ -88,7 +91,7 @@ const CourtRewardsTable = ({ address }: { address: string }) => {
   });
 
   tableData = [
-    courtPayout
+    isPayoutEligible(courtPayout)
       ? {
           timestamp: (
             <span className="flex items-center gap-2 text-gray-400">
