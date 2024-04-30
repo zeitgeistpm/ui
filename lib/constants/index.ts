@@ -73,7 +73,7 @@ export const graphQlEndpoints: EndpointOption[] = [
     environment: "staging",
   },
   {
-    value: "https://processor.rpc-0.zeitgeist.pm/graphql",
+    value: "https://zeitgeist-squid-mainnet.stellate.sh/",
     label: "Polkadot (Live)",
     environment: "production",
   },
