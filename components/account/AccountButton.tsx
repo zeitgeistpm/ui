@@ -12,7 +12,6 @@ import { useAccountModals } from "lib/state/account";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { FaNetworkWired } from "react-icons/fa";
-import { wsxID } from "lib/constants";
 
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -31,7 +30,6 @@ import { DesktopOnboardingModal } from "./OnboardingModal";
 import SettingsModal from "components/settings/SettingsModal";
 import CopyIcon from "../ui/CopyIcon";
 import { formatNumberCompact } from "lib/util/format-compact";
-import useActiveBalance from "lib/state/useActiveBalance";
 
 const BalanceRow = ({
   imgPath,
@@ -97,16 +95,15 @@ const AccountButton: FC<{
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-
+  console.log(activeAccount?.address);
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: polkadotBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 0,
   });
-
-  const balance = useActiveBalance(activeAccount?.address, {
-    ForeignAsset: isWSX ? wsxID : 0,
+  const { data: balance } = useBalance(activeAccount?.address, {
+    CampaignAsset: 0,
   });
-
+  console.log(balance?.toString());
   const { data: constants } = useChainConstants();
 
   const connect = async () => {

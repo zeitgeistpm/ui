@@ -8,11 +8,11 @@ const CreateMarketPage: NextPage = () => {
   const { activeAccount } = useWallet();
   const router = useRouter();
 
-  useEffect(() => {
-    if (activeAccount?.address !== process.env.NEXT_PUBLIC_MW_WSX) {
-      router.push("/markets");
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   if (activeAccount?.address !== process.env.NEXT_PUBLIC_MW_WSX) {
+  //     router.push("/markets");
+  //   }
+  // }, [router]);
 
   return (
     <div className="mt-10">

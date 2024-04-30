@@ -134,8 +134,6 @@ export const signAndSend = async (
   cb?: GenericCallback,
   foreignAssetNumber?: number,
 ) => {
-  console.log(foreignAssetNumber);
-  return;
   return new Promise(async (resolve, reject) => {
     try {
       if (isExtSigner(signer)) {

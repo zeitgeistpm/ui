@@ -18,7 +18,7 @@ const useFeePayingAssetSelection = () => {
   const [state, setState] = useAtom(feePayingAssetStateAtom);
 
   useEffect(() => {
-    isWSX && setState({ label: "WSX", value: { ForeignAsset: wsxID } });
+    isWSX && setState({ label: "WSX", value: { CampaignAsset: wsxID } });
   }, [isWSX]);
 
   const setAsset = (selection: SelectedFeeAsset) => {

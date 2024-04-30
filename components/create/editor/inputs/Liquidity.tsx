@@ -59,7 +59,7 @@ export const LiquidityInput = ({
       },
     });
   };
-
+  console.log(value);
   return (
     <div className="center">
       <div className="md:max-w-4xl">

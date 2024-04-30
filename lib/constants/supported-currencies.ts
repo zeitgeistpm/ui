@@ -32,7 +32,7 @@ export const supportedCurrencies = [
     description: "Create market with WSX as the base asset.",
     image: "/currencies/wsx-currency.png",
     twColor: "ztg-blue",
-    assetId: { ForeignAsset: wsxID } as const,
+    assetId: { CampaignAsset: wsxID } as const,
   } satisfies CurrencyMetadata,
   {
     name: "USDC" as const,

@@ -115,7 +115,7 @@ export const MarketEditor = () => {
           )
         : marketFormDataToExtrinsicParams(editor.form, signer, chainTime)
       : undefined;
-
+  console.log(creationParams);
   return (
     <>
       <Transition
