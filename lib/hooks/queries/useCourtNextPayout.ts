@@ -13,6 +13,7 @@ import { HistoricalAccountBalanceOrderByInput } from "@zeitgeistpm/indexer";
 import { useQuery } from "@tanstack/react-query";
 import { useConnectedCourtParticipant } from "./court/useConnectedCourtParticipant";
 import { blockDate } from "@zeitgeistpm/utility/dist/time";
+import { useWallet } from "lib/state/wallet";
 
 export const courtNextPayoutRootKey = "court-next-payout";
 
@@ -38,12 +39,12 @@ export const useCourtNextPayout = () => {
   const [sdk, id] = useSdkv2();
   const now = useChainTime();
   const { data: constants } = useChainConstants();
-  const connectedParticipant = useConnectedCourtParticipant();
+  const wallet = useWallet();
 
-  const enabled = isIndexedSdk(sdk) && now && constants && connectedParticipant;
+  const enabled = isIndexedSdk(sdk) && now && constants && wallet.realAddress;
 
   const query = useQuery<CourtPayoutInfo | WithPayoutEligibility | null>(
-    [id, courtNextPayoutRootKey, connectedParticipant?.address, now?.block],
+    [id, courtNextPayoutRootKey, wallet?.realAddress, now?.block],
     async () => {
       if (enabled) {
         /**
@@ -67,7 +68,7 @@ export const useCourtNextPayout = () => {
 
         const participantFirstJoinedAt = await getAccountJoined(
           sdk,
-          connectedParticipant.address,
+          wallet.realAddress!,
         );
 
         const courtPayoutInfo: CourtPayoutInfo = {
@@ -89,22 +90,6 @@ export const useCourtNextPayout = () => {
         }
 
         return courtPayoutInfo;
-
-        // const nextRewardBlock = participantFirstJoinedAt ? currentBlock
-        //   .sub(participantFirstJoinedAt)
-        //   .gt(inflationPeriod)
-        //   ? nextPayoutBlock
-        //   : nextPayoutBlock.add(inflationPeriod) : null;
-
-        // const nextRewardDate = nextRewardBlock ? blockDate(now, nextRewardBlock.toNumber()) : null;
-
-        // return {
-        //   nextRewardDate,
-        //   inflationPeriod: inflationPeriod.toNumber(),
-        //   nextRewardBlock: nextRewardBlock?.toNumber(),
-        //   nextPayoutBlock: nextPayoutBlock.toNumber(),
-        //   lastPayoutBlock: lastPayoutBlock.toNumber(),
-        // };
       }
 
       return null;
@@ -150,6 +135,7 @@ const getAccountJoined = async (sdk: Sdk<IndexerContext>, address: string) => {
       earliestEligibleJoin = new Decimal(event.blockNumber);
     }
     if (event.extrinsic?.name === "Court.exit_court") {
+      console.log("EXITED");
       break;
     }
   }

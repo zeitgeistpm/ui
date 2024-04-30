@@ -197,7 +197,7 @@ const CourtPage: NextPage = ({
                     </div>
                   </div>
                 </div>
-                {connectedParticipant ? (
+                {totalRewards?.gt(0) ? (
                   <div className="text-md line-clamp-1 flex  font-mono font-semibold">
                     <div className="text-right">
                       <h3 className="mb-1 flex-1 font-sans text-sm text-gray-800">
@@ -242,8 +242,18 @@ const CourtPage: NextPage = ({
               {courtPayout ? (
                 <div className="mb-1">
                   <div className="mb-1 flex items-center text-sm text-gray-600">
-                    <h4 className="bold flex-1 text-sm text-gray-600">
+                    <h4 className="bold flex flex-1 items-center gap-1 text-sm text-gray-600">
                       Next Staking Payout
+                      {!isPayoutEligible(courtPayout) ? (
+                        <InfoPopover
+                          overlay={false}
+                          position="top-end"
+                          popoverCss={`!w-96`}
+                        >
+                          You are not eligible for the next staking reward
+                          payout. Join as a juror or delegator to be eligible.
+                        </InfoPopover>
+                      ) : null}
                     </h4>
                     <div className="text-xs">
                       {new Intl.DateTimeFormat("default", {
