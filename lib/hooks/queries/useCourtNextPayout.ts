@@ -128,7 +128,7 @@ const getAccountJoined = async (sdk: Sdk<IndexerContext>, address: string) => {
     });
 
   let earliestEligibleJoin: Decimal | null = null;
-  console.log(historicalAccountBalances);
+
   for (const event of historicalAccountBalances) {
     if (
       event.extrinsic?.name === "Court.join_court" ||
