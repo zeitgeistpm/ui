@@ -1,19 +1,12 @@
-import { useChainTime } from "lib/state/chaintime";
-import { useChainConstants } from "./useChainConstants";
-import Decimal from "decimal.js";
-import { useSdkv2 } from "../useSdkv2";
-import {
-  IndexerConfig,
-  IndexerContext,
-  isIndexedSdk,
-  isRpcSdk,
-  Sdk,
-} from "@zeitgeistpm/sdk";
-import { HistoricalAccountBalanceOrderByInput } from "@zeitgeistpm/indexer";
 import { useQuery } from "@tanstack/react-query";
-import { useConnectedCourtParticipant } from "./court/useConnectedCourtParticipant";
+import { HistoricalAccountBalanceOrderByInput } from "@zeitgeistpm/indexer";
+import { IndexerContext, isIndexedSdk, Sdk } from "@zeitgeistpm/sdk";
 import { blockDate } from "@zeitgeistpm/utility/dist/time";
+import Decimal from "decimal.js";
+import { useChainTime } from "lib/state/chaintime";
 import { useWallet } from "lib/state/wallet";
+import { useSdkv2 } from "../useSdkv2";
+import { useChainConstants } from "./useChainConstants";
 
 export const courtNextPayoutRootKey = "court-next-payout";
 
@@ -118,6 +111,12 @@ const getAccountJoined = async (sdk: Sdk<IndexerContext>, address: string) => {
               },
               {
                 extrinsic: {
+                  name_eq: "Court.delegate",
+                },
+              },
+
+              {
+                extrinsic: {
                   name_eq: "Court.exit_court",
                 },
               },
@@ -129,9 +128,12 @@ const getAccountJoined = async (sdk: Sdk<IndexerContext>, address: string) => {
     });
 
   let earliestEligibleJoin: Decimal | null = null;
-
+  console.log(historicalAccountBalances);
   for (const event of historicalAccountBalances) {
-    if (event.extrinsic?.name === "Court.join_court") {
+    if (
+      event.extrinsic?.name === "Court.join_court" ||
+      event.extrinsic?.name === "Court.delegate"
+    ) {
       earliestEligibleJoin = new Decimal(event.blockNumber);
     }
     if (event.extrinsic?.name === "Court.exit_court") {

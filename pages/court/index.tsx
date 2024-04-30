@@ -6,7 +6,9 @@ import CourtUnstakeButton from "components/court/CourtUnstakeButton";
 import JoinCourtAsJurorButton from "components/court/JoinCourtAsJurorButton";
 import JurorsTable from "components/court/JurorsTable";
 import ManageDelegationButton from "components/court/ManageDelegationButton";
+import SubScanIcon from "components/icons/SubScanIcon";
 import InfoPopover from "components/ui/InfoPopover";
+import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
@@ -15,8 +17,14 @@ import { useCourtStakeSharePercentage } from "lib/hooks/queries/court/useCourtSt
 import { useCourtTotalStakedAmount } from "lib/hooks/queries/court/useCourtTotalStakedAmount";
 import { useCourtYearlyInflationAmount } from "lib/hooks/queries/court/useCourtYearlyInflation";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import {
+  isPayoutEligible,
+  useCourtNextPayout,
+} from "lib/hooks/queries/useCourtNextPayout";
+import { useCourtReassignments } from "lib/hooks/queries/useCourtReassignments";
 import { useMintedInCourt } from "lib/hooks/queries/useMintedInCourt";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
+import { useChainTime } from "lib/state/chaintime";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { isNumber } from "lodash-es";
@@ -25,23 +33,13 @@ import Image from "next/image";
 import Link from "next/link";
 import NotFoundPage from "pages/404";
 import { IGetPlaiceholderReturn, getPlaiceholder } from "plaiceholder";
-import { ChevronDown } from "react-feather";
-import { IoMdArrowRoundForward } from "react-icons/io";
-import { FaList, FaMoneyBillWave } from "react-icons/fa";
 import { useState } from "react";
-import Modal from "components/ui/Modal";
-import moment from "moment";
-import SubScanIcon from "components/icons/SubScanIcon";
-import { useCourtReassignments } from "lib/hooks/queries/useCourtReassignments";
-import { HiCheckCircle, HiChevronDoubleUp, HiXCircle } from "react-icons/hi";
-import {
-  isPayoutEligible,
-  useCourtNextPayout,
-} from "lib/hooks/queries/useCourtNextPayout";
+import { ChevronDown } from "react-feather";
+import { FaList } from "react-icons/fa";
+import { HiCheckCircle, HiChevronDoubleUp } from "react-icons/hi";
+import { IoMdArrowRoundForward } from "react-icons/io";
 import { MdMoneyOff } from "react-icons/md";
-import { PiTimer, PiTimerBold } from "react-icons/pi";
-import { blockDate } from "@zeitgeistpm/utility/dist/time";
-import { useChainTime } from "lib/state/chaintime";
+import { PiTimerBold } from "react-icons/pi";
 
 export async function getStaticProps() {
   const [bannerPlaiceholder] = await Promise.all([
