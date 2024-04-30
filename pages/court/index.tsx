@@ -311,7 +311,7 @@ const CourtPage: NextPage = ({
                     {Intl.DateTimeFormat("default", {
                       dateStyle: "medium",
                       timeStyle: "short",
-                    }).format(blockDate(now, courtPayout.nextRewardBlock))}
+                    }).format(courtPayout.nextRewardDate)}
                   </div>
                   <div className="text-gray-300">
                     -- <b>{constants?.tokenSymbol}</b>

@@ -12,6 +12,7 @@ import {
 import { HistoricalAccountBalanceOrderByInput } from "@zeitgeistpm/indexer";
 import { useQuery } from "@tanstack/react-query";
 import { useConnectedCourtParticipant } from "./court/useConnectedCourtParticipant";
+import { blockDate } from "@zeitgeistpm/utility/dist/time";
 
 export const courtNextPayoutRootKey = "court-next-payout";
 
@@ -59,7 +60,10 @@ export const useCourtNextPayout = () => {
           ? nextPayoutBlock
           : nextPayoutBlock.add(inflationPeriod);
 
+        const nextRewardDate = blockDate(now, nextRewardBlock.toNumber());
+
         return {
+          nextRewardDate,
           nextRewardBlock: nextRewardBlock.toNumber(),
           nextPayoutBlock: nextPayoutBlock.toNumber(),
           lastPayoutBlock: lastPayoutBlock.toNumber(),

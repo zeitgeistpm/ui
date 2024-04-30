@@ -7,12 +7,17 @@ import { useMintedInCourt } from "lib/hooks/queries/useMintedInCourt";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { formatNumberLocalized } from "lib/util";
 import EmptyPortfolio from "./EmptyPortfolio";
+import { useCourtNextPayout } from "lib/hooks/queries/useCourtNextPayout";
+import { times } from "lodash-es";
+import { isNotNull } from "@zeitgeistpm/utility/dist/null";
+import InfoPopover from "components/ui/InfoPopover";
+import { PiTimerBold } from "react-icons/pi";
 
 const columns: TableColumn[] = [
   {
     header: "Time",
     accessor: "timestamp",
-    type: "text",
+    type: "component",
   },
   {
     header: "Amount",
@@ -35,12 +40,18 @@ const CourtRewardsTable = ({ address }: { address: string }) => {
   const { data: ztgPrice } = useZtgPrice();
   const { data: constants } = useChainConstants();
 
-  const tableData: TableData[] | undefined = mintedInCourt?.map((mint) => {
+  const { data: courtPayout } = useCourtNextPayout();
+
+  let tableData: TableData[] | undefined = mintedInCourt?.map((mint) => {
     return {
-      timestamp: new Intl.DateTimeFormat("default", {
-        dateStyle: "medium",
-        timeStyle: "medium",
-      }).format(new Date(mint?.timestamp)),
+      timestamp: (
+        <span>
+          {new Intl.DateTimeFormat("default", {
+            dateStyle: "medium",
+            timeStyle: "medium",
+          }).format(new Date(mint?.timestamp))}
+        </span>
+      ),
       amount: (
         <div>
           <div>
@@ -75,6 +86,36 @@ const CourtRewardsTable = ({ address }: { address: string }) => {
       ),
     };
   });
+
+  tableData = [
+    courtPayout
+      ? {
+          timestamp: (
+            <span className="flex items-center gap-2 text-gray-400">
+              {new Intl.DateTimeFormat("default", {
+                dateStyle: "medium",
+                timeStyle: "medium",
+              }).format(courtPayout.nextRewardDate)}
+              <span className="flex items-center gap-1 italic">
+                (ETA <PiTimerBold size={18} />)
+              </span>
+            </span>
+          ),
+          amount: <div className="text-gray-300">--</div>,
+          subscan: (
+            <div className="center text-center">
+              <InfoPopover
+                icon={<PiTimerBold className="text-orange-300" size={24} />}
+                position={"top-start"}
+              >
+                Next expected staking reward payout.
+              </InfoPopover>
+            </div>
+          ),
+        }
+      : null,
+    ...(tableData ?? []),
+  ].filter(isNotNull);
 
   return (
     <div>
