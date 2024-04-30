@@ -34,6 +34,11 @@ import moment from "moment";
 import SubScanIcon from "components/icons/SubScanIcon";
 import { useCourtReassignments } from "lib/hooks/queries/useCourtReassignments";
 import { HiCheckCircle, HiChevronDoubleUp, HiXCircle } from "react-icons/hi";
+import { useCourtNextPayout } from "lib/hooks/queries/useCourtNextPayout";
+import { MdMoneyOff } from "react-icons/md";
+import { PiTimer, PiTimerBold } from "react-icons/pi";
+import { blockDate } from "@zeitgeistpm/utility/dist/time";
+import { useChainTime } from "lib/state/chaintime";
 
 export async function getStaticProps() {
   const [bannerPlaiceholder] = await Promise.all([
@@ -62,6 +67,8 @@ const CourtPage: NextPage = ({
   const { data: ztgPrice } = useZtgPrice();
   const stakeShare = useCourtStakeSharePercentage();
 
+  const now = useChainTime();
+
   const { data: mintedPayouts } = useMintedInCourt({
     account: wallet.realAddress,
   });
@@ -69,6 +76,8 @@ const CourtPage: NextPage = ({
   const { data: courtReassignments } = useCourtReassignments({
     account: wallet.realAddress,
   });
+
+  const { data: courtPayout } = useCourtNextPayout();
 
   const allRewards = mintedPayouts
     ?.concat(courtReassignments ?? [])
@@ -184,7 +193,7 @@ const CourtPage: NextPage = ({
                       <h3 className="mb-1 flex-1 font-sans text-sm text-gray-800">
                         Staking Rewards
                       </h3>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-end gap-2">
                         <div>
                           {formatNumberLocalized(
                             totalRewards?.div(ZTG).toNumber() ?? 0,
@@ -287,6 +296,34 @@ const CourtPage: NextPage = ({
           </div>
           <div className="pb-4">
             <div className="subtle-scroll-bar flex max-h-[640px] min-h-[200px] flex-col gap-1 overflow-y-scroll px-4 py-4">
+              {now && courtPayout?.nextRewardBlock ? (
+                <div className="mb-1 flex gap-2">
+                  <div className="flex items-center">
+                    <InfoPopover
+                      icon={<PiTimerBold className="text-orange-300" />}
+                      position={"bottom-end"}
+                      popoverCss="!w-96"
+                    >
+                      Next expected staking reward payout.
+                    </InfoPopover>
+                  </div>
+                  <div className="flex-1 italic text-gray-500">
+                    {Intl.DateTimeFormat("default", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }).format(blockDate(now, courtPayout.nextRewardBlock))}
+                  </div>
+                  <div className="text-gray-300">
+                    -- <b>{constants?.tokenSymbol}</b>
+                  </div>
+                  <div className="w-6">
+                    <div className="scale-75 opacity-30">
+                      <SubScanIcon />
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
               {allRewards?.map((payout, index) => (
                 <div className="mb-1 flex gap-2">
                   <div className="flex items-center">
@@ -297,7 +334,7 @@ const CourtPage: NextPage = ({
                           new Decimal(payout.dBalance ?? 0).gt(0) ? (
                             <HiCheckCircle className="text-green-400" />
                           ) : (
-                            <HiXCircle className="text-red-500" />
+                            <MdMoneyOff className="text-red-500" />
                           )
                         }
                         position={index > 1 ? "top-end" : "bottom-end"}
@@ -335,7 +372,7 @@ const CourtPage: NextPage = ({
                     <b>{constants?.tokenSymbol}</b>
                   </div>
 
-                  <div>
+                  <div className="w-6">
                     <a
                       className="center text-sm"
                       target="_blank"
