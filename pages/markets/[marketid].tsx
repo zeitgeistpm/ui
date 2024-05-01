@@ -200,7 +200,6 @@ const Market: NextPage<MarketPageProps> = ({
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
   );
-
   useEffect(() => {
     tradeItem.set({
       assetId: outcomeAssets[0],

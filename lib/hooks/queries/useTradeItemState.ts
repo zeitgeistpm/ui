@@ -28,7 +28,7 @@ export const useTradeItemState = (item: TradeItem) => {
   const marketId = getMarketIdOf(item.assetId);
   const { data: pools } = usePoolsByIds([{ marketId: marketId }]);
   const { data: market } = useMarket({ marketId });
-
+  console.log(market);
   const pool = pools?.[0];
   const baseAsset = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unwrap()

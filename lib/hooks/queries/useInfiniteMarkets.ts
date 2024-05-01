@@ -92,29 +92,29 @@ export const useInfiniteMarkets = (
               },
             ],
           },
-          {
-            OR: [
-              {
-                scoringRule_eq: ScoringRule.Cpmm,
-                pool_isNull: withLiquidityOnly ? false : undefined,
-                ...(withLiquidityOnly
-                  ? {
-                      pool: {
-                        account: {
-                          balances_some: {
-                            balance_gt: 0,
-                          },
-                        },
-                      },
-                    }
-                  : {}),
-              },
-              {
-                scoringRule_eq: ScoringRule.Lmsr,
-                neoPool_isNull: withLiquidityOnly ? false : undefined,
-              },
-            ],
-          },
+          // {
+          //   OR: [
+          //     {
+          //       scoringRule_eq: ScoringRule.Cpmm,
+          //       pool_isNull: withLiquidityOnly ? false : undefined,
+          //       ...(withLiquidityOnly
+          //         ? {
+          //             pool: {
+          //               account: {
+          //                 balances_some: {
+          //                   balance_gt: 0,
+          //                 },
+          //               },
+          //             },
+          //           }
+          //         : {}),
+          //     },
+          //     {
+          //       scoringRule_eq: ScoringRule.Lmsr,
+          //       neoPool_isNull: withLiquidityOnly ? false : undefined,
+          //     },
+          //   ],
+          // },
         ],
       },
       offset: !pageParam ? 0 : limit * pageParam,

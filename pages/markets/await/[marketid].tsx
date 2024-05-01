@@ -25,7 +25,6 @@ export const MarketAwait: NextPage = () => {
           timeout: Infinity,
         },
       );
-
       indexedMarket.then((market) => {
         if (market === PollingTimeout) throw new Error("should be unreachable");
         setState("success");
