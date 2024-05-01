@@ -4,7 +4,7 @@ import tailwindConfig from "../../tailwind.config";
 import { EndpointOption, Environment } from "../types";
 
 // IMPORTANT: this should be false for all other branches other than the wsx branch.
-export const isWSX = true;
+export const isWSX = false;
 
 export const wsxID = process.env.NEXT_PUBLIC_VERCEL_ENV === "staging" ? 0 : 0;
 export const wsxAssetIdString = `{"campaignAsset":${wsxID}}`;

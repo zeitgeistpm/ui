@@ -72,11 +72,11 @@ export const useInfiniteMarkets = (
       where: {
         AND: [
           {
-            // ...validMarketWhereInput,
+            ...validMarketWhereInput,
             status_not_in: [MarketStatus.Destroyed],
             status_in: statuses.length === 0 ? undefined : statuses,
             tags_containsAny: tags?.length === 0 ? undefined : tags,
-            // baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
+            baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
             scoringRule_not_eq: ScoringRule.Parimutuel,
           },
           {
@@ -116,7 +116,7 @@ export const useInfiniteMarkets = (
       limit: limit,
       order: orderByMap[orderBy] as MarketOrderByInput, //todo: fix this type once sdk updated,
     });
-    console.log(markets);
+
     for (const market of markets) {
       const cmsData: FullCmsMarketMetadata | undefined =
         queryClient.getQueryData(marketCmsDatakeyForMarket(market.marketId));
