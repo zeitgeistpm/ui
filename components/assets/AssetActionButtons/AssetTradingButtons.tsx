@@ -53,7 +53,7 @@ const AssetTradingButtons = ({
       {tradeItem && (
         <Modal open={isOpen} onClose={() => setIsOpen(false)}>
           <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white">
-            {market?.scoringRule === ScoringRule.Lmsr ? (
+            {market?.scoringRule === ScoringRule.AmmCdaHybrid ? (
               <Amm2TradeForm
                 marketId={marketId}
                 initialAsset={assetId}

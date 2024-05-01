@@ -106,7 +106,7 @@ export const useInfiniteMarkets = (
                   : {}),
               },
               {
-                scoringRule_eq: ScoringRule.Lmsr,
+                scoringRule_eq: ScoringRule.AmmCdaHybrid,
                 neoPool_isNull: withLiquidityOnly ? false : undefined,
               },
             ],

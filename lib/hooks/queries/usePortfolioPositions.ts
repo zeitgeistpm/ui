@@ -193,7 +193,7 @@ export const usePortfolioPositions = (
   const pools = usePoolsByIds(filter);
   const markets = useMarketsByIds(filter);
   const amm2MarketIds = markets.data
-    ?.filter((market) => market.scoringRule === ScoringRule.Lmsr)
+    ?.filter((market) => market.scoringRule === ScoringRule.AmmCdaHybrid)
     .map((m) => m.marketId);
 
   const { data: amm2SpotPrices } = useAmm2MarketSpotPrices(amm2MarketIds);
@@ -318,7 +318,7 @@ export const usePortfolioPositions = (
           price = calcResolvedMarketPrices(market).get(getIndexOf(assetId));
           price24HoursAgo = price;
         } else {
-          if (market.scoringRule === ScoringRule.Lmsr) {
+          if (market.scoringRule === ScoringRule.AmmCdaHybrid) {
             price = lookupAssetPrice(assetId, amm2SpotPrices);
 
             price24HoursAgo = lookupAssetPrice(
