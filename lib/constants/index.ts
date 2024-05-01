@@ -4,10 +4,10 @@ import tailwindConfig from "../../tailwind.config";
 import { EndpointOption, Environment } from "../types";
 
 // IMPORTANT: this should be false for all other branches other than the wsx branch.
-export const isWSX = false;
+export const isWSX = true;
 
-export const wsxID = process.env.NEXT_PUBLIC_VERCEL_ENV === "staging" ? 3 : 2;
-export const wsxAssetIdString = `{"foreignAsset":${wsxID}}`;
+export const wsxID = process.env.NEXT_PUBLIC_VERCEL_ENV === "staging" ? 0 : 0;
+export const wsxAssetIdString = `{"campaignAsset":${wsxID}}`;
 
 export const ZTG = 10 ** 10;
 
