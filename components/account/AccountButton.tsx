@@ -95,7 +95,7 @@ const AccountButton: FC<{
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  console.log(activeAccount?.address);
+
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: polkadotBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 0,
@@ -103,7 +103,7 @@ const AccountButton: FC<{
   const { data: balance } = useBalance(activeAccount?.address, {
     CampaignAsset: 0,
   });
-  console.log(balance?.toString());
+
   const { data: constants } = useChainConstants();
 
   const connect = async () => {
