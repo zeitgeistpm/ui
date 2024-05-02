@@ -156,7 +156,6 @@ export async function getStaticProps({ params }) {
       market.description = cmsMetadata?.description;
     }
   }
-
   return {
     props: {
       indexedMarket: market ?? null,
