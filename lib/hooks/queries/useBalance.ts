@@ -71,7 +71,7 @@ export const fetchAssetBalance = async (
     );
     return new Decimal(balance.unwrap().balance.toString());
   } else {
-    const balance = await api.query.campaignAssets.account(
+    const balance = await api.query.customAssets.account(
       assetId.CustomAsset,
       address,
     );
