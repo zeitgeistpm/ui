@@ -631,7 +631,7 @@ const MarketHeader: FC<{
         {marketStage?.type === "Court" ? (
           <div className="w-full">
             <h3 className="mb-2 text-sm text-gray-700">Market is in court</h3>
-            {caseId ? (
+            {caseId != null ? (
               <CourtStageTimer caseId={caseId} />
             ) : (
               <Skeleton height={22} className="w-full rounded-md" />
