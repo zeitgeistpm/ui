@@ -45,6 +45,7 @@ import { MdModeEdit, MdOutlineHistory } from "react-icons/md";
 import { AddressDetails } from "./MarketAddresses";
 import { MarketTimer, MarketTimerSkeleton } from "./MarketTimer";
 import { MarketPromotionCallout } from "./PromotionCallout";
+import Link from "next/link";
 
 export const QuillViewer = dynamic(
   () => import("../../components/ui/QuillViewer"),
@@ -140,7 +141,9 @@ const MarketOutcome: FC<
         <div className="flex flex-1 gap-2 rounded-lg bg-gray-200 px-5 py-3">
           <span className="text-gray-400">By: </span>
           <div className="flex items-center">
-            <UserIdentity user={by} />
+            <Link href={`/portfolio/${by}`}>
+              <UserIdentity user={by} />
+            </Link>
           </div>
         </div>
       )}
@@ -236,10 +239,12 @@ const MarketHistory: FC<
                   <span className="inline font-medium">
                     <span className="font-bold">
                       {marketHistory?.reported?.by ? (
-                        <UserIdentity
-                          user={marketHistory.reported.by}
-                          className="items-baseline"
-                        />
+                        <Link href={`/portfolio/${marketHistory.reported.by}`}>
+                          <UserIdentity
+                            user={marketHistory.reported.by}
+                            className="items-baseline"
+                          />
+                        </Link>
                       ) : (
                         "Unknown"
                       )}
@@ -270,10 +275,12 @@ const MarketHistory: FC<
                         <span className="inline font-medium">
                           <span className="font-bold">
                             {dispute?.by ? (
-                              <UserIdentity
-                                user={dispute?.by}
-                                className="items-baseline"
-                              />
+                              <Link href={`/portfolio/${dispute.by}`}>
+                                <UserIdentity
+                                  user={dispute?.by}
+                                  className="items-baseline"
+                                />
+                              </Link>
                             ) : (
                               "Unknown"
                             )}
