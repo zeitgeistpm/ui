@@ -8,7 +8,7 @@ export const isWSX = true;
 
 export const wsxID = process.env.NEXT_PUBLIC_VERCEL_ENV === "staging" ? 0 : 4;
 export const wsxIdObject = { campaignAsset: wsxID };
-export const wsxAssetIdString = `{"campaignAsset":${wsxID}}`;
+export const wsxAssetIdString = `{\"campaignAsset\":0}"`;
 
 export const ZTG = 10 ** 10;
 
@@ -117,5 +117,6 @@ export const endpointsStaging = getEndpointOptions("staging");
 export const endpointOptions =
   environment === "production" ? endpointsProduction : endpointsStaging;
 
-export const LAST_MARKET_ID_BEFORE_ASSET_MIGRATION =
-  environment === "production" ? 9999 : 9999;
+export const LAST_MARKET_ID_BEFORE_ASSET_MIGRATION = Number(
+  process.env.NEXT_PUBLIC_LAST_MARKET_ID_BEFORE_ASSET_MIGRATION,
+);

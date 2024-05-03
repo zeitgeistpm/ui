@@ -37,6 +37,7 @@ export const useExtrinsic = <T>(
     return ext;
   }, [extrinsicFn]);
   const { data: fee } = useExtrinsicFee(extrinsic);
+
   const resetState = () => {
     setIsError(false);
     setIsSuccess(false);
@@ -106,7 +107,7 @@ export const useExtrinsic = <T>(
         notifications.pushNotification(error, { type: "Error" });
       },
     };
-
+    console.log(fee);
     signAndSend(
       extrinsic,
       signer,
