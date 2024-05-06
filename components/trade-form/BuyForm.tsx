@@ -180,6 +180,7 @@ const BuyForm = ({
       ) {
         return;
       }
+      const amountDecimal = new Decimal(amount);
       const maxPrice = newSpotPrice.mul(1 / slippageMultiplier); // adjust by slippage
 
       const selectedOrders = selectOrdersForMarketBuy(
@@ -190,14 +191,14 @@ const BuyForm = ({
           price,
           side,
         })),
-        new Decimal(amount).abs().mul(ZTG),
+        amountDecimal.abs().mul(ZTG),
       );
 
       return sdk.api.tx.hybridRouter.buy(
         marketId,
         market?.categories?.length,
         selectedAsset,
-        amount.mul(ZTG).toFixed(0),
+        amountDecimal.toFixed(0),
         maxPrice.mul(ZTG).toFixed(0),
         selectedOrders.map(({ id }) => id),
         "ImmediateOrCancel",

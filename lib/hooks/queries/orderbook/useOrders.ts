@@ -38,7 +38,6 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
     async () => {
       if (enabled) {
         const { orders } = await sdk.indexer.orders({ where });
-
         const ordersMapped: Order[] = orders.map((order) => {
           const makerAsset = parseAssetId(
             order.maker.asset,
@@ -55,8 +54,8 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
             order.maker.unfilledAmount,
           );
           const price = IOBaseAssetId.is(makerAsset)
-            ? takerInitialAmount.div(makerInitialAmount)
-            : makerInitialAmount.div(takerInitialAmount);
+            ? makerInitialAmount.div(takerInitialAmount)
+            : takerInitialAmount.div(makerInitialAmount);
 
           const outcomeAssetId = IOMarketOutcomeAssetId.is(makerAsset)
             ? makerAsset

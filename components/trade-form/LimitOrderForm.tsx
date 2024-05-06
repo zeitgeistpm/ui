@@ -36,6 +36,8 @@ import { useForm } from "react-hook-form";
 // for sells, max sell amount is balance
 // price needs to be worse than the best order
 
+//todo: adjust default price based on buys and sells (under spot price on buy, over on sell)
+
 export const LimitBuyOrderForm = ({
   marketId,
   initialAsset,
@@ -73,11 +75,12 @@ export const LimitBuyOrderForm = ({
     (params) => {
       if (!isRpcSdk(sdk) || !market || !selectedAsset || !params) return;
       const { price, amount } = params;
+      const amountIn = amount.mul(price);
       return sdk.api.tx.hybridRouter.buy(
         marketId,
         market.assets.length,
         selectedAsset,
-        amount.mul(ZTG).toFixed(0),
+        amountIn.mul(ZTG).toFixed(0),
         price.mul(ZTG).toFixed(0),
         [],
         "LimitOrder",
@@ -353,8 +356,6 @@ const LimitOrderForm = ({
                   message: "Value is required",
                 },
                 validate: (value) => {
-                  console.log("price", value);
-
                   if (Number(value) >= 1) {
                     return `Price must be less than 1`;
                   } else if (Number(value) <= 0) {
