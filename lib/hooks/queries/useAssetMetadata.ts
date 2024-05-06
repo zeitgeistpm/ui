@@ -101,27 +101,49 @@ export const useAllAssetMetadata = () => {
           },
         ],
       ];
-      const allMetadata = await sdk.api.query.assetRegistry.metadata.entries();
-      for (const meta of allMetadata) {
-        const foreignAssetId = meta[0].args[0].asForeignAsset.toNumber();
-        const location = meta[1].unwrapOr(null)?.location.isSome
-          ? meta[1].unwrap().location.unwrap()
-          : null;
-        const assetMetadata: AssetMetadata = {
-          symbol: meta[1].unwrap().symbol.toPrimitive() as string,
-          name: meta[1].unwrap().name.toPrimitive() as string,
-          location: location,
-          feeFactor: new Decimal(
-            meta[1]
-              .unwrapOr(null)
-              ?.additional.xcm.feeFactor.unwrapOr(null)
-              ?.toString() ?? ZTG,
-          ),
-          decimals: Number(meta[1].unwrap().name.toString()),
-        };
-        res = [...res, [foreignAssetId, assetMetadata]];
-      }
-      return res;
+      // const allMetadata = await sdk.api.query.assetRegistry.metadata.entries();
+      const allMetadata = await sdk.api.query.campaignAssets.metadata.entries();
+      console.log(allMetadata);
+
+      const campaignMeta: [number, AssetMetadata][] = allMetadata.reduce(
+        (accumulator, meta, index) => {
+          const campaignAssetId = index;
+          const assetMetadata: AssetMetadata = {
+            symbol: meta[1].symbol.toPrimitive() as string,
+            name: meta[1].name.toPrimitive() as string,
+            feeFactor: ZTG, //will need to adjust this value
+            location: null, //not present in campaign assets
+            decimals: Number(meta[1].name.toString()),
+          };
+          accumulator.push([campaignAssetId, assetMetadata]);
+          return accumulator;
+        },
+        [] as [number, AssetMetadata][],
+      );
+      console.log([...res, ...campaignMeta]);
+      return [...res, ...campaignMeta];
+
+      // for (const meta of allMetadata) {
+      //   const foreignAssetId = meta[0].args[0].asForeignAsset.toNumber();
+      //   const location = meta[1].unwrapOr(null)?.location.isSome
+      //     ? meta[1].unwrap().location.unwrap()
+      //     : null;
+      //   const assetMetadata: AssetMetadata = {
+      //     symbol: meta[1].unwrap().symbol.toPrimitive() as string,
+      //     name: meta[1].unwrap().name.toPrimitive() as string,
+      //     location: location,
+      //     feeFactor: new Decimal(
+      //       meta[1]
+      //         .unwrapOr(null)
+      //         ?.additional.xcm.feeFactor.unwrapOr(null)
+      //         ?.toString() ?? ZTG,
+      //     ),
+      //     decimals: Number(meta[1].unwrap().name.toString()),
+      //   };
+      //   res = [...res, [foreignAssetId, assetMetadata]];
+      // }
+      // console.log(allMetadata);
+      // return res;
     },
     {
       enabled: Boolean(enabled),

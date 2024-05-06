@@ -1,5 +1,11 @@
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-import { AssetId, IOForeignAssetId, IOZtgAssetId, ZTG } from "@zeitgeistpm/sdk";
+import {
+  AssetId,
+  IOCampaignAssetId,
+  IOForeignAssetId,
+  IOZtgAssetId,
+  ZTG,
+} from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import useFeePayingAssetSelection from "lib/state/fee-paying-asset";
 import { useWallet } from "lib/state/wallet";
@@ -8,6 +14,8 @@ import { ChainConstants, useChainConstants } from "./useChainConstants";
 import { CurrencyBalance } from "./useCurrencyBalances";
 import { useForeignAssetBalances } from "./useForeignAssetBalances";
 import { useZtgBalance } from "./useZtgBalance";
+import { useBalance } from "./useBalance";
+import { campaignID } from "lib/constants";
 
 type FeeAsset = {
   assetId: AssetId;
@@ -29,12 +37,18 @@ export const useFeePayingAsset = (
   const { data: foreignAssetBalances } = useForeignAssetBalances(
     activeAccount?.address,
   );
+
+  const { data: campaignAssetBalance } = useBalance(activeAccount?.address, {
+    CampaignAsset: campaignID,
+  });
+
   const { data: constants } = useChainConstants();
   const { data: assetMetadata } = useAllAssetMetadata();
   const { assetSelection } = useFeePayingAssetSelection();
   const enabled =
     !!nativeBalance &&
     !!foreignAssetBalances &&
+    !!campaignAssetBalance &&
     !!activeAccount &&
     !!assetMetadata &&
     !!baseFee &&
@@ -77,6 +91,24 @@ export const useFeePayingAsset = (
               amount: baseFee,
               sufficientBalance: true,
             };
+          } else if (IOCampaignAssetId.is(assetSelection.value)) {
+            const balance = campaignAssetBalance;
+            const metadata = assetMetadata?.find(
+              (data) =>
+                IOCampaignAssetId.is(assetSelection.value) &&
+                assetSelection.value.CampaignAsset === data[0],
+            )?.[1];
+            const feeFactor = metadata?.feeFactor.div(ZTG);
+            const fee =
+              feeFactor && baseFee.mul(feeFactor).mul(foreignAssetFeeBuffer);
+            if (metadata && fee && balance) {
+              return {
+                assetId: assetSelection.value,
+                symbol: metadata?.symbol,
+                amount: fee,
+                sufficientBalance: fee && balance?.greaterThan(fee),
+              };
+            }
           } else if (IOForeignAssetId.is(assetSelection.value)) {
             const balance = foreignAssetBalances.find(
               (asset) =>
