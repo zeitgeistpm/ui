@@ -36,7 +36,7 @@ import { useForm } from "react-hook-form";
 // for sells, max sell amount is balance
 // price needs to be worse than the best order
 
-//todo: adjust default price based on buys and sells (under spot price on buy, over on sell)
+const DEFAULT_PRICE_ADJUSTMENT = 0.01;
 
 export const LimitBuyOrderForm = ({
   marketId,
@@ -240,9 +240,12 @@ const LimitOrderForm = ({
   useEffect(() => {
     // default price to current spot price
     if (!assetsAreEqual(initialPriceSetAsset, asset)) {
-      setValue("price", spotPrice?.toFixed(3));
+      const adjustedPrice = spotPrice?.plus(
+        side === "buy" ? DEFAULT_PRICE_ADJUSTMENT : -DEFAULT_PRICE_ADJUSTMENT,
+      );
+      setValue("price", adjustedPrice?.toFixed(3));
       setInitialPriceSetAsset(asset);
-      onPriceChange?.(spotPrice ?? new Decimal(0));
+      onPriceChange?.(adjustedPrice ?? new Decimal(0));
       trigger("price"); // reset validation
     }
   }, [spotPrice, initialPriceSetAsset]);
