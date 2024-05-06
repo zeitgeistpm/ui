@@ -46,7 +46,7 @@ const CourtUnstakeButton = ({ className }: { className?: string }) => {
   return (
     <>
       <button
-        className={`rounded-md bg-[#DC056C] px-4 py-2 text-white ${className}`}
+        className={`rounded-md bg-[#670031] px-4 py-2 text-white ${className}`}
         onClick={() => setIsOpen(true)}
       >
         Unstake
