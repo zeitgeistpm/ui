@@ -100,7 +100,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
       <div className="relative">
         <button
           disabled={isLoading}
-          className={`rounded-md bg-[#670031] px-4 py-2 text-white transition-all  ${
+          className={`rounded-md bg-[#DC056C] px-4 py-2 text-white transition-all  ${
             connectedParticipant?.type === "Delegator" &&
             "ring-2 ring-orange-500"
           } ${className}`}
