@@ -117,7 +117,7 @@ export async function getStaticProps({ params }) {
     getMarket(client, params.marketid),
     getCmsFullMarketMetadataForMarket(params.marketid),
   ]);
-  console.log(market);
+
   const chartSeries: ChartSeries[] = market?.categories?.map(
     (category, index) => {
       return {
@@ -288,7 +288,7 @@ const Market: NextPage<MarketPageProps> = ({
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
-  console.log(market);
+
   const marketHasPool =
     (market?.scoringRule === ScoringRule.Cpmm &&
       poolId != null &&

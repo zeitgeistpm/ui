@@ -8,6 +8,7 @@ import { useMemo, useState } from "react";
 import { useSdkv2 } from "./useSdkv2";
 import { useExtrinsicFee } from "./queries/useExtrinsicFee";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
+import Decimal from "decimal.js";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -36,8 +37,15 @@ export const useExtrinsic = <T>(
     const ext = extrinsicFn();
     return ext;
   }, [extrinsicFn]);
-  const { data: fee } = useExtrinsicFee(extrinsic);
 
+  //TODO: renable once fee paying assets refactored
+  // const { data: fee } = useExtrinsicFee(extrinsic);
+  let fee = {
+    assetId: { CampaignAsset: 0 },
+    symbol: "WSX",
+    amount: new Decimal(247698589.08),
+    sufficientBalance: true,
+  };
   const resetState = () => {
     setIsError(false);
     setIsSuccess(false);
@@ -107,12 +115,11 @@ export const useExtrinsic = <T>(
         notifications.pushNotification(error, { type: "Error" });
       },
     };
-    console.log(fee);
     signAndSend(
       extrinsic,
       signer,
       extrinsicCallback(extrinsicCallbackParams),
-      IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
+      fee?.assetId.CampaignAsset,
     ).catch((error) => {
       notifications.pushNotification(error?.toString() ?? "Unknown Error", {
         type: "Error",

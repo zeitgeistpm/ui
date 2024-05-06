@@ -112,7 +112,6 @@ const _callback = (
   _unsub: any,
 ) => {
   const { events, status } = result;
-  console.log(events, status);
   if (status.isInBlock) {
     events.forEach(({ phase, event: { data, method, section } }) => {
       console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
@@ -151,11 +150,8 @@ export const signAndSend = async (
           },
         );
       } else if (isWSX) {
-        console.log(signer, foreignAssetNumber);
-        const registry = new TypeRegistry();
         const AssetId = {
-          CampaignAsset: (value) => ({ CampaignAsset: value }), // Define enum variants
-          // Define other variants if needed
+          CampaignAsset: (value) => ({ CampaignAsset: value }),
         };
         const unsub = await tx.signAndSend(
           signer,

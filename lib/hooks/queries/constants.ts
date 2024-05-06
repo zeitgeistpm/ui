@@ -9,8 +9,8 @@ export const marketMetaFilter: MarketWhereInput = {
   question_not_eq: "",
   categories_isNull: false,
   hasValidMetaCategories_eq: true,
-  ...(isWSX ? { baseAsset_eq: wsxAssetIdString } : {}),
-  ...(!isWSX ? { baseAsset_not_eq: wsxAssetIdString } : {}),
+  // ...(isWSX ? { baseAsset_eq: wsxAssetIdString } : {}),
+  // ...(!isWSX ? { baseAsset_not_eq: wsxAssetIdString } : {}),
 };
 
 export const swapsMetaFilter: HistoricalSwapWhereInput = {

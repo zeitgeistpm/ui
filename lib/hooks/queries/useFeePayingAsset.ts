@@ -9,7 +9,8 @@ import { CurrencyBalance } from "./useCurrencyBalances";
 import { useForeignAssetBalances } from "./useForeignAssetBalances";
 import { useZtgBalance } from "./useZtgBalance";
 import { isWSX } from "lib/constants";
-import { useEffect } from "react";
+import { IOCampaignAssetId } from "@zeitgeistpm/sdk";
+import { useBalance } from "./useBalance";
 
 type FeeAsset = {
   assetId: AssetId;
@@ -31,6 +32,10 @@ export const useFeePayingAsset = (
   const { data: foreignAssetBalances } = useForeignAssetBalances(
     activeAccount?.address,
   );
+  // const { data: foreignAssetBalances } = useBalance(activeAccount?.address, {
+  //   CampaignAsset: 0,
+  // });
+
   const { data: constants } = useChainConstants();
   const { data: assetMetadata } = useAllAssetMetadata();
   const { assetSelection } = useFeePayingAssetSelection();
@@ -80,6 +85,8 @@ export const useFeePayingAsset = (
               sufficientBalance: true,
             };
           } else if (IOForeignAssetId.is(assetSelection.value)) {
+            // } else if (IOCampaignAssetId.is(assetSelection.value)) {
+            // const balance = foreignAssetBalances;
             const balance = foreignAssetBalances.find(
               (asset) =>
                 IOForeignAssetId.is(assetSelection.value) &&
@@ -90,10 +97,10 @@ export const useFeePayingAsset = (
                 IOForeignAssetId.is(assetSelection.value) &&
                 assetSelection.value.ForeignAsset === data[0],
             )?.[1];
+            // const feeFactor = new Decimal(10000000000).div(ZTG);
             const feeFactor = metadata?.feeFactor.div(ZTG);
             const fee =
               feeFactor && baseFee.mul(feeFactor).mul(foreignAssetFeeBuffer);
-
             if (metadata && fee && balance) {
               return {
                 assetId: assetSelection.value,
