@@ -142,7 +142,7 @@ export const isValidBuyAmount = (
       assetReserve,
       amountInMinusFees,
       liquidityParameter,
-    ).lessThanOrEqualTo(lsmrConstant)
+    ).lessThanOrEqualTo(lmsrConstant)
   ) {
     return { isValid: false, message: "Amount in too low" };
   } else {
@@ -187,7 +187,7 @@ export const calculateReserveAfterSell = (
   return term1.plus(term2).minus(1).ln().mul(liquidity).plus(assetReserve);
 };
 
-const lsmrConstant = 0.1;
+const lmsrConstant = 0.1;
 
 const calculatePoolNumericalThreshold = (liquidityParameter: Decimal) =>
   liquidityParameter.mul(10);
