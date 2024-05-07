@@ -351,9 +351,12 @@ const Market: NextPage<MarketPageProps> = ({
           ) : (
             <></>
           )}
-          <OrdersTable
-            where={{ marketId_eq: marketId, makerAccountId_eq: realAddress }}
-          />
+          <div className="mt-3 flex flex-col gap-y-3">
+            <div>My Orders</div>
+            <OrdersTable
+              where={{ marketId_eq: marketId, makerAccountId_eq: realAddress }}
+            />
+          </div>
           {marketIsLoading === false && marketHasPool === false && (
             <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
               <div className="h-ztg-20 w-ztg-20">

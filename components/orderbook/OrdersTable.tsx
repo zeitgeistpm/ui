@@ -33,6 +33,11 @@ const columns: TableColumn[] = [
     type: "text",
   },
   {
+    header: "Filled",
+    accessor: "percentageFilled",
+    type: "text",
+  },
+  {
     header: "Total Value",
     accessor: "value",
     type: "text",
@@ -41,7 +46,7 @@ const columns: TableColumn[] = [
     header: "",
     accessor: "button",
     type: "component",
-    width: "200px",
+    width: "180px",
   },
 ];
 
@@ -61,12 +66,14 @@ const OrdersTable = ({ where }: { where: InputMaybe<OrderWhereInput> }) => {
       id,
       marketId,
       makerAddress,
+      filledPercentage,
     }) => {
       const index = getIndexOf(outcomeAssetId);
       const market = markets?.find((market) => market.marketId === marketId);
       const outcomeName = market?.categories?.[index]?.name;
       const baseAsset = parseAssetIdString(market?.baseAsset) as BaseAssetId;
       const baseSymbol = lookupAssetSymbol(baseAsset);
+      const orderFilled = filledPercentage === 100;
 
       return {
         side: side.toUpperCase(),
@@ -74,10 +81,11 @@ const OrdersTable = ({ where }: { where: InputMaybe<OrderWhereInput> }) => {
         amount: outcomeAmount.div(ZTG).toFixed(3),
         value: `${outcomeAmount.mul(price).div(ZTG).toFixed(3)} ${baseSymbol}`,
         price: `${price.toFixed(3)} ${baseSymbol}`,
+        percentageFilled: `${filledPercentage}%`,
         button: (
           <CancelOrderButton
             orderId={id}
-            disabled={realAddress !== makerAddress}
+            disabled={realAddress !== makerAddress || orderFilled}
           />
         ),
       };
@@ -121,7 +129,7 @@ const CancelOrderButton = ({
   return (
     <SecondaryButton
       onClick={() => cancelOrder()}
-      disabled={isLoading || isSuccess}
+      disabled={isLoading || isSuccess || disabled}
     >
       Cancel Order
     </SecondaryButton>

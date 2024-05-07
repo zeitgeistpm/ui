@@ -27,6 +27,7 @@ export type Order = {
     | {
         ScalarOutcome: [MarketId, "Short" | "Long"];
       };
+  filledPercentage: number;
 };
 
 export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
@@ -38,6 +39,7 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
     async () => {
       if (enabled) {
         const { orders } = await sdk.indexer.orders({ where });
+        console.log(orders);
         const ordersMapped: Order[] = orders.map((order) => {
           const makerAsset = parseAssetId(
             order.maker.asset,
@@ -67,6 +69,11 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
             ? takerInitialAmount
             : makerInitialAmount;
 
+          const filledPercentage = new Decimal(order.taker.filledAmount)
+            .div(takerInitialAmount)
+            .mul(100)
+            .toNumber();
+
           const mappedOrder: Order = {
             id: order.id,
             marketId: order.marketId,
@@ -75,6 +82,7 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
             price,
             outcomeAmount: outcomeAmount,
             outcomeAssetId: outcomeAssetId!, // one of the assets must be MarketOutcome
+            filledPercentage,
           };
 
           return mappedOrder;

@@ -10,7 +10,7 @@ export type MarketOrder = {
 export const selectOrdersForMarketBuy = (
   endingPrice: Decimal,
   assetOrderBook: MarketOrder[], // orders for asset to buy/sell
-  amount: Decimal,
+  outcomeAssetamount: Decimal,
 ) => {
   const sortedOrders = assetOrderBook.sort((a, b) =>
     a.price.minus(b.price).toNumber(),
@@ -25,7 +25,7 @@ export const selectOrdersForMarketBuy = (
   let filledAmount = new Decimal(0);
   const selectedOrders: MarketOrder[] = [];
   orderCandidates.forEach((order) => {
-    if (filledAmount.lessThan(amount)) {
+    if (filledAmount.lessThan(outcomeAssetamount)) {
       filledAmount = filledAmount.plus(order.amount);
       selectedOrders.push(order);
     }
@@ -37,7 +37,7 @@ export const selectOrdersForMarketBuy = (
 export const selectOrdersForMarketSell = (
   endingPrice: Decimal,
   assetOrderBook: MarketOrder[], // orders for asset to buy/sell
-  amount: Decimal,
+  outcomeAssetamount: Decimal,
 ) => {
   const sortedOrders = assetOrderBook.sort((a, b) =>
     b.price.minus(a.price).toNumber(),
@@ -52,7 +52,7 @@ export const selectOrdersForMarketSell = (
   let filledAmount = new Decimal(0);
   const selectedOrders: MarketOrder[] = [];
   orderCandidates.forEach((order) => {
-    if (filledAmount.lessThan(amount)) {
+    if (filledAmount.lessThan(outcomeAssetamount)) {
       filledAmount = filledAmount.plus(order.amount);
       selectedOrders.push(order);
     }

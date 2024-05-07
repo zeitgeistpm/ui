@@ -180,8 +180,9 @@ const BuyForm = ({
       ) {
         return;
       }
-      const amountDecimal = new Decimal(amount);
+      const amountDecimal = new Decimal(amount).mul(ZTG); // base asset amount
       const maxPrice = newSpotPrice.mul(1 / slippageMultiplier); // adjust by slippage
+      const approxOutcomeAmount = amountDecimal.mul(maxPrice); // this will be slightly higher than the expect amount out and therefore may pick up extra order suggestions
 
       const selectedOrders = selectOrdersForMarketBuy(
         maxPrice,
@@ -191,7 +192,7 @@ const BuyForm = ({
           price,
           side,
         })),
-        amountDecimal.abs().mul(ZTG),
+        approxOutcomeAmount.abs().mul(ZTG),
       );
 
       return sdk.api.tx.hybridRouter.buy(
