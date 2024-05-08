@@ -59,6 +59,30 @@ export const calculateSpotPrice = (
   return new Decimal(0).minus(reserve).div(liquidity).exp();
 };
 
+export const calculateSpotPriceAfterBuy = (
+  initialReserve: Decimal, // amount of asset in the pool
+  liquidity: Decimal, // liqudity parameter of the pool
+  outcomeAssetOut: Decimal,
+  baseAssetAmountIn: Decimal,
+) => {
+  const newReserve = initialReserve.minus(
+    outcomeAssetOut.minus(baseAssetAmountIn),
+  );
+  return calculateSpotPrice(newReserve, liquidity);
+};
+
+export const calculateSpotPriceAfterSell = (
+  initialReserve: Decimal, // amount of asset in the pool
+  liquidity: Decimal, // liqudity parameter of the pool
+  outcomeAssetIn: Decimal,
+  baseAssetAmountOut: Decimal,
+) => {
+  const newReserve = initialReserve.plus(
+    outcomeAssetIn.minus(baseAssetAmountOut),
+  );
+  return calculateSpotPrice(newReserve, liquidity);
+};
+
 export const approximateMaxAmountInForBuy = (
   reserve: Decimal, // amount of asset in the pool
   liquidity: Decimal, // liqudity parameter of the pool

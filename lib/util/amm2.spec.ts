@@ -9,6 +9,8 @@ import {
   isValidBuyAmount,
   isValidSellAmount,
   calculateReserveAfterSell,
+  calculateSpotPriceAfterBuy,
+  calculateSpotPriceAfterSell,
 } from "./amm2";
 import { ZTG } from "@zeitgeistpm/sdk";
 
@@ -80,6 +82,31 @@ describe("amm2", () => {
       );
 
       expect(amountOut.toFixed(5)).toEqual("0.25000");
+    });
+  });
+
+  describe("calculateSpotPriceAfterBuy", () => {
+    test("should work", () => {
+      const spotPrice = calculateSpotPriceAfterBuy(
+        new Decimal(59.00001516623987),
+        new Decimal(144.00003701590745),
+        new Decimal(543.3339883933237),
+        new Decimal(486),
+      );
+
+      expect(spotPrice.toNumber()).toEqual(0.98849704337919602199);
+    });
+  });
+  describe("calculateSpotPriceAfterSell", () => {
+    test("should work", () => {
+      const spotPrice = calculateSpotPriceAfterSell(
+        new Decimal(99.0),
+        new Decimal(108.04431012579187),
+        new Decimal(40),
+        new Decimal(14.27511827415865),
+      );
+
+      expect(spotPrice.toFixed(8)).toEqual("0.31525092");
     });
   });
 
