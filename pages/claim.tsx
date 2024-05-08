@@ -59,7 +59,7 @@ const ClaimPage: NextPage = () => {
         </div>
         {showEligibility === false ? (
           <>
-            <div className="w-full text-lg font-semibold">
+            <div className="font-bol w-full text-xl font-bold">
               Enter your Polkadot address below to check your eligibility:
             </div>
             <div className="flex w-full flex-col gap-4 rounded-md bg-[#DFE5ED] p-7 sm:flex-row">
