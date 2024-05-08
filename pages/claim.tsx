@@ -43,7 +43,7 @@ const ClaimPage: NextPage = () => {
             alt="Airdrop"
           />
         </div>
-        <div className="w-full whitespace-pre-wrap text-lg">
+        <div className="mb-4 w-full whitespace-pre-wrap text-lg">
           This airdrop is designed for those who have actively participated in
           Polkadot's OpenGov by voting before the start of{" "}
           <a href="https://polkadot.polkassembly.io/referenda/502">
@@ -51,11 +51,15 @@ const ClaimPage: NextPage = () => {
           </a>
           . The snapshot was taken February 14th, 2024 (22:14:54 UTC). Only
           wallets that voted on Polkadot's OpenGov before the snapshot will be
-          eligible. Claims will be open until July 1st, 2024.
+          eligible. Claims will be open until July 1st, 2024.{" "}
+          <span className="mt-4 italic underline">
+            Users will receive their airdrop ZTG tokens at the end of the claim
+            period.
+          </span>
         </div>
         {showEligibility === false ? (
           <>
-            <div className="w-full text-xl font-bold">
+            <div className="w-full text-lg font-semibold">
               Enter your Polkadot address below to check your eligibility:
             </div>
             <div className="flex w-full flex-col gap-4 rounded-md bg-[#DFE5ED] p-7 sm:flex-row">
