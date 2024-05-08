@@ -171,12 +171,14 @@ const SellForm = ({
 
       const selectedOrders = selectOrdersForMarketSell(
         minPrice,
-        orders.map(({ id, side, price, outcomeAmount }) => ({
-          id: Number(id),
-          amount: outcomeAmount,
-          price,
-          side,
-        })),
+        orders
+          .filter(({ filledPercentage }) => filledPercentage !== 100)
+          .map(({ id, side, price, outcomeAmount }) => ({
+            id: Number(id),
+            amount: outcomeAmount,
+            price,
+            side,
+          })),
         new Decimal(amount).abs().mul(ZTG),
       );
 

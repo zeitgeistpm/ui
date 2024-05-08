@@ -181,17 +181,23 @@ const BuyForm = ({
         return;
       }
       const amountDecimal = new Decimal(amount).mul(ZTG); // base asset amount
+      console.log(spotPrice?.toNumber());
+      console.log(newSpotPrice.toNumber());
+
       const maxPrice = newSpotPrice.mul(1 / slippageMultiplier); // adjust by slippage
+      console.log(maxPrice.toNumber());
       const approxOutcomeAmount = amountDecimal.mul(maxPrice); // this will be slightly higher than the expect amount out and therefore may pick up extra order suggestions
 
       const selectedOrders = selectOrdersForMarketBuy(
         maxPrice,
-        orders.map(({ id, side, price, outcomeAmount }) => ({
-          id: Number(id),
-          amount: outcomeAmount,
-          price,
-          side,
-        })),
+        orders
+          .filter(({ filledPercentage }) => filledPercentage !== 100)
+          .map(({ id, side, price, outcomeAmount }) => ({
+            id: Number(id),
+            amount: outcomeAmount,
+            price,
+            side,
+          })),
         approxOutcomeAmount.abs().mul(ZTG),
       );
 
