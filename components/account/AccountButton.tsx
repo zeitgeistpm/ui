@@ -103,7 +103,6 @@ const AccountButton: FC<{
   const { data: balance } = useBalance(activeAccount?.address, {
     CampaignAsset: 0,
   });
-
   const { data: constants } = useChainConstants();
 
   const connect = async () => {

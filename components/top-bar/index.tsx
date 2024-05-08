@@ -219,6 +219,7 @@ const TopBar = () => {
 const GetTokensButton = () => {
   const { activeAccount, connected } = useWallet();
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
+  console.log(isCampaignAsset);
   return (
     <>
       <Transition

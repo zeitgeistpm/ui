@@ -39,13 +39,13 @@ export const useExtrinsic = <T>(
   }, [extrinsicFn]);
 
   //TODO: renable once fee paying assets refactored
-  // const { data: fee } = useExtrinsicFee(extrinsic);
-  let fee = {
-    assetId: { CampaignAsset: 0 },
-    symbol: "WSX",
-    amount: new Decimal(247698589.08),
-    sufficientBalance: true,
-  };
+  const { data: fee } = useExtrinsicFee(extrinsic);
+  // let fee = {
+  //   assetId: { CampaignAsset: 0 },
+  //   symbol: "WSX",
+  //   amount: new Decimal(247698589.08),
+  //   sufficientBalance: true,
+  // };
   const resetState = () => {
     setIsError(false);
     setIsSuccess(false);

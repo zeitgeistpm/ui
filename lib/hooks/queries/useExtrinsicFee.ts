@@ -41,7 +41,6 @@ export const useExtrinsicFee = (
       keepPreviousData: true,
     },
   );
-
   const feeQuery = useFeePayingAsset(fee);
   // console.log(feeQuery);
   return feeQuery;
