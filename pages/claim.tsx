@@ -43,7 +43,7 @@ const ClaimPage: NextPage = () => {
             alt="Airdrop"
           />
         </div>
-        <div className="mb-4 w-full whitespace-pre-wrap text-lg">
+        <div className="w-full whitespace-pre-wrap text-lg">
           This airdrop is designed for those who have actively participated in
           Polkadot's OpenGov by voting before the start of{" "}
           <a href="https://polkadot.polkassembly.io/referenda/502">
