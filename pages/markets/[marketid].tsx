@@ -77,7 +77,7 @@ import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 import { FaChevronUp } from "react-icons/fa";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
@@ -195,6 +195,10 @@ const Market: NextPage<MarketPageProps> = ({
 
   const tradeItem = useTradeItem();
 
+  if (indexedMarket == null) {
+    return <NotFoundPage backText="Back To Markets" backLink="/" />;
+  }
+
   const outcomeAssets = indexedMarket?.outcomeAssets?.map(
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
@@ -285,16 +289,11 @@ const Market: NextPage<MarketPageProps> = ({
     }
   }, [market?.report, disputes]);
 
-  if (indexedMarket == null) {
-    return <NotFoundPage backText="Back To Markets" backLink="/" />;
-  }
-
   const marketHasPool =
     (market?.scoringRule === ScoringRule.Cpmm &&
       poolId != null &&
       poolIdLoading === false) ||
-    (market?.scoringRule === ScoringRule.AmmCdaHybrid &&
-      market?.neoPool != null);
+    (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
 
   const poolCreationDate = new Date(
     indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
@@ -396,7 +395,7 @@ const Market: NextPage<MarketPageProps> = ({
             <MarketDescription market={indexedMarket} />
           </div>
 
-          {!isWSX && (
+          {!isCampaignAsset && (
             <AddressDetails title="Oracle" address={indexedMarket.oracle} />
           )}
           {marketHasPool === true && (
@@ -419,7 +418,7 @@ const Market: NextPage<MarketPageProps> = ({
             />
           )}
 
-          {!isWSX && market && (marketHasPool || poolDeployed) && (
+          {!isCampaignAsset && market && (marketHasPool || poolDeployed) && (
             <div className="my-12">
               <div
                 className="mb-8 flex cursor-pointer items-center text-mariner"
@@ -478,7 +477,9 @@ const Market: NextPage<MarketPageProps> = ({
                 <ReferendumSummary referendumIndex={referendumIndex} />
               </div>
             )}
-            {!isWSX && <SimilarMarketsSection market={market ?? undefined} />}
+            {!isCampaignAsset && (
+              <SimilarMarketsSection market={market ?? undefined} />
+            )}
           </div>
         </div>
       </div>

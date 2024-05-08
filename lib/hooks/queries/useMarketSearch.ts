@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MarketOrderByInput, ZeitgeistIndexer } from "@zeitgeistpm/indexer";
 import { isIndexedSdk } from "@zeitgeistpm/sdk";
 import Fuse from "fuse.js";
-import { isWSX, wsxID } from "lib/constants";
+import { isCampaignAsset, campaignID } from "lib/constants";
 import { useDebounce } from "use-debounce";
 import { useSdkv2 } from "../useSdkv2";
 
@@ -41,8 +41,12 @@ export const searchMarketsText = async (
     where: {
       AND: [
         {
-          baseAsset_eq: isWSX ? `{"foreignAsset":${wsxID}}` : undefined,
-          baseAsset_not_eq: !isWSX ? `{"foreignAsset":${wsxID}}` : undefined,
+          baseAsset_eq: isCampaignAsset
+            ? `{"foreignAsset":${campaignID}}`
+            : undefined,
+          baseAsset_not_eq: !isCampaignAsset
+            ? `{"foreignAsset":${campaignID}}`
+            : undefined,
         },
         {
           OR: search,

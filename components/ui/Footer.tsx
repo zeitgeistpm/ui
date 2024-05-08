@@ -3,11 +3,11 @@ import axios from "axios";
 import Link from "next/link";
 import { useNotifications } from "lib/state/notifications";
 import { useForm } from "react-hook-form";
-import { endpointOptions, isWSX } from "lib/constants";
+import { endpointOptions, isCampaignAsset } from "lib/constants";
 import Input from "./Input";
 import Image from "next/image";
 
-const emailList = isWSX
+const emailList = isCampaignAsset
   ? "https://emails.zeitgeist.pm/wsx-subscribe"
   : "https://emails.zeitgeist.pm/app-subscribe";
 
@@ -93,7 +93,7 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
 const FooterMenus = () => {
   return (
     <>
-      {isWSX ? (
+      {isCampaignAsset ? (
         <div className="grid w-full grid-cols-3 gap-7">
           <FooterMenu
             className="col-span-1"
@@ -152,7 +152,7 @@ const Footer = () => {
           <FooterNewsletterSub title="Subscribe to Newsletter" />
         </div>
         <div className="flex flex-col gap-5 md:flex-row">
-          {isWSX ? (
+          {isCampaignAsset ? (
             <Image
               className=" mx-auto block invert"
               src="/wsx/powered-ztg.svg"

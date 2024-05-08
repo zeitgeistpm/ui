@@ -6,7 +6,7 @@ import React, { Fragment } from "react";
 import AcccountSettingsForm from "./AccountSettingsForm";
 import FeePayingAssetSelect from "./FeePayingAssetSelect";
 import OtherSettingsForm from "./OtherSettingsForm";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 
 export type SettingsModalProps = {
   open: boolean;
@@ -51,7 +51,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                   )}
                 </Tab>
               </div>
-              {!isWSX && (
+              {!isCampaignAsset && (
                 <>
                   <div className="center flex-grow">
                     <Tab as={Fragment}>

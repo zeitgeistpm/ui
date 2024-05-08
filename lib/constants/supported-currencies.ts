@@ -1,7 +1,7 @@
 import { AssetId } from "@zeitgeistpm/sdk";
 import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 import { isEqual } from "lodash-es";
-import { wsxID } from ".";
+import { campaignID } from ".";
 
 export type CurrencyMetadata = {
   name: string;
@@ -32,7 +32,7 @@ export const supportedCurrencies = [
     description: "Create market with WSX as the base asset.",
     image: "/currencies/wsx-currency.png",
     twColor: "ztg-blue",
-    assetId: { CampaignAsset: wsxID } as const,
+    assetId: { CampaignAsset: campaignID } as const,
   } satisfies CurrencyMetadata,
   {
     name: "USDC" as const,

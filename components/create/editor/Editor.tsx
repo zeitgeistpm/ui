@@ -37,7 +37,7 @@ import Input from "components/ui/Input";
 import TimezoneSelect from "./inputs/TimezoneSelect";
 import FeeSelect from "./inputs/FeeSelect";
 import { useWallet } from "lib/state/wallet";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 import { marketFormDataToExtrinsicParams } from "lib/state/market-creation/types/form";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 

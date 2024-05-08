@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Keyring } from "@polkadot/keyring";
-import { wsxID } from "lib/constants";
+import { campaignID } from "lib/constants";
 import * as jose from "jose";
 
 export default async function checkNewUser(req, res) {
@@ -90,7 +90,7 @@ async function fundUser(wallet) {
     // 10000000000000 min amoount
     const transfer = api.tx.assetManager.transfer(
       wallet,
-      { ForeignAsset: wsxID },
+      { ForeignAsset: campaignID },
       amount,
     );
 

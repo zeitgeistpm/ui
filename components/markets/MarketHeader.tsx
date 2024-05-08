@@ -45,7 +45,7 @@ import { MdModeEdit, MdOutlineHistory } from "react-icons/md";
 import { AddressDetails } from "./MarketAddresses";
 import { MarketTimer, MarketTimerSkeleton } from "./MarketTimer";
 import { MarketPromotionCallout } from "./PromotionCallout";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 
 export const QuillViewer = dynamic(
   () => import("../../components/ui/QuillViewer"),
@@ -486,7 +486,7 @@ const MarketHeader: FC<{
           </div>
         </div>
       </div>
-      {!isWSX && (
+      {!isCampaignAsset && (
         <>
           <div className="relative mb-4 flex items-center gap-3">
             <AddressDetails title="Creator" address={market.creator} />

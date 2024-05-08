@@ -12,7 +12,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { hotjar } from "react-hotjar";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
@@ -98,7 +98,7 @@ const MyApp = ({ Component, pageProps }) => {
           >
             <Head>
               <title>
-                {isWSX
+                {isCampaignAsset
                   ? "The WSX - Powered by Zeitgeist"
                   : "Zeitgeist - Prediction Markets"}
               </title>

@@ -17,7 +17,7 @@ import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { FullCmsMarketMetadata } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 import { marketMetaFilter } from "./constants";
-import { isWSX, wsxAssetIdString } from "../../constants";
+import { isCampaignAsset, campaignAssetIdString } from "../../constants";
 import { marketsRootQuery } from "./useMarket";
 
 import { WHITELISTED_TRUSTED_CREATORS } from "lib/constants/whitelisted-trusted-creators";
@@ -72,18 +72,18 @@ export const useInfiniteMarkets = (
     const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
       where: {
         AND: [
-          // {
-          //   ...validMarketWhereInput,
-          //   status_not_in: [MarketStatus.Destroyed],
-          //   status_in: statuses.length === 0 ? undefined : statuses,
-          //   tags_containsAny: tags?.length === 0 ? undefined : tags,
-          //   baseAsset_in: isWSX
-          //     ? [wsxAssetIdString]
-          //     : currencies?.length !== 0
-          //       ? currencies
-          //       : undefined,
-          //   scoringRule_not_eq: ScoringRule.Parimutuel,
-          // },
+          {
+            ...validMarketWhereInput,
+            status_not_in: [MarketStatus.Destroyed],
+            status_in: statuses.length === 0 ? undefined : statuses,
+            tags_containsAny: tags?.length === 0 ? undefined : tags,
+            baseAsset_in: isCampaignAsset
+              ? [campaignAssetIdString]
+              : currencies?.length !== 0
+                ? currencies
+                : undefined,
+            scoringRule_not_eq: ScoringRule.Parimutuel,
+          },
           {
             disputeMechanism_isNull: false,
             OR: [

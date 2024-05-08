@@ -14,7 +14,7 @@ import { ChainName, CHAIN_IMAGES } from "lib/constants/chains";
 import TransferButton from "./TransferButton";
 import { AssetId } from "@zeitgeistpm/sdk";
 import { convertDecimals } from "lib/util/convert-decimals";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset, campaignLabel } from "lib/constants";
 
 const columns: TableColumn[] = [
   {
@@ -124,9 +124,10 @@ const CurrenciesTable = ({ address }: { address: string }) => {
   const { data: constants } = useChainConstants();
 
   // filter WSX assets depending on client
-  const balances = isWSX
-    ? allBalances?.filter((b) => b.symbol === "WSX")
-    : allBalances?.filter((b) => b.symbol !== "WSX");
+  // TODO: filter assets from supported list instead
+  const balances = isCampaignAsset
+    ? allBalances?.filter((b) => b.symbol === campaignLabel)
+    : allBalances?.filter((b) => b.symbol !== campaignLabel);
 
   const tableData: TableData[] | undefined = balances
     ?.sort((a, b) => b.balance.minus(a.balance).toNumber())

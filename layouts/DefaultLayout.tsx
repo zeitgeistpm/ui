@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 
 import { Account } from "components/account/Account";
 import { ConfirmationProvider } from "components/confirmation/ConfirmationProvider";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 import { DisclaimerModal } from "components/onboarding/DisclaimerModal";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
@@ -98,9 +98,8 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
       </TradeItemContext.Provider>
       <Account />
       <Onboarding />
-      {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" && !isWSX && (
-        <GrillChat />
-      )}
+      {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" &&
+        !isCampaignAsset && <GrillChat />}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import { persistentAtom } from "./util/persistent-atom";
 import { AssetOption } from "components/ui/AssetSelect";
-import { isWSX, wsxID } from "lib/constants";
+import { isCampaignAsset, campaignID, campaignLabel } from "lib/constants";
 import { useEffect } from "react";
 
 type SelectedFeeAsset = AssetOption;
@@ -18,8 +18,9 @@ const useFeePayingAssetSelection = () => {
   const [state, setState] = useAtom(feePayingAssetStateAtom);
 
   useEffect(() => {
-    isWSX && setState({ label: "WSX", value: { CampaignAsset: wsxID } });
-  }, [isWSX]);
+    isCampaignAsset &&
+      setState({ label: campaignLabel, value: { CampaignAsset: campaignID } });
+  }, [isCampaignAsset]);
 
   const setAsset = (selection: SelectedFeeAsset) => {
     setState(selection);

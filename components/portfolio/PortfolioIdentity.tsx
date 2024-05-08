@@ -3,7 +3,7 @@ import DiscordIcon from "components/icons/DiscordIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
 import SettingsModal from "components/settings/SettingsModal";
 import Avatar from "components/ui/Avatar";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
@@ -40,7 +40,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
   return (
     <>
       <div className="mb-5 flex w-full flex-col justify-center gap-y-2 sm:gap-y-5">
-        {!isWSX && (
+        {!isCampaignAsset && (
           <div className="flex flex-col gap-5 sm:flex-row">
             <div>{address && <Avatar address={address} size={100} />}</div>
             <div className="flex flex-col justify-center">

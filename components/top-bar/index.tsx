@@ -19,7 +19,7 @@ import {
 import { useCategoryCounts } from "lib/hooks/queries/useCategoryCounts";
 import MarketSearch from "components/markets/MarketSearch";
 import { Alerts } from "./Alerts";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 import { delay } from "lib/util/delay";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
@@ -54,7 +54,7 @@ const TopBar = () => {
             <MenuLogo />
           </Link>
         </div>
-        {!isWSX && (
+        {!isCampaignAsset && (
           <div className="flex items-center gap-7 border-x-0 border-ztg-blue py-2 md:border-x-1 md:px-7">
             <Menu as="div" className="relative inline-block text-left">
               {({ open, close }) => {
@@ -198,8 +198,8 @@ const TopBar = () => {
         )}
         <MarketSearch />
         <div className="center relative ml-auto gap-3">
-          {!isWSX && <GetTokensButton />}
-          {!isWSX && (
+          {!isCampaignAsset && <GetTokensButton />}
+          {!isCampaignAsset && (
             <>
               {process.env.NEXT_PUBLIC_SHOW_AIRDROP !== "true" ? (
                 <GetTokensButton />

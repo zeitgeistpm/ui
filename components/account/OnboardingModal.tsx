@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useWallet } from "lib/state/wallet";
 import WalletIcon from "./WalletIcon";
 import WalletSelect from "./WalletSelect";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 import { getWallets } from "@talismn/connect-wallets";
 import { SUPPORTED_WALLET_NAMES } from "lib/constants";
 
@@ -224,7 +224,7 @@ export const DesktopOnboardingModal = (props: {
     }
   }, [hasWallet, activeAccount]);
 
-  const screens = isWSX
+  const screens = isCampaignAsset
     ? [
         <TextSection
           children={<WalletSelect />}

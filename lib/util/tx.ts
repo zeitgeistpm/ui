@@ -4,7 +4,7 @@ import { KeyringPairOrExtSigner, isExtSigner } from "@zeitgeistpm/rpc";
 import type { ApiPromise } from "@polkadot/api";
 import { UseNotifications } from "lib/state/notifications";
 import { unsubOrWarns } from "./unsub-or-warns";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 import { TypeRegistry, createType } from "@polkadot/types";
 
 type GenericCallback = (...args: any[]) => void;
@@ -149,7 +149,7 @@ export const signAndSend = async (
             cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
           },
         );
-      } else if (isWSX) {
+      } else if (isCampaignAsset) {
         const AssetId = {
           CampaignAsset: (value) => ({ CampaignAsset: value }),
         };

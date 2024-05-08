@@ -23,7 +23,7 @@ import {
   removeNotification,
 } from "./notifications";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 import { WalletConnect } from "./wallet-connect";
 
 const DAPP_NAME = "zeitgeist";

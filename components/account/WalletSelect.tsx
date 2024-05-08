@@ -10,7 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useEffect } from "react";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 
 const WalletSelect = () => {
   const { selectWallet, errors, accounts, connected, walletId } = useWallet();
@@ -75,7 +75,7 @@ const WalletSelect = () => {
       <Web3wallet />
       <h3 className="my-4 text-lg font-bold">Crypto Wallet</h3>
       <div className="flex justify-between gap-6">
-        {isMobileDevice && !isWSX ? (
+        {isMobileDevice && !isCampaignAsset ? (
           <div>
             <Link
               href="https://novawallet.io/"

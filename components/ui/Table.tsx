@@ -14,7 +14,7 @@ import PercentageChange from "./PercentageChange";
 import { ChartData } from "./TimeSeriesChart";
 import InfoPopover from "components/ui/InfoPopover";
 import { AiOutlineInfoCircle } from "react-icons/ai";
-import { isWSX } from "lib/constants";
+import { isCampaignAsset } from "lib/constants";
 
 interface TableProps {
   data?: TableData[] | null;
@@ -215,7 +215,7 @@ const Cell = ({
             <div className="mb-0.5 text-sm">
               {formatNumberLocalized(value.value)}
             </div>
-            {!isWSX && (
+            {!isCampaignAsset && (
               <div className="text-xs font-light text-sky-600">
                 $
                 {(

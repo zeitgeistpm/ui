@@ -4,11 +4,15 @@ import tailwindConfig from "../../tailwind.config";
 import { EndpointOption, Environment } from "../types";
 
 // IMPORTANT: this should be false for all other branches other than the wsx branch.
-export const isWSX = true;
+// export const isCampaignAsset = false;
+// export const campaignID = process.env.NEXT_PUBLIC_VERCEL_ENV === "staging" ? 3 : 2;
+// export const campaignAssetIdString = `{"foreignAsset":${campaignID}}`;
 
-export const wsxID = process.env.NEXT_PUBLIC_VERCEL_ENV === "staging" ? 0 : 4;
-export const wsxIdObject = { campaignAsset: wsxID };
-export const wsxAssetIdString = `{\"campaignAsset\":0}"`;
+export const isCampaignAsset: string | false = "wsx";
+export const campaignLabel = "WSX";
+export const campaignID: number =
+  process.env.NEXT_PUBLIC_VERCEL_ENV === "staging" ? 0 : 0;
+export const campaignAssetIdString = `{"campaignAsset":${campaignID}}`;
 
 export const ZTG = 10 ** 10;
 
@@ -69,7 +73,7 @@ export const endpoints: EndpointOption[] = [
 
 export const graphQlEndpoints: EndpointOption[] = [
   {
-    value: "https://zeitgeist-squid-bsr.stellate.sh/",
+    value: "https://processor.bsr.zeitgeist.pm/graphql",
     label: "Battery Park (Testnet)",
     environment: "staging",
   },

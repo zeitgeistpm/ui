@@ -5,7 +5,7 @@
 // import Decimal from "decimal.js";
 // import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 // import { ZTG } from "@zeitgeistpm/sdk";
-// import { wsxIdObject } from "lib/constants";
+// import { campaignIDObject } from "lib/constants";
 // import { walletAtom, store } from "./wallet";
 // import { useAtom } from "jotai";
 // import { formatNumberLocalized } from "lib/util";
@@ -14,7 +14,7 @@
 //   userAddress: string | undefined,
 //   foreignAssetId?: AssetId,
 // ) => {
-//   const assetId = foreignAssetId || wsxIdObject;
+//   const assetId = foreignAssetId || campaignIDObject;
 //   const [balance, setBalance] = useState<Decimal | undefined>(undefined);
 //   const [walletState, setWalletState] = useAtom(walletAtom);
 //   const [sdk, id] = useSdkv2();
