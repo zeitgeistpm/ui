@@ -24,6 +24,7 @@ import { useWallet } from "lib/state/wallet";
 import {
   approximateMaxAmountInForBuy,
   calculateSpotPrice,
+  calculateSpotPriceAfterBuy,
   calculateSwapAmountOutForBuy,
   isValidBuyAmount,
 } from "lib/util/amm2";
@@ -36,8 +37,7 @@ import { assetsAreEqual } from "lib/util/assets-are-equal";
 import { perbillToNumber } from "lib/util/perbill-to-number";
 import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
 import { selectOrdersForMarketBuy } from "lib/util/order-selection";
-
-const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
+import { NewsSection } from "components/front-page/News";
 
 const BuyForm = ({
   marketId,
@@ -120,51 +120,49 @@ const BuyForm = ({
     );
   }, [assetReserve, pool?.liquidity]);
 
-  const {
-    amountOut,
-    spotPrice,
-    newSpotPrice,
-    priceImpact,
-    maxProfit,
-    minAmountOut,
-  } = useMemo(() => {
-    const amountOut =
-      assetReserve && pool.liquidity && swapFee
-        ? calculateSwapAmountOutForBuy(
-            assetReserve,
-            amountIn,
-            pool.liquidity,
-            swapFee,
-            creatorFee,
-          )
+  const { amountOut, spotPrice, newSpotPrice, priceImpact, maxProfit } =
+    useMemo(() => {
+      const amountOut =
+        assetReserve && pool.liquidity && swapFee
+          ? calculateSwapAmountOutForBuy(
+              assetReserve,
+              amountIn,
+              pool.liquidity,
+              swapFee,
+              creatorFee,
+            )
+          : new Decimal(0);
+
+      const spotPrice =
+        assetReserve && calculateSpotPrice(assetReserve, pool?.liquidity);
+
+      const newSpotPrice =
+        pool?.liquidity &&
+        assetReserve &&
+        swapFee &&
+        calculateSpotPriceAfterBuy(
+          assetReserve,
+          pool.liquidity,
+          amountOut,
+          amountIn,
+          swapFee,
+          creatorFee,
+        );
+
+      const priceImpact = spotPrice
+        ? newSpotPrice?.div(spotPrice).minus(1).mul(100)
         : new Decimal(0);
 
-    const spotPrice =
-      assetReserve && calculateSpotPrice(assetReserve, pool?.liquidity);
+      const maxProfit = amountOut.minus(amountIn);
 
-    const poolAmountOut = amountOut.minus(amountIn);
-    const newSpotPrice =
-      pool?.liquidity &&
-      assetReserve &&
-      calculateSpotPrice(assetReserve?.minus(poolAmountOut), pool?.liquidity);
-
-    const priceImpact = spotPrice
-      ? newSpotPrice?.div(spotPrice).minus(1).mul(100)
-      : new Decimal(0);
-
-    const maxProfit = amountOut.minus(amountIn);
-
-    const minAmountOut = amountOut.mul(slippageMultiplier);
-
-    return {
-      amountOut,
-      spotPrice,
-      newSpotPrice,
-      priceImpact,
-      maxProfit,
-      minAmountOut,
-    };
-  }, [amountIn, pool?.liquidity, assetReserve]);
+      return {
+        amountOut,
+        spotPrice,
+        newSpotPrice,
+        priceImpact,
+        maxProfit,
+      };
+    }, [amountIn, pool?.liquidity, assetReserve]);
 
   const { isLoading, send, fee } = useExtrinsic(
     () => {
@@ -181,11 +179,8 @@ const BuyForm = ({
         return;
       }
       const amountDecimal = new Decimal(amount).mul(ZTG); // base asset amount
-      console.log(spotPrice?.toNumber());
-      console.log(newSpotPrice.toNumber());
 
-      const maxPrice = newSpotPrice.mul(1 / slippageMultiplier); // adjust by slippage
-      console.log(maxPrice.toNumber());
+      const maxPrice = newSpotPrice.plus(DEFAULT_SLIPPAGE_PERCENTAGE / 100); // adjust by slippage
       const approxOutcomeAmount = amountDecimal.mul(maxPrice); // this will be slightly higher than the expect amount out and therefore may pick up extra order suggestions
 
       const selectedOrders = selectOrdersForMarketBuy(

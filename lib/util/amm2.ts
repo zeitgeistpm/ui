@@ -64,10 +64,17 @@ export const calculateSpotPriceAfterBuy = (
   liquidity: Decimal, // liqudity parameter of the pool
   outcomeAssetOut: Decimal,
   baseAssetAmountIn: Decimal,
+  poolFee: Decimal, // 1% is 0.01
+  creatorFee: Decimal, // 1% is 0.01
 ) => {
-  const newReserve = initialReserve.minus(
-    outcomeAssetOut.minus(baseAssetAmountIn),
+  const amountInMinusFee = baseAssetAmountIn.mul(
+    new Decimal(1).minus(poolFee.plus(creatorFee)),
   );
+
+  const newReserve = initialReserve.minus(
+    outcomeAssetOut.minus(amountInMinusFee),
+  );
+
   return calculateSpotPrice(newReserve, liquidity);
 };
 

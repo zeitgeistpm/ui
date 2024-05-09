@@ -90,11 +90,13 @@ describe("amm2", () => {
       const spotPrice = calculateSpotPriceAfterBuy(
         new Decimal(59.00001516623987),
         new Decimal(144.00003701590745),
-        new Decimal(543.3339883933237),
+        new Decimal(538.4164567924635),
         new Decimal(486),
+        new Decimal(0.01),
+        new Decimal(0),
       );
 
-      expect(spotPrice.toNumber()).toEqual(0.98849704337919602199);
+      expect(spotPrice.toNumber()).toEqual(0.9881021930750705);
     });
   });
   describe("calculateSpotPriceAfterSell", () => {
