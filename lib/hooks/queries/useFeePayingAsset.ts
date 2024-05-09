@@ -84,10 +84,8 @@ export const useFeePayingAsset = (
             constants,
           );
         } else {
-          console.log("1eher");
           const isNative = IOZtgAssetId.is(assetSelection.value);
           if (isNative) {
-            console.log("2eher");
             return {
               assetId: { Ztg: null },
               symbol: constants?.tokenSymbol ?? "",
@@ -95,29 +93,32 @@ export const useFeePayingAsset = (
               sufficientBalance: true,
             };
           } else if (IOCampaignAssetId.is(assetSelection.value)) {
-            console.log("eher");
             const balance = campaignAssetBalance;
             const metadata = assetMetadata?.find(
               (data) =>
                 IOCampaignAssetId.is(assetSelection.value) &&
                 assetSelection.value.CampaignAsset === data[0],
             )?.[1];
-            console.log(metadata);
-            // const feeFactor = metadata?.feeFactor.div(ZTG);
-            // const fee =
-            //   feeFactor && baseFee.mul(feeFactor).mul(foreignAssetFeeBuffer);
-
-            // if (metadata && fee && balance) {
-            //   return {
-            //     assetId: assetSelection.value,
-            //     symbol: metadata?.symbol,
-            //     amount: fee,
-            //     sufficientBalance: fee && balance?.greaterThan(fee),
-            //   };
-            // }
+            const totalZtgIssuance = assetMetadata[0][1].totalIssuance;
+            const feeFactor = metadata?.feeFactor;
+            const totalCampaignAssetIssuance = metadata?.totalIssuance;
+            const fee =
+              feeFactor &&
+              totalCampaignAssetIssuance &&
+              totalZtgIssuance &&
+              baseFee
+                .mul(feeFactor)
+                .mul(totalCampaignAssetIssuance)
+                .div(totalZtgIssuance);
+            if (metadata && fee && balance) {
+              return {
+                assetId: assetSelection.value,
+                symbol: metadata?.symbol,
+                amount: fee,
+                sufficientBalance: fee && balance?.greaterThan(fee),
+              };
+            }
           } else if (IOForeignAssetId.is(assetSelection.value)) {
-            // } else if (IOCampaignAssetId.is(assetSelection.value)) {
-            // const balance = foreignAssetBalances;
             const balance = foreignAssetBalances.find(
               (asset) =>
                 IOForeignAssetId.is(assetSelection.value) &&
@@ -128,10 +129,11 @@ export const useFeePayingAsset = (
                 IOForeignAssetId.is(assetSelection.value) &&
                 assetSelection.value.ForeignAsset === data[0],
             )?.[1];
-            // const feeFactor = new Decimal(10000000000).div(ZTG);
+
             const feeFactor = metadata?.feeFactor.div(ZTG);
             const fee =
               feeFactor && baseFee.mul(feeFactor).mul(foreignAssetFeeBuffer);
+
             if (metadata && fee && balance) {
               return {
                 assetId: assetSelection.value,

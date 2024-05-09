@@ -1,6 +1,10 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
-import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk";
+import {
+  IOForeignAssetId,
+  IOCampaignAssetId,
+  isRpcSdk,
+} from "@zeitgeistpm/sdk";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
@@ -119,7 +123,11 @@ export const useExtrinsic = <T>(
       extrinsic,
       signer,
       extrinsicCallback(extrinsicCallbackParams),
-      fee?.assetId.CampaignAsset,
+      IOForeignAssetId.is(fee?.assetId)
+        ? fee?.assetId.ForeignAsset
+        : IOCampaignAssetId.is(fee?.assetId)
+          ? fee?.assetId?.CampaignAsset
+          : undefined,
     ).catch((error) => {
       notifications.pushNotification(error?.toString() ?? "Unknown Error", {
         type: "Error",
