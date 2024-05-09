@@ -53,8 +53,7 @@ const ClaimPage: NextPage = () => {
           wallets that voted on Polkadot's OpenGov before the snapshot will be
           eligible. Claims will be open until July 1st, 2024.{" "}
           <span className="mt-4 italic underline">
-            Users will receive their airdrop ZTG tokens at the end of the claim
-            period.
+            Users will receive their ZTG tokens after the claim period.
           </span>
         </div>
         {showEligibility === false ? (
