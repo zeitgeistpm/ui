@@ -88,11 +88,7 @@ async function fundUser(wallet) {
     // const amount = 1_000_000_000_000_0; // 1000 tokens
     const amount = 1_000_000_000_000; // 100 tokens
     // 10000000000000 min amoount
-    const transfer = api.tx.assetManager.transfer(
-      wallet,
-      { ForeignAsset: campaignID },
-      amount,
-    );
+    const transfer = api.tx.campaignAssets.transfer(campaignID, wallet, amount);
 
     const txHash = await transfer.signAndSend(masterAccount);
 

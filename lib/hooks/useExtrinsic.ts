@@ -12,7 +12,6 @@ import { useMemo, useState } from "react";
 import { useSdkv2 } from "./useSdkv2";
 import { useExtrinsicFee } from "./queries/useExtrinsicFee";
 import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
-import Decimal from "decimal.js";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -44,12 +43,7 @@ export const useExtrinsic = <T>(
 
   //TODO: renable once fee paying assets refactored
   const { data: fee } = useExtrinsicFee(extrinsic);
-  // let fee = {
-  //   assetId: { CampaignAsset: 0 },
-  //   symbol: "WSX",
-  //   amount: new Decimal(247698589.08),
-  //   sufficientBalance: true,
-  // };
+
   const resetState = () => {
     setIsError(false);
     setIsSuccess(false);
@@ -80,9 +74,8 @@ export const useExtrinsic = <T>(
 
     if (confirmEnabled) {
       const confirmed = await confirm.prompt({
-        title: "Confirm Transaction",
-        description:
-          "This will make an onchain transaction. Please confirm that you want to proceed.",
+        title: "Confirm Trade",
+        description: "Please confirm that you want to proceed.",
       });
 
       if (!confirmed) {
@@ -119,6 +112,7 @@ export const useExtrinsic = <T>(
         notifications.pushNotification(error, { type: "Error" });
       },
     };
+
     signAndSend(
       extrinsic,
       signer,

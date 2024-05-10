@@ -7,6 +7,7 @@ import { useAtom } from "jotai";
 import { openloginAdapter, clientId } from "lib/state/util/web3auth-config";
 import { useNotifications } from "lib/state/notifications";
 import { checkNewUser } from "lib/state/wsx";
+import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 interface loginOptions {
   loginProvider: string;
   extraLoginOptions: {
@@ -24,6 +25,7 @@ const useWeb3Wallet = () => {
   const [web3auth] = useAtom(web3authAtom);
   const notificationStore = useNotifications();
   const { selectWallet, disconnectWallet, walletId } = useWallet();
+  const confirm = useConfirmation();
 
   const initWeb3Auth = async () => {
     if (!clientId) {
@@ -154,8 +156,11 @@ const useWeb3Wallet = () => {
 
     const resp = await checkNewUser(address, user.idToken, appPubKey);
     if (resp.success) {
-      //TODO
-      //notify user of tokens being sent
+      await confirm.prompt({
+        title: "Welcome to WSX!",
+        description:
+          "In just a few moments your account will be funded with 2 million WSX tokens for trading within the platform. Have a look around and happy trading!",
+      });
     }
   };
 
