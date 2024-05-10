@@ -76,12 +76,12 @@ const OrdersTable = ({ where }: { where: InputMaybe<OrderWhereInput> }) => {
       const orderFilled = filledPercentage === 100;
 
       return {
-        side: side.toUpperCase(),
+        side: side.toUpperCase() + "-" + id,
         outcome: outcomeName,
         amount: outcomeAmount.div(ZTG).toFixed(3),
         value: `${outcomeAmount.mul(price).div(ZTG).toFixed(3)} ${baseSymbol}`,
         price: `${price.toFixed(3)} ${baseSymbol}`,
-        percentageFilled: `${filledPercentage}%`,
+        percentageFilled: `${filledPercentage.toFixed(0)}%`,
         button: (
           <CancelOrderButton
             orderId={id}
