@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { AssetId, isRpcSdk, parseAssetId } from "@zeitgeistpm/sdk";
+import { AssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useWallet } from "lib/state/wallet";
 import { useOrders } from "./useOrders";
 
-export const ordersRootKey = "orders";
+export const userOrdersRootKey = "user-orders";
 
 export type MarketOrder = {
   id: number;
@@ -24,7 +24,7 @@ export const useUserOrders = () => {
   const { data: orders } = useOrders();
 
   const query = useQuery(
-    [id, orders?.length],
+    [id, userOrdersRootKey, orders?.length],
     async () => {
       return orders?.filter((order) => order.makerAddress === realAddress);
     },

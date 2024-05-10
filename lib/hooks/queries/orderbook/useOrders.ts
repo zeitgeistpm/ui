@@ -11,7 +11,7 @@ import {
 import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 
-export const ordersRootKey = "order";
+export const ordersRootKey = "orders";
 
 export type Order = {
   id: string;

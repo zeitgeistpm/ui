@@ -10,7 +10,7 @@ import {
 import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 
-export const ordersRootKey = "rpc-orders";
+export const rpcOrdersRootKey = "rpc-orders";
 
 type RawMarketOrderData = {
   makerAmount: Decimal;
@@ -40,7 +40,7 @@ export const useRpcOrders = () => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, ordersRootKey],
+    [id, rpcOrdersRootKey],
     async () => {
       if (isRpcSdk(sdk)) {
         const ordersRes = await sdk.api.query.orderbook.orders.entries();

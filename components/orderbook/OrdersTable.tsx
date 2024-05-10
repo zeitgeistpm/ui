@@ -1,9 +1,13 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { InputMaybe, OrderWhereInput } from "@zeitgeistpm/indexer";
 import { BaseAssetId, ZTG, getIndexOf, isRpcSdk } from "@zeitgeistpm/sdk";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { lookupAssetSymbol } from "lib/constants/foreign-asset";
-import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
+import {
+  ordersRootKey,
+  useOrders,
+} from "lib/hooks/queries/orderbook/useOrders";
 import { useMarketsByIds } from "lib/hooks/queries/useMarketsByIds";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -78,7 +82,7 @@ const OrdersTable = ({ where }: { where: InputMaybe<OrderWhereInput> }) => {
       return {
         side: side.toUpperCase() + "-" + id,
         outcome: outcomeName,
-        amount: outcomeAmount.div(ZTG).toFixed(3),
+        amount: outcomeAmount.div(ZTG).toFixed(2),
         value: `${outcomeAmount.mul(price).div(ZTG).toFixed(3)} ${baseSymbol}`,
         price: `${price.toFixed(3)} ${baseSymbol}`,
         percentageFilled: `${filledPercentage.toFixed(0)}%`,
@@ -106,7 +110,8 @@ const CancelOrderButton = ({
   disabled: boolean;
 }) => {
   const notificationStore = useNotifications();
-  const [sdk] = useSdkv2();
+  const [sdk, id] = useSdkv2();
+  const queryClient = useQueryClient();
 
   const {
     isLoading,
@@ -119,6 +124,8 @@ const CancelOrderButton = ({
     },
     {
       onSuccess: () => {
+        queryClient.invalidateQueries([id, ordersRootKey]);
+
         notificationStore.pushNotification("Successfully cancelled order", {
           type: "Success",
         });

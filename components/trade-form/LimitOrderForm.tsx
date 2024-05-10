@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
   MarketOutcomeAssetId,
   ZTG,
@@ -10,7 +11,10 @@ import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
-import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
+import {
+  ordersRootKey,
+  useOrders,
+} from "lib/hooks/queries/orderbook/useOrders";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -45,7 +49,7 @@ export const LimitBuyOrderForm = ({
   marketId: number;
   initialAsset?: MarketOutcomeAssetId;
 }) => {
-  const [sdk] = useSdkv2();
+  const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
   const wallet = useWallet();
   const { data: orders } = useOrders({ marketId_eq: marketId });
@@ -61,6 +65,7 @@ export const LimitBuyOrderForm = ({
   >(initialAsset ?? outcomeAssets?.[0]);
   const [price, setPrice] = useState<Decimal>();
   const baseAsset = parseAssetIdString(market?.baseAsset);
+  const queryClient = useQueryClient();
 
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
 
@@ -88,6 +93,7 @@ export const LimitBuyOrderForm = ({
     },
     {
       onSuccess: () => {
+        queryClient.invalidateQueries([id, ordersRootKey]);
         notificationStore.pushNotification(`Placed buy order`, {
           type: "Success",
         });
@@ -122,7 +128,7 @@ export const LimitSellOrderForm = ({
   marketId: number;
   initialAsset?: MarketOutcomeAssetId;
 }) => {
-  const [sdk] = useSdkv2();
+  const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
   const wallet = useWallet();
   const { data: orders } = useOrders({ marketId_eq: marketId });
@@ -137,6 +143,7 @@ export const LimitSellOrderForm = ({
     MarketOutcomeAssetId | undefined
   >(initialAsset ?? outcomeAssets?.[0]);
   const baseAsset = parseAssetIdString(market?.baseAsset);
+  const queryClient = useQueryClient();
 
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
 
@@ -164,6 +171,7 @@ export const LimitSellOrderForm = ({
     },
     {
       onSuccess: () => {
+        queryClient.invalidateQueries([id, ordersRootKey]);
         notificationStore.pushNotification(`Placed sell order`, {
           type: "Success",
         });
@@ -241,7 +249,7 @@ const LimitOrderForm = ({
     // default price to current spot price
     if (!assetsAreEqual(initialPriceSetAsset, asset)) {
       const adjustedPrice = spotPrice?.plus(
-        side === "buy" ? DEFAULT_PRICE_ADJUSTMENT : -DEFAULT_PRICE_ADJUSTMENT,
+        side === "buy" ? -DEFAULT_PRICE_ADJUSTMENT : DEFAULT_PRICE_ADJUSTMENT,
       );
       setValue("price", adjustedPrice?.toFixed(3));
       setInitialPriceSetAsset(asset);
