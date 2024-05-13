@@ -85,8 +85,8 @@ async function fundUser(wallet) {
     const keyring = new Keyring({ type: "sr25519" });
     const masterAccount = keyring.addFromUri(process.env.SEED_WSX);
 
-    // const amount = 1_000_000_000_000_0; // 1000 tokens
-    const amount = 1_000_000_000_000; // 100 tokens
+    const amount = 1_000_000_000_000_000; // 100,000 tokens
+    // const amount = 1_000_000_000_000; // 100 tokens
     // 10000000000000 min amoount
     const transfer = api.tx.campaignAssets.transfer(campaignID, wallet, amount);
 
