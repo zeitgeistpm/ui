@@ -58,7 +58,7 @@ export const useMarketSpotPrices = (
       if (!enabled) return;
       const spotPrices: MarketPrices =
         market?.status !== "Resolved"
-          ? market.scoringRule === ScoringRule.Lmsr
+          ? market.scoringRule === ScoringRule.AmmCdaHybrid
             ? calcMarketPricesAmm2(amm2Pool!)
             : calcMarketPrices(market, basePoolBalance!, balances!)
           : calcResolvedMarketPrices(market);
