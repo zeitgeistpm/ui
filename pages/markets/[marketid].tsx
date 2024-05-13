@@ -195,6 +195,10 @@ const Market: NextPage<MarketPageProps> = ({
 
   const tradeItem = useTradeItem();
 
+  if (indexedMarket == null) {
+    return <NotFoundPage backText="Back To Markets" backLink="/" />;
+  }
+
   const outcomeAssets = indexedMarket?.outcomeAssets?.map(
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
@@ -285,10 +289,6 @@ const Market: NextPage<MarketPageProps> = ({
       return report;
     }
   }, [market?.report, disputes]);
-
-  if (indexedMarket == null) {
-    return <NotFoundPage backText="Back To Markets" backLink="/" />;
-  }
 
   const marketHasPool =
     (market?.scoringRule === ScoringRule.Cpmm &&
