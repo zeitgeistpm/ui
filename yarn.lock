@@ -5178,6 +5178,7 @@ __metadata:
     commander: ^8.3.0
     cross-env: ^7.0.3
     decimal.js: ^10.4.3
+    disqus-react: ^1.1.5
     dotenv: ^9.0.2
     embla-carousel: ^8.0.0-rc19
     embla-carousel-react: ^8.0.0-rc19
@@ -7032,6 +7033,16 @@ __metadata:
   version: 1.0.3
   resolution: "dijkstrajs@npm:1.0.3"
   checksum: 82ff2c6633f235dd5e6bed04ec62cdfb1f327b4d7534557bd52f18991313f864ee50654543072fff4384a92b643ada4d5452f006b7098dbdfad6c8744a8c9e08
+  languageName: node
+  linkType: hard
+
+"disqus-react@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "disqus-react@npm:1.1.5"
+  peerDependencies:
+    react: ^15.6.1 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^15.6.1 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: c95024c4a235d38f05ad1134f4e34a4ece4617ab01ba288da1c7a8476d94929ccd47b72abc482e017d70f55c32740e0470081c7e05e6d82192b22dd954417d21
   languageName: node
   linkType: hard
 

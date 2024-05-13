@@ -209,7 +209,7 @@ const TopBar = () => {
             </>
           )}
           <AccountButton />
-          <Alerts />
+          {!isCampaignAsset && <Alerts />}
         </div>
       </div>
     </div>

@@ -303,11 +303,11 @@ const SellForm = ({
         >
           <div>
             <div className="center h-[20px] font-normal">Sell</div>
-            <div className="center h-[20px] text-ztg-12-120 font-normal">
+            {/* <div className="center h-[20px] text-ztg-12-120 font-normal">
               Network fee:{" "}
               {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
               {fee?.symbol}
-            </div>
+            </div> */}
           </div>
         </FormTransactionButton>
       </form>

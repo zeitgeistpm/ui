@@ -3,7 +3,7 @@ import Link from "next/link";
 import EmptyPortfolio from "./EmptyPortfolio";
 import { useTradeHistory } from "lib/hooks/queries/useTradeHistory";
 import { formatNumberLocalized } from "lib/util";
-import { ZTG } from "lib/constants";
+import { ZTG, campaignLabel, campaignAssetIdString } from "lib/constants";
 import SubScanIcon from "components/icons/SubScanIcon";
 
 const columns: TableColumn[] = [
@@ -42,8 +42,8 @@ const columns: TableColumn[] = [
 
 const TradeHistoryTable = ({ address }: { address: string }) => {
   const { data: tradeHistory, isLoading } = useTradeHistory(address);
-
   const tableData: TableData[] | undefined = tradeHistory?.map((trade) => {
+    console.log(trade);
     return {
       question: (
         <Link
@@ -55,13 +55,23 @@ const TradeHistoryTable = ({ address }: { address: string }) => {
       ),
       bought: `${formatNumberLocalized(
         trade?.assetAmountOut.div(ZTG).toNumber() ?? 0,
-      )} ${trade?.assetOut}`,
+      )} ${
+        trade?.assetOut?.includes(campaignAssetIdString.toUpperCase())
+          ? campaignLabel
+          : trade?.assetOut
+      }`,
       sold: `${formatNumberLocalized(
         trade?.assetAmountIn.div(ZTG).toNumber() ?? 0,
-      )} ${trade?.assetIn}`,
-      price: `${formatNumberLocalized(
-        trade?.price.toNumber() ?? 0,
-      )} ${trade?.baseAssetName}`,
+      )} ${
+        trade?.assetIn?.includes(campaignAssetIdString.toUpperCase())
+          ? campaignLabel
+          : trade?.assetIn
+      }`,
+      price: `${formatNumberLocalized(trade?.price.toNumber() ?? 0)} ${
+        trade?.baseAssetName?.includes(campaignAssetIdString.toUpperCase())
+          ? campaignLabel
+          : trade?.baseAssetName
+      }`,
       time: new Intl.DateTimeFormat("default", {
         dateStyle: "medium",
         timeStyle: "medium",

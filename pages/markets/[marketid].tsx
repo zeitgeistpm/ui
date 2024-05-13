@@ -79,6 +79,7 @@ import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { isCampaignAsset } from "lib/constants";
 import { FaChevronUp } from "react-icons/fa";
+import DisqusComments from "components/markets/Comments";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -394,6 +395,8 @@ const Market: NextPage<MarketPageProps> = ({
           <div className="mb-12 max-w-[90vw]">
             <MarketDescription market={indexedMarket} />
           </div>
+
+          <DisqusComments post={indexedMarket} />
 
           {!isCampaignAsset && (
             <AddressDetails title="Oracle" address={indexedMarket.oracle} />

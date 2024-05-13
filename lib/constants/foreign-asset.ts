@@ -1,5 +1,6 @@
 import { AssetId, BaseAssetId, IOForeignAssetId } from "@zeitgeistpm/sdk";
 import { ChainName } from "./chains";
+import { isCampaignAsset, campaignLabel } from ".";
 
 type ForeignAssetMetadata = {
   [foreignAssetId: number]: {
@@ -14,7 +15,9 @@ type ForeignAssetMetadata = {
 };
 
 export const lookupAssetImagePath = (assetId?: AssetId | null) => {
-  if (IOForeignAssetId.is(assetId)) {
+  if (isCampaignAsset) {
+    return "/currencies/wsx-currency.png";
+  } else if (IOForeignAssetId.is(assetId)) {
     return FOREIGN_ASSET_METADATA[assetId.ForeignAsset].image;
   } else {
     return "/currencies/ztg.svg";
@@ -25,7 +28,9 @@ export const lookupAssetSymbol = (baseAssetId?: BaseAssetId) => {
   const foreignAssetId = IOForeignAssetId.is(baseAssetId)
     ? baseAssetId.ForeignAsset
     : null;
-  if (foreignAssetId == null) {
+  if (isCampaignAsset) {
+    return campaignLabel;
+  } else if (foreignAssetId == null) {
     return "ZTG";
   } else {
     return FOREIGN_ASSET_METADATA[foreignAssetId].tokenSymbol;

@@ -141,21 +141,12 @@ const AccountButton: FC<{
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {hasWallet === true ? (
-            <HeaderActionButton
-              disabled={!isRpcSdk(sdk)}
-              onClick={() => connect()}
-            >
-              Connect Wallet
-            </HeaderActionButton>
-          ) : (
-            <HeaderActionButton
-              disabled={false}
-              onClick={() => setShowOnboarding(true)}
-            >
-              Get Started
-            </HeaderActionButton>
-          )}
+          <HeaderActionButton
+            disabled={!isRpcSdk(sdk)}
+            onClick={() => connect()}
+          >
+            Sign In
+          </HeaderActionButton>
         </div>
       ) : (
         <div className="relative ml-auto">

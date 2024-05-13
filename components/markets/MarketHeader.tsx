@@ -621,16 +621,18 @@ const MarketHeader: FC<{
             </div>
           </div>
         )}
-        <div className="group relative flex items-center">
-          <div className="pt-1">
-            <MarketFavoriteToggle size={24} marketId={market.marketId} />
-          </div>
-          <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
-            <div className="rounded-lg bg-pink-300 px-2 py-1 text-sm">
-              Toggle Favorited
+        {!isCampaignAsset && (
+          <div className="group relative flex items-center">
+            <div className="pt-1">
+              <MarketFavoriteToggle size={24} marketId={market.marketId} />
+            </div>
+            <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="rounded-lg bg-pink-300 px-2 py-1 text-sm">
+                Toggle Favorited
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {promotionData && (
           <MarketPromotionCallout market={market} promotion={promotionData} />

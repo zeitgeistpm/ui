@@ -32,7 +32,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   type = "button",
   extrinsic,
   disableFeeCheck = false,
-  connectText = "Connect Wallet",
+  connectText = "Sign In",
   loading,
 }) => {
   const wallet = useWallet();

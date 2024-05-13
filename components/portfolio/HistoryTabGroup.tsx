@@ -4,8 +4,8 @@ import TradeHistoryTable from "./TradeHistoryTable";
 import TransactionHistoryTable from "./TransactionHistoryTable";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 
-type HistoryTabItem = "Trades" | "Other Transactions";
-const historyTabItems: HistoryTabItem[] = ["Trades", "Other Transactions"];
+type HistoryTabItem = "Trades";
+const historyTabItems: HistoryTabItem[] = ["Trades"];
 
 const HistoryTabGroup = ({ address }: { address: string }) => {
   const [historyTabSelection, setHistoryTabSelection] =
@@ -20,14 +20,8 @@ const HistoryTabGroup = ({ address }: { address: string }) => {
       selectedIndex={selectedIndex}
       onChange={(index) => setHistoryTabSelection(historyTabItems[index])}
     >
-      <SubTabsList titles={historyTabItems} />
       <Tab.Panels>
-        <Tab.Panel>
-          <TradeHistoryTable address={address} />
-        </Tab.Panel>
-        <Tab.Panel>
-          <TransactionHistoryTable address={address} />
-        </Tab.Panel>
+        <TradeHistoryTable address={address} />
       </Tab.Panels>
     </Tab.Group>
   );

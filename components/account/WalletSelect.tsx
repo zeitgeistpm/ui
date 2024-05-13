@@ -65,7 +65,7 @@ const WalletSelect = () => {
     <div className="flex flex-col">
       {hasWallet === true && (
         <>
-          <h3 className="mb-4 text-2xl font-bold">Log back in to WSX</h3>
+          <h3 className="mb-4 text-2xl font-bold">Log in to WSX</h3>
           <p className="mb-4">
             Use one of the following options to log in and start using
             Prediction Markets.

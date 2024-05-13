@@ -33,7 +33,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
 
   return (
     <div className="flex flex-col gap-y-[30px] md:flex-row">
-      <div className="flex w-full max-w-[600px] md:border-r-2 md:border-gray-200">
+      <div className="flex w-full md:border-r-2 md:border-gray-200">
         <div className="flex-1 border-r-2 border-gray-200">
           {"loading" in props ? (
             <BreakdownSlotSkeleton />
@@ -61,30 +61,34 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
       </div>
 
       <div className="flex w-full max-w-[600px] md:pl-4">
-        <div className="flex-1 border-r-2 border-gray-200">
-          {"loading" in props || poolIsLoading ? (
-            <BreakdownSlotSkeleton />
-          ) : (
-            <BreakdownSlot
-              title="Liquidity"
-              value={poolZtgTotal?.mul(ZTG) ?? new Decimal(0)}
-              usdZtgPrice={props.usdZtgPrice}
-              changePercentage={0}
-            />
-          )}
-        </div>
-        <div className="flex-1 pl-4">
-          {"loading" in props ? (
-            <BreakdownSlotSkeleton />
-          ) : (
-            <BreakdownSlot
-              title="Bonded"
-              value={props.bonded.value}
-              usdZtgPrice={props.usdZtgPrice}
-              changePercentage={props.bonded.changePercentage}
-            />
-          )}
-        </div>
+        {!isCampaignAsset && (
+          <div className="flex-1 border-r-2 border-gray-200">
+            {"loading" in props || poolIsLoading ? (
+              <BreakdownSlotSkeleton />
+            ) : (
+              <BreakdownSlot
+                title="Liquidity"
+                value={poolZtgTotal?.mul(ZTG) ?? new Decimal(0)}
+                usdZtgPrice={props.usdZtgPrice}
+                changePercentage={0}
+              />
+            )}
+          </div>
+        )}
+        {!isCampaignAsset && (
+          <div className="flex-1 pl-4">
+            {"loading" in props ? (
+              <BreakdownSlotSkeleton />
+            ) : (
+              <BreakdownSlot
+                title="Bonded"
+                value={props.bonded.value}
+                usdZtgPrice={props.usdZtgPrice}
+                changePercentage={props.bonded.changePercentage}
+              />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

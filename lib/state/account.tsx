@@ -22,11 +22,7 @@ export const useAccountModals = () => {
       });
     },
     openWalletSelect: () => {
-      if (disclaimerAccepted) {
-        setState({ ...state, walletSelectModalOpen: true });
-      } else {
-        showDisclaimer();
-      }
+      setState({ ...state, walletSelectModalOpen: true });
     },
     closeAccountSelect: () => {
       setState({ ...state, accountSelectModalOpen: false });

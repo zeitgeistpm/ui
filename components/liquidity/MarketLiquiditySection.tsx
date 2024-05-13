@@ -160,7 +160,7 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
       <div className="flex md:w-full">
         {!wallet.connected ? (
           <LiquidityHeaderButtonItem className="border-r-1 md:mx-0">
-            <TransactionButton connectText="Connect Wallet to Manage Liquidity" />
+            <TransactionButton connectText="Sign in to Manage Liquidity" />
           </LiquidityHeaderButtonItem>
         ) : (
           <>

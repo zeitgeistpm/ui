@@ -27,29 +27,9 @@ import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useMemo } from "react";
 
-type MainTabItem =
-  | "Predictions"
-  | "Balances"
-  | "Markets"
-  | "Badges"
-  | "History"
-  | "Court";
+type MainTabItem = "Predictions" | "Markets" | "History";
 
-const mainTabItems: MainTabItem[] = [
-  "Predictions",
-  ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true" ? ["Balances"] : []),
-  "Markets",
-  "Badges",
-  "History",
-  "Court",
-] as MainTabItem[];
-
-type MarketsTabItem = "Created Markets" | "Liquidity" | "Creator Fee Payouts";
-const marketsTabItems: MarketsTabItem[] = [
-  "Created Markets",
-  "Liquidity",
-  "Creator Fee Payouts",
-];
+const mainTabItems: MainTabItem[] = ["Predictions", "History"] as MainTabItem[];
 
 const Portfolio: NextPageWithLayout = () => {
   const router = useRouter();
@@ -62,9 +42,6 @@ const Portfolio: NextPageWithLayout = () => {
 
   const [mainTabSelection, setMainTabSelection] =
     useQueryParamState<MainTabItem>("mainTab");
-
-  const [marketsTabSelection, setMarketsTabSelection] =
-    useQueryParamState<MarketsTabItem>("marketsTab");
 
   const { markets, breakdown } = usePortfolioPositions(address);
 
@@ -104,16 +81,7 @@ const Portfolio: NextPageWithLayout = () => {
         >
           <div className="overflow-auto border-b border-sky-200">
             <Tab.List className="mb-4 flex">
-              {[
-                "Predictions",
-                ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true"
-                  ? ["Balances"]
-                  : []),
-                "Markets",
-                "Badges",
-                "History",
-                "Court",
-              ].map((title, index) => (
+              {["Predictions", "History"].map((title, index) => (
                 <Tab className="text-sm sm:text-xl" key={index}>
                   {({ selected }) => (
                     <div
@@ -181,46 +149,8 @@ const Portfolio: NextPageWithLayout = () => {
                 />
               )}
             </Tab.Panel>
-            {process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true" && (
-              <Tab.Panel>
-                {address && <CurrenciesTable address={address} />}
-              </Tab.Panel>
-            )}
-            <Tab.Panel>
-              <Tab.Group
-                defaultIndex={0}
-                selectedIndex={
-                  marketsTabSelection &&
-                  marketsTabItems.indexOf(marketsTabSelection)
-                }
-                onChange={(index) =>
-                  setMarketsTabSelection(marketsTabItems[index])
-                }
-              >
-                <div className="overflow-auto">
-                  <SubTabsList titles={marketsTabItems} />
-                </div>
-                <Tab.Panels>
-                  <Tab.Panel>
-                    {address && <BondsTable address={address} />}
-                  </Tab.Panel>
-                  <Tab.Panel>
-                    <AccountPoolsTable address={address} />
-                  </Tab.Panel>
-                  <Tab.Panel>
-                    {address && <CreatorFeePayouts address={address} />}
-                  </Tab.Panel>
-                </Tab.Panels>
-              </Tab.Group>
-            </Tab.Panel>
-            <Tab.Panel className="mt-[40px]">
-              {address && <BadgesList address={address} />}
-            </Tab.Panel>
             <Tab.Panel>
               {address && <HistoryTabGroup address={address} />}
-            </Tab.Panel>
-            <Tab.Panel>
-              {address && <CourtTabGroup address={address} />}
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
