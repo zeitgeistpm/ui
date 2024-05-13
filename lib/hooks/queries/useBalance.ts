@@ -56,7 +56,7 @@ export const fetchAssetBalance = async (
   } else if (IOCurrencyAsset.is(assetId)) {
     if (
       IOMarketOutcomeAssetId.is(assetId) &&
-      // new market assets need queried with marketAssets.account
+      // new market assets need to be queried with marketAssets.account
       getMarketIdOf(assetId) > LAST_MARKET_ID_BEFORE_ASSET_MIGRATION
     ) {
       const balance = await api.query.marketAssets.account(assetId, address);
@@ -72,7 +72,7 @@ export const fetchAssetBalance = async (
     );
     return new Decimal(balance.unwrap().balance.toString());
   } else {
-    const balance = await api.query.campaignAssets.account(
+    const balance = await api.query.customAssets.account(
       assetId.CustomAsset,
       address,
     );

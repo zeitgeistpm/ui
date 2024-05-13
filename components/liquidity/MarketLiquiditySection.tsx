@@ -30,7 +30,8 @@ export const MarketLiquiditySection = ({
 }) => {
   const marketHasPool =
     (market?.scoringRule === ScoringRule.Cpmm && market.pool != null) ||
-    (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
+    (market?.scoringRule === ScoringRule.AmmCdaHybrid &&
+      market.neoPool != null);
 
   return (
     <>
