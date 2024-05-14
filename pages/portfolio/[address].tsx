@@ -5,6 +5,7 @@ import OrdersTable from "components/orderbook/OrdersTable";
 import AccountPoolsTable from "components/portfolio/AccountPoolsTable";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
+import CourtTabGroup from "components/portfolio/CourtTabGroup";
 import CreatorFeePayouts from "components/portfolio/CreatorFeePayouts";
 import CurrenciesTable from "components/portfolio/CurrenciesTable";
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
@@ -32,7 +33,8 @@ type MainTabItem =
   | "Balances"
   | "Markets"
   | "Badges"
-  | "History";
+  | "History"
+  | "Court";
 
 const mainTabItems: MainTabItem[] = [
   "Predictions",
@@ -40,6 +42,7 @@ const mainTabItems: MainTabItem[] = [
   "Markets",
   "Badges",
   "History",
+  "Court",
 ] as MainTabItem[];
 
 type MarketsTabItem =
@@ -115,6 +118,7 @@ const Portfolio: NextPageWithLayout = () => {
                 "Markets",
                 "Badges",
                 "History",
+                "Court",
               ].map((title, index) => (
                 <Tab className="text-sm sm:text-xl" key={index}>
                   {({ selected }) => (
@@ -229,6 +233,9 @@ const Portfolio: NextPageWithLayout = () => {
             </Tab.Panel>
             <Tab.Panel>
               {address && <HistoryTabGroup address={address} />}
+            </Tab.Panel>
+            <Tab.Panel>
+              {address && <CourtTabGroup address={address} />}
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
