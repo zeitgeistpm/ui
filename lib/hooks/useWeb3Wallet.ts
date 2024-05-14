@@ -155,7 +155,6 @@ const useWeb3Wallet = () => {
     const appPubKey = parsedToken.wallets[0].public_key;
 
     const resp = await checkNewUser(address, user.idToken, appPubKey);
-    console.log(resp);
     if (resp.success) {
       await confirm.prompt({
         title: "Welcome to WSX!",

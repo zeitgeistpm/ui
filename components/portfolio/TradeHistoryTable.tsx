@@ -43,7 +43,6 @@ const columns: TableColumn[] = [
 const TradeHistoryTable = ({ address }: { address: string }) => {
   const { data: tradeHistory, isLoading } = useTradeHistory(address);
   const tableData: TableData[] | undefined = tradeHistory?.map((trade) => {
-    console.log(trade);
     return {
       question: (
         <Link
