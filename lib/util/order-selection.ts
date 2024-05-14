@@ -20,8 +20,6 @@ export const selectOrdersForMarketBuy = (
       order.side === "sell" && order.price.lessThanOrEqualTo(endingPrice),
   );
 
-  console.log(orderCandidates);
-
   let filledAmount = new Decimal(0);
   const selectedOrders: MarketOrder[] = [];
   orderCandidates.forEach((order) => {
@@ -46,8 +44,6 @@ export const selectOrdersForMarketSell = (
     (order) =>
       order.side === "buy" && order.price.greaterThanOrEqualTo(endingPrice),
   );
-
-  console.log(orderCandidates);
 
   let filledAmount = new Decimal(0);
   const selectedOrders: MarketOrder[] = [];

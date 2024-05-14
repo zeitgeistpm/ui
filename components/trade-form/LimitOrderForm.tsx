@@ -17,6 +17,7 @@ import {
 } from "lib/hooks/queries/orderbook/useOrders";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
+import { FeeAsset } from "lib/hooks/queries/useFeePayingAsset";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -24,21 +25,10 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { assetsAreEqual } from "lib/util/assets-are-equal";
+import { formatNumberCompact } from "lib/util/format-compact";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-
-// for buys, max buy is price * base amount balanace
-// for sells, max sell is balance
-// default price to spot price
-
-// BUY
-// max buy amount is price * base amount balance
-// price needs to be worse than the best order
-
-// SELL
-// for sells, max sell amount is balance
-// price needs to be worse than the best order
 
 const DEFAULT_PRICE_ADJUSTMENT = 0.01;
 
@@ -73,7 +63,11 @@ export const LimitBuyOrderForm = ({
 
   const maxAmount = baseAssetBalance?.div(price ?? 0) ?? new Decimal(0);
 
-  const { isLoading, send: buy } = useExtrinsic<{
+  const {
+    isLoading,
+    send: buy,
+    fee,
+  } = useExtrinsic<{
     price: Decimal;
     amount: Decimal;
   }>(
@@ -117,6 +111,7 @@ export const LimitBuyOrderForm = ({
       }}
       maxAmount={maxAmount}
       isLoading={isLoading}
+      fee={fee}
     />
   );
 };
@@ -152,7 +147,11 @@ export const LimitSellOrderForm = ({
     selectedAsset,
   );
 
-  const { isLoading, send: sell } = useExtrinsic<{
+  const {
+    isLoading,
+    send: sell,
+    fee,
+  } = useExtrinsic<{
     price: Decimal;
     amount: Decimal;
   }>(
@@ -192,6 +191,7 @@ export const LimitSellOrderForm = ({
       }}
       maxAmount={selectedAssetBalance}
       isLoading={isLoading}
+      fee={fee}
     />
   );
 };
@@ -205,14 +205,16 @@ const LimitOrderForm = ({
   maxAmount,
   side,
   isLoading,
+  fee,
 }: {
   marketId: number;
-  asset?: MarketOutcomeAssetId; // todo: this can just be "asset" driven from parent
+  asset?: MarketOutcomeAssetId;
   maxPrice?: Decimal;
   minPrice?: Decimal;
   maxAmount?: Decimal;
   side: "buy" | "sell";
   isLoading: boolean;
+  fee?: FeeAsset | null;
   onSubmit: (price: Decimal, amount: Decimal) => void;
   onAssetChange?: (assetId: MarketOutcomeAssetId) => void;
   onPriceChange?: (price: Decimal) => void;
@@ -241,9 +243,7 @@ const LimitOrderForm = ({
   const [initialPriceSetAsset, setInitialPriceSetAsset] = useState<
     MarketOutcomeAssetId | undefined
   >();
-  const spotPrice = asset
-    ? spotPrices?.get(getIndexOf(asset)) //todo: check this works for scalar
-    : undefined;
+  const spotPrice = asset ? spotPrices?.get(getIndexOf(asset)) : undefined;
 
   useEffect(() => {
     // default price to current spot price
@@ -413,11 +413,11 @@ const LimitOrderForm = ({
               <div className="center h-[20px] font-normal">
                 {side === "buy" ? "Place Buy Order" : "Place Sell Order"}
               </div>
-              {/* <div className="center h-[20px] text-ztg-12-120 font-normal">
-              Network fee:{" "}
-              {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
-              {fee?.symbol}
-            </div> */}
+              <div className="center h-[20px] text-ztg-12-120 font-normal">
+                Network fee:{" "}
+                {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
+                {fee?.symbol}
+              </div>
             </div>
           </FormTransactionButton>
         </div>

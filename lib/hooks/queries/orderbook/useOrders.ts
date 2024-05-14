@@ -39,7 +39,6 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
     async () => {
       if (enabled) {
         const { orders } = await sdk.indexer.orders({ where });
-        console.log(orders);
         const ordersMapped: Order[] = orders.map((order) => {
           const makerAsset = parseAssetId(
             order.maker.asset,

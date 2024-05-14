@@ -79,6 +79,7 @@ import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { FaChevronUp } from "react-icons/fa";
 import OrdersTable from "components/orderbook/OrdersTable";
+import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -191,6 +192,10 @@ const Market: NextPage<MarketPageProps> = ({
   const { marketid } = router.query;
   const marketId = Number(marketid);
   const { realAddress } = useWallet();
+  const { data: orders, isLoading: isOrdersLoading } = useOrders({
+    marketId_eq: marketId,
+    makerAccountId_eq: realAddress,
+  });
 
   const referendumChain = cmsMetadata?.referendumRef?.chain;
   const referendumIndex = cmsMetadata?.referendumRef?.referendumIndex;
@@ -351,12 +356,17 @@ const Market: NextPage<MarketPageProps> = ({
           ) : (
             <></>
           )}
-          <div className="mt-3 flex flex-col gap-y-3">
-            <div>My Orders</div>
-            <OrdersTable
-              where={{ marketId_eq: marketId, makerAccountId_eq: realAddress }}
-            />
-          </div>
+          {isOrdersLoading === false && (orders?.length ?? 0) > 0 && (
+            <div className="mt-3 flex flex-col gap-y-3">
+              <div>My Orders</div>
+              <OrdersTable
+                where={{
+                  marketId_eq: marketId,
+                  makerAccountId_eq: realAddress,
+                }}
+              />
+            </div>
+          )}
           {marketIsLoading === false && marketHasPool === false && (
             <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
               <div className="h-ztg-20 w-ztg-20">
