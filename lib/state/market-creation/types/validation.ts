@@ -17,6 +17,7 @@ import {
 import { minBaseLiquidity } from "../constants/currency";
 import { MarketFormData } from "./form";
 import { timelineAsBlocks } from "./timeline";
+import { formatNumberLocalized } from "lib/util";
 
 export type MarketValidationDependencies = {
   form: Partial<MarketFormData>;
@@ -127,7 +128,9 @@ export const createMarketFormValidator = ({
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["liquidity", "base"],
-          message: `Minimum base liquidity is ${min} ${form.currency}`,
+          message: `Minimum base liquidity is ${formatNumberLocalized(min)} ${
+            form.currency
+          }`,
         });
       }
     })
