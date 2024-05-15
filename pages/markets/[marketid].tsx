@@ -294,7 +294,8 @@ const Market: NextPage<MarketPageProps> = ({
     (market?.scoringRule === ScoringRule.Cpmm &&
       poolId != null &&
       poolIdLoading === false) ||
-    (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
+    (market?.scoringRule === ScoringRule.AmmCdaHybrid &&
+      market.neoPool != null);
 
   const poolCreationDate = new Date(
     indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
