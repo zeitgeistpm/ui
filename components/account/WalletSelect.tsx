@@ -1,4 +1,4 @@
-import { BaseDotsamaWallet } from "@talismn/connect-wallets";
+import { BaseDotsamaWallet, Wallet } from "@talismn/connect-wallets";
 import { useAccountModals } from "lib/state/account";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
@@ -18,7 +18,7 @@ const WalletSelect = () => {
 
   const wasConnected = usePrevious(connected);
 
-  const handleSelectWallet = async (wallet: BaseDotsamaWallet) => {
+  const handleSelectWallet = async (wallet: BaseDotsamaWallet | Wallet) => {
     if (!wallet.installed && wallet.extensionName !== "web3auth") {
       window.open(wallet.installUrl);
     } else {
@@ -75,22 +75,38 @@ const WalletSelect = () => {
       <h3 className="my-4 text-lg font-bold">Crypto Wallet</h3>
       <div className="flex justify-between gap-6">
         {isMobileDevice ? (
-          <Link
-            href="https://novawallet.io/"
-            className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"
-            target="_blank"
-          >
-            <Image
-              src="/icons/nova.png"
-              alt={"wallet.logo.alt"}
-              width={30}
-              height={30}
-              quality={100}
-            />
-            <div className="relative ml-4 font-medium">
-              <span>Nova Wallet</span>
+          <div>
+            <Link
+              href="https://novawallet.io/"
+              className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"
+              target="_blank"
+            >
+              <Image
+                src="/icons/nova.png"
+                alt={"wallet.logo.alt"}
+                width={30}
+                height={30}
+                quality={100}
+              />
+              <div className="relative ml-4 font-medium">
+                <span>Nova Wallet</span>
+              </div>
+            </Link>
+            <div className="mt-2">
+              <span className="mb-2 text-sm font-semibold">
+                Nova Wallet instructions:
+              </span>
+              <ol className="list-decimal pl-4 text-xs">
+                <li>Open Nova Wallet app on your mobile device.</li>
+                <li>Navigate to "Browser" on the bottom menu.</li>
+                <li>Search for and select "Zeitgeist".</li>
+                <li>
+                  Once inside Zeitgeist: press "Connect Wallet" in the top menu
+                  and allow access when prompted.
+                </li>
+              </ol>
             </div>
-          </Link>
+          </div>
         ) : (
           supportedWallets
             .filter((w) => w.extensionName !== "web3auth")
@@ -101,6 +117,7 @@ const WalletSelect = () => {
               const hasError = error != null;
               return (
                 <WalletIcon
+                  key={wallet.extensionName}
                   onClick={() => {
                     handleSelectWallet(wallet);
                   }}

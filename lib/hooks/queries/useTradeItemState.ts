@@ -57,11 +57,9 @@ export const useTradeItemState = (item: TradeItem) => {
     { account: poolAccountId, assetId: item.assetId },
   ]);
 
-  const poolAssetBalance = new Decimal(
-    poolAssetBalances
-      ?.get(poolAccountId, item.assetId)
-      ?.data?.balance?.free.toString() ?? 0,
-  );
+  const poolAssetBalance =
+    poolAssetBalances?.get(poolAccountId, item.assetId)?.data?.balance ??
+    new Decimal(0);
 
   const balances = {
     poolBaseBalance: poolBaseBalance?.toString(),

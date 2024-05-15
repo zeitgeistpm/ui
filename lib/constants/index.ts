@@ -37,6 +37,8 @@ export const SUPPORTED_WALLET_NAMES = [
   "web3auth",
 ];
 
+export const ZTG_CHAIN_ID = "polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c";
+
 export const endpoints: EndpointOption[] = [
   {
     value: "wss://zeitgeist-rpc.dwellir.com",
@@ -66,7 +68,7 @@ export const endpoints: EndpointOption[] = [
 
 export const graphQlEndpoints: EndpointOption[] = [
   {
-    value: "https://zeitgeist-squid-bsr.stellate.sh/",
+    value: "https://processor.bsr.zeitgeist.pm/graphql",
     label: "Battery Park (Testnet)",
     environment: "staging",
   },
@@ -112,3 +114,7 @@ export const endpointsStaging = getEndpointOptions("staging");
 
 export const endpointOptions =
   environment === "production" ? endpointsProduction : endpointsStaging;
+
+export const LAST_MARKET_ID_BEFORE_ASSET_MIGRATION = Number(
+  process.env.NEXT_PUBLIC_LAST_MARKET_ID_BEFORE_ASSET_MIGRATION,
+);

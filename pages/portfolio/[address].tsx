@@ -4,6 +4,7 @@ import BadgesList from "components/avatar/BadgesList";
 import AccountPoolsTable from "components/portfolio/AccountPoolsTable";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
+import CourtTabGroup from "components/portfolio/CourtTabGroup";
 import CreatorFeePayouts from "components/portfolio/CreatorFeePayouts";
 import CurrenciesTable from "components/portfolio/CurrenciesTable";
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
@@ -31,7 +32,8 @@ type MainTabItem =
   | "Balances"
   | "Markets"
   | "Badges"
-  | "History";
+  | "History"
+  | "Court";
 
 const mainTabItems: MainTabItem[] = [
   "Predictions",
@@ -39,6 +41,7 @@ const mainTabItems: MainTabItem[] = [
   "Markets",
   "Badges",
   "History",
+  "Court",
 ] as MainTabItem[];
 
 type MarketsTabItem = "Created Markets" | "Liquidity" | "Creator Fee Payouts";
@@ -85,6 +88,7 @@ const Portfolio: NextPageWithLayout = () => {
       {address && <PortfolioIdentity address={address} />}
       <div className="mb-12">
         <PortfolioBreakdown
+          address={address}
           {...(breakdown ?? {
             loading: true,
           })}
@@ -108,6 +112,7 @@ const Portfolio: NextPageWithLayout = () => {
                 "Markets",
                 "Badges",
                 "History",
+                "Court",
               ].map((title, index) => (
                 <Tab className="text-sm sm:text-xl" key={index}>
                   {({ selected }) => (
@@ -137,9 +142,9 @@ const Portfolio: NextPageWithLayout = () => {
                   (marketPositions) => {
                     const market = marketPositions[0].market;
 
-                    // marketPositions = marketPositions.filter((position) =>
-                    //   position.userBalance.gt(0),
-                    // );
+                    marketPositions = marketPositions.filter((position) =>
+                      position.userBalance.gt(0),
+                    );
 
                     if (
                       market.status === "Resolved" &&
@@ -160,7 +165,9 @@ const Portfolio: NextPageWithLayout = () => {
                         className="mb-8"
                         market={market}
                         usdZtgPrice={ztgPrice}
-                        positions={marketPositions}
+                        positions={marketPositions.filter((position) =>
+                          position.userBalance.gt(0),
+                        )}
                       />
                     );
                   },
@@ -211,6 +218,9 @@ const Portfolio: NextPageWithLayout = () => {
             </Tab.Panel>
             <Tab.Panel>
               {address && <HistoryTabGroup address={address} />}
+            </Tab.Panel>
+            <Tab.Panel>
+              {address && <CourtTabGroup address={address} />}
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>

@@ -195,6 +195,10 @@ const Market: NextPage<MarketPageProps> = ({
 
   const tradeItem = useTradeItem();
 
+  if (indexedMarket == null) {
+    return <NotFoundPage backText="Back To Markets" backLink="/" />;
+  }
+
   const outcomeAssets = indexedMarket?.outcomeAssets?.map(
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
@@ -286,15 +290,12 @@ const Market: NextPage<MarketPageProps> = ({
     }
   }, [market?.report, disputes]);
 
-  if (indexedMarket == null) {
-    return <NotFoundPage backText="Back To Markets" backLink="/" />;
-  }
-
   const marketHasPool =
     (market?.scoringRule === ScoringRule.Cpmm &&
       poolId != null &&
       poolIdLoading === false) ||
-    (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
+    (market?.scoringRule === ScoringRule.AmmCdaHybrid &&
+      market.neoPool != null);
 
   const poolCreationDate = new Date(
     indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
