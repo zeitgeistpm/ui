@@ -41,6 +41,35 @@ const useWeb3Wallet = () => {
     }
   };
 
+  const onboardUser = async () => {
+    if (!web3auth) {
+      return;
+    }
+    const user = await web3auth.getUserInfo();
+    if (!user?.idToken) {
+      return;
+    }
+    const base64Url = user?.idToken.split(".")[1];
+    const base64 = base64Url.replace("-", "+").replace("_", "/");
+    const parsedToken = JSON.parse(window.atob(base64));
+    try {
+      const res = await fetch("/api/onboardUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + user.idToken,
+        },
+        body: JSON.stringify({
+          email: user.email,
+          name: user.name,
+          appPubKey: parsedToken.wallets[0].public_key,
+        }),
+      });
+    } catch (e) {
+      return;
+    }
+  };
+
   const login = async (loginOptions: loginOptions) => {
     if (!web3auth || !auth0Domain) {
       notificationStore.pushNotification(
@@ -64,19 +93,7 @@ const useWeb3Wallet = () => {
       );
       if (web3authProvider) {
         await getKeypair(web3authProvider);
-        // TODO: refactor user onboarding
-        // const user = await web3auth.getUserInfo();
-        // try {
-        //   const res = await fetch("/api/onboardUser", {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({ email: user.email, name: user.name }),
-        //   });
-        // } catch (e) {
-        //   return;
-        // }
+        await onboardUser();
       }
     } catch (e) {
       notificationStore.pushNotification(
