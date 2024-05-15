@@ -94,6 +94,7 @@ export const useExtrinsic = <T>(
           : notifications.pushNotification(`Trade placed`, {
               type: "Success",
               autoRemove: true,
+              lifetime: 5,
             });
       },
       successCallback: (data) => {

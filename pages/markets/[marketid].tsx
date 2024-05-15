@@ -397,8 +397,6 @@ const Market: NextPage<MarketPageProps> = ({
             <MarketDescription market={indexedMarket} />
           </div>
 
-          <DisqusComments post={indexedMarket} />
-
           {!isCampaignAsset && (
             <AddressDetails title="Oracle" address={indexedMarket.oracle} />
           )}
@@ -421,6 +419,8 @@ const Market: NextPage<MarketPageProps> = ({
               onPoolDeployed={handlePoolDeployed}
             />
           )}
+
+          <DisqusComments post={indexedMarket} />
 
           {!isCampaignAsset && market && (marketHasPool || poolDeployed) && (
             <div className="my-12">

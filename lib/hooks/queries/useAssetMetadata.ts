@@ -3,6 +3,7 @@ import {
   AssetId,
   IOForeignAssetId,
   IOZtgAssetId,
+  IOCampaignAssetId,
   ZTG,
   isRpcSdk,
 } from "@zeitgeistpm/sdk";
@@ -10,6 +11,7 @@ import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
 import { XcmVersionedMultiLocation } from "@polkadot/types/lookup";
 import Decimal from "decimal.js";
+import { campaignID } from "lib/constants";
 
 export type AssetMetadata = {
   symbol: string;
@@ -39,6 +41,17 @@ export const useAssetMetadata = (assetId?: AssetId) => {
             decimals: 10,
           };
           return assetMetadata;
+        } else if (IOCampaignAssetId.is(assetId)) {
+          const campaignAssetDetails =
+            await sdk.api.query.campaignAssets.metadata(0);
+          const campaignMeta: AssetMetadata = {
+            symbol: campaignAssetDetails.symbol.toPrimitive() as string,
+            name: campaignAssetDetails.name.toPrimitive() as string,
+            feeFactor: new Decimal(100), //specified in docs
+            location: null, //not present in campaign assets
+            decimals: Number(campaignAssetDetails.name.toString()),
+          };
+          return campaignMeta;
         } else if (IOForeignAssetId.is(assetId)) {
           const metadata = await sdk.api.query.assetRegistry.metadata(assetId);
           const location = metadata.unwrapOr(null)?.location.isSome
