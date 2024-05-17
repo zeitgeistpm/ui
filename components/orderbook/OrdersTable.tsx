@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { InputMaybe, OrderWhereInput } from "@zeitgeistpm/indexer";
+import { InputMaybe, OrderStatus, OrderWhereInput } from "@zeitgeistpm/indexer";
 import { BaseAssetId, ZTG, getIndexOf, isRpcSdk } from "@zeitgeistpm/sdk";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
@@ -42,8 +42,8 @@ const columns: TableColumn[] = [
     type: "text",
   },
   {
-    header: "Total Value",
-    accessor: "value",
+    header: "Status",
+    accessor: "status",
     type: "text",
   },
   {
@@ -71,6 +71,7 @@ const OrdersTable = ({ where }: { where: InputMaybe<OrderWhereInput> }) => {
       marketId,
       makerAddress,
       filledPercentage,
+      status,
     }) => {
       const index = getIndexOf(outcomeAssetId);
       const market = markets?.find((market) => market.marketId === marketId);
@@ -86,10 +87,15 @@ const OrdersTable = ({ where }: { where: InputMaybe<OrderWhereInput> }) => {
         value: `${outcomeAmount.mul(price).div(ZTG).toFixed(3)} ${baseSymbol}`,
         price: `${price.toFixed(3)} ${baseSymbol}`,
         percentageFilled: `${filledPercentage.toFixed(0)}%`,
+        status: status,
         button: (
           <CancelOrderButton
             orderId={id}
-            disabled={realAddress !== makerAddress || orderFilled}
+            disabled={
+              realAddress !== makerAddress ||
+              orderFilled ||
+              status === OrderStatus.Removed
+            }
           />
         ),
       };

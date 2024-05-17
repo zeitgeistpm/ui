@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { InputMaybe, OrderWhereInput } from "@zeitgeistpm/indexer";
+import { InputMaybe, OrderStatus, OrderWhereInput } from "@zeitgeistpm/indexer";
 import {
   AssetId,
   IOBaseAssetId,
@@ -28,6 +28,7 @@ export type Order = {
         ScalarOutcome: [MarketId, "Short" | "Long"];
       };
   filledPercentage: number;
+  status: OrderStatus;
 };
 
 export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
@@ -82,6 +83,7 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
             outcomeAmount: outcomeAmount,
             outcomeAssetId: outcomeAssetId!, // one of the assets must be MarketOutcome
             filledPercentage,
+            status: order.status,
           };
 
           return mappedOrder;
