@@ -1,3 +1,5 @@
+import { ISubmittableResult } from "@polkadot/types/types";
+import { OrderStatus } from "@zeitgeistpm/indexer";
 import {
   isRpcSdk,
   MarketOutcomeAssetId,
@@ -13,6 +15,7 @@ import {
   lookupAssetReserve,
   useAmm2Pool,
 } from "lib/hooks/queries/amm2/useAmm2Pool";
+import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
@@ -28,16 +31,13 @@ import {
   calculateSwapAmountOutForBuy,
   isValidBuyAmount,
 } from "lib/util/amm2";
-import { formatNumberCompact } from "lib/util/format-compact";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { useState, useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
-import { ISubmittableResult } from "@polkadot/types/types";
 import { assetsAreEqual } from "lib/util/assets-are-equal";
-import { perbillToNumber } from "lib/util/perbill-to-number";
-import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
+import { formatNumberCompact } from "lib/util/format-compact";
 import { selectOrdersForMarketBuy } from "lib/util/order-selection";
-import { NewsSection } from "components/front-page/News";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { perbillToNumber } from "lib/util/perbill-to-number";
+import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 
 const BuyForm = ({
   marketId,
@@ -76,7 +76,10 @@ const BuyForm = ({
   const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
   const { data: pool } = useAmm2Pool(marketId);
-  const { data: orders } = useOrders({ marketId_eq: marketId });
+  const { data: orders } = useOrders({
+    marketId_eq: marketId,
+    status_eq: OrderStatus.Placed,
+  });
 
   const swapFee = pool?.swapFee.div(ZTG);
   const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));

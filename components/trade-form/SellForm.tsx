@@ -1,3 +1,5 @@
+import { ISubmittableResult } from "@polkadot/types/types";
+import { OrderStatus } from "@zeitgeistpm/indexer";
 import {
   isRpcSdk,
   MarketOutcomeAssetId,
@@ -13,6 +15,8 @@ import {
   lookupAssetReserve,
   useAmm2Pool,
 } from "lib/hooks/queries/amm2/useAmm2Pool";
+import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -27,14 +31,11 @@ import {
   isValidSellAmount,
 } from "lib/util/amm2";
 import { formatNumberCompact } from "lib/util/format-compact";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { useState, useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
-import { ISubmittableResult } from "@polkadot/types/types";
-import { perbillToNumber } from "lib/util/perbill-to-number";
-import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
-import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
 import { selectOrdersForMarketSell } from "lib/util/order-selection";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { perbillToNumber } from "lib/util/perbill-to-number";
+import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 
 const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
@@ -74,7 +75,10 @@ const SellForm = ({
   const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
-  const { data: orders } = useOrders({ marketId_eq: marketId });
+  const { data: orders } = useOrders({
+    marketId_eq: marketId,
+    status_eq: OrderStatus.Placed,
+  });
 
   const swapFee = pool?.swapFee.div(ZTG);
   const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
