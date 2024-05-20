@@ -1,6 +1,5 @@
 import { Tab } from "@headlessui/react";
 import { getIndexOf } from "@zeitgeistpm/sdk";
-import BadgesList from "components/avatar/BadgesList";
 import AccountPoolsTable from "components/portfolio/AccountPoolsTable";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
@@ -27,19 +26,12 @@ import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useMemo } from "react";
 
-type MainTabItem =
-  | "Predictions"
-  | "Balances"
-  | "Markets"
-  | "Badges"
-  | "History"
-  | "Court";
+type MainTabItem = "Predictions" | "Balances" | "Markets" | "History" | "Court";
 
 const mainTabItems: MainTabItem[] = [
   "Predictions",
   ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true" ? ["Balances"] : []),
   "Markets",
-  "Badges",
   "History",
   "Court",
 ] as MainTabItem[];
@@ -110,7 +102,6 @@ const Portfolio: NextPageWithLayout = () => {
                   ? ["Balances"]
                   : []),
                 "Markets",
-                "Badges",
                 "History",
                 "Court",
               ].map((title, index) => (
@@ -212,9 +203,6 @@ const Portfolio: NextPageWithLayout = () => {
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>
-            </Tab.Panel>
-            <Tab.Panel className="mt-[40px]">
-              {address && <BadgesList address={address} />}
             </Tab.Panel>
             <Tab.Panel>
               {address && <HistoryTabGroup address={address} />}
