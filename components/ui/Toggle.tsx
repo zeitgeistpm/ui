@@ -36,7 +36,7 @@ export const Toggle = ({
       <span
         aria-hidden="true"
         className={`
-            ${checked ? "translate-x-12" : "translate-x-1"}
+            ${checked ? "translate-x-[90%]" : "translate-x-[10%]"}
             pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white 
             shadow-lg ring-0 transition duration-150 ease-[cubic-bezier(.51,.44,.4,1.35)]`}
       />
