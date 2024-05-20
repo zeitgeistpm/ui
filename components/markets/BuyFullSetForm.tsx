@@ -113,11 +113,7 @@ const BuyFullSetForm = ({
 
   useGlobalKeyPress("Enter", handleSignTransaction);
 
-  const imagePath = IOForeignAssetId.is(baseAssetId)
-    ? lookupAssetImagePath(baseAssetId.ForeignAsset)
-    : IOBaseAssetId.is(baseAssetId)
-      ? lookupAssetImagePath(baseAssetId.Ztg)
-      : "";
+  const imagePath = lookupAssetImagePath(baseAssetId);
 
   return (
     <div className="w-full">

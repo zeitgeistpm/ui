@@ -67,7 +67,7 @@ const getTrendingMarkets = async (
       order: MarketOrderByInput.IdDesc,
       where: {
         status_eq: MarketStatus.Active,
-        scoringRule_eq: ScoringRule.Lmsr,
+        scoringRule_eq: ScoringRule.AmmCdaHybrid,
         ...marketMetaFilter,
       },
     });

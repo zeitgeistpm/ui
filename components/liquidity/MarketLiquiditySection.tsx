@@ -1,6 +1,5 @@
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { parseAssetId } from "@zeitgeistpm/sdk";
-import LiquidityModal from "components/liquidity/LiquidityModal";
 import PoolTable from "components/liquidity/PoolTable";
 import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
 import InfoPopover from "components/ui/InfoPopover";
@@ -31,7 +30,8 @@ export const MarketLiquiditySection = ({
 }) => {
   const marketHasPool =
     (market?.scoringRule === ScoringRule.Cpmm && market.pool != null) ||
-    (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
+    (market?.scoringRule === ScoringRule.AmmCdaHybrid &&
+      market.neoPool != null);
 
   return (
     <>
@@ -109,9 +109,7 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const wallet = useWallet();
 
   const prediction =
-    market &&
-    market?.pool?.assets &&
-    getCurrentPrediction(market.pool.assets, market);
+    market && market?.assets && getCurrentPrediction(market.assets, market);
 
   const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
 

@@ -220,6 +220,10 @@ const Market: NextPage<MarketPageProps> = ({
 
   const tradeItem = useTradeItem();
 
+  if (indexedMarket == null) {
+    return <NotFoundPage backText="Back To Markets" backLink="/" />;
+  }
+
   const outcomeAssets = indexedMarket?.outcomeAssets?.map(
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
@@ -342,15 +346,12 @@ const Market: NextPage<MarketPageProps> = ({
   const hasLiveTwitchStream =
     hasLiveTwitchStreamClient || hasLiveTwitchStreamServer;
 
-  if (indexedMarket == null) {
-    return <NotFoundPage backText="Back To Markets" backLink="/" />;
-  }
-
   const marketHasPool =
     (market?.scoringRule === ScoringRule.Cpmm &&
       poolId != null &&
       poolIdLoading === false) ||
-    (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
+    (market?.scoringRule === ScoringRule.AmmCdaHybrid &&
+      market.neoPool != null);
 
   const poolCreationDate = new Date(
     indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
@@ -395,7 +396,7 @@ const Market: NextPage<MarketPageProps> = ({
 
                 <Tab
                   key="twitch"
-                  className="ui-selected:bg-twitch-purple text-twitch-purple ui-selected:text-twitch-gray border-twitch-purple flex items-center gap-2 rounded-md border-1 px-2 py-1 ui-selected:border-transparent"
+                  className="flex items-center gap-2 rounded-md border-1 border-twitch-purple px-2 py-1 text-twitch-purple ui-selected:border-transparent ui-selected:bg-twitch-purple ui-selected:text-twitch-gray"
                 >
                   <FaTwitch size={16} />
                   Twitch Stream

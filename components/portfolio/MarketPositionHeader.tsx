@@ -14,12 +14,7 @@ const MarketPositionHeader = ({
   baseAsset: string;
 }) => {
   const baseAssetId = parseAssetIdString(baseAsset);
-  lookupAssetImagePath();
-  const imagePath = IOForeignAssetId.is(baseAssetId)
-    ? lookupAssetImagePath(baseAssetId.ForeignAsset)
-    : IOBaseAssetId.is(baseAssetId)
-      ? lookupAssetImagePath(baseAssetId.Ztg)
-      : "";
+  const imagePath = lookupAssetImagePath(baseAssetId);
 
   return (
     <h3 className="mb-5 flex items-center text-sm font-normal sm:text-base">

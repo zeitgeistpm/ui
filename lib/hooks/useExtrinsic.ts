@@ -79,36 +79,38 @@ export const useExtrinsic = <T>(
       }
     }
 
+    const extrinsicCallbackParams = {
+      api: sdk.api,
+      notifications,
+      broadcastCallback: () => {
+        setIsBroadcasting(true);
+        callbacks?.onBroadcast
+          ? callbacks.onBroadcast()
+          : notifications?.pushNotification("Broadcasting transaction...", {
+              autoRemove: true,
+            });
+      },
+      successCallback: (data) => {
+        setIsLoading(false);
+        setIsSuccess(true);
+        setIsBroadcasting(false);
+
+        callbacks?.onSuccess && callbacks.onSuccess(data);
+      },
+      failCallback: (error) => {
+        setIsLoading(false);
+        setIsError(true);
+        setIsBroadcasting(false);
+
+        callbacks?.onError && callbacks.onError();
+        notifications.pushNotification(error, { type: "Error" });
+      },
+    };
+
     signAndSend(
       extrinsic,
       signer,
-      extrinsicCallback({
-        api: sdk.api,
-        notifications,
-        broadcastCallback: () => {
-          setIsBroadcasting(true);
-          callbacks?.onBroadcast
-            ? callbacks.onBroadcast()
-            : notifications?.pushNotification("Broadcasting transaction...", {
-                autoRemove: true,
-              });
-        },
-        successCallback: (data) => {
-          setIsLoading(false);
-          setIsSuccess(true);
-          setIsBroadcasting(false);
-
-          callbacks?.onSuccess && callbacks.onSuccess(data);
-        },
-        failCallback: (error) => {
-          setIsLoading(false);
-          setIsError(true);
-          setIsBroadcasting(false);
-
-          callbacks?.onError && callbacks.onError();
-          notifications.pushNotification(error, { type: "Error" });
-        },
-      }),
+      extrinsicCallback(extrinsicCallbackParams),
       IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
     ).catch((error) => {
       notifications.pushNotification(error?.toString() ?? "Unknown Error", {

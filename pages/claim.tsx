@@ -9,7 +9,7 @@ import airdrop from "../public/airdrop.json";
 import { environment } from "lib/constants";
 import NotFoundPage from "./404";
 
-const TOTAL_AIRDROP_ZTG = 2_000_000;
+const TOTAL_AIRDROP_ZTG = 1_000_000;
 const ZTG_PER_ADDRESS = TOTAL_AIRDROP_ZTG / airdrop.length;
 const AIRDROP_REMARK_PREFIX = "zeitgeist.airdrop-1";
 
@@ -51,7 +51,10 @@ const ClaimPage: NextPage = () => {
           </a>
           . The snapshot was taken February 14th, 2024 (22:14:54 UTC). Only
           wallets that voted on Polkadot's OpenGov before the snapshot will be
-          eligible. Claims will be open until July 1st, 2024.
+          eligible. Claims will be open until July 1st, 2024.{" "}
+          <span className="mt-4 italic underline">
+            Users will receive their ZTG tokens after the claim period.
+          </span>
         </div>
         {showEligibility === false ? (
           <>

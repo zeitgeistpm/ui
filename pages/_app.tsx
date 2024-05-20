@@ -4,7 +4,6 @@ import "styles/index.css";
 import { Hydrate, QueryClientProvider } from "@tanstack/react-query";
 import * as Fathom from "fathom-client";
 
-import { AvatarContext } from "@zeitgeistpm/avatara-react";
 import Devtools from "components/devtools";
 import DefaultLayout from "layouts/DefaultLayout";
 import { appQueryClient } from "lib/query-client";
@@ -82,28 +81,15 @@ const MyApp = ({ Component, pageProps }) => {
       </style>
       <QueryClientProvider client={appQueryClient}>
         <Hydrate state={pageProps.dehydratedState}>
-          <AvatarContext.Provider
-            value={{
-              api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
-              ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE ?? "" } },
-              rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
-              indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
-              avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
-              badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
-              avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
-              prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
-            }}
-          >
-            <Head>
-              <title>Zeitgeist - Prediction Markets</title>
-            </Head>
-            <DefaultLayout>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </DefaultLayout>
-            {/* <Devtools /> */}
-          </AvatarContext.Provider>
+          <Head>
+            <title>Zeitgeist - Prediction Markets</title>
+          </Head>
+          <DefaultLayout>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </DefaultLayout>
+          {/* <Devtools /> */}
         </Hydrate>
       </QueryClientProvider>
     </div>

@@ -168,11 +168,7 @@ const CasePage: NextPage = ({
       ? market.report?.outcome.categorical
       : undefined;
 
-  const imagePath = IOForeignAssetId.is(baseAsset)
-    ? lookupAssetImagePath(baseAsset.ForeignAsset)
-    : IOBaseAssetId.is(baseAsset)
-      ? lookupAssetImagePath(baseAsset.Ztg)
-      : "";
+  const imagePath = lookupAssetImagePath(baseAsset);
 
   const connectedParticipantDraw = selectedDraws?.find(
     (draw) => draw.courtParticipant.toString() === wallet.realAddress,
