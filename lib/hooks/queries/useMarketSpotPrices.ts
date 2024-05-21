@@ -38,11 +38,7 @@ export const useMarketSpotPrices = (
 
   const { data: amm2Pool } = useAmm2Pool(marketId);
 
-  const enabled =
-    isRpcSdk(sdk) &&
-    marketId != null &&
-    !!market &&
-    !!(amm2Pool || (pool && basePoolBalance && balances));
+  const enabled = isRpcSdk(sdk) && marketId != null && !!market;
 
   const query = useQuery(
     [
