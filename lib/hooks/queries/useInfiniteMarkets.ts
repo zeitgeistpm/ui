@@ -68,7 +68,7 @@ export const useInfiniteMarkets = (
     const statuses = filters.status as MarketStatus[];
     const tags = filters.tag;
     const currencies = filters.currency;
-    console.log(currencies);
+
     const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
       where: {
         AND: [
