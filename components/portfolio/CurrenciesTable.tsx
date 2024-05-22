@@ -16,7 +16,6 @@ import { ChainName, CHAIN_IMAGES } from "lib/constants/chains";
 import TransferButton from "./TransferButton";
 import { AssetId } from "@zeitgeistpm/sdk";
 import { convertDecimals } from "lib/util/convert-decimals";
-import { isWSX } from "lib/constants";
 import { useMemo } from "react";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
@@ -125,15 +124,9 @@ const MoveButton = ({
 };
 
 const CurrenciesTable = ({ address }: { address: string }) => {
-  const { data: allBalances, isFetched } = useCurrencyBalances(address);
+  const { data: balances, isFetched } = useCurrencyBalances(address);
   const { data: constants } = useChainConstants();
   const wasFetched = usePrevious(isFetched);
-
-  const balances = useMemo(() => {
-    return isWSX
-      ? allBalances?.filter((b) => b.symbol === "WSX")
-      : allBalances?.filter((b) => b.symbol !== "WSX");
-  }, [isWSX, allBalances]);
 
   // set sort order only once when data is first fetched
   // sort by balance descending, but keep sorting on subsequent renders/balance updates.

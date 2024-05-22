@@ -35,6 +35,18 @@ export const supportedCurrencies = [
   } satisfies CurrencyMetadata,
 ] as const;
 
+export const supportedCurrenciesFilter = supportedCurrencies.map((currency) => {
+  const assetKey = Object.keys(currency.assetId)[0];
+  const assetValue = currency.assetId[assetKey];
+  return assetValue === null ? assetKey : `{ "${assetKey}": ${assetValue} }`;
+});
+
+export const supportedCurrenciesFilterString = `[${supportedCurrenciesFilter
+  .map((item) => {
+    return `"${item.replace(/"/g, '\\"')}"`;
+  })
+  .join(", ")}]`;
+
 export type SupportedCurrencyTag = Unpacked<
   typeof supportedCurrencies
 >[number]["name"];

@@ -18,8 +18,8 @@ import { FullCmsMarketMetadata } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 import { marketMetaFilter } from "./constants";
 import { marketsRootQuery } from "./useMarket";
+import { supportedCurrenciesFilter } from "../../constants/supported-currencies";
 
-import { tryCatch } from "@zeitgeistpm/utility/dist/either";
 import { WHITELISTED_TRUSTED_CREATORS } from "lib/constants/whitelisted-trusted-creators";
 
 export const rootKey = "markets-filtered";
@@ -68,7 +68,7 @@ export const useInfiniteMarkets = (
     const statuses = filters.status as MarketStatus[];
     const tags = filters.tag;
     const currencies = filters.currency;
-
+    console.log(currencies);
     const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
       where: {
         AND: [
@@ -77,7 +77,8 @@ export const useInfiniteMarkets = (
             status_not_in: [MarketStatus.Destroyed],
             status_in: statuses.length === 0 ? undefined : statuses,
             tags_containsAny: tags?.length === 0 ? undefined : tags,
-            baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
+            baseAsset_in:
+              currencies?.length !== 0 ? currencies : supportedCurrenciesFilter,
             scoringRule_not_eq: ScoringRule.Parimutuel,
           },
           {

@@ -2,9 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { MarketOrderByInput, ZeitgeistIndexer } from "@zeitgeistpm/indexer";
 import { isIndexedSdk } from "@zeitgeistpm/sdk";
 import Fuse from "fuse.js";
-import { isWSX, wsxID } from "lib/constants";
 import { useDebounce } from "use-debounce";
 import { useSdkv2 } from "../useSdkv2";
+import { supportedCurrenciesFilter } from "lib/constants/supported-currencies";
 
 export const marketSearchKey = "market-search";
 
@@ -41,8 +41,7 @@ export const searchMarketsText = async (
     where: {
       AND: [
         {
-          baseAsset_eq: isWSX ? `{"foreignAsset":${wsxID}}` : undefined,
-          baseAsset_not_eq: !isWSX ? `{"foreignAsset":${wsxID}}` : undefined,
+          baseAsset_in: supportedCurrenciesFilter,
         },
         {
           OR: search,
