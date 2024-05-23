@@ -39,7 +39,7 @@ const CopyIcon: FC<CopyIconProps> = ({
   }, [recentlyCopied]);
 
   return (
-    <div className={"relative flex w-ztg-20 items-center " + className}>
+    <div className={"relative flex items-center " + className}>
       <Copy
         size={size}
         role="button"
