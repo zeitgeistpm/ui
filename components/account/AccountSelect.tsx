@@ -9,8 +9,6 @@ import Select, {
   SingleValueProps,
   StylesConfig,
 } from "react-select";
-import { IoIosArrowDropdownCircle } from "react-icons/io";
-
 import CopyIcon from "../ui/CopyIcon";
 import AccountSelectOption from "./AccountSelectOption";
 import AccountSelectValue from "./AccountSelectValue";
@@ -98,7 +96,7 @@ const AccountSelect: FC<AccountSelectProps> = ({
   const wallet = useWallet();
 
   return (
-    <div className="flex w-full items-center justify-center rounded-lg bg-sky-100 px-1">
+    <div className="flex w-full items-center justify-between rounded-lg bg-sky-100 px-2">
       <Select
         isSearchable={false}
         options={options}
@@ -116,7 +114,13 @@ const AccountSelect: FC<AccountSelectProps> = ({
         }}
         onChange={onChange}
       />
-      {wallet.activeAccount?.address && <IoIosArrowDropdownCircle size={22} />}
+      {wallet.activeAccount?.address && (
+        <CopyIcon
+          copyText={wallet.activeAccount?.address}
+          className="w-auto px-1"
+          size={18}
+        />
+      )}
     </div>
   );
 };

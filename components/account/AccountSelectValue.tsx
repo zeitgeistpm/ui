@@ -1,6 +1,7 @@
 import Avatar from "components/ui/Avatar";
 import { shortenAddress } from "lib/util";
 import CopyIcon from "../ui/CopyIcon";
+import { IoIosArrowDropdownCircle } from "react-icons/io";
 import React, { FC } from "react";
 import { useWallet } from "lib/state/wallet";
 export interface AccountSelectValueProps {
@@ -19,17 +20,14 @@ const AccountSelectValue: FC<AccountSelectValueProps> = ({ name, address }) => {
       </div>
       <div className="ml-4 flex flex-col">
         <div className="text-xxs font-bold uppercase text-sky-600">{name}</div>
-        <div className="font-mono text-sm font-semibold md:hidden">
+        <div className="flex items-center gap-1 font-mono text-sm font-semibold md:hidden">
           {shortenAddress(address, 8, 12)}
+          <IoIosArrowDropdownCircle size={16} />
         </div>
-        <div className="hidden font-mono text-xs font-semibold md:flex">
+        <div className="hidden gap-1 font-mono text-sm font-semibold md:flex">
           {address}
           {wallet.activeAccount?.address && (
-            <CopyIcon
-              copyText={wallet.activeAccount?.address}
-              className="w-auto px-1"
-              size={12}
-            />
+            <IoIosArrowDropdownCircle size={18} />
           )}
         </div>
       </div>
