@@ -10,7 +10,7 @@ export const useCourtVoteDrawsForCase = (caseId?: number) => {
   const [sdk, id] = useSdkv2();
   const queryClient = useQueryClient();
 
-  const enabled = !!sdk && isRpcSdk(sdk) && caseId;
+  const enabled = !!sdk && isRpcSdk(sdk) && caseId != null;
 
   const query = useQuery<ZrmlCourtDraw[]>(
     [id, voteDrawsRootKey, caseId],
