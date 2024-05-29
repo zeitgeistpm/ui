@@ -84,6 +84,7 @@ import { AiOutlineFileAdd } from "react-icons/ai";
 import { BsFillChatSquareTextFill } from "react-icons/bs";
 import { CgLivePhoto } from "react-icons/cg";
 import { FaChevronUp, FaTwitch } from "react-icons/fa";
+import DisqusComments from "components/markets/Comments";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -577,6 +578,8 @@ const Market: NextPage<MarketPageProps> = ({
               </Transition>
             </div>
           )}
+
+          <DisqusComments post={indexedMarket} />
         </div>
 
         <div className="hidden md:-mr-6 md:block md:w-[320px] lg:mr-auto lg:w-[460px]">
