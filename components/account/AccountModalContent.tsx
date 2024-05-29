@@ -5,6 +5,7 @@ import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { ZTG } from "@zeitgeistpm/sdk";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { formatNumberLocalized } from "lib/util";
 
 const AccountModalContent: FC = () => {
   const { activeAccount, disconnectWallet, accounts, selectAccount } =
@@ -38,26 +39,26 @@ const AccountModalContent: FC = () => {
         value={value}
         onChange={onAccountChange}
       />
-      <div className="mt-ztg-15 flex h-ztg-50 items-center justify-between">
-        <div className="flex h-full flex-grow items-center rounded-ztg-10 bg-sky-100 dark:bg-black">
-          <div className="flex items-center px-ztg-8">
-            <div className="center h-ztg-28 w-ztg-28 rounded-full bg-white dark:bg-sky-1000">
-              <div className="center h-ztg-22 w-ztg-22 rounded-full bg-sky-100 dark:bg-black">
-                <div className="center h-ztg-16 w-ztg-16 rounded-full bg-border-dark dark:bg-sky-1000">
+      <div className="mt-4 flex h-12.5 items-center justify-between">
+        <div className="flex h-full w-full items-center rounded-lg bg-sky-100 px-2">
+          <div className="flex items-center px-2">
+            <div className="center rounded-full bg-white">
+              <div className="center rounded-full bg-sky-100">
+                <div className="center h-6 w-6 rounded-full">
                   <img
-                    src="/icons/acc-balance.svg"
+                    src="/currencies/ztg.svg"
                     alt="Account balance"
                     style={{ marginTop: "-1px" }}
                   />
                 </div>
               </div>
             </div>
-            <div className="ml-ztg-16 flex flex-col">
-              <div className="text-ztg-10-150 font-bold uppercase text-sky-600">
+            <div className="ml-4 flex flex-col">
+              <div className="text-xxs font-bold uppercase text-sky-600">
                 balance
               </div>
-              <div className="font-mono text-ztg-14-120 font-bold text-sheen-green">
-                {`${activeBalance?.div(ZTG).toFixed(4)} ${
+              <div className="font-mono text-sm font-bold text-blue">
+                {`${formatNumberLocalized(Number(activeBalance?.div(ZTG)))} ${
                   constants?.tokenSymbol ?? ""
                 }` ?? "---"}
               </div>
@@ -65,13 +66,13 @@ const AccountModalContent: FC = () => {
           </div>
         </div>
         <div
-          className="ml-ztg-16 flex h-full w-ztg-176 cursor-pointer items-center justify-evenly rounded-ztg-10 bg-border-light text-white dark:bg-sky-700"
+          className="ml-4 flex h-12.5 cursor-pointer items-center justify-center gap-2 rounded-lg bg-border-light px-2 text-white md:w-44"
           onClick={() => {
             disconnectWallet();
           }}
         >
-          <div className=" text-ztg-16-150 capitalize">disconnect</div>
-          <LogOut size={16} className="-ml-ztg-30 text-white" />
+          <div className="capitalize">disconnect</div>
+          <LogOut size={16} className="text-white" />
         </div>
       </div>
     </div>

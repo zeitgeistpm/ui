@@ -9,7 +9,6 @@ import Select, {
   SingleValueProps,
   StylesConfig,
 } from "react-select";
-
 import CopyIcon from "../ui/CopyIcon";
 import AccountSelectOption from "./AccountSelectOption";
 import AccountSelectValue from "./AccountSelectValue";
@@ -19,7 +18,7 @@ export type AccountOption = { label: string; value: string };
 const Control = ({ children, ...rest }: ControlProps<AccountOption, false>) => {
   return (
     <components.Control {...(rest as ControlProps)}>
-      <div className="flex cursor-pointer items-center justify-between rounded-ztg-10 bg-sky-100 dark:bg-black">
+      <div className="flex cursor-pointer items-center justify-between rounded-lg bg-sky-100">
         {children}
       </div>
     </components.Control>
@@ -28,7 +27,6 @@ const Control = ({ children, ...rest }: ControlProps<AccountOption, false>) => {
 
 const Option = (props: OptionProps<AccountOption, false>) => {
   const { label, value } = props.data;
-
   return (
     <components.Option {...props} className="bg-black">
       <AccountSelectOption name={label} address={value} />
@@ -47,7 +45,7 @@ const DropdownIndicator = () => {
 };
 
 const IndicatorSeparator = () => {
-  return <></>;
+  return null;
 };
 
 const customStyles: StylesConfig<AccountOption> = {
@@ -98,32 +96,29 @@ const AccountSelect: FC<AccountSelectProps> = ({
   const wallet = useWallet();
 
   return (
-    <div className="flex h-ztg-50 w-full items-center rounded-ztg-10 bg-sky-100 dark:bg-black">
-      <div className="flex-1">
-        <Select
-          isSearchable={false}
-          options={options}
-          styles={customStyles}
-          value={value}
-          isMulti={false}
-          isDisabled={disabled}
-          placeholder="Select an account"
-          components={{
-            Control,
-            Option,
-            SingleValue,
-            DropdownIndicator,
-            IndicatorSeparator,
-          }}
-          onChange={onChange}
-        />
-      </div>
-
+    <div className="flex w-full items-center justify-between rounded-lg bg-sky-100 px-2">
+      <Select
+        isSearchable={false}
+        options={options}
+        styles={customStyles}
+        value={value}
+        isMulti={false}
+        isDisabled={disabled}
+        placeholder="Select an account"
+        components={{
+          Control,
+          Option,
+          SingleValue,
+          DropdownIndicator,
+          IndicatorSeparator,
+        }}
+        onChange={onChange}
+      />
       {wallet.activeAccount?.address && (
         <CopyIcon
           copyText={wallet.activeAccount?.address}
-          className="w-auto pr-ztg-8"
-          size={16}
+          className="w-auto px-1"
+          size={18}
         />
       )}
     </div>
