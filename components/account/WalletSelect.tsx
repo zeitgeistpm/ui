@@ -78,7 +78,7 @@ const WalletSelect = () => {
           <div>
             <Link
               href="https://novawallet.io/"
-              className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"
+              className="mb-4 flex h-[56px] w-full items-center justify-center rounded-md border text-center"
               target="_blank"
             >
               <Image
@@ -92,18 +92,30 @@ const WalletSelect = () => {
                 <span>Nova Wallet</span>
               </div>
             </Link>
+            <Link
+              href="https://www.subwallet.app/"
+              className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"
+              target="_blank"
+            >
+              <Image
+                src="/icons/subwallet.png"
+                alt={"wallet.logo.alt"}
+                width={30}
+                height={30}
+                quality={100}
+              />
+              <div className="relative ml-4 font-medium">
+                <span>SubWallet</span>
+              </div>
+            </Link>
             <div className="mt-2">
               <span className="mb-2 text-sm font-semibold">
-                Nova Wallet instructions:
+                Mobile Wallet instructions:
               </span>
               <ol className="list-decimal pl-4 text-xs">
-                <li>Open Nova Wallet app on your mobile device.</li>
-                <li>Navigate to "Browser" on the bottom menu.</li>
-                <li>Search for and select "Zeitgeist".</li>
-                <li>
-                  Once inside Zeitgeist: press "Connect Wallet" in the top menu
-                  and allow access when prompted.
-                </li>
+                <li>Open wallet app on your mobile device.</li>
+                <li>Search for "Zeitgeist" in dApps or Browser tab.</li>
+                <li>Press "Connect Wallet" in top menu inside Zeitgeist.</li>
               </ol>
             </div>
           </div>
