@@ -346,7 +346,7 @@ const Market: NextPage<MarketPageProps> = ({
   const hasLiveTwitchStream =
     hasLiveTwitchStreamClient || hasLiveTwitchStreamServer;
 
-  const marketHasPool = market.neoPool != null;
+  const marketHasPool = market?.neoPool != null;
 
   const poolCreationDate = new Date(
     indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
