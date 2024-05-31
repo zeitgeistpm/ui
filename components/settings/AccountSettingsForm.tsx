@@ -155,6 +155,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
       </div>
 
       <FormTransactionButton
+        loading={isUpdating}
         disabled={!isDirty || !isValid || isUpdating || isClearing}
       >
         Set Identity

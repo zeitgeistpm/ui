@@ -235,6 +235,7 @@ const JoinPoolForm = ({
       </div>
 
       <FormTransactionButton
+        loading={isLoading}
         disabled={
           formState.isValid === false ||
           isLoading ||

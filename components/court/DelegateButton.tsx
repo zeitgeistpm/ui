@@ -168,6 +168,7 @@ const DelegateButton = ({ address }: { address: string }) => {
                 </span>
               </div>
               <FormTransactionButton
+                loading={isLoading}
                 className="w-full max-w-[250px]"
                 disabled={formState.isValid === false || isLoading}
               >

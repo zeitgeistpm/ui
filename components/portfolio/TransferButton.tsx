@@ -298,7 +298,10 @@ const TransferModal = ({
               : ""}
           </span>
         </div>
-        <FormTransactionButton disabled={!isValid || txIsLoading}>
+        <FormTransactionButton
+          loading={txIsLoading}
+          disabled={!isValid || txIsLoading}
+        >
           Transfer
         </FormTransactionButton>
       </form>

@@ -137,7 +137,11 @@ const SellFullSetForm = ({
           </p>
         </div>
       </div>
-      <TransactionButton onClick={handleSignTransaction} disabled={disabled}>
+      <TransactionButton
+        onClick={handleSignTransaction}
+        disabled={disabled}
+        loading={isLoading}
+      >
         Confirm Sell
         {fee && (
           <span className="block text-xs font-normal">
