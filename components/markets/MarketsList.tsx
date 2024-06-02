@@ -1,6 +1,4 @@
-import { ScalarRangeType } from "@zeitgeistpm/sdk";
 import React, { useEffect, useState } from "react";
-import Decimal from "decimal.js";
 import { useInView } from "react-intersection-observer";
 
 import Loader from "react-spinners/PulseLoader";
@@ -12,10 +10,7 @@ import MarketFilterSelection from "./market-filter";
 import MarketCard from "./market-card/index";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import { filterTypes } from "lib/constants/market-filter";
-import { ZTG } from "lib/constants";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
-import { CmsTopicHeader } from "lib/cms/topics";
-import { Topics } from "components/front-page/Topics";
 
 export type MarketsListProps = {
   className?: string;

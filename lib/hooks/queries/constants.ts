@@ -2,7 +2,7 @@ import {
   MarketWhereInput,
   HistoricalSwapWhereInput,
 } from "@zeitgeistpm/indexer";
-import { isWSX, wsxAssetIdString, wsxID } from "lib/constants";
+import { isWSX, wsxAssetIdString } from "lib/constants";
 
 export const marketMetaFilter: MarketWhereInput = {
   question_isNull: false,

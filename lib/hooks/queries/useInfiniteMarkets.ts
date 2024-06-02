@@ -19,7 +19,6 @@ import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 import { marketMetaFilter } from "./constants";
 import { marketsRootQuery } from "./useMarket";
 
-import { tryCatch } from "@zeitgeistpm/utility/dist/either";
 import { WHITELISTED_TRUSTED_CREATORS } from "lib/constants/whitelisted-trusted-creators";
 
 export const rootKey = "markets-filtered";
