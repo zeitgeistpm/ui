@@ -12,7 +12,7 @@ html {
 }
 
 /* prevents styles injected by headless ui */
-html {
+html.dialog-open {
   overflow: visible !important;
   padding-right: 0 !important;
 }
