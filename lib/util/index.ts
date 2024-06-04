@@ -30,13 +30,15 @@ const hexChars = [
 
 export const formatNumberLocalized = (
   num: number | bigint,
-  locale: string = "en-US",
-  maximumFractionDigits: number = 2,
+  maximumFractionDigits: number = 3,
 ) => {
+  const userLocale = navigator.language || "en-US";
   // Ensure displaying absolute zeros are unsigned(-), because javascript sucks sometimes.
   if (num === 0 || num === 0n) num = 0;
 
-  return new Intl.NumberFormat(locale, { maximumFractionDigits }).format(num);
+  return new Intl.NumberFormat(userLocale, { maximumFractionDigits }).format(
+    num,
+  );
 };
 
 export const isValidPolkadotAddress = (address: string) => {
