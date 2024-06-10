@@ -346,12 +346,7 @@ const Market: NextPage<MarketPageProps> = ({
   const hasLiveTwitchStream =
     hasLiveTwitchStreamClient || hasLiveTwitchStreamServer;
 
-  const marketHasPool =
-    (market?.scoringRule === ScoringRule.Cpmm &&
-      poolId != null &&
-      poolIdLoading === false) ||
-    (market?.scoringRule === ScoringRule.AmmCdaHybrid &&
-      market.neoPool != null);
+  const marketHasPool = market?.neoPool != null;
 
   const poolCreationDate = new Date(
     indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
@@ -396,7 +391,7 @@ const Market: NextPage<MarketPageProps> = ({
 
                 <Tab
                   key="twitch"
-                  className="flex items-center gap-2 rounded-md border-1 border-twitch-purple px-2 py-1 text-twitch-purple ui-selected:border-transparent ui-selected:bg-twitch-purple ui-selected:text-twitch-gray"
+                  className="border-twitch-purple text-twitch-purple ui-selected:bg-twitch-purple ui-selected:text-twitch-gray flex items-center gap-2 rounded-md border-1 px-2 py-1 ui-selected:border-transparent"
                 >
                   <FaTwitch size={16} />
                   Twitch Stream

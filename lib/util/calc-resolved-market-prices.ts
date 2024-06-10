@@ -9,7 +9,8 @@ export const calcResolvedMarketPrices = (
   market: FullMarketFragment,
 ): MarketPrices => {
   const assetIds = (
-    market.scoringRule === ScoringRule.AmmCdaHybrid
+    market.scoringRule === ScoringRule.AmmCdaHybrid ||
+    market.scoringRule === ScoringRule.Lmsr
       ? market.neoPool?.account.balances.map((b) =>
           parseAssetIdString(b.assetId),
         )
