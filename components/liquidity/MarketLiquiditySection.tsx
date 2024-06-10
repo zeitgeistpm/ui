@@ -28,10 +28,7 @@ export const MarketLiquiditySection = ({
   market: FullMarketFragment;
   poll?: boolean;
 }) => {
-  const marketHasPool =
-    (market?.scoringRule === ScoringRule.Cpmm && market.pool != null) ||
-    (market?.scoringRule === ScoringRule.AmmCdaHybrid &&
-      market.neoPool != null);
+  const marketHasPool = market.neoPool != null;
 
   return (
     <>
