@@ -9,9 +9,9 @@ const AccountModalHead = () => {
 
   return (
     <div className="flex flex-row justify-between">
-      <div className="text-ztg-16-150 font-bold text-black">Account</div>
+      <div className="text-lg font-bold">Account</div>
       <div
-        className="mr-ztg-7 cursor-pointer underline"
+        className="cursor-pointer rounded-lg border-2 border-gray-300 px-1 hover:border-gray-400"
         onClick={() => {
           switchExtension();
         }}

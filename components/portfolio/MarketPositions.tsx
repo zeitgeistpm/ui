@@ -267,6 +267,7 @@ export const MarketPositions = ({
       />
     </div>
   );
+  // }
 
   return <></>;
 };

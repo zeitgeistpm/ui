@@ -71,13 +71,13 @@ const CourtExitButton = ({ className }: { className?: string }) => {
     <>
       <button
         className={`rounded-md ${
-          canExit ? "bg-[#DC056C]" : "bg-gray-400"
+          canExit ? "bg-[#670031]" : "bg-gray-400"
         }  px-4 py-2 text-white ${className}`}
         onClick={() => setIsOpen(true)}
         disabled={!canExit}
       >
-        <div className="flex items-center gap-1">
-          {canExit ? "Exit" : "Preparing to exit"}
+        <div className="flex items-center justify-center gap-1">
+          <span>{canExit ? "Exit" : "Preparing to exit"}</span>
           {!canExit && (
             <span className="text-xs text-gray-500">
               ({moment.duration(cooldownTime?.left).humanize()} left)

@@ -68,59 +68,61 @@ export const useCrossChainExtrinsic = <T>(
     if (!signer || !extrinsic || !sourceChainApi || !destinationChainApi)
       return;
 
+    const extrinsicCallbackParams = {
+      api: sourceChainApi,
+      notifications,
+      successCallback: async (data) => {
+        callbacks?.onSourceSuccess && callbacks.onSourceSuccess(data);
+
+        const unsub = await destinationChainApi.query.system.events(
+          (events) => {
+            for (const record of events) {
+              const { event } = record;
+              const { method } = event;
+              const types = event.typeDef;
+
+              // assumes that any activity for the connected address on the destination
+              // chain means that there has been a successful deposit
+              const destinationChainActivityDetected = event.data.some(
+                (data, index) =>
+                  types[index].type === "AccountId32" &&
+                  ["deposit", "deposited"].includes(method.toLowerCase()) &&
+                  encodeAddress(
+                    decodeAddress(wallet.activeAccount?.address),
+                  ) === encodeAddress(decodeAddress(data.toString())),
+              );
+
+              if (destinationChainActivityDetected) {
+                unsub();
+                setIsLoading(false);
+                setIsSuccess(true);
+                callbacks?.onDestinationSuccess &&
+                  callbacks.onDestinationSuccess();
+
+                queryClient.invalidateQueries([
+                  id,
+                  currencyBalanceRootKey,
+                  wallet.activeAccount?.address,
+                ]);
+                break;
+              }
+            }
+          },
+        );
+      },
+      failCallback: (error) => {
+        setIsLoading(false);
+        setIsError(true);
+
+        callbacks?.onSourceError && callbacks.onSourceError();
+        notifications.pushNotification(error, { type: "Error" });
+      },
+    };
+
     signAndSend(
       extrinsic,
       signer,
-      extrinsicCallback({
-        api: sourceChainApi,
-        notifications,
-        successCallback: async (data) => {
-          callbacks?.onSourceSuccess && callbacks.onSourceSuccess(data);
-
-          const unsub = await destinationChainApi.query.system.events(
-            (events) => {
-              for (const record of events) {
-                const { event } = record;
-                const { method } = event;
-                const types = event.typeDef;
-
-                // assumes that any activity for the connected address on the destination
-                // chain means that there has been a successful deposit
-                const destinationChainActivityDetected = event.data.some(
-                  (data, index) =>
-                    types[index].type === "AccountId32" &&
-                    ["deposit", "deposited"].includes(method.toLowerCase()) &&
-                    encodeAddress(
-                      decodeAddress(wallet.activeAccount?.address),
-                    ) === encodeAddress(decodeAddress(data.toString())),
-                );
-
-                if (destinationChainActivityDetected) {
-                  unsub();
-                  setIsLoading(false);
-                  setIsSuccess(true);
-                  callbacks?.onDestinationSuccess &&
-                    callbacks.onDestinationSuccess();
-
-                  queryClient.invalidateQueries([
-                    id,
-                    currencyBalanceRootKey,
-                    wallet.activeAccount?.address,
-                  ]);
-                  break;
-                }
-              }
-            },
-          );
-        },
-        failCallback: (error) => {
-          setIsLoading(false);
-          setIsError(true);
-
-          callbacks?.onSourceError && callbacks.onSourceError();
-          notifications.pushNotification(error, { type: "Error" });
-        },
-      }),
+      extrinsicCallback(extrinsicCallbackParams),
       IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
     ).catch((error) => {
       notifications.pushNotification(error?.toString() ?? "Unknown Error", {

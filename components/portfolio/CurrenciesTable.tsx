@@ -4,6 +4,8 @@ import { ZTG } from "lib/constants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import {
   CurrencyBalance,
+  currencyBalanceId,
+  eqCurrencyBalanceId,
   useCurrencyBalances,
 } from "lib/hooks/queries/useCurrencyBalances";
 import DepositButton from "./DepositButton";
@@ -15,6 +17,9 @@ import TransferButton from "./TransferButton";
 import { AssetId } from "@zeitgeistpm/sdk";
 import { convertDecimals } from "lib/util/convert-decimals";
 import { isWSX } from "lib/constants";
+import { useMemo } from "react";
+import { usePrevious } from "lib/hooks/usePrevious";
+import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 
 const columns: TableColumn[] = [
   {
@@ -88,7 +93,6 @@ const MoveButton = ({
   const destinationAsset = allBalanceDetails.find(
     (detail) => detail.chain === sourceChain,
   );
-  console.log(chain, sourceChain, destinationAsset, transferAssetId);
 
   return (
     <>
@@ -121,52 +125,71 @@ const MoveButton = ({
 };
 
 const CurrenciesTable = ({ address }: { address: string }) => {
-  const { data: allBalances } = useCurrencyBalances(address);
+  const { data: allBalances, isFetched } = useCurrencyBalances(address);
   const { data: constants } = useChainConstants();
+  const wasFetched = usePrevious(isFetched);
 
-  // filter WSX assets depending on client
-  const balances = isWSX
-    ? allBalances?.filter((b) => b.symbol === "WSX")
-    : allBalances?.filter((b) => b.symbol !== "WSX");
+  const balances = useMemo(() => {
+    return isWSX
+      ? allBalances?.filter((b) => b.symbol === "WSX")
+      : allBalances?.filter((b) => b.symbol !== "WSX");
+  }, [isWSX, allBalances]);
 
-  const tableData: TableData[] | undefined = balances
-    ?.sort((a, b) => b.balance.minus(a.balance).toNumber())
-    .map((balance) => {
-      const amount =
-        balance.chain === "Zeitgeist"
-          ? balance.balance
-          : convertDecimals(balance.balance, balance.decimals, 10);
-      return {
-        chain: (
-          <ImageAndText
-            name={balance.chain}
-            imagePath={CHAIN_IMAGES[balance.chain]}
-          />
-        ),
-        asset: (
-          <ImageAndText
-            name={balance.symbol}
-            imagePath={lookupAssetImagePath(balance.foreignAssetId) ?? ""}
-          />
-        ),
-        balance: amount.div(ZTG).toFixed(3),
-        button: (
-          <div className="flex gap-3">
-            <MoveButton
-              chain={balance.chain}
-              sourceChain={balance.sourceChain}
-              token={balance.symbol}
-              foreignAssetId={balance.foreignAssetId ?? 0}
-              balance={amount}
-              nativeToken={constants?.tokenSymbol ?? ""}
-              existentialDeposit={balance.existentialDeposit}
-              allBalanceDetails={balances}
-              assetDecimals={balance.decimals}
+  // set sort order only once when data is first fetched
+  // sort by balance descending, but keep sorting on subsequent renders/balance updates.
+  const sorting = useMemo(() => {
+    return balances
+      ?.sort((a, b) => b.balance.minus(a.balance).toNumber())
+      .map((b) => currencyBalanceId(b));
+  }, [isFetched && !wasFetched]);
+
+  const tableData: TableData[] | undefined = useMemo(() => {
+    return sorting
+      ?.map((id) => balances?.find((b) => eqCurrencyBalanceId(id, b)))
+      .filter(isNotNull)
+      .map((balance) => {
+        const amount =
+          balance.chain === "Zeitgeist"
+            ? balance.balance
+            : convertDecimals(balance.balance, balance.decimals, 10);
+        return {
+          chain: (
+            <ImageAndText
+              name={balance.chain}
+              imagePath={CHAIN_IMAGES[balance.chain]}
             />
-          </div>
-        ),
-      };
-    });
+          ),
+          asset: (
+            <ImageAndText
+              name={balance.symbol}
+              imagePath={lookupAssetImagePath(
+                balance.foreignAssetId != null
+                  ? {
+                      ForeignAsset: balance.foreignAssetId,
+                    }
+                  : null,
+              )}
+            />
+          ),
+          balance: amount.div(ZTG).toFixed(3),
+          button: (
+            <div className="flex gap-3">
+              <MoveButton
+                chain={balance.chain}
+                sourceChain={balance.sourceChain}
+                token={balance.symbol}
+                foreignAssetId={balance.foreignAssetId ?? 0}
+                balance={amount}
+                nativeToken={constants?.tokenSymbol ?? ""}
+                existentialDeposit={balance.existentialDeposit}
+                allBalanceDetails={balances!}
+                assetDecimals={balance.decimals}
+              />
+            </div>
+          ),
+        };
+      });
+  }, [constants, balances, sorting]);
 
   return (
     <div>
