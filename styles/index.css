@@ -10,6 +10,13 @@ html {
   font-size: 100%;
   -webkit-tap-highlight-color: transparent;
 }
+
+/* prevents styles injected by headless ui */
+html.dialog-open {
+  overflow: visible !important;
+  padding-right: 0 !important;
+}
+
 /* hide number input arrows */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
