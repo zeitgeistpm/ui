@@ -144,10 +144,11 @@ export const marketFormDataToExtrinsicParams = (
           ),
         },
       }
-    : {
-        scoringRule: "AmmCdaHybrid",
+    : // patch to make it work until next runtime upgrade
+      ({
+        scoringRule: "Lmsr",
         creationType: form.moderation,
-      };
+      } as any as NoPool);
 
   let disputeMechanism: CreateMarketParams<RpcContext>["disputeMechanism"] =
     "Authorized";
