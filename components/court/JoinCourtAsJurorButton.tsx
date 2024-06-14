@@ -216,6 +216,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
               </div>
 
               <FormTransactionButton
+                loading={isLoading}
                 className="w-full max-w-[250px]"
                 disabled={formState.isValid === false || isLoading}
               >
