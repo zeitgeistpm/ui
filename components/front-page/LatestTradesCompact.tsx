@@ -1,4 +1,5 @@
 import Avatar from "components/ui/Avatar";
+import Skeleton from "components/ui/Skeleton";
 import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata";
 import { TradeItem, useLatestTrades } from "lib/hooks/queries/useLatestTrades";
 import { useMarketImage } from "lib/hooks/useMarketImage";
@@ -8,12 +9,16 @@ import Image from "next/image";
 import Link from "next/link";
 
 const LatestTradesCompact = () => {
-  const { data: trades } = useLatestTrades(4);
+  const { data: trades, isLoading } = useLatestTrades(4);
 
   return (
     <div>
       <div className="flex w-full flex-col divide-y divide-solid overflow-hidden rounded-lg bg-white">
-        {trades?.map((trade) => <LatestTradeRow trade={trade} />)}
+        {isLoading ? (
+          <Skeleton height={280} />
+        ) : (
+          trades?.map((trade) => <LatestTradeRow trade={trade} />)
+        )}
       </div>
     </div>
   );
