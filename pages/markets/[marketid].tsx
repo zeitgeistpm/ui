@@ -1,14 +1,12 @@
-import { Disclosure, Transition } from "@headlessui/react";
-import {
-  FullMarketFragment,
-  MarketStatus,
-  ScoringRule,
-} from "@zeitgeistpm/indexer";
+import { Disclosure, Tab, Transition } from "@headlessui/react";
+import { useQuery } from "@tanstack/react-query";
+import { FullMarketFragment, MarketStatus } from "@zeitgeistpm/indexer";
 import {
   MarketOutcomeAssetId,
   ScalarRangeType,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import { from } from "@zeitgeistpm/utility/dist/aeither";
 import LatestTrades from "components/front-page/LatestTrades";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import DisputeResult from "components/markets/DisputeResult";
@@ -24,6 +22,7 @@ import PoolDeployer from "components/markets/PoolDeployer";
 import ReportResult from "components/markets/ReportResult";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
+import OrdersTable from "components/orderbook/OrdersTable";
 import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
 import CategoricalReportBox from "components/outcomes/CategoricalReportBox";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
@@ -33,13 +32,14 @@ import { TradeTabType } from "components/trade-form/TradeTab";
 import ReferendumSummary from "components/ui/ReferendumSummary";
 import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
+import Toggle from "components/ui/Toggle";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
+import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import {
   FullCmsMarketMetadata,
   getCmsFullMarketMetadataForMarket,
 } from "lib/cms/markets";
-import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
   MarketPageIndexedData,
@@ -49,6 +49,7 @@ import {
 } from "lib/gql/markets";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
+import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -59,6 +60,7 @@ import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useTradeItem } from "lib/hooks/trade";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useWallet } from "lib/state/wallet";
+import { extractChannelName, isLive } from "lib/twitch";
 import {
   MarketCategoricalOutcome,
   MarketReport,
@@ -77,12 +79,22 @@ import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
-import { FaChevronUp } from "react-icons/fa";
+import { BsFillChatSquareTextFill } from "react-icons/bs";
+import { CgLivePhoto } from "react-icons/cg";
+import { FaChevronUp, FaTwitch } from "react-icons/fa";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
   loading: () => <div style={{ width: "100%", height: "606px" }} />,
 });
+
+const TwitchPlayer = dynamic(
+  () => import("../../components/twitch/TwitchPlayer"),
+  {
+    ssr: false,
+    loading: () => <div style={{ width: "100%", height: "606px" }} />,
+  },
+);
 
 const SimilarMarketsSection = dynamic(
   () => import("../../components/markets/SimilarMarketsSection"),
@@ -156,6 +168,14 @@ export async function getStaticProps({ params }) {
     }
   }
 
+  const hasLiveTwitchStream = await from(async () => {
+    const channelName = extractChannelName(cmsMetadata?.twitchStreamUrl);
+    if (channelName) {
+      return await isLive(channelName);
+    }
+    return false;
+  });
+
   return {
     props: {
       indexedMarket: market ?? null,
@@ -163,6 +183,7 @@ export async function getStaticProps({ params }) {
       resolutionTimestamp: resolutionTimestamp ?? null,
       promotionData: null,
       cmsMetadata: cmsMetadata ?? null,
+      hasLiveTwitchStream: hasLiveTwitchStream,
     },
     revalidate:
       environment === "production"
@@ -177,6 +198,7 @@ type MarketPageProps = {
   resolutionTimestamp: string;
   promotionData: PromotedMarket | null;
   cmsMetadata: FullCmsMarketMetadata | null;
+  hasLiveTwitchStream: boolean;
 };
 
 const Market: NextPage<MarketPageProps> = ({
@@ -185,10 +207,16 @@ const Market: NextPage<MarketPageProps> = ({
   resolutionTimestamp,
   promotionData,
   cmsMetadata,
+  hasLiveTwitchStream: hasLiveTwitchStreamServer,
 }) => {
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
+  const { realAddress } = useWallet();
+  const { data: orders, isLoading: isOrdersLoading } = useOrders({
+    marketId_eq: marketId,
+    makerAccountId_eq: realAddress,
+  });
 
   const referendumChain = cmsMetadata?.referendumRef?.chain;
   const referendumIndex = cmsMetadata?.referendumRef?.referendumIndex;
@@ -234,6 +262,8 @@ const Market: NextPage<MarketPageProps> = ({
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
   const baseAsset = parseAssetIdString(indexedMarket?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAsset);
+
+  const [showTwitchChat, setShowTwitchChat] = useState(true);
 
   const wallet = useWallet();
 
@@ -290,16 +320,41 @@ const Market: NextPage<MarketPageProps> = ({
     }
   }, [market?.report, disputes]);
 
-  const marketHasPool =
-    (market?.scoringRule === ScoringRule.Cpmm &&
-      poolId != null &&
-      poolIdLoading === false) ||
-    (market?.scoringRule === ScoringRule.AmmCdaHybrid &&
-      market.neoPool != null);
+  const hasChart = Boolean(
+    chartSeries && (indexedMarket?.pool || indexedMarket.neoPool),
+  );
+
+  const twitchStreamChannelName = extractChannelName(
+    cmsMetadata?.twitchStreamUrl,
+  );
+
+  const hasTwitchStream = Boolean(twitchStreamChannelName);
+
+  const activeTabsCount = [hasChart, hasTwitchStream].filter(Boolean).length;
+
+  const { data: hasLiveTwitchStreamClient } = useQuery(
+    [],
+    async () => {
+      if (!twitchStreamChannelName) return undefined;
+      return isLive(twitchStreamChannelName);
+    },
+    {
+      enabled: Boolean(hasTwitchStream),
+      refetchInterval: 1000 * 30,
+      refetchOnWindowFocus: false,
+      initialData: hasLiveTwitchStreamServer,
+    },
+  );
+
+  const hasLiveTwitchStream =
+    hasLiveTwitchStreamClient || hasLiveTwitchStreamServer;
+
+  const marketHasPool = market?.neoPool != null;
 
   const poolCreationDate = new Date(
     indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
   );
+
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -323,32 +378,117 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           )}
 
-          {chartSeries && (indexedMarket?.pool || indexedMarket.neoPool) ? (
-            <div className="mt-4">
-              {indexedMarket.scalarType === "number" ? (
-                <ScalarMarketChart
-                  marketId={indexedMarket.marketId}
-                  poolCreationDate={poolCreationDate}
-                  marketStatus={indexedMarket.status}
-                  resolutionDate={new Date(resolutionTimestamp)}
+          <div className="mt-4">
+            <Tab.Group defaultIndex={hasLiveTwitchStream ? 1 : 0}>
+              <Tab.List
+                className={`flex gap-2 text-sm ${
+                  activeTabsCount < 2 ? "hidden" : ""
+                }`}
+              >
+                <Tab
+                  key="chart"
+                  className="rounded-md border-1 border-gray-400 px-2 py-1 ui-selected:border-transparent ui-selected:bg-gray-300"
+                >
+                  Chart
+                </Tab>
+
+                <Tab
+                  key="twitch"
+                  className="flex items-center gap-2 rounded-md border-1 border-twitch-purple px-2 py-1 text-twitch-purple ui-selected:border-transparent ui-selected:bg-twitch-purple ui-selected:text-twitch-gray"
+                >
+                  <FaTwitch size={16} />
+                  Twitch Stream
+                  {hasLiveTwitchStream && (
+                    <div className="flex items-center gap-1 text-orange-400">
+                      <div className="animate-pulse-scale">
+                        <CgLivePhoto />
+                      </div>
+                      Live!
+                    </div>
+                  )}
+                </Tab>
+                <div className="flex flex-1 items-center">
+                  <button className="ml-auto flex items-center gap-1">
+                    <Toggle
+                      className="w-6"
+                      checked={showTwitchChat}
+                      onChange={(checked) => {
+                        setShowTwitchChat(checked);
+                      }}
+                      activeClassName="bg-twitch-purple"
+                    />
+                    <BsFillChatSquareTextFill
+                      size={18}
+                      className={
+                        showTwitchChat ? "text-twitch-purple" : "text-gray-400"
+                      }
+                    />
+                  </button>
+                </div>
+              </Tab.List>
+
+              <Tab.Panels className="mt-2">
+                {hasChart ? (
+                  <Tab.Panel key="chart">
+                    {indexedMarket.scalarType === "number" ? (
+                      <ScalarMarketChart
+                        marketId={indexedMarket.marketId}
+                        poolCreationDate={poolCreationDate}
+                        marketStatus={indexedMarket.status}
+                        resolutionDate={new Date(resolutionTimestamp)}
+                      />
+                    ) : (
+                      <CategoricalMarketChart
+                        marketId={indexedMarket.marketId}
+                        chartSeries={chartSeries}
+                        baseAsset={
+                          indexedMarket.pool?.baseAsset ??
+                          indexedMarket.neoPool?.collateral
+                        }
+                        poolCreationDate={poolCreationDate}
+                        marketStatus={indexedMarket.status}
+                        resolutionDate={new Date(resolutionTimestamp)}
+                      />
+                    )}
+                  </Tab.Panel>
+                ) : (
+                  <></>
+                )}
+
+                {hasTwitchStream && twitchStreamChannelName ? (
+                  <Tab.Panel key="twitch">
+                    <div className="h-[500px]">
+                      <TwitchPlayer
+                        channel={twitchStreamChannelName}
+                        autoplay
+                        muted
+                        withChat={showTwitchChat}
+                        darkMode={false}
+                        hideControls={false}
+                        width={"100%"}
+                        height={"100%"}
+                      />
+                    </div>
+                  </Tab.Panel>
+                ) : (
+                  <></>
+                )}
+              </Tab.Panels>
+            </Tab.Group>
+          </div>
+          {realAddress &&
+            isOrdersLoading === false &&
+            (orders?.length ?? 0) > 0 && (
+              <div className="mt-3 flex flex-col gap-y-3">
+                <div>My Orders</div>
+                <OrdersTable
+                  where={{
+                    marketId_eq: marketId,
+                    makerAccountId_eq: realAddress,
+                  }}
                 />
-              ) : (
-                <CategoricalMarketChart
-                  marketId={indexedMarket.marketId}
-                  chartSeries={chartSeries}
-                  baseAsset={
-                    indexedMarket.pool?.baseAsset ??
-                    indexedMarket.neoPool?.collateral
-                  }
-                  poolCreationDate={poolCreationDate}
-                  marketStatus={indexedMarket.status}
-                  resolutionDate={new Date(resolutionTimestamp)}
-                />
-              )}
-            </div>
-          ) : (
-            <></>
-          )}
+              </div>
+            )}
           {marketIsLoading === false && marketHasPool === false && (
             <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
               <div className="h-ztg-20 w-ztg-20">
@@ -451,7 +591,13 @@ const Market: NextPage<MarketPageProps> = ({
 
         <div className="hidden md:-mr-6 md:block md:w-[320px] lg:mr-auto lg:w-[460px]">
           <div className="sticky top-28">
-            <div className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg">
+            <div
+              className="mb-12 animate-pop-in rounded-lg  opacity-0 shadow-lg"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
+              }}
+            >
               {market?.status === MarketStatus.Active ? (
                 <>
                   <Amm2TradeForm marketId={marketId} />

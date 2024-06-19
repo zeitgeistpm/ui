@@ -32,13 +32,9 @@ import {
   getBaseAssetHistoricalPrices,
   lookupPrice,
 } from "lib/gql/historical-prices";
-import {
-  avatarPartsKey,
-  getAvatarParts,
-} from "lib/hooks/queries/useAvatarParts";
+
 import { shortenAddress } from "lib/util";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
-import { createAvatarSdk } from "lib/util/create-avatar-sdk";
 import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
@@ -171,13 +167,12 @@ export async function getStaticProps({ params }) {
   const periodDuration = durationLookup[period];
   const periodStart = new Date(periodEnd.getTime() - periodDuration);
 
-  const [sdk, avatarSdk] = await Promise.all([
+  const [sdk] = await Promise.all([
     create({
       provider: endpointOptions.map((e) => e.value),
       indexer: graphQlEndpoint,
       storage: ZeitgeistIpfs(),
     }),
-    createAvatarSdk(),
   ]);
 
   const basePrices = await getBaseAssetHistoricalPrices();
@@ -481,14 +476,6 @@ export async function getStaticProps({ params }) {
   );
 
   const queryClient = new QueryClient();
-
-  await Promise.all(
-    top20.map((player) =>
-      queryClient.prefetchQuery([avatarPartsKey, player.accountId], () =>
-        getAvatarParts(avatarSdk, player.accountId),
-      ),
-    ),
-  );
 
   //todo: need to solve coin gecko rate limit issue
   // const trendingMarkets = await getTrendingMarkets(sdk.indexer.client, sdk);

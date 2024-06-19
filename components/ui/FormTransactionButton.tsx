@@ -7,6 +7,7 @@ interface TransactionButtonProps {
   dataTest?: string;
   disableFeeCheck?: boolean;
   type?: "button" | "submit" | "reset";
+  loading: boolean | undefined;
 }
 
 const FormTransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
@@ -16,6 +17,7 @@ const FormTransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   disableFeeCheck = false,
   type = "submit",
   children,
+  loading = undefined,
 }) => {
   return (
     <TransactionButton
@@ -24,6 +26,7 @@ const FormTransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
       className={className}
       dataTest={dataTest}
       disableFeeCheck={disableFeeCheck}
+      loading={loading}
     >
       {children}
     </TransactionButton>

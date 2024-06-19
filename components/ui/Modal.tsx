@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { ReactNode, Fragment } from "react";
+import { ReactNode, Fragment, useEffect } from "react";
 
 const Modal = ({
   open,
@@ -10,6 +10,18 @@ const Modal = ({
   open: boolean;
   onClose: () => void;
 }) => {
+  useEffect(() => {
+    if (typeof window !== undefined) {
+      const htmlElement = document.documentElement;
+
+      if (open) {
+        htmlElement.classList.add("dialog-open");
+      } else {
+        htmlElement.classList.remove("dialog-open");
+      }
+    }
+  }, [open]);
+
   return (
     <Transition appear show={open} as={Fragment}>
       <Dialog open={true} onClose={onClose} className="relative z-ztg-50">

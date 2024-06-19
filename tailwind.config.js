@@ -304,6 +304,12 @@ module.exports = {
           light: "#FFF7EC",
           DEFAULT: "yellow", //placeholder
         },
+        twitch: {
+          purple: "#6441a5",
+          "light-purple": "#b9a3e3",
+          dark: "#262626",
+          gray: "#f1f1f1",
+        },
       },
       inset: {
         "42%": "42%",

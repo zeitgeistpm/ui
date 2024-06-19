@@ -38,11 +38,7 @@ export const useMarketSpotPrices = (
 
   const { data: amm2Pool } = useAmm2Pool(marketId);
 
-  const enabled =
-    isRpcSdk(sdk) &&
-    marketId != null &&
-    !!market &&
-    !!(amm2Pool || (pool && basePoolBalance && balances));
+  const enabled = isRpcSdk(sdk) && marketId != null && !!market;
 
   const query = useQuery(
     [
@@ -58,7 +54,8 @@ export const useMarketSpotPrices = (
       if (!enabled) return;
       const spotPrices: MarketPrices =
         market?.status !== "Resolved"
-          ? market.scoringRule === ScoringRule.AmmCdaHybrid
+          ? market.scoringRule === ScoringRule.AmmCdaHybrid ||
+            market.scoringRule === ScoringRule.Lmsr
             ? calcMarketPricesAmm2(amm2Pool!)
             : calcMarketPrices(market, basePoolBalance!, balances!)
           : calcResolvedMarketPrices(market);
