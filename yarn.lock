@@ -4746,6 +4746,7 @@ __metadata:
     react-spinners: ^0.10.6
     react-table: ^7.7.0
     react-test-renderer: ^18.2.0
+    react-twitch-embed: ^3.0.2
     recharts: ^2.4.3
     rxjs: 7.5.6
     sharp: ^0.31.2
@@ -12510,6 +12511,16 @@ __metadata:
     react: ">=16.6.0"
     react-dom: ">=16.6.0"
   checksum: 75602840106aa9c6545149d6d7ae1502fb7b7abadcce70a6954c4b64a438ff1cd16fc77a0a1e5197cdd72da398f39eb929ea06f9005c45b132ed34e056ebdeb1
+  languageName: node
+  linkType: hard
+
+"react-twitch-embed@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "react-twitch-embed@npm:3.0.2"
+  peerDependencies:
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  checksum: 317fb4761af91f6cd940e220ab9fe8913ffb390fe8fb6ca56772c87ad9651d29af53edace8ecbe7bdd72dca6b6f7a1e8960c1b86efd11db57853bfe589d24898
   languageName: node
   linkType: hard
 

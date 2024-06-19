@@ -326,6 +326,7 @@ const SellForm = ({
           className="w-full max-w-[250px]"
           disabled={formState.isValid === false || isLoading}
           disableFeeCheck={true}
+          loading={isLoading}
         >
           <div>
             <div className="center h-[20px] font-normal">Sell</div>

@@ -392,8 +392,8 @@ const CasePage: NextPage = ({
             View Market
           </Link>
 
-          <div className="flex items-start gap-4">
-            <div>
+          <div className="flex w-full items-start gap-4">
+            <div className="flex w-full flex-col">
               <div className="relative mb-6 flex items-center gap-3">
                 <AddressDetails title="Creator" address={market.creator} />
 
@@ -428,7 +428,7 @@ const CasePage: NextPage = ({
                 </div>
               </div>
 
-              <div className="mb-6 md:max-w-[900px]">
+              <div className="mb-6 w-full">
                 <CourtStageTimer caseId={caseId} market={market} />
               </div>
             </div>

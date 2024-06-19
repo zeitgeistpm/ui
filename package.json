@@ -97,6 +97,7 @@
     "react-select": "^5.7.0",
     "react-spinners": "^0.10.6",
     "react-table": "^7.7.0",
+    "react-twitch-embed": "^3.0.2",
     "recharts": "^2.4.3",
     "rxjs": "7.5.6",
     "sharp": "^0.31.2",
