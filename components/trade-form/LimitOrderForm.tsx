@@ -405,6 +405,7 @@ const LimitOrderForm = ({
         </div>
         <div className="flex w-full items-center justify-center">
           <FormTransactionButton
+            loading={isLoading}
             className="w-full max-w-[250px]"
             disabled={formState.isValid === false || isLoading}
             disableFeeCheck={true}
