@@ -1,5 +1,6 @@
 import { Tab } from "@headlessui/react";
 import { getIndexOf } from "@zeitgeistpm/sdk";
+import OrdersTable from "components/orderbook/OrdersTable";
 import AccountPoolsTable from "components/portfolio/AccountPoolsTable";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
@@ -36,11 +37,16 @@ const mainTabItems: MainTabItem[] = [
   "Court",
 ] as MainTabItem[];
 
-type MarketsTabItem = "Created Markets" | "Liquidity" | "Creator Fee Payouts";
+type MarketsTabItem =
+  | "Created Markets"
+  | "Liquidity"
+  | "Creator Fee Payouts"
+  | "Orders";
 const marketsTabItems: MarketsTabItem[] = [
   "Created Markets",
   "Liquidity",
   "Creator Fee Payouts",
+  "Orders",
 ];
 
 const Portfolio: NextPageWithLayout = () => {
@@ -203,6 +209,15 @@ const Portfolio: NextPageWithLayout = () => {
                   </Tab.Panel>
                   <Tab.Panel>
                     {address && <CreatorFeePayouts address={address} />}
+                  </Tab.Panel>
+                  <Tab.Panel>
+                    {address && (
+                      <OrdersTable
+                        where={{
+                          makerAccountId_eq: address,
+                        }}
+                      />
+                    )}
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>

@@ -1,10 +1,6 @@
 import { Disclosure, Tab, Transition } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  FullMarketFragment,
-  MarketStatus,
-  ScoringRule,
-} from "@zeitgeistpm/indexer";
+import { FullMarketFragment, MarketStatus } from "@zeitgeistpm/indexer";
 import {
   MarketOutcomeAssetId,
   ScalarRangeType,
@@ -26,6 +22,7 @@ import PoolDeployer from "components/markets/PoolDeployer";
 import ReportResult from "components/markets/ReportResult";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
+import OrdersTable from "components/orderbook/OrdersTable";
 import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
 import CategoricalReportBox from "components/outcomes/CategoricalReportBox";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
@@ -52,6 +49,7 @@ import {
 } from "lib/gql/markets";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
+import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -214,6 +212,11 @@ const Market: NextPage<MarketPageProps> = ({
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
+  const { realAddress } = useWallet();
+  const { data: orders, isLoading: isOrdersLoading } = useOrders({
+    marketId_eq: marketId,
+    makerAccountId_eq: realAddress,
+  });
 
   const referendumChain = cmsMetadata?.referendumRef?.chain;
   const referendumIndex = cmsMetadata?.referendumRef?.referendumIndex;
@@ -391,7 +394,7 @@ const Market: NextPage<MarketPageProps> = ({
 
                 <Tab
                   key="twitch"
-                  className="border-twitch-purple text-twitch-purple ui-selected:bg-twitch-purple ui-selected:text-twitch-gray flex items-center gap-2 rounded-md border-1 px-2 py-1 ui-selected:border-transparent"
+                  className="flex items-center gap-2 rounded-md border-1 border-twitch-purple px-2 py-1 text-twitch-purple ui-selected:border-transparent ui-selected:bg-twitch-purple ui-selected:text-twitch-gray"
                 >
                   <FaTwitch size={16} />
                   Twitch Stream
@@ -473,7 +476,19 @@ const Market: NextPage<MarketPageProps> = ({
               </Tab.Panels>
             </Tab.Group>
           </div>
-
+          {realAddress &&
+            isOrdersLoading === false &&
+            (orders?.length ?? 0) > 0 && (
+              <div className="mt-3 flex flex-col gap-y-3">
+                <div>My Orders</div>
+                <OrdersTable
+                  where={{
+                    marketId_eq: marketId,
+                    makerAccountId_eq: realAddress,
+                  }}
+                />
+              </div>
+            )}
           {marketIsLoading === false && marketHasPool === false && (
             <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
               <div className="h-ztg-20 w-ztg-20">
@@ -576,7 +591,13 @@ const Market: NextPage<MarketPageProps> = ({
 
         <div className="hidden md:-mr-6 md:block md:w-[320px] lg:mr-auto lg:w-[460px]">
           <div className="sticky top-28">
-            <div className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg">
+            <div
+              className="mb-12 animate-pop-in rounded-lg  opacity-0 shadow-lg"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
+              }}
+            >
               {market?.status === MarketStatus.Active ? (
                 <>
                   <Amm2TradeForm marketId={marketId} />

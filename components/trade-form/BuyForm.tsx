@@ -1,3 +1,5 @@
+import { ISubmittableResult } from "@polkadot/types/types";
+import { OrderStatus } from "@zeitgeistpm/indexer";
 import {
   isRpcSdk,
   MarketOutcomeAssetId,
@@ -13,6 +15,7 @@ import {
   lookupAssetReserve,
   useAmm2Pool,
 } from "lib/hooks/queries/amm2/useAmm2Pool";
+import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
@@ -24,18 +27,17 @@ import { useWallet } from "lib/state/wallet";
 import {
   approximateMaxAmountInForBuy,
   calculateSpotPrice,
+  calculateSpotPriceAfterBuy,
   calculateSwapAmountOutForBuy,
   isValidBuyAmount,
 } from "lib/util/amm2";
-import { formatNumberCompact } from "lib/util/format-compact";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { useState, useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
-import { ISubmittableResult } from "@polkadot/types/types";
 import { assetsAreEqual } from "lib/util/assets-are-equal";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { selectOrdersForMarketBuy } from "lib/util/order-selection";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { perbillToNumber } from "lib/util/perbill-to-number";
-
-const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
+import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 
 const BuyForm = ({
   marketId,
@@ -74,6 +76,10 @@ const BuyForm = ({
   const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
   const { data: pool } = useAmm2Pool(marketId);
+  const { data: orders } = useOrders({
+    marketId_eq: marketId,
+    status_eq: OrderStatus.Placed,
+  });
 
   const swapFee = pool?.swapFee.div(ZTG);
   const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
@@ -117,51 +123,49 @@ const BuyForm = ({
     );
   }, [assetReserve, pool?.liquidity]);
 
-  const {
-    amountOut,
-    spotPrice,
-    newSpotPrice,
-    priceImpact,
-    maxProfit,
-    minAmountOut,
-  } = useMemo(() => {
-    const amountOut =
-      assetReserve && pool.liquidity && swapFee
-        ? calculateSwapAmountOutForBuy(
-            assetReserve,
-            amountIn,
-            pool.liquidity,
-            swapFee,
-            creatorFee,
-          )
+  const { amountOut, spotPrice, newSpotPrice, priceImpact, maxProfit } =
+    useMemo(() => {
+      const amountOut =
+        assetReserve && pool.liquidity && swapFee
+          ? calculateSwapAmountOutForBuy(
+              assetReserve,
+              amountIn,
+              pool.liquidity,
+              swapFee,
+              creatorFee,
+            )
+          : new Decimal(0);
+
+      const spotPrice =
+        assetReserve && calculateSpotPrice(assetReserve, pool?.liquidity);
+
+      const newSpotPrice =
+        pool?.liquidity &&
+        assetReserve &&
+        swapFee &&
+        calculateSpotPriceAfterBuy(
+          assetReserve,
+          pool.liquidity,
+          amountOut,
+          amountIn,
+          swapFee,
+          creatorFee,
+        );
+
+      const priceImpact = spotPrice
+        ? newSpotPrice?.div(spotPrice).minus(1).mul(100)
         : new Decimal(0);
 
-    const spotPrice =
-      assetReserve && calculateSpotPrice(assetReserve, pool?.liquidity);
+      const maxProfit = amountOut.minus(amountIn);
 
-    const poolAmountOut = amountOut.minus(amountIn);
-    const newSpotPrice =
-      pool?.liquidity &&
-      assetReserve &&
-      calculateSpotPrice(assetReserve?.minus(poolAmountOut), pool?.liquidity);
-
-    const priceImpact = spotPrice
-      ? newSpotPrice?.div(spotPrice).minus(1).mul(100)
-      : new Decimal(0);
-
-    const maxProfit = amountOut.minus(amountIn);
-
-    const minAmountOut = amountOut.mul(slippageMultiplier);
-
-    return {
-      amountOut,
-      spotPrice,
-      newSpotPrice,
-      priceImpact,
-      maxProfit,
-      minAmountOut,
-    };
-  }, [amountIn, pool?.liquidity, assetReserve]);
+      return {
+        amountOut,
+        spotPrice,
+        newSpotPrice,
+        priceImpact,
+        maxProfit,
+      };
+    }, [amountIn, pool?.liquidity, assetReserve]);
 
   const { isLoading, send, fee } = useExtrinsic(
     () => {
@@ -171,17 +175,38 @@ const BuyForm = ({
         !amount ||
         amount === "" ||
         market?.categories?.length == null ||
-        !selectedAsset
+        !selectedAsset ||
+        !newSpotPrice ||
+        !orders
       ) {
         return;
       }
+      const amountDecimal = new Decimal(amount).mul(ZTG); // base asset amount
 
-      return sdk.api.tx.neoSwaps.buy(
+      const maxPrice = newSpotPrice.plus(DEFAULT_SLIPPAGE_PERCENTAGE / 100); // adjust by slippage
+      const approxOutcomeAmount = amountDecimal.mul(maxPrice); // this will be slightly higher than the expect amount out and therefore may pick up extra order suggestions
+
+      const selectedOrders = selectOrdersForMarketBuy(
+        maxPrice,
+        orders
+          .filter(({ filledPercentage }) => filledPercentage !== 100)
+          .map(({ id, side, price, outcomeAmount }) => ({
+            id: Number(id),
+            amount: outcomeAmount,
+            price,
+            side,
+          })),
+        approxOutcomeAmount.abs().mul(ZTG),
+      );
+
+      return sdk.api.tx.hybridRouter.buy(
         marketId,
         market?.categories?.length,
         selectedAsset,
-        new Decimal(amount).abs().mul(ZTG).toFixed(0),
-        minAmountOut.toFixed(0),
+        amountDecimal.toFixed(0),
+        maxPrice.mul(ZTG).toFixed(0),
+        selectedOrders.map(({ id }) => id),
+        "ImmediateOrCancel",
       );
     },
     {
@@ -268,7 +293,7 @@ const BuyForm = ({
           </div>
         </div>
         <div className="text-sm">For</div>
-        <div className="center relative h-[56px] w-full rounded-md bg-anti-flash-white text-ztg-18-150 font-normal">
+        <div className="center relative h-[56px] w-full rounded-md bg-white text-ztg-18-150 font-normal">
           <Input
             type="number"
             className="w-full bg-transparent font-mono outline-none"
