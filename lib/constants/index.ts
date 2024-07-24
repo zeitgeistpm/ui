@@ -46,11 +46,6 @@ export const endpoints: EndpointOption[] = [
     environment: "production",
   },
   {
-    value: "wss://zeitgeist-rpc.dwellir.com",
-    label: "Dwellir",
-    environment: "production",
-  },
-  {
     value: "wss://main.rpc.zeitgeist.pm/ws",
     label: "ZeitgeistPM",
     environment: "production",
