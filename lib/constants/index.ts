@@ -41,11 +41,6 @@ export const ZTG_CHAIN_ID = "polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c";
 
 export const endpoints: EndpointOption[] = [
   {
-    value: "wss://zeitgeist-rpc.dwellir.com",
-    label: "Dwellir",
-    environment: "production",
-  },
-  {
     value: "wss://zeitgeist.api.onfinality.io/public-ws",
     label: "OnFinality",
     environment: "production",

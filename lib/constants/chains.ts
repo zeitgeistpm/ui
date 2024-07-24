@@ -71,7 +71,7 @@ const BATTERY_STATION_CHAINS: Chain[] = [
       };
       const account = {
         parents: 0,
-        interior: { X1: { AccountId32: { id: accountId, network: "Any" } } },
+        interior: { X1: { AccountId32: { id: accountId } } },
       };
       const asset = [
         {
@@ -81,9 +81,9 @@ const BATTERY_STATION_CHAINS: Chain[] = [
       ];
 
       const tx = api.tx.xcmPallet.reserveTransferAssets(
-        { V2: destination },
-        { V2: account },
-        { V2: asset },
+        { V3: destination },
+        { V3: account },
+        { V3: asset },
         0,
       );
 
@@ -135,7 +135,7 @@ const PROD_CHAINS: Chain[] = [
       };
       const account = {
         parents: 0,
-        interior: { X1: { AccountId32: { id: accountId, network: "Any" } } },
+        interior: { X1: { AccountId32: { id: accountId } } },
       };
       const asset = [
         {
@@ -145,9 +145,9 @@ const PROD_CHAINS: Chain[] = [
       ];
 
       const tx = api.tx.xcmPallet.reserveTransferAssets(
-        { V2: destination },
-        { V2: account },
-        { V2: asset },
+        { V3: destination },
+        { V3: account },
+        { V3: asset },
         0,
       );
 
