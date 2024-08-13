@@ -167,7 +167,7 @@ const TopBar = () => {
 
                       <CategoriesMenuItem onSelect={close} />
 
-                      <Menu.Item>
+                      {/* <Menu.Item>
                         {({ active }) => (
                           <Link href="/create" onClick={close}>
                             <button
@@ -182,7 +182,7 @@ const TopBar = () => {
                             </button>
                           </Link>
                         )}
-                      </Menu.Item>
+                      </Menu.Item> */}
 
                       {process.env.NEXT_PUBLIC_SHOW_COURT === "true" && (
                         <Menu.Item>
