@@ -5,6 +5,9 @@ export const calculateFreeBalance = (
   miscFrozen: string,
   feeFrozen: string,
 ) => {
-  const maxFrozen = Decimal.max(miscFrozen, feeFrozen);
+  const maxFrozen = Decimal.max(
+    miscFrozen ? miscFrozen : 0,
+    feeFrozen ? feeFrozen : 0,
+  );
   return new Decimal(free).minus(maxFrozen);
 };
