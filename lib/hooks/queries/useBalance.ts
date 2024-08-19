@@ -49,9 +49,9 @@ export const fetchAssetBalance = async (
   if (IOZtgAssetId.is(assetId)) {
     const { data } = await api.query.system.account(address);
     return calculateFreeBalance(
-      data.free.toString(),
-      data.miscFrozen.toString(),
-      data.feeFrozen.toString(),
+      data?.free?.toString(),
+      data?.miscFrozen?.toString(),
+      data?.feeFrozen?.toString(),
     );
   } else if (IOCurrencyAsset.is(assetId)) {
     if (
