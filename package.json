@@ -26,7 +26,7 @@
     "@headlessui/tailwindcss": "^0.1.2",
     "@notionhq/client": "^2.2.3",
     "@plaiceholder/next": "^2.5.0",
-    "@polkadot/api": "^10.12.6",
+    "@polkadot/api": "12.1.1",
     "@polkadot/extension-dapp": "^0.44.6",
     "@polkadot/keyring": "^12.6.2",
     "@polkadot/ui-keyring": "^2.4.1",

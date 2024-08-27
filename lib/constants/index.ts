@@ -41,8 +41,14 @@ export const ZTG_CHAIN_ID = "polkadot:1bf2a2ecb4a868de66ea8610f2ce7c8c";
 
 export const endpoints: EndpointOption[] = [
   {
-    value: "wss://zeitgeist.api.onfinality.io/ws?apikey=fcfa6c61-e80e-4bb9-b255-44c2c82d0ddb",
+    value:
+      "wss://zeitgeist.api.onfinality.io/ws?apikey=fcfa6c61-e80e-4bb9-b255-44c2c82d0ddb",
     label: "OnFinality",
+    environment: "production",
+  },
+  {
+    value: "wss://zeitgeist.api.onfinality.io/public-ws",
+    label: "OnFinalityPublic",
     environment: "production",
   },
   {
