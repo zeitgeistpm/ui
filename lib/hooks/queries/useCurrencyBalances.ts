@@ -59,9 +59,9 @@ export const useCurrencyBalances = (address: string) => {
         const { data } = await sdk.api.query.system.account(address);
 
         const nativeBalance = calculateFreeBalance(
-          data.free.toString(),
-          data.miscFrozen.toString(),
-          data.feeFrozen.toString(),
+          data?.free?.toString(),
+          data?.miscFrozen?.toString(),
+          data?.feeFrozen?.toString(),
         );
 
         const apisArray = Object.values(apis ?? {});
