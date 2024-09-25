@@ -9,7 +9,7 @@ import { CurrencyBalance } from "./useCurrencyBalances";
 import { useForeignAssetBalances } from "./useForeignAssetBalances";
 import { useZtgBalance } from "./useZtgBalance";
 
-type FeeAsset = {
+export type FeeAsset = {
   assetId: AssetId;
   symbol: string;
   amount: Decimal;

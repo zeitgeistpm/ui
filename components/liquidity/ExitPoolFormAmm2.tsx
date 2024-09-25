@@ -245,6 +245,7 @@ const ExitPoolForm = ({
         {...register("poolSharesPercentage", { min: 0, value: "0" })}
       />
       <FormTransactionButton
+        loading={isLoading}
         disabled={formState.isValid === false || isLoading}
       >
         Exit Pool

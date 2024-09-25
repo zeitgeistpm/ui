@@ -288,6 +288,7 @@ const WithdrawModal = ({
             <span className="ml-1 text-black">{chain?.withdrawFee}</span>
           </div>
           <FormTransactionButton
+            loading={isLoading}
             className="w-full max-w-[250px]"
             disabled={formState.isValid === false || isLoading}
           >
