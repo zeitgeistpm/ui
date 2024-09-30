@@ -27,13 +27,21 @@ interface ButtonListProps {
 
 const exchangeList = [
   {
-    title: "Purchase ZTG with Crypto or Fiat (CEX)",
+    title: "Buy ZTG on Gate (CEX)",
     disabled: false,
     onClick: () =>
       window.open("https://blog.zeitgeist.pm/how-to-buy-ztg-on-gateio/"),
   },
   {
-    title: "Trade for ZTG with Crypto (DEX)",
+    title: "Buy ZTG on Banxa (Fiat)",
+    disabled: false,
+    onClick: () =>
+      window.open(
+        "https://checkout.banxa.com/?coinType=ZTG&blockchain=ZTG&orderMode=BUY",
+      ),
+  },
+  {
+    title: "Buy ZTG on HydraDX (DEX)",
     disabled: false,
     onClick: () => {
       window.open(
