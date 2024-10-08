@@ -36,7 +36,11 @@ const exchangeList = [
   {
     className: "",
     title: "Banxa (Fiat)",
-    icon: <span className="bg-green-600 px-2 py-1 text-xs rounded text-white">NEW</span>,
+    icon: (
+      <span className="rounded bg-green-600 px-2 py-1 text-xs text-white">
+        NEW
+      </span>
+    ),
     disabled: false,
     onClick: () =>
       window.open(
