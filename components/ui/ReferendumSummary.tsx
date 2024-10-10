@@ -12,12 +12,12 @@ const ReferendumSummary = ({
   return (
     <>
       {referendum && (
-        <div className="w-full flex flex-col shadow-lg rounded-lg px-10 py-6 gap-4 font-medium">
+        <div className="flex w-full flex-col gap-4 rounded-lg px-10 py-6 font-medium shadow-lg">
           <div className="flex items-center">
             <div className="text-lg">Referendum</div>
             <a
               href={`https://polkadot.polkassembly.io/referenda/${referendumIndex}`}
-              className="ml-auto text-sm flex gap-2 items-center justify-center text-black rounded-md px-2 py-2 "
+              className="ml-auto flex items-center justify-center gap-2 rounded-md px-2 py-2 text-sm text-black "
               target="_blank"
               rel="noreferrer"
             >
@@ -30,7 +30,7 @@ const ReferendumSummary = ({
             </a>
           </div>
           <div className="flex items-center justify-center">
-            <div className="h-[150px] w-[300px] mt-3 ">
+            <div className="mt-3 h-[150px] w-[300px] ">
               <CircularProgressbar
                 value={barValue}
                 circleRatio={0.5}
@@ -49,13 +49,13 @@ const ReferendumSummary = ({
 
           <div className="flex">
             <div className="flex flex-col">
-              <div className="text-[#0070EB] font-mono text-xl">
+              <div className="font-mono text-xl text-[#0070EB]">
                 {referendum.ayePercentage.mul(100).toFixed(1)}%
               </div>
               <div className="text-lg">Aye</div>
             </div>
-            <div className="flex flex-col ml-auto">
-              <div className="text-[#FC9965] font-mono text-xl">
+            <div className="ml-auto flex flex-col">
+              <div className="font-mono text-xl text-[#FC9965]">
                 {referendum.nayPercentage.mul(100).toFixed(1)}%
               </div>
               <div className="text-lg">Nay</div>
