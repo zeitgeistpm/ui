@@ -15,6 +15,7 @@ interface StepperProps {
 }
 
 interface ButtonProps {
+  className?: string;
   title: string;
   icon?: React.ReactNode | string;
   disabled: boolean;
@@ -27,13 +28,27 @@ interface ButtonListProps {
 
 const exchangeList = [
   {
-    title: "Purchase ZTG with Crypto or Fiat (CEX)",
+    title: "Gate.io (CEX)",
     disabled: false,
     onClick: () =>
       window.open("https://blog.zeitgeist.pm/how-to-buy-ztg-on-gateio/"),
   },
   {
-    title: "Trade for ZTG with Crypto (DEX)",
+    className: "",
+    title: "Banxa (Fiat)",
+    icon: (
+      <span className="rounded bg-green-600 px-2 py-1 text-xs text-white">
+        NEW
+      </span>
+    ),
+    disabled: false,
+    onClick: () =>
+      window.open(
+        "https://checkout.banxa.com/?coinType=ZTG&blockchain=ZTG&orderMode=BUY",
+      ),
+  },
+  {
+    title: "HydraDX (DEX)",
     disabled: false,
     onClick: () => {
       window.open(
@@ -155,7 +170,7 @@ export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
           key={index}
           disabled={button.disabled}
           onClick={button.onClick}
-          className={`flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${
+          className={`flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${button?.className} ${
             button.disabled === true ? "bg-gray-light-2" : "border"
           }`}
         >
