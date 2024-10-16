@@ -335,6 +335,47 @@ const DepositPage: NextPage = () => {
         )}
         {method === "buy" &&
           currency === "ztg" &&
+          paymentMethod === "card" &&
+          encodedAddress && (
+            <div className={"grid gap-3 " + `grid-cols-1`}>
+              <ResultButtons
+                items={[
+                  {
+                    label: "Banxa",
+                    url: `https://checkout.banxa.com/?coinType=ZTG&blockchain=ZTG&orderMode=BUY&walletAddress=${encodedAddress}`,
+                  },
+                ]}
+              />
+              <div className="mt-7 flex flex-col gap-2 md:flex-row">
+                <div className="item-center flex gap-2">
+                  <Image
+                    src="/currencies/ztg.svg"
+                    width={25}
+                    height={25}
+                    alt="Zeitgeist currency"
+                  />
+                  <div>Zeitgeist Address:</div>
+                </div>
+                <div className="flex font-semibold">
+                  <span className="hidden sm:inline">{encodedAddress}</span>
+                  <span className="inline sm:hidden">
+                    {shortenAddress(encodedAddress, 12, 12)}
+                  </span>
+                  <CopyIcon
+                    size={24}
+                    className="ml-3 cursor-pointer"
+                    copyText={encodedAddress}
+                  />
+                </div>
+              </div>
+              <div className="mt-2">
+                After purchasing ZTG return to this page and select the Deposit
+                tab to move it to your account on Zeitgeist
+              </div>
+            </div>
+          )}
+        {method === "buy" &&
+          currency === "ztg" &&
           paymentMethod === "crypto" && (
             <ResultButtons
               items={[
