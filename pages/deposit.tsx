@@ -287,20 +287,6 @@ const DepositPage: NextPage = () => {
     DepositPaymentMethod | undefined
   >("crypto");
 
-  const disabledPaymentMethods = useMemo<
-    DepositPaymentMethod[] | undefined
-  >(() => {
-    if (currency === "ztg") {
-      return ["card"];
-    }
-  }, [currency]);
-
-  useEffect(() => {
-    if (currency === "ztg" && method === "buy" && paymentMethod === "card") {
-      setPaymentMethod(undefined);
-    }
-  }, [currency, method, paymentMethod]);
-
   const encodedAddress =
     wallet.realAddress &&
     currency &&
@@ -342,8 +328,6 @@ const DepositPage: NextPage = () => {
             labels={DepositPaymentMethodLabels}
             selected={paymentMethod}
             onChange={setPaymentMethod}
-            disabled={disabledPaymentMethods}
-            disabledItemClassName="!bg-misty-harbor text-sky-600"
             className=""
             itemClassName="text-center center outline-none rounded-lg bg-white p-3 leading-10"
             selectedItemClassName="!bg-ice-hush"
