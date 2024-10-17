@@ -285,7 +285,7 @@ const DepositPage: NextPage = () => {
   const [currency, setCurrency] = useState<DepositCurrency | undefined>("ztg");
   const [paymentMethod, setPaymentMethod] = useState<
     DepositPaymentMethod | undefined
-  >("crypto");
+  >("card");
 
   const encodedAddress =
     wallet.realAddress &&
