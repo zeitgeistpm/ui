@@ -285,21 +285,7 @@ const DepositPage: NextPage = () => {
   const [currency, setCurrency] = useState<DepositCurrency | undefined>("ztg");
   const [paymentMethod, setPaymentMethod] = useState<
     DepositPaymentMethod | undefined
-  >("crypto");
-
-  const disabledPaymentMethods = useMemo<
-    DepositPaymentMethod[] | undefined
-  >(() => {
-    if (currency === "ztg") {
-      return ["card"];
-    }
-  }, [currency]);
-
-  useEffect(() => {
-    if (currency === "ztg" && method === "buy" && paymentMethod === "card") {
-      setPaymentMethod(undefined);
-    }
-  }, [currency, method, paymentMethod]);
+  >("card");
 
   const encodedAddress =
     wallet.realAddress &&
@@ -342,8 +328,6 @@ const DepositPage: NextPage = () => {
             labels={DepositPaymentMethodLabels}
             selected={paymentMethod}
             onChange={setPaymentMethod}
-            disabled={disabledPaymentMethods}
-            disabledItemClassName="!bg-misty-harbor text-sky-600"
             className=""
             itemClassName="text-center center outline-none rounded-lg bg-white p-3 leading-10"
             selectedItemClassName="!bg-ice-hush"
@@ -351,12 +335,53 @@ const DepositPage: NextPage = () => {
         )}
         {method === "buy" &&
           currency === "ztg" &&
+          paymentMethod === "card" &&
+          encodedAddress && (
+            <div className={"grid gap-3 " + `grid-cols-1`}>
+              <ResultButtons
+                items={[
+                  {
+                    label: "Banxa",
+                    url: `https://checkout.banxa.com/?coinType=ZTG&blockchain=ZTG&orderMode=BUY&walletAddress=${encodedAddress}`,
+                  },
+                ]}
+              />
+              <div className="mt-7 flex flex-col gap-2 md:flex-row">
+                <div className="item-center flex gap-2">
+                  <Image
+                    src="/currencies/ztg.svg"
+                    width={25}
+                    height={25}
+                    alt="Zeitgeist currency"
+                  />
+                  <div>Zeitgeist Address:</div>
+                </div>
+                <div className="flex font-semibold">
+                  <span className="hidden sm:inline">{encodedAddress}</span>
+                  <span className="inline sm:hidden">
+                    {shortenAddress(encodedAddress, 12, 12)}
+                  </span>
+                  <CopyIcon
+                    size={24}
+                    className="ml-3 cursor-pointer"
+                    copyText={encodedAddress}
+                  />
+                </div>
+              </div>
+              <div className="mt-2">
+                After purchasing ZTG return to this page and select the Deposit
+                tab to move it to your account on Zeitgeist
+              </div>
+            </div>
+          )}
+        {method === "buy" &&
+          currency === "ztg" &&
           paymentMethod === "crypto" && (
             <ResultButtons
               items={[
                 {
                   label: "Hydra DX",
-                  url: "https://app.hydradx.io/trade?assetIn=5&assetOut=12",
+                  url: "https://app.hydration.net/trade/swap?assetIn=5&assetOut=12",
                 },
                 { label: "Gate.io", url: "https://www.gate.io/trade/ZTG_USDT" },
               ]}
@@ -369,7 +394,7 @@ const DepositPage: NextPage = () => {
               items={[
                 {
                   label: "DEX",
-                  url: "https://app.hydradx.io/trade?assetIn=10&assetOut=5",
+                  url: "https://app.hydration.net/trade/swap?assetIn=10&assetOut=5",
                 },
                 {
                   label: "CEX",
