@@ -381,7 +381,7 @@ const DepositPage: NextPage = () => {
               items={[
                 {
                   label: "Hydra DX",
-                  url: "https://app.hydration.net/trade/swap?assetIn=5&assetOut=12",
+                  url: "https://app.hydradx.io/trade?assetIn=5&assetOut=12",
                 },
                 { label: "Gate.io", url: "https://www.gate.io/trade/ZTG_USDT" },
               ]}
@@ -394,7 +394,7 @@ const DepositPage: NextPage = () => {
               items={[
                 {
                   label: "DEX",
-                  url: "https://app.hydration.net/trade/swap?assetIn=10&assetOut=5",
+                  url: "https://app.hydradx.io/trade?assetIn=10&assetOut=5",
                 },
                 {
                   label: "CEX",
