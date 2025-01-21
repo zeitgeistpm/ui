@@ -190,7 +190,7 @@ const IndexPage: NextPage<{
           chainProperties={chainProperties}
         />
 
-        {process.env.NEXT_PUBLIC_SHOW_TOPICS === "true" ? (
+        {process.env.NEXT_PUBLIC_SHOW_TOPICS === "false" ? (
           <div className="relative z-30 mb-12">
             <div className="mb-8 flex gap-2">
               <Topics
@@ -277,9 +277,9 @@ const IndexPage: NextPage<{
           </div>
         </div>
 
-        <div className="mb-12">
+        {/* <div className="mb-12">
           <PopularCategories imagePlaceholders={categoryPlaceholders} />
-        </div>
+        </div> */}
 
         <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} />
 

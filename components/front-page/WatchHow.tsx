@@ -3,12 +3,12 @@ import { useParallax } from "lib/hooks/animation/useParallax";
 import { useTypedText } from "lib/hooks/animation/useTypedText";
 import { useRelativeMousePosition } from "lib/hooks/events/useRelativeMousePosition";
 import { useEffect, useRef, useState } from "react";
-import { Video } from "react-feather";
+import { Book } from "react-feather";
 import { useInView } from "react-intersection-observer";
 
 const WatchHow = () => {
   const { text, play, animationState } = useTypedText(
-    "Trade on any future event",
+    "New to Prediction Markets?",
   );
 
   const { ref, inView } = useInView({ delay: 60 });
@@ -77,15 +77,15 @@ const WatchHow = () => {
           ))}
         </div>
         <a
-          href="https://www.youtube.com/playlist?list=PLdOlgpqyU8RP-ZK2A2qbcfxOlzoeuR6sx"
+          href="https://docs.zeitgeist.pm/docs/category/learn"
           target="_blank"
           rel="noreferrer"
           className={`center relative z-10 ml-auto flex cursor-pointer gap-2 rounded-md bg-ztg-pink px-[20px] py-[10px] text-white opacity-70 ${
             animationState === "finished" && "animate-pop-in"
           }`}
         >
-          <span className="text-sm font-semibold md:text-[px]">Watch how</span>
-          <Video size={24} />
+          <span className="text-sm font-semibold md:text-[px]">Learn More</span>
+          <Book size={24} />
         </a>
         <motion.div
           className="absolute left-[10%] top-12 h-[0] w-[40%] rounded-full pb-[40%] blur-3xl sm:left-[25%] sm:top-8"
