@@ -119,7 +119,7 @@ const Footer = () => {
         </div>
         <div className="flex flex-col gap-5 md:flex-row">
           <span className="whitespace-nowrap text-center text-ztg-12-150 text-white md:text-start">
-            © 2022 Equipoise Corp.
+            © {new Date().getFullYear()} Equipoise Corp.
           </span>
           <span className="text-[11px] leading-relaxed text-sky-600">
             Please be advised that Equipoise Corp. d/b/a Zeitgeist is registered
