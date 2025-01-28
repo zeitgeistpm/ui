@@ -55,6 +55,7 @@
     "axios": "^0.21.4",
     "boring-avatars": "^1.6.1",
     "decimal.js": "^10.4.3",
+    "disqus-react": "^1.1.5",
     "dotenv": "^9.0.2",
     "embla-carousel": "^8.0.0-rc19",
     "embla-carousel-react": "^8.0.0-rc19",
