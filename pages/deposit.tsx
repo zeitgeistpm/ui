@@ -121,8 +121,10 @@ const DepositPaymentMethodLabels: Record<DepositPaymentMethod, string> = {
 
 const ResultButtons = ({
   items,
+  disabled = false,
 }: {
   items: { label: string; url: string }[];
+  disabled?: boolean;
 }) => {
   const size = items.length;
   return (
@@ -131,11 +133,17 @@ const ResultButtons = ({
         return (
           <Link
             key={id}
-            href={item.url}
+            href={disabled ? "#" : item.url}
             target="_blank"
             className={
-              "center flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-white p-3 leading-10 outline-none"
+              "center flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-white p-3 leading-10 outline-none " +
+              (disabled ? "opacity-50 cursor-not-allowed" : "")
             }
+            onClick={(e) => {
+              if (disabled) {
+                e.preventDefault();
+              }
+            }}
           >
             <div>{item.label}</div>
             <ExternalLink size={16} />
@@ -280,12 +288,12 @@ const DotDeposit = ({ address }: { address: string }) => {
 
 const DepositPage: NextPage = () => {
   const wallet = useWallet();
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptedPolkadotTerms, setAcceptedPolkadotTerms] = useState(false);
 
   const [method, setMethod] = useState<DepositMethod | undefined>("buy");
   const [currency, setCurrency] = useState<DepositCurrency | undefined>("ztg");
-  const [paymentMethod, setPaymentMethod] = useState<
-    DepositPaymentMethod | undefined
-  >("card");
+  const [paymentMethod, setPaymentMethod] = useState<DepositPaymentMethod | undefined>("card");
 
   const encodedAddress =
     wallet.realAddress &&
@@ -345,7 +353,20 @@ const DepositPage: NextPage = () => {
                     url: `https://checkout.banxa.com/?coinType=ZTG&blockchain=ZTG&orderMode=BUY&walletAddress=${encodedAddress}`,
                   },
                 ]}
+                disabled={!acceptedTerms}
               />
+              <div className="flex items-center gap-2 mb-4">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="h-4 w-4"
+                />
+                <label htmlFor="terms" className="text-sm">
+                  I understand that I will be redirected to Banxa, a third-party website to complete the payment and will be subject to their terms of service.
+                </label>
+              </div>
               <div className="mt-7 flex flex-col gap-2 md:flex-row">
                 <div className="item-center flex gap-2">
                   <Image
@@ -370,7 +391,7 @@ const DepositPage: NextPage = () => {
               </div>
               <div className="mt-2">
                 After purchasing ZTG return to this page and select the Deposit
-                tab to move it to your account on Zeitgeist
+                tab to move it to your account on Zeitgeist.
               </div>
             </div>
           )}
@@ -415,7 +436,20 @@ const DepositPage: NextPage = () => {
                     url: `https://checkout.banxa.com/?fiatAmount=50&fiatType=EUR&coinAmount=8&coinType=DOT&lockFiat=false&orderMode=BUY&walletAddress=${encodedAddress}`,
                   },
                 ]}
+                disabled={!acceptedPolkadotTerms}
               />
+              <div className="flex items-center gap-2 mb-4">
+                <input
+                  type="checkbox"
+                  id="polkadot-terms"
+                  checked={acceptedPolkadotTerms}
+                  onChange={(e) => setAcceptedPolkadotTerms(e.target.checked)}
+                  className="h-4 w-4"
+                />
+                <label htmlFor="polkadot-terms" className="text-sm">
+                  I understand that I will be redirected to Banxa, a third-party website to complete the payment and will be subject to their terms of service.
+                </label>
+              </div>
               <div className="mt-7 flex flex-col gap-2 md:flex-row">
                 <div className="item-center flex gap-2">
                   <Image
@@ -437,6 +471,10 @@ const DepositPage: NextPage = () => {
                     copyText={encodedAddress}
                   />
                 </div>
+              </div>
+              <div className="mt-2">
+                After purchasing DOT return to this page and select the Deposit
+                tab to move it to your account on Zeitgeist.
               </div>
             </div>
           )}
