@@ -37,8 +37,8 @@ const AccountButton = dynamic(
     loading: () => (
       <div
         className="center flex h-[44px] w-[76px] rounded-full border-2 border-white bg-black py-1 pl-1.5 text-white transition-all md:w-[186px] md:py-0"
-        // height={"44px"}
-        // width={"186px"}
+      // height={"44px"}
+      // width={"186px"}
       >
         <div className="animate-pulse text-xs">...</div>
       </div>
@@ -64,10 +64,10 @@ const TopBar = () => {
                 <>
                   <div className="flex gap-2">
                     <Menu.Button className="center relative flex gap-2 font-light text-white">
-                      <div className="relative hidden h-6 w-6 md:block">
-                        <FiGrid size={"100%"} />
+                      <div className="relative hidden md:flex flex-col items-center">
+                        <FiGrid size="20px" />
+                        <div className="hidden md:block text-xs">Markets</div>
                       </div>
-                      <div className="hidden md:block">Markets</div>
                       <div className="block md:hidden">
                         <MenuIcon />
                       </div>
@@ -209,13 +209,24 @@ const TopBar = () => {
 
           <Link
             className="md:center relative hidden gap-2 font-light text-white md:flex"
+            href="/create"
+          >
+            <div className="relative hidden md:flex flex-col items-center">
+              <FiPlusSquare size="20px" />
+              <div className="hidden md:block text-xs whitespace-nowrap">Create Market</div>
+            </div>
+          </Link>
+
+          <Link
+            className="md:center relative hidden gap-2 font-light text-white md:flex"
             href="/leaderboard/year"
           >
-            <div className="relative h-6 w-6">
-              <FiAward size={"100%"} />
+            <div className="relative hidden md:flex flex-col items-center">
+              <FiAward size="20px" />
+              <div className="hidden md:block text-xs">Leaderboard</div>
             </div>
-            <div>Leaderboard</div>
           </Link>
+
         </div>
         <MarketSearch />
         <div className="center relative ml-auto gap-3">
