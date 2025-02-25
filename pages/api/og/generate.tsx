@@ -71,6 +71,10 @@ export default async function GenerateOgImage(request: NextRequest) {
       new URL("../../../public/og/zeitgeist_badge.png", import.meta.url),
     ).then((res) => res.arrayBuffer()),
   ]);
+
+  const fontSize = question.length > 60 ?
+    (question.length > 100 ? 24 : 28) : 32;
+
   const image = (
     <div
       tw="px-16 pt-16 pb-24 text-white"
@@ -100,9 +104,22 @@ export default async function GenerateOgImage(request: NextRequest) {
             src={cmsImageUrl ?? fallbackImagePath}
             tw="rounded-[5px]"
           />
-          <h1 tw={`${questionClass} ml-6`} style={{ lineHeight: "1.3em" }}>
+          <div
+            style={{
+              maxWidth: '90%',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              fontSize: `${fontSize}px`,
+              lineHeight: 1.3,
+              fontWeight: 600
+            }}
+          >
             {question}
-          </h1>
+          </div>
         </div>
         <div tw="flex flex-col mt-10">
           <h2 tw={`font-bold text-4xl font-sans`}>
@@ -115,8 +132,8 @@ export default async function GenerateOgImage(request: NextRequest) {
               ? market.marketType.categorical
                 ? `${prediction.name} (${prediction.percentage}%)`
                 : `${Intl.NumberFormat("en-US", {
-                    maximumSignificantDigits: 3,
-                  }).format(Number(prediction.name))}`
+                  maximumSignificantDigits: 3,
+                }).format(Number(prediction.name))}`
               : "No Prediction"}
           </div>
         </div>
