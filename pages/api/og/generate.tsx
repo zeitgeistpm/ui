@@ -72,9 +72,6 @@ export default async function GenerateOgImage(request: NextRequest) {
     ).then((res) => res.arrayBuffer()),
   ]);
 
-  const fontSize = question.length > 60 ?
-    (question.length > 100 ? 24 : 28) : 32;
-
   const image = (
     <div
       tw="px-16 pt-16 pb-24 text-white"
@@ -104,18 +101,19 @@ export default async function GenerateOgImage(request: NextRequest) {
             src={cmsImageUrl ?? fallbackImagePath}
             tw="rounded-[5px]"
           />
-          <div
-            style={{
-              maxWidth: '90%',
+          <div 
+            tw="ml-6 font-bold"
+            style={{ 
+              maxWidth: '800px',
               display: 'flex',
               flexDirection: 'column',
+              fontSize: '32px',
+              lineHeight: 1.3,
+              wordBreak: 'break-word',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
-              fontSize: `${fontSize}px`,
-              lineHeight: 1.3,
-              fontWeight: 600
+              WebkitBoxOrient: 'vertical'
             }}
           >
             {question}
