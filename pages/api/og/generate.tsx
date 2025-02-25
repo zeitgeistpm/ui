@@ -102,12 +102,11 @@ export default async function GenerateOgImage(request: NextRequest) {
             tw="rounded-[5px]"
           />
           <div 
-            tw="ml-6 font-bold"
+            tw={`ml-6 font-bold ${questionClass}`}
             style={{ 
               maxWidth: '800px',
               display: 'flex',
               flexDirection: 'column',
-              fontSize: '32px',
               lineHeight: 1.3,
               wordBreak: 'break-word',
               overflow: 'hidden',
