@@ -71,6 +71,7 @@ export default async function GenerateOgImage(request: NextRequest) {
       new URL("../../../public/og/zeitgeist_badge.png", import.meta.url),
     ).then((res) => res.arrayBuffer()),
   ]);
+
   const image = (
     <div
       tw="px-16 pt-16 pb-24 text-white"
@@ -100,9 +101,22 @@ export default async function GenerateOgImage(request: NextRequest) {
             src={cmsImageUrl ?? fallbackImagePath}
             tw="rounded-[5px]"
           />
-          <h1 tw={`${questionClass} ml-6`} style={{ lineHeight: "1.3em" }}>
+          <div 
+            tw={`ml-6 font-bold ${questionClass}`}
+            style={{ 
+              maxWidth: '800px',
+              display: 'flex',
+              flexDirection: 'column',
+              lineHeight: 1.3,
+              wordBreak: 'break-word',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical'
+            }}
+          >
             {question}
-          </h1>
+          </div>
         </div>
         <div tw="flex flex-col mt-10">
           <h2 tw={`font-bold text-4xl font-sans`}>
@@ -115,8 +129,8 @@ export default async function GenerateOgImage(request: NextRequest) {
               ? market.marketType.categorical
                 ? `${prediction.name} (${prediction.percentage}%)`
                 : `${Intl.NumberFormat("en-US", {
-                    maximumSignificantDigits: 3,
-                  }).format(Number(prediction.name))}`
+                  maximumSignificantDigits: 3,
+                }).format(Number(prediction.name))}`
               : "No Prediction"}
           </div>
         </div>
