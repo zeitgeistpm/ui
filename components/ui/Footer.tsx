@@ -109,7 +109,7 @@ const Footer = () => {
             <FooterMenu
               title="Community"
               links={[
-                { text: "Discord", href: "https://discord.gg/xv8HuA4s8v" },
+                { text: "Discord", href: "https://discord.gg/DxqwS6xaZp" },
                 { text: "Telegram", href: "https://t.me/zeitgeist_official" },
                 { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
               ]}
