@@ -22,12 +22,12 @@ const NetworkStats = ({
 }) => {
   return (
     <div className="relative z-10 mt-10 flex w-full flex-col gap-4 sm:flex-row">
-      {/* <StatCard
+      <StatCard
         title="All-time trading volume"
         value={`$${new Intl.NumberFormat("en-US", {
           maximumSignificantDigits: 5,
         }).format(totalVolumeUsd)}`}
-      /> */}
+      />
       <StatCard title="Markets Created" value={marketCount.toString()} />
       <StatCard title="Total Traders" value={tradersCount.toString()} />
     </div>
