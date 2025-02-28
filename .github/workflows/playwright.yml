@@ -8,12 +8,20 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 16
       - name: Install dependencies
         run: yarn
+      - name: Fix system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pulseaudio alsa-base alsa-utils
+          sudo apt-get install -y libgbm-dev libxkbcommon-x11-0 libx11-xcb1 \
+          libxcomposite1 libxcursor1 libxdamage1 libxi6 libxtst6 libnss3 \
+          libcups2 libxss1 libxrandr2 libasound2-data libatk1.0-0 \
+          libatk-bridge2.0-0 libpangocairo-1.0-0
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
       - name: Run Playwright tests
