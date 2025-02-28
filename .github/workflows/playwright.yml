@@ -15,11 +15,12 @@ jobs:
       - name: Fix system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y pulseaudio alsa-base alsa-utils
+          sudo apt-get install -y liboss4-salsa-asound2
+          sudo apt-get install -y libffi6 || sudo apt-get install -y libffi8 || sudo apt-get install -y libffi-dev
+          sudo apt-get install -y libx264-dev
           sudo apt-get install -y libgbm-dev libxkbcommon-x11-0 libx11-xcb1 \
           libxcomposite1 libxcursor1 libxdamage1 libxi6 libxtst6 libnss3 \
-          libcups2 libxss1 libxrandr2 libasound2-data libatk1.0-0 \
-          libatk-bridge2.0-0 libpangocairo-1.0-0
+          libcups2 libxss1 libxrandr2 libatk1.0-0 libatk-bridge2.0-0
       - name: Install dependencies
         run: yarn
       - name: Install Playwright Browsers
