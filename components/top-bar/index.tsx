@@ -145,7 +145,7 @@ const TopBar = () => {
                           </Link>
                         )}
                       </Menu.Item>
-                      {/* 
+
                       <div className="block md:hidden">
                         <Menu.Item>
                           {({ active }) => (
@@ -163,7 +163,7 @@ const TopBar = () => {
                             </Link>
                           )}
                         </Menu.Item>
-                      </div> */}
+                      </div>
 
                       <CategoriesMenuItem onSelect={close} />
 
@@ -217,7 +217,7 @@ const TopBar = () => {
             </div>
           </Link>
 
-          {/* <Link
+          <Link
             className="md:center relative hidden gap-2 font-light text-white md:flex"
             href="/leaderboard/year"
           >
@@ -225,7 +225,7 @@ const TopBar = () => {
               <FiAward size="20px" />
               <div className="hidden md:block text-xs">Leaderboard</div>
             </div>
-          </Link> */}
+          </Link>
 
         </div>
         <MarketSearch />
