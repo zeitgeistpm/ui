@@ -12,16 +12,26 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+
+      # Targeted fix for libasound2 dependency issues
+      - name: Install specific dependencies
+        run: |
+          sudo apt-get update
+          # Install the specific provider for libasound2
+          sudo apt-get install -y liboss4-salsa-asound2
+
       - name: Install dependencies
         run: yarn
-      - name: Install Playwright dependencies
-        run: npx playwright install-deps chromium
-      - name: Install Playwright browsers
-        run: npx playwright install chromium
+
+      # Install only Chromium using yarn instead of npx
+      - name: Install Playwright browser
+        run: yarn playwright install --with-deps chromium
+
       - name: Run Playwright tests
         run: yarn playwright test
         env:
           PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.target_url }}
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
