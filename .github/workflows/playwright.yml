@@ -7,6 +7,10 @@ jobs:
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
     timeout-minutes: 15
     runs-on: ubuntu-latest
+    container:
+      # Use image version that matches your Playwright version
+      # (Check version in package.json)
+      image: mcr.microsoft.com/playwright:v1.39.0-jammy
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -14,13 +18,11 @@ jobs:
           node-version: 16
       - name: Install dependencies
         run: yarn
-      - name: Install Playwright Browsers
-        run: yarn playwright install --with-deps
       - name: Run Playwright tests
         run: yarn playwright test
         env:
           PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.target_url }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
