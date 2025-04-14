@@ -161,12 +161,12 @@ const CurrenciesTable = ({ address }: { address: string }) => {
           ),
           asset: (
             <ImageAndText
-              name={balance.symbol}
+              name={`${balance.symbol} (${balance.sourceChain})`}
               imagePath={lookupAssetImagePath(
                 balance.foreignAssetId != null
                   ? {
-                      ForeignAsset: balance.foreignAssetId,
-                    }
+                    ForeignAsset: balance.foreignAssetId,
+                  }
                   : null,
               )}
             />

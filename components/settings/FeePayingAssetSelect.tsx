@@ -22,7 +22,7 @@ const FeePayingAssetSelect = () => {
   const { data: assetMetadata, isSuccess } = useAllAssetMetadata();
   const { assetSelection, setAsset } = useFeePayingAssetSelection();
   const [showSaved, setShowSaved] = useState(false);
-
+  console.log(assetMetadata)
   const options = useMemo<AssetOption[]>(() => {
     if (!isSuccess) {
       return [];
@@ -45,7 +45,7 @@ const FeePayingAssetSelect = () => {
         options = [
           ...options,
           {
-            label: meta.symbol,
+            label: meta.name,
             value: { ForeignAsset: id },
             image: findAssetImageForSymbol(meta.symbol),
           },

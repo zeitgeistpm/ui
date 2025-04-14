@@ -6,7 +6,7 @@ import { ISubmittableResult } from "@polkadot/types/types";
 import { ZTG } from ".";
 import { calculateFreeBalance } from "lib/util/calc-free-balance";
 
-export type ChainName = "Rococo" | "Zeitgeist" | "Polkadot" | "Moonbeam";
+export type ChainName = "Rococo" | "Zeitgeist" | "Polkadot" | "Moonbeam" | "AssetHub";
 
 export const CHAIN_IMAGES = {
   Rococo: "/currencies/rococo.png",

@@ -39,7 +39,6 @@ const BalanceRow = ({
   units?: string;
   balance?: Decimal;
 }) => {
-  console.log(formatNumberLocalized(balance?.div(ZTG).abs().toNumber()))
   return (
     <div className="flex items-center">
       <img src={imgPath} height={"24px"} width="24px" />
