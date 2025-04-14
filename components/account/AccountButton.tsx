@@ -96,9 +96,17 @@ const AccountButton: FC<{
 
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   // Disable Polkadot balance for now as it's not working
-  // const { data: polkadotBalance } = useBalance(activeAccount?.address, {
-  //   ForeignAsset: 0,
-  // });
+  const { data: polkadotBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: 0,
+  });
+  const { data: usdcAssetHubBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: 4,
+  });
+  const { data: usdcMoonbeamBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: 1,
+  });
+
+  console.log(polkadotBalance?.toString())
 
   const { data: constants } = useChainConstants();
 
@@ -283,12 +291,21 @@ const AccountButton: FC<{
                           units={constants?.tokenSymbol}
                           balance={activeBalance}
                         />
-                        {/* Disable Polkadot balance for now as it's not working */}
-                        {/* <BalanceRow
+                        <BalanceRow
+                          imgPath="/currencies/usdc.svg"
+                          units="USDC (AssetHub)"
+                          balance={usdcAssetHubBalance}
+                        />
+                        <BalanceRow
+                          imgPath="/currencies/usdc.svg"
+                          units="USDC (Moonbeam)"
+                          balance={usdcMoonbeamBalance}
+                        />
+                        <BalanceRow
                           imgPath="/currencies/dot.png"
                           units="DOT"
                           balance={polkadotBalance}
-                        /> */}
+                        />
                         <Menu.Item>
                           {({ active }) => (
                             <Link

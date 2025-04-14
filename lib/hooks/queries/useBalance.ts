@@ -5,6 +5,7 @@ import {
   IOCampaignAssetId,
   IOCurrencyAsset,
   IOMarketOutcomeAssetId,
+  IOForeignAssetId,
   IOZtgAssetId,
   getMarketIdOf,
   isRpcSdk,
@@ -46,13 +47,17 @@ export const fetchAssetBalance = async (
   address: string,
   assetId: AssetId,
 ) => {
+  console.log(IOForeignAssetId.is(assetId))
   if (IOZtgAssetId.is(assetId)) {
     const { data } = await api.query.system.account(address);
     return calculateFreeBalance(
       data?.free?.toString(),
-      data?.miscFrozen?.toString(),
-      data?.feeFrozen?.toString(),
+      data?.frozen?.toString(),
+      data?.reserved?.toString(),
     );
+  } else if (IOForeignAssetId.is(assetId)) {
+    const balance = await api.query.tokens.accounts(address, assetId);
+    return new Decimal(balance.free.toString());
   } else if (IOCurrencyAsset.is(assetId)) {
     if (
       IOMarketOutcomeAssetId.is(assetId) &&
@@ -76,6 +81,7 @@ export const fetchAssetBalance = async (
       assetId.CustomAsset,
       address,
     );
+    console.log(balance.toHuman())
     return new Decimal(balance.unwrap().balance.toString());
   }
 };
