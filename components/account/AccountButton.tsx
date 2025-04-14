@@ -34,16 +34,18 @@ const BalanceRow = ({
   imgPath,
   balance,
   units,
+  className,
 }: {
   imgPath: string;
   units?: string;
   balance?: Decimal;
+  className?: string;
 }) => {
   return (
     <div className="flex items-center">
       <img src={imgPath} height={"24px"} width="24px" />
       <div
-        className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold`}
+        className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold ${className}`}
       >
         {balance &&
           `${formatNumberLocalized(balance?.div(ZTG).abs().toNumber())} ${units ?? ""
@@ -289,21 +291,28 @@ const AccountButton: FC<{
                           units={constants?.tokenSymbol}
                           balance={activeBalance}
                         />
-                        <BalanceRow
-                          imgPath="/currencies/usdc.svg"
-                          units="USDC (AssetHub)"
-                          balance={usdcAssetHubBalance}
-                        />
-                        <BalanceRow
-                          imgPath="/currencies/usdc.svg"
-                          units="USDC (Moonbeam)"
-                          balance={usdcMoonbeamBalance}
-                        />
-                        <BalanceRow
-                          imgPath="/currencies/dot.png"
-                          units="DOT"
-                          balance={polkadotBalance}
-                        />
+                        <div className="flex flex-col gap-1">
+                          <BalanceRow
+                            imgPath="/currencies/usdc.svg"
+                            units="USDC (AssetHub)"
+                            balance={usdcAssetHubBalance}
+                            className="text-xs font-medium"
+                          />
+                          <BalanceRow
+                            imgPath="/currencies/usdc.svg"
+                            units="USDC (Moonbeam)"
+                            balance={usdcMoonbeamBalance}
+                            className="text-xs font-medium"
+
+                          />
+                          <BalanceRow
+                            imgPath="/currencies/dot.png"
+                            units="DOT"
+                            balance={polkadotBalance}
+                            className="text-xs font-medium"
+
+                          />
+                        </div>
                         <Menu.Item>
                           {({ active }) => (
                             <Link
