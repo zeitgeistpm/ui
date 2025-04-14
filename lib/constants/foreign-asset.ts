@@ -34,6 +34,17 @@ export const lookupAssetSymbol = (baseAssetId?: BaseAssetId) => {
   }
 };
 
+export const lookupAssetOriginChain = (baseAssetId?: BaseAssetId | AssetId) => {
+  const foreignAssetId = IOForeignAssetId.is(baseAssetId)
+    ? baseAssetId.ForeignAsset
+    : null;
+  if (foreignAssetId == null) {
+    return "Zeitgeist";
+  } else {
+    return FOREIGN_ASSET_METADATA[foreignAssetId].originChain;
+  }
+};
+
 const BATTERY_STATION_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
   0: {
     image: "/currencies/dot.png",

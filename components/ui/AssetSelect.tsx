@@ -14,6 +14,7 @@ import Select, {
   ValueContainerProps,
   MenuListProps,
 } from "react-select";
+import { lookupAssetOriginChain } from "lib/constants/foreign-asset";
 
 export type AssetOption = {
   label: string;
@@ -26,7 +27,7 @@ const Control = ({ children, ...rest }: ControlProps<AssetOption, false>) => {
   return (
     <components.Control
       {...rest}
-      className="flex h-full !cursor-pointer items-center justify-between pl-4"
+      className="flex h-full w-full !cursor-pointer items-center justify-between pl-4"
     >
       {children}
     </components.Control>
@@ -50,7 +51,7 @@ const SelectContainer = (props: ContainerProps<AssetOption, false>) => {
 };
 
 const SingleValue = (props: SingleValueProps<AssetOption, false>) => {
-  const { label, image } = props.data;
+  const { label, image, value } = props.data;
   return (
     <div className="flex items-center font-semibold">
       {image ? (
@@ -63,9 +64,9 @@ const SingleValue = (props: SingleValueProps<AssetOption, false>) => {
           quality={100}
         />
       ) : (
-        <div className="mr-3 h-[36px] w-[36px] rounded-full bg-ztg-blue"></div>
+        <div className="mr-3 h-[36px] w-full rounded-full bg-ztg-blue"></div>
       )}
-      <span>{label}</span>
+      <span>{label} ({lookupAssetOriginChain(value)})</span>
     </div>
   );
 };
@@ -94,7 +95,7 @@ const Option = (props: OptionProps<AssetOption, false>) => {
       ) : (
         <div className="mr-3 h-[36px] w-[36px] rounded-full bg-ztg-blue"></div>
       )}
-      <span>{label}</span>
+      <span>{label} ({lookupAssetOriginChain(value)})</span>
       {balance && (
         <div className="ml-auto text-xs">
           Balance: {formatNumberLocalized(balance.div(ZTG).toNumber())}
@@ -133,7 +134,7 @@ const AssetSelect: React.FC<AssetSelectProps> = ({
 }) => {
   return (
     <Select
-      className={`!static h-full  ${showArrowRight ? "pr-4" : "w-34"}`}
+      className={`!static h-full ${showArrowRight ? "pr-4" : "w-fit"}`}
       isSearchable={false}
       options={options}
       unstyled={true}

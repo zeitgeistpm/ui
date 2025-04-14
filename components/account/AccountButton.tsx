@@ -106,8 +106,6 @@ const AccountButton: FC<{
     ForeignAsset: 1,
   });
 
-  console.log(polkadotBalance?.toString())
-
   const { data: constants } = useChainConstants();
 
   const connect = async () => {
