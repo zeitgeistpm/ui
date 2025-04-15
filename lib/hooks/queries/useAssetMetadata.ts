@@ -129,6 +129,5 @@ export const useAllAssetMetadata = () => {
       staleTime: Infinity,
     },
   );
-
   return query;
 };

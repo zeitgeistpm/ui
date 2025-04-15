@@ -27,7 +27,7 @@ export const supportedCurrencies = [
     assetId: { ForeignAsset: 0 } as const,
   } satisfies CurrencyMetadata,
   {
-    name: "USDC" as const,
+    name: "USDC.wh" as const,
     description: "Create market with Moonbeam USDC.wh as the base asset.",
     image: "/currencies/usdc.svg",
     twColor: "usdc",

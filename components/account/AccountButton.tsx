@@ -294,13 +294,13 @@ const AccountButton: FC<{
                         <div className="flex flex-col gap-1">
                           <BalanceRow
                             imgPath="/currencies/usdc.svg"
-                            units="USDC (AssetHub)"
+                            units="USDC"
                             balance={usdcAssetHubBalance}
                             className="text-xs font-medium"
                           />
                           <BalanceRow
                             imgPath="/currencies/usdc.svg"
-                            units="USDC (Moonbeam)"
+                            units="USDC.wh"
                             balance={usdcMoonbeamBalance}
                             className="text-xs font-medium"
 

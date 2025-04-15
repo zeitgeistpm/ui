@@ -1,7 +1,6 @@
 import { AssetId, BaseAssetId, IOForeignAssetId } from "@zeitgeistpm/sdk";
 import { ChainName } from "./chains";
 import { hexToU8a } from "@polkadot/util";
-import Keyring from "@polkadot/keyring";
 
 type ForeignAssetMetadata = {
   [foreignAssetId: number]: {
@@ -17,7 +16,7 @@ type ForeignAssetMetadata = {
 
 export const lookupAssetImagePath = (assetId?: AssetId | null) => {
   if (IOForeignAssetId.is(assetId)) {
-    return FOREIGN_ASSET_METADATA[assetId.ForeignAsset].image;
+    return FOREIGN_ASSET_METADATA[assetId.ForeignAsset]?.image;
   } else {
     return "/currencies/ztg.svg";
   }

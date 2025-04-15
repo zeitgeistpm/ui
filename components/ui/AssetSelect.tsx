@@ -92,6 +92,7 @@ const Option = (props: OptionProps<AssetOption, false>) => {
           alt={label}
           quality={100}
         />
+
       ) : (
         <div className="mr-3 h-[36px] w-[36px] rounded-full bg-ztg-blue"></div>
       )}

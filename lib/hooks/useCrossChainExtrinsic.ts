@@ -123,7 +123,6 @@ export const useCrossChainExtrinsic = <T>(
       extrinsic,
       signer,
       extrinsicCallback(extrinsicCallbackParams),
-      IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
     ).catch((error) => {
       notifications.pushNotification(error?.toString() ?? "Unknown Error", {
         type: "Error",
