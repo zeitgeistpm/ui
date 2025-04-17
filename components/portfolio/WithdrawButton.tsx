@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
+
 const WithdrawButton = ({
   toChain,
   tokenSymbol,
@@ -70,7 +71,7 @@ const createWithdrawExtrinsic = (
 ) => {
   const accountId = api.createType("AccountId32", address).toHex();
 
-  // If foreign asset above 0 (not DOT native), we need to specify the parachain id
+  // ForeignAsset 0 is native DOT. If foreignAssetId is above 0, we need to specify the parachain id
   const account = foreignAssetId > 0 ? {
     parents: 1,
     interior: {

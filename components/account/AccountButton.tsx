@@ -97,7 +97,7 @@ const AccountButton: FC<{
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
-  // Disable Polkadot balance for now as it's not working
+
   const { data: polkadotBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 0,
   });
