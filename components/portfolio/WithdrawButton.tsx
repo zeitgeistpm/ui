@@ -44,7 +44,7 @@ const WithdrawButton = ({
   return (
     <>
       <SecondaryButton onClick={() => setIsOpen(true)}>
-        Withdraw
+        Transfer to {toChain}
       </SecondaryButton>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <WithdrawModal

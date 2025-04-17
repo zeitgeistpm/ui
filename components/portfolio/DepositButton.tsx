@@ -37,7 +37,7 @@ const DepositButton = ({
 
   return (
     <>
-      <SecondaryButton onClick={() => setIsOpen(true)}>Deposit</SecondaryButton>
+      <SecondaryButton onClick={() => setIsOpen(true)}>Transfer to Zeitgeist</SecondaryButton>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <DepositModal
           sourceChain={sourceChain}

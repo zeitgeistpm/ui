@@ -174,7 +174,7 @@ const CurrenciesTable = ({ address }: { address: string }) => {
           ),
           balance: amount.div(ZTG).toFixed(3),
           button: (
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-2 w-full py-2">
               <MoveButton
                 chain={balance.chain}
                 sourceChain={balance.sourceChain}
