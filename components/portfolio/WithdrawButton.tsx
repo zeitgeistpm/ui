@@ -21,7 +21,7 @@ import { formatNumberCompact } from "lib/util/format-compact";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
-
+import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 const WithdrawButton = ({
   toChain,
   tokenSymbol,
@@ -70,17 +70,38 @@ const createWithdrawExtrinsic = (
 ) => {
   const accountId = api.createType("AccountId32", address).toHex();
 
-  const account = {
+  // If foreign asset above 0 (not DOT native), we need to specify the parachain id
+  const account = foreignAssetId > 0 ? {
     parents: 1,
-    interior: { X1: { AccountId32: { id: accountId } } },
+    interior: {
+      X2: [{
+        Parachain: FOREIGN_ASSET_METADATA[foreignAssetId].parachainId
+      },
+      {
+        AccountId32: {
+          id: accountId
+        }
+      }
+      ]
+    },
+  } : {
+    parents: 1,
+    interior: {
+      X1:
+      {
+        AccountId32: {
+          id: accountId
+        }
+      }
+    },
   };
+
   const destWeightLimit = { Unlimited: null };
 
   return api.tx.xTokens.transfer(
     { ForeignAsset: foreignAssetId },
     amount,
     { V3: account },
-    // { Limited: "100000000000" },
     destWeightLimit,
   );
 };
@@ -125,11 +146,11 @@ const WithdrawModal = ({
   const { data: fee } = useExtrinsicFee(
     isRpcSdk(sdk) && wallet.activeAccount
       ? createWithdrawExtrinsic(
-          sdk.api,
-          "100000000000",
-          wallet.activeAccount.address,
-          foreignAssetId,
-        )
+        sdk.api,
+        "100000000000",
+        wallet.activeAccount.address,
+        foreignAssetId,
+      )
       : undefined,
   );
   const amount = getValues("amount");

@@ -11,6 +11,7 @@ type ForeignAssetMetadata = {
     withdrawDestinationFee?: string;
     tokenSymbol: string;
     subsquidId?: string;
+    parachainId?: number;
   };
 };
 
@@ -132,6 +133,7 @@ const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     coinGeckoId: "usd",
     tokenSymbol: "USDC",
     subsquidId: "USDC",
+    parachainId: 2004,
   },
   4: {
     originChain: "AssetHub",
@@ -140,6 +142,7 @@ const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     coinGeckoId: "usd",
     tokenSymbol: "USDC",
     subsquidId: "USDC",
+    parachainId: 1000,
   },
 };
 

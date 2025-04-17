@@ -64,7 +64,7 @@ const SingleValue = (props: SingleValueProps<AssetOption, false>) => {
           quality={100}
         />
       ) : (
-        <div className="mr-3 h-[36px] w-full rounded-full bg-ztg-blue"></div>
+        <div className="mr-3 h-[36px] w-[36px] rounded-full bg-ztg-blue"></div>
       )}
       <span>{label} ({lookupAssetOriginChain(value)})</span>
     </div>

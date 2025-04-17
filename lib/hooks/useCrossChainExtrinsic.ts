@@ -80,18 +80,19 @@ export const useCrossChainExtrinsic = <T>(
               const { event } = record;
               const { method } = event;
               const types = event.typeDef;
-
               // assumes that any activity for the connected address on the destination
               // chain means that there has been a successful deposit
               const destinationChainActivityDetected = event.data.some(
-                (data, index) =>
-                  types[index].type === "AccountId32" &&
-                  ["deposit", "deposited"].includes(method.toLowerCase()) &&
-                  encodeAddress(
-                    decodeAddress(wallet.activeAccount?.address),
-                  ) === encodeAddress(decodeAddress(data.toString())),
+                (data, index) => {
+                  return types[index].type === "AccountId32" &&
+                    ["deposit", "deposited"].includes(method.toLowerCase())
+                  //todo: doesnt work for each parachain so will need to do more testing
+                  // &&
+                  // encodeAddress(
+                  //   decodeAddress(wallet.activeAccount?.address),
+                  // ), encodeAddress(decodeAddress(data.toString()));
+                }
               );
-
               if (destinationChainActivityDetected) {
                 unsub();
                 setIsLoading(false);
