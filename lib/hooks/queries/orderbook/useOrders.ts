@@ -13,29 +13,6 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 
 export const ordersRootKey = "orders";
 
-// Define the interface for the GraphQL response
-interface OrderResponse {
-  __typename?: "Order";
-  id: string;
-  marketId: number;
-  makerAccountId: string;
-  updatedAt: any;
-  createdAt: any;
-  status: OrderStatus; // Explicitly define status property
-  maker: {
-    __typename?: "OrderRecord";
-    asset: string;
-    filledAmount: any;
-    unfilledAmount: any;
-  };
-  taker: {
-    __typename?: "OrderRecord";
-    asset: string;
-    filledAmount: any;
-    unfilledAmount: any;
-  };
-}
-
 export type Order = {
   id: string;
   marketId: number;
@@ -62,10 +39,8 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
     [id, ordersRootKey, where],
     async () => {
       if (enabled) {
-        // Type the response from the GraphQL query
-        const { orders } = await sdk.indexer.orders({ where }) as { orders: OrderResponse[] };
-        
-        const ordersMapped: Order[] = orders.map((order: OrderResponse) => {
+        const { orders } = await sdk.indexer.orders({ where });
+        const ordersMapped: Order[] = orders.map((order) => {
           const makerAsset = parseAssetId(
             order.maker.asset,
           ).unwrap() as unknown as AssetId;
@@ -99,16 +74,16 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
             .mul(100)
             .toNumber();
 
-          const mappedOrder: Order = {
+            const mappedOrder: Order = {
             id: order.id,
             marketId: order.marketId,
             makerAddress: order.makerAccountId,
             side,
             price,
             outcomeAmount: outcomeAmount,
-            outcomeAssetId: outcomeAssetId!, // one of the assets must be MarketOutcome
+            outcomeAssetId: outcomeAssetId!,
             filledPercentage,
-            status: order.status, // Now TypeScript knows this exists
+            status: (order as unknown as { status: OrderStatus }).status, // TODO: update indexer SDK types
           };
 
           return mappedOrder;
