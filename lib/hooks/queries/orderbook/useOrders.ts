@@ -13,6 +13,29 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 
 export const ordersRootKey = "orders";
 
+// Define the interface for the GraphQL response
+interface OrderResponse {
+  __typename?: "Order";
+  id: string;
+  marketId: number;
+  makerAccountId: string;
+  updatedAt: any;
+  createdAt: any;
+  status: OrderStatus; // Explicitly define status property
+  maker: {
+    __typename?: "OrderRecord";
+    asset: string;
+    filledAmount: any;
+    unfilledAmount: any;
+  };
+  taker: {
+    __typename?: "OrderRecord";
+    asset: string;
+    filledAmount: any;
+    unfilledAmount: any;
+  };
+}
+
 export type Order = {
   id: string;
   marketId: number;
@@ -39,8 +62,10 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
     [id, ordersRootKey, where],
     async () => {
       if (enabled) {
-        const { orders } = await sdk.indexer.orders({ where });
-        const ordersMapped: Order[] = orders.map((order) => {
+        // Type the response from the GraphQL query
+        const { orders } = await sdk.indexer.orders({ where }) as { orders: OrderResponse[] };
+        
+        const ordersMapped: Order[] = orders.map((order: OrderResponse) => {
           const makerAsset = parseAssetId(
             order.maker.asset,
           ).unwrap() as unknown as AssetId;
@@ -83,7 +108,7 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
             outcomeAmount: outcomeAmount,
             outcomeAssetId: outcomeAssetId!, // one of the assets must be MarketOutcome
             filledPercentage,
-            status: order.status,
+            status: order.status, // Now TypeScript knows this exists
           };
 
           return mappedOrder;
