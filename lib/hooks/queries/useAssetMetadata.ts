@@ -8,13 +8,13 @@ import {
 } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
-import { XcmVersionedMultiLocation } from "@polkadot/types/lookup";
+import { StagingXcmVersionedMultiLocation } from "@polkadot/types/lookup";
 import Decimal from "decimal.js";
 
 export type AssetMetadata = {
   symbol: string;
   name: string;
-  location: XcmVersionedMultiLocation | null;
+  location: StagingXcmVersionedMultiLocation | null;
   feeFactor: Decimal;
   decimals: number;
 };

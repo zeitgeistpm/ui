@@ -140,5 +140,18 @@
     "typescript": "^5.0.4",
     "vitest": "^0.34.6"
   },
+  "resolutions": {
+    "@polkadot/types": "15.9.1",
+    "@polkadot/api": "15.9.1",
+    "@polkadot/api-augment": "15.9.1",
+    "@polkadot/api-base": "15.9.1",
+    "@polkadot/rpc-augment": "15.9.1",
+    "@polkadot/rpc-core": "15.9.1",
+    "@polkadot/rpc-provider": "15.9.1",
+    "@polkadot/types-augment": "15.9.1",
+    "@polkadot/types-codec": "15.9.1",
+    "@polkadot/types-create": "15.9.1",
+    "@polkadot/types-known": "15.9.1"
+  },
   "packageManager": "yarn@3.2.2"
 }
