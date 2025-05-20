@@ -223,7 +223,7 @@ const DepositModal = ({
             {...register("percentage", { value: "0" })}
           />
           <div className="my-[4px] h-[16px] text-ztg-12-120 text-vermilion">
-            <>{formState.errors["amount"]?.message}</>
+            {formState.errors["amount"]?.message?.toString()}
             {!formState.errors["amount"]?.message &&
               remainingSourceBalance.lessThan(sourceExistentialDeposit) &&
               remainingSourceBalance

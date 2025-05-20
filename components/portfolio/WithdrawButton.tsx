@@ -294,7 +294,7 @@ const WithdrawModal = ({
             {...register("percentage", { value: "0" })}
           />
           <div className="my-[4px] h-[16px] text-ztg-12-120 text-vermilion">
-            <>{formState.errors["amount"]?.message}</>
+            {formState.errors["amount"]?.message?.toString()}
           </div>
           <div className="center mb-[16px] text-ztg-12-120 font-normal text-sky-600">
             Zeitgeist fee:
