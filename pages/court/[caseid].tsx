@@ -83,9 +83,9 @@ export async function getStaticProps({
           marketId_eq: marketId.unwrap().toNumber(),
         },
       })
-    : undefined;
+    : null;
 
-  const market = markets?.markets[0];
+  const market = markets?.markets[0] ?? null;
 
   if (market) {
     if (cmsMetadata?.imageUrl) {
