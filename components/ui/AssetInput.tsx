@@ -41,7 +41,6 @@ const AssetInput: React.FC<AssetInputProps> = ({
           onAmountChange?.(e.target.value);
         }}
         className="absolute right-4 top-[50%] translate-y-[-50%] bg-transparent !px-0 text-right text-lg"
-        style={{ width: "calc(100% - 155px)" }}
       />
       {error && (
         <div className="text-right text-sm text-vermilion">{error}</div>

@@ -1,5 +1,6 @@
 import { AssetId, BaseAssetId, IOForeignAssetId } from "@zeitgeistpm/sdk";
 import { ChainName } from "./chains";
+import { hexToU8a } from "@polkadot/util";
 
 type ForeignAssetMetadata = {
   [foreignAssetId: number]: {
@@ -10,12 +11,13 @@ type ForeignAssetMetadata = {
     withdrawDestinationFee?: string;
     tokenSymbol: string;
     subsquidId?: string;
+    parachainId?: number;
   };
 };
 
 export const lookupAssetImagePath = (assetId?: AssetId | null) => {
   if (IOForeignAssetId.is(assetId)) {
-    return FOREIGN_ASSET_METADATA[assetId.ForeignAsset].image;
+    return FOREIGN_ASSET_METADATA[assetId.ForeignAsset]?.image;
   } else {
     return "/currencies/ztg.svg";
   }
@@ -29,6 +31,17 @@ export const lookupAssetSymbol = (baseAssetId?: BaseAssetId) => {
     return "ZTG";
   } else {
     return FOREIGN_ASSET_METADATA[foreignAssetId].tokenSymbol;
+  }
+};
+
+export const lookupAssetOriginChain = (baseAssetId?: BaseAssetId | AssetId) => {
+  const foreignAssetId = IOForeignAssetId.is(baseAssetId)
+    ? baseAssetId.ForeignAsset
+    : null;
+  if (foreignAssetId == null) {
+    return "Zeitgeist";
+  } else {
+    return FOREIGN_ASSET_METADATA[foreignAssetId].originChain;
   }
 };
 
@@ -48,20 +61,61 @@ const BATTERY_STATION_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     tokenSymbol: "ROC",
   },
   3: {
-    //todo: add WSX logo
+    //todo: remove
     image: "/currencies/ausd.jpg",
     withdrawSupported: false,
     coinGeckoId: "polkadot",
     tokenSymbol: "WSX",
   },
   4: {
-    //todo: add NTT logo
+    //todo: remove
     image: "/currencies/ausd.jpg",
     withdrawSupported: false,
     coinGeckoId: "polkadot",
     tokenSymbol: "NTT",
   },
 };
+
+export const FOREIGN_ASSET_MULTILOCATION = {
+  0: {
+    parents: 1
+  },
+  1: {
+    parents: 1,
+    interior: {
+      X3: [
+        {
+          Parachain: 2004,
+        },
+        {
+          PalletInstance: 110,
+        },
+        {
+          AccountKey20: {
+            network: null,
+            key: hexToU8a('0x931715fee2d06333043d11f658c8ce934ac61d0c'),
+          }
+        },
+      ],
+    },
+  },
+  4: {
+    parents: 1,
+    interior: {
+      X3: [
+        {
+          Parachain: 1000
+        },
+        {
+          PalletInstance: 50
+        },
+        {
+          GeneralIndex: 1337
+        }
+      ]
+    }
+  }
+}
 
 const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
   0: {
@@ -79,6 +133,16 @@ const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     coinGeckoId: "usd",
     tokenSymbol: "USDC",
     subsquidId: "USDC",
+    parachainId: 2004,
+  },
+  4: {
+    originChain: "AssetHub",
+    image: "/currencies/usdc.svg",
+    withdrawSupported: false,
+    coinGeckoId: "usd",
+    tokenSymbol: "USDC",
+    subsquidId: "USDC",
+    parachainId: 1000,
   },
 };
 
