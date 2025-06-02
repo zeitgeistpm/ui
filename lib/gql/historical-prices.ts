@@ -42,7 +42,21 @@ export const getBaseAssetHistoricalPrices = async (): Promise<BasePrices> => {
     coinGeckoIds.map((id) => fetch(generateUrl(id))),
   );
 
-  const prices = await Promise.all(pricesRes.map((res) => res.json()));
+  const prices = await Promise.all(
+    pricesRes.map(async (res, index) => {
+      const id = coinGeckoIds[index];
+      if (!res.ok) {
+        console.error(`Failed to fetch price data for ${id}: ${res.statusText}`);
+        return { prices: [] };
+      }
+      try {
+        return await res.json();
+      } catch (e) {
+        console.error(`Failed to parse price data for ${id}: ${e}`);
+        return { prices: [] };
+      }
+    })
+  );
   const assetIds = Object.keys(FOREIGN_ASSET_METADATA);
 
   const pricesObj = prices.reduce<BasePrices>((obj, assetPrices, index) => {

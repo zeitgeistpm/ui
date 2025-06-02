@@ -21,6 +21,7 @@ import { formatNumberCompact } from "lib/util/format-compact";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
+import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 
 const WithdrawButton = ({
   toChain,
@@ -44,7 +45,7 @@ const WithdrawButton = ({
   return (
     <>
       <SecondaryButton onClick={() => setIsOpen(true)}>
-        Withdraw
+        Transfer to {toChain}
       </SecondaryButton>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <WithdrawModal
@@ -70,17 +71,38 @@ const createWithdrawExtrinsic = (
 ) => {
   const accountId = api.createType("AccountId32", address).toHex();
 
-  const account = {
+  // ForeignAsset 0 is native DOT. If foreignAssetId is above 0, we need to specify the parachain id
+  const account = foreignAssetId > 0 ? {
     parents: 1,
-    interior: { X1: { AccountId32: { id: accountId } } },
+    interior: {
+      X2: [{
+        Parachain: FOREIGN_ASSET_METADATA[foreignAssetId].parachainId
+      },
+      {
+        AccountId32: {
+          id: accountId
+        }
+      }
+      ]
+    },
+  } : {
+    parents: 1,
+    interior: {
+      X1:
+      {
+        AccountId32: {
+          id: accountId
+        }
+      }
+    },
   };
+
   const destWeightLimit = { Unlimited: null };
 
   return api.tx.xTokens.transfer(
     { ForeignAsset: foreignAssetId },
     amount,
     { V3: account },
-    // { Limited: "100000000000" },
     destWeightLimit,
   );
 };
@@ -125,11 +147,11 @@ const WithdrawModal = ({
   const { data: fee } = useExtrinsicFee(
     isRpcSdk(sdk) && wallet.activeAccount
       ? createWithdrawExtrinsic(
-          sdk.api,
-          "100000000000",
-          wallet.activeAccount.address,
-          foreignAssetId,
-        )
+        sdk.api,
+        "100000000000",
+        wallet.activeAccount.address,
+        foreignAssetId,
+      )
       : undefined,
   );
   const amount = getValues("amount");
@@ -272,7 +294,7 @@ const WithdrawModal = ({
             {...register("percentage", { value: "0" })}
           />
           <div className="my-[4px] h-[16px] text-ztg-12-120 text-vermilion">
-            <>{formState.errors["amount"]?.message}</>
+            {formState.errors["amount"]?.message?.toString()}
           </div>
           <div className="center mb-[16px] text-ztg-12-120 font-normal text-sky-600">
             Zeitgeist fee:

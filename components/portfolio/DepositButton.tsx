@@ -24,18 +24,20 @@ const DepositButton = ({
   balance,
   sourceExistentialDeposit,
   assetDecimals,
+  sourceAssetId,
 }: {
   sourceChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
   sourceExistentialDeposit: Decimal;
   assetDecimals: number;
+  sourceAssetId?: number;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <SecondaryButton onClick={() => setIsOpen(true)}>Deposit</SecondaryButton>
+      <SecondaryButton onClick={() => setIsOpen(true)}>Transfer to Zeitgeist</SecondaryButton>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <DepositModal
           sourceChain={sourceChain}
@@ -44,6 +46,7 @@ const DepositButton = ({
           assetDecimals={assetDecimals}
           sourceExistentialDeposit={sourceExistentialDeposit}
           onSuccess={() => setIsOpen(false)}
+          sourceAssetId={sourceAssetId}
         />
       </Modal>
     </>
@@ -57,6 +60,7 @@ const DepositModal = ({
   onSuccess,
   sourceExistentialDeposit,
   assetDecimals,
+  sourceAssetId,
 }: {
   sourceChain: ChainName;
   tokenSymbol: string;
@@ -64,6 +68,7 @@ const DepositModal = ({
   sourceExistentialDeposit: Decimal;
   assetDecimals: number;
   onSuccess: () => void;
+  sourceAssetId?: number;
 }) => {
   const {
     register,
@@ -106,6 +111,7 @@ const DepositModal = ({
         wallet.realAddress,
         amountDecimal.toFixed(0),
         constants.parachainId,
+        sourceAssetId,
       );
       return tx;
     },
@@ -217,7 +223,7 @@ const DepositModal = ({
             {...register("percentage", { value: "0" })}
           />
           <div className="my-[4px] h-[16px] text-ztg-12-120 text-vermilion">
-            <>{formState.errors["amount"]?.message}</>
+            {formState.errors["amount"]?.message?.toString()}
             {!formState.errors["amount"]?.message &&
               remainingSourceBalance.lessThan(sourceExistentialDeposit) &&
               remainingSourceBalance
