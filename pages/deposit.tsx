@@ -190,7 +190,6 @@ const DotDeposit = ({ address }: { address: string }) => {
   const remainingSourceBalance = dotBalance
     .minus(amountDecimal)
     .minus(feeEstimate);
-
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
       if (!chain || !api || !wallet.realAddress || !constants) return;

@@ -14,6 +14,7 @@ export type CurrencyBalance = {
   balance: Decimal;
   chain: ChainName;
   foreignAssetId?: number;
+  sourceAssetId?: number;
   sourceChain: ChainName;
   existentialDeposit: Decimal;
   decimals: number;
@@ -60,8 +61,8 @@ export const useCurrencyBalances = (address: string) => {
 
         const nativeBalance = calculateFreeBalance(
           data?.free?.toString(),
-          data?.miscFrozen?.toString(),
-          data?.feeFrozen?.toString(),
+          data?.frozen?.toString(),
+          data?.reserved?.toString(),
         );
 
         const apisArray = Object.values(apis ?? {});

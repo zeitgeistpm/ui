@@ -118,6 +118,7 @@ const MoveButton = ({
           balance={balance}
           sourceExistentialDeposit={existentialDeposit}
           assetDecimals={assetDecimals}
+          sourceAssetId={destinationAsset?.sourceAssetId}
         />
       )}
     </>
@@ -161,19 +162,19 @@ const CurrenciesTable = ({ address }: { address: string }) => {
           ),
           asset: (
             <ImageAndText
-              name={balance.symbol}
+              name={`${balance.symbol} (${balance.sourceChain})`}
               imagePath={lookupAssetImagePath(
                 balance.foreignAssetId != null
                   ? {
-                      ForeignAsset: balance.foreignAssetId,
-                    }
+                    ForeignAsset: balance.foreignAssetId,
+                  }
                   : null,
               )}
             />
           ),
           balance: amount.div(ZTG).toFixed(3),
           button: (
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-2 w-full py-2 whitespace-nowrap">
               <MoveButton
                 chain={balance.chain}
                 sourceChain={balance.sourceChain}

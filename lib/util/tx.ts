@@ -4,6 +4,7 @@ import { KeyringPairOrExtSigner, isExtSigner } from "@zeitgeistpm/rpc";
 import type { ApiPromise } from "@polkadot/api";
 import { UseNotifications } from "lib/state/notifications";
 import { unsubOrWarns } from "./unsub-or-warns";
+import { FOREIGN_ASSET_MULTILOCATION } from "lib/constants/foreign-asset";
 
 type GenericCallback = (...args: any[]) => void;
 
@@ -90,15 +91,15 @@ export const extrinsicCallback = ({
       retractedCallback
         ? retractedCallback()
         : notificationStore?.pushNotification(
-            "This transaction was temporarily retracted. It will take a little longer to complete",
-            { type: "Info" },
-          );
+          "This transaction was temporarily retracted. It will take a little longer to complete",
+          { type: "Info" },
+        );
     } else if (status.isBroadcast) {
       broadcastCallback
         ? broadcastCallback()
         : notificationStore?.pushNotification("Broadcasting transaction...", {
-            autoRemove: true,
-          });
+          autoRemove: true,
+        });
     }
   };
 };
@@ -140,7 +141,7 @@ export const signAndSend = async (
           {
             signer: signer.signer,
             ...(foreignAssetNumber != null
-              ? { assetId: foreignAssetNumber }
+              ? { assetId: FOREIGN_ASSET_MULTILOCATION[foreignAssetNumber] }
               : {}),
           },
           (result) => {

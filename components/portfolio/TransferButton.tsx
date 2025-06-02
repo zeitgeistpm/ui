@@ -42,7 +42,7 @@ const TransferButton: React.FC<TransferButtonProps> = ({ assetId }) => {
   return (
     <>
       <SecondaryButton onClick={() => setIsOpen(true)} disabled={!address}>
-        Transfer
+        Send to Address
       </SecondaryButton>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         {address && <TransferModal assetId={assetId} address={address} />}

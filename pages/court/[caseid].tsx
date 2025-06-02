@@ -83,9 +83,9 @@ export async function getStaticProps({
           marketId_eq: marketId.unwrap().toNumber(),
         },
       })
-    : undefined;
+    : null;
 
-  const market = markets?.markets[0];
+  const market = markets?.markets[0] ?? null;
 
   if (market) {
     if (cmsMetadata?.imageUrl) {
@@ -189,18 +189,22 @@ const CasePage: NextPage = ({
 
   const { unCommitVote } = useCourtVote({
     caseId,
-    marketId: market.marketId,
+    marketId: market?.marketId,
   });
 
   const { resetBackedUpState } = useCourtSalt({
     caseId,
-    marketId: market.marketId,
+    marketId: market?.marketId,
   });
 
   const totalSlashableStake = calculateSlashableStake(
     courtCase?.appeals.length ?? 0,
     chainConstants?.court.minJurorStake ?? 0,
   );
+
+  if (!market) {
+    return <NotFoundPage />;
+  }
 
   const onClickRecastVote = async () => {
     if (
@@ -541,7 +545,7 @@ const Votes = ({
             }`}
           >
             {showLeaderIndicator && isRevealed && index === 0 && (
-              <div className=" absolute right-3 top-0 translate-y-[-50%] rounded-xl bg-green-400 px-2 text-xxs text-white">
+              <div className="absolute right-3 top-0 translate-y-[-50%] rounded-xl bg-green-400 px-2 text-xxs text-white">
                 Leading
               </div>
             )}
