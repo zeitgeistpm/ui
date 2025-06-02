@@ -57,13 +57,15 @@ const PoolDeployer = ({
         const amount = new Decimal(liquidity.amount).mul(ZTG).toFixed(0);
         return sdk.api.tx.utility.batchAll([
           sdk.api.tx.predictionMarkets.buyCompleteSet(marketId, amount),
-          sdk.api.tx.neoSwaps.deployPool(
-            marketId,
+          sdk.api.tx.neoSwaps.deployCombinatorialPool(
+            amount,
+            [marketId],
             new Decimal(liquidity.amount).mul(ZTG).toFixed(0),
             liquidity.rows.map((row) =>
               new Decimal(row.price.price).mul(ZTG).toFixed(0),
             ),
             swapFeeFromFloat(liquidity.swapFee?.value).toString(),
+            "16",
           ),
         ]);
       }

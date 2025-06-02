@@ -145,6 +145,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
           type: "Info",
           lifetime: 60,
         });
+        console.log("check", creationParams);
 
         const result = await sdk.model.markets.create(
           creationParams,
@@ -152,10 +153,10 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
             ? feeDetails?.assetId
             : undefined,
         );
-
+        console.log("result", result);
         const { market } = result.saturate().unwrap();
         const marketId = market.marketId;
-
+        console.log("marketId", marketId);
         editor.published(marketId);
 
         notifications.pushNotification(
@@ -176,7 +177,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
             timeout: 6 * 1000,
           },
         );
-
+        console.log("indexedStatus", indexedStatus);
         if (indexedStatus === PollingTimeout) {
           router.push(`/markets/await/${marketId}`);
         } else {
