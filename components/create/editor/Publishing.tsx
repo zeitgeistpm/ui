@@ -32,6 +32,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import { RiSendPlaneLine } from "react-icons/ri";
+import { GraphQLClient } from "graphql-request";
 
 export type PublishingProps = {
   editor: MarketDraftEditor;
@@ -154,8 +155,18 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
             : undefined,
         );
         console.log("result", result);
-        const { market } = result.saturate().unwrap();
-        const marketId = market.marketId;
+        
+        // Find the market creation event from neoSwaps
+        const marketCreationEvent = result.raw.events.find(
+          (event) => event.event.section === "neoSwaps" && event.event.data.names?.includes("marketId")
+        );
+        
+        if (!marketCreationEvent) {
+          throw new Error("Market creation event not found");
+        }
+        
+        // The marketId is in the event data
+        const marketId = marketCreationEvent.event.data["marketId"]
         console.log("marketId", marketId);
         editor.published(marketId);
 
@@ -170,7 +181,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
 
         const indexedStatus = await poll(
           async () => {
-            return checkMarketExists(sdk.indexer.client, marketId);
+            return checkMarketExists(sdk.indexer.client as unknown as GraphQLClient, marketId);
           },
           {
             intervall: 1000,
