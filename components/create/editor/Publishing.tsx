@@ -155,18 +155,21 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
             : undefined,
         );
         console.log("result", result);
+
+        const { market } = result.saturate().unwrap();
+        const marketId = market.marketId;
         
         // Find the market creation event from neoSwaps
-        const marketCreationEvent = result.raw.events.find(
-          (event) => event.event.section === "neoSwaps" && event.event.data.names?.includes("marketId")
-        );
+        // const marketCreationEvent = result.raw.events.find(
+        //   (event) => event.event.section === "neoSwaps" && event.event.data.names?.includes("marketId")
+        // );
         
-        if (!marketCreationEvent) {
-          throw new Error("Market creation event not found");
-        }
+        // if (!marketCreationEvent) {
+        //   throw new Error("Market creation event not found");
+        // }
         
-        // The marketId is in the event data
-        const marketId = marketCreationEvent.event.data["marketId"]
+        // // The marketId is in the event data
+        // const marketId = Number(marketCreationEvent.event.data["marketId"])
         console.log("marketId", marketId);
         editor.published(marketId);
 
@@ -236,7 +239,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
       setIsTransacting(false);
     }
   };
-
+  
   return (
     <>
       <div className="">

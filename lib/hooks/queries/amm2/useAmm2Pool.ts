@@ -39,7 +39,9 @@ export const useAmm2Pool = (marketId?: number) => {
     [id, amm2PoolKey, marketId],
     async () => {
       if (!enabled) return;
-      const res = await sdk.api.query.neoSwaps.pools(marketId);
+      const poolId = await sdk.api.query.neoSwaps.marketIdToPoolId(marketId);
+      if (!poolId) return;
+      const res = await sdk.api.query.neoSwaps.pools(Number(poolId));
       const unwrappedRes = res.unwrapOr(null);
 
       if (unwrappedRes) {
