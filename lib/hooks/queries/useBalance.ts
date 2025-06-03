@@ -56,10 +56,14 @@ export const fetchAssetBalance = async (
     const balance = await api.query.tokens.accounts(address, assetId);
     return new Decimal(balance.free.toString());
   } else if (IOMarketOutcomeAssetId.is(assetId)) {
+
     if (getMarketIdOf(assetId) > LAST_MARKET_ID_BEFORE_ASSET_MIGRATION) {
+      console.log(assetId)
+
       const balance = await api.query.marketAssets.account(assetId, address);
       return new Decimal((balance as any).unwrap().balance.toString());
     } else {
+
       const balance = await api.query.tokens.accounts(address, assetId);
       return new Decimal(balance.free.toString());
     }

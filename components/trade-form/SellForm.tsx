@@ -95,6 +95,7 @@ const SellForm = ({
     wallet.realAddress,
     selectedAsset,
   );
+  // console.log(selectedAssetBalance, selectedAsset)
   const formAmount = getValues("amount");
 
   const amountIn = new Decimal(formAmount && formAmount !== "" ? formAmount : 0)
@@ -161,6 +162,7 @@ const SellForm = ({
       const amount = getValues("amount");
       if (
         !isRpcSdk(sdk) ||
+        !pool?.poolId ||
         !amount ||
         amount === "" ||
         market?.categories?.length == null ||
@@ -186,14 +188,14 @@ const SellForm = ({
         new Decimal(amount).abs().mul(ZTG),
       );
 
-      return sdk.api.tx.hybridRouter.sell(
-        marketId,
+      return sdk.api.tx.neoSwaps.sell(
+        pool?.poolId,
         market?.categories?.length,
         selectedAsset,
         new Decimal(amount).mul(ZTG).toFixed(0),
         minPrice.mul(ZTG).toFixed(0),
-        selectedOrders.map(({ id }) => id),
-        "ImmediateOrCancel",
+        // selectedOrders.map(({ id }) => id),
+        // "ImmediateOrCancel",
       );
     },
     {

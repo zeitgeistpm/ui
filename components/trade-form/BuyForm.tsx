@@ -76,6 +76,7 @@ const BuyForm = ({
   const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
   const { data: pool } = useAmm2Pool(marketId);
+
   const { data: orders } = useOrders({
     marketId_eq: marketId,
     status_eq: OrderStatus.Placed,
@@ -172,6 +173,7 @@ const BuyForm = ({
       const amount = getValues("amount");
       if (
         !isRpcSdk(sdk) ||
+        !pool?.poolId ||
         !amount ||
         amount === "" ||
         market?.categories?.length == null ||
@@ -199,14 +201,14 @@ const BuyForm = ({
         approxOutcomeAmount.abs().mul(ZTG),
       );
 
-      return sdk.api.tx.hybridRouter.buy(
-        marketId,
+      return sdk.api.tx.neoSwaps.buy(
+        pool?.poolId,
         market?.categories?.length,
         selectedAsset,
         amountDecimal.toFixed(0),
         maxPrice.mul(ZTG).toFixed(0),
-        selectedOrders.map(({ id }) => id),
-        "ImmediateOrCancel",
+        // selectedOrders.map(({ id }) => id),
+        // "ImmediateOrCancel",
       );
     },
     {

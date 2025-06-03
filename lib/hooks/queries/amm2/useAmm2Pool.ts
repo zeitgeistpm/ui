@@ -15,6 +15,7 @@ export const amm2PoolKey = "amm2-pool";
 type ReserveMap = Map<number | "Long" | "Short", Decimal>;
 
 export type Amm2Pool = {
+  poolId: number;
   accountId: string;
   baseAsset: AssetId;
   liquidity: Decimal;
@@ -71,6 +72,7 @@ export const useAmm2Pool = (marketId?: number) => {
           });
 
         const pool: Amm2Pool = {
+          poolId: Number(poolId),
           accountId: unwrappedRes.accountId.toString(),
           baseAsset: parseAssetIdString(unwrappedRes.collateral.toString())!,
           liquidity: new Decimal(unwrappedRes.liquidityParameter.toString()),
