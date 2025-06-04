@@ -156,20 +156,19 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
         );
         console.log("result", result);
 
-        const { market } = result.saturate().unwrap();
-        const marketId = market.marketId;
+        // const { market } = result.saturate().unwrap();
+        // const marketId = market.marketId;
         
-        // Find the market creation event from neoSwaps
-        // const marketCreationEvent = result.raw.events.find(
-        //   (event) => event.event.section === "neoSwaps" && event.event.data.names?.includes("marketId")
-        // );
+        const marketCreationEvent = result.raw.events.find(
+          (event) => event.event.index.toString() === "0x3903"
+        );
         
-        // if (!marketCreationEvent) {
-        //   throw new Error("Market creation event not found");
-        // }
-        
-        // // The marketId is in the event data
-        // const marketId = Number(marketCreationEvent.event.data["marketId"])
+        if (!marketCreationEvent) {
+          throw new Error("Market creation event not found");
+        }
+        const marketData = marketCreationEvent.event.data[2] as any;
+        const marketId = Number(marketData.marketId);
+
         console.log("marketId", marketId);
         editor.published(marketId);
 

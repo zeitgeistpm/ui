@@ -39,12 +39,14 @@ export const useAmm2Pool = (marketId?: number) => {
   const query = useQuery(
     [id, amm2PoolKey, marketId],
     async () => {
+      console.log(marketId, "marketId");
       if (!enabled) return;
       const poolId = await sdk.api.query.neoSwaps.marketIdToPoolId(marketId);
+      console.log(Number(poolId), "poolId");
       if (!poolId) return;
-      const res = await sdk.api.query.neoSwaps.pools(Number(poolId));
+      const res = await sdk.api.query.neoSwaps.pools(marketId);
       const unwrappedRes = res.unwrapOr(null);
-
+      console.log(unwrappedRes, "unwrappedRes");
       if (unwrappedRes) {
         const reserves: ReserveMap = new Map();
         const assetIds: MarketOutcomeAssetId[] = [];

@@ -54,20 +54,19 @@ const PoolDeployer = ({
   } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && liquidity?.amount && liquidity.rows) {
-        const amount = new Decimal(liquidity.amount).mul(ZTG).toFixed(0);
-        return sdk.api.tx.utility.batchAll([
-          sdk.api.tx.predictionMarkets.buyCompleteSet(marketId, amount),
-          sdk.api.tx.neoSwaps.deployCombinatorialPool(
-            amount,
-            [marketId],
-            new Decimal(liquidity.amount).mul(ZTG).toFixed(0),
-            liquidity.rows.map((row) =>
-              new Decimal(row.price.price).mul(ZTG).toFixed(0),
-            ),
-            swapFeeFromFloat(liquidity.swapFee?.value).toString(),
-            "16",
+        const liquidityAmount = new Decimal(liquidity.amount).mul(ZTG).toFixed(0);
+        const asset_count = 2;
+        
+        return sdk.api.tx.neoSwaps.deployCombinatorialPool(
+          asset_count,
+          [marketId],
+          new Decimal(liquidity.amount).mul(ZTG).toFixed(0),
+          liquidity.rows.map((row) =>
+            new Decimal(row.price.price).mul(ZTG).toFixed(0),
           ),
-        ]);
+          swapFeeFromFloat(liquidity.swapFee?.value).toString(),
+          { total: 16, consumeAll: true },
+        );
       }
     },
     {
