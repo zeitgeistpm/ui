@@ -36,7 +36,7 @@ export const useMarketSpotPrices = (
     blockNumber,
   );
 
-  const { data: amm2Pool } = useAmm2Pool(marketId);
+  const { data: amm2Pool } = useAmm2Pool(marketId, market?.neoPool?.poolId);
 
   const enabled = isRpcSdk(sdk) && marketId != null && !!market;
 

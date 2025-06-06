@@ -32,21 +32,20 @@ type PoolAccount = {
   fees: Decimal;
 };
 
-export const useAmm2Pool = (marketId?: number) => {
+export const useAmm2Pool = (marketId?: number, poolId?: number) => {
   const [sdk, id] = useSdkv2();
 
-  const enabled = !!sdk && marketId != null && isRpcSdk(sdk);
+  const enabled = !!sdk && marketId != null && poolId != null && isRpcSdk(sdk);
   const query = useQuery(
     [id, amm2PoolKey, marketId],
     async () => {
-      console.log(marketId, "marketId");
       if (!enabled) return;
-      const poolId = await sdk.api.query.neoSwaps.marketIdToPoolId(marketId);
-      console.log(Number(poolId), "poolId");
-      if (!poolId) return;
-      const res = await sdk.api.query.neoSwaps.pools(marketId);
-      const unwrappedRes = res.unwrapOr(null);
-      console.log(unwrappedRes, "unwrappedRes");
+
+      const poolIds = await sdk.api.query.neoSwaps.marketIdToPoolId(marketId);
+
+      const res = await sdk.api.query.neoSwaps.pools(poolId);
+      console.log(res.toHuman(), "res");
+      const unwrappedRes = res.unwrap();
       if (unwrappedRes) {
         const reserves: ReserveMap = new Map();
         const assetIds: MarketOutcomeAssetId[] = [];

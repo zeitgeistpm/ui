@@ -237,7 +237,6 @@ const LimitOrderForm = ({
   });
   const wallet = useWallet();
   const baseAsset = parseAssetIdString(market?.baseAsset);
-  const { data: pool } = useAmm2Pool(marketId);
 
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   const [initialPriceSetAsset, setInitialPriceSetAsset] = useState<

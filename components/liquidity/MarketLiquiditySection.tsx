@@ -48,7 +48,7 @@ export const MarketLiquiditySection = ({
             <LiquidityHeader market={market} />
           </div>
           <PoolTable
-            poolId={market.pool?.poolId}
+            poolId={market.pool?.poolId ?? market.neoPool?.poolId}
             marketId={Number(market.marketId)}
           />
         </>
@@ -90,7 +90,8 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { pool, neoPool } = market;
 
   const { data: stats } = useMarketsStats([market.marketId]);
-  const liquidity = new Decimal(stats?.[0].liquidity ?? 0);
+
+  const liquidity = new Decimal(stats?.[0].liquidity ? neoPool?.totalStake : 0);
 
   const swapFee = new Decimal(Number(pool?.swapFee ?? neoPool?.swapFee ?? 0))
     .div(ZTG)
@@ -117,7 +118,7 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
         : `${prediction.name} ${prediction.percentage}%`
       : "";
 
-  return (
+      return (
     <div className="md:flex md:justify-between">
       <div className="mb-8 flex flex-col sm:flex-row md:mb-0 md:w-full">
         <LiquidityHeaderTextItem

@@ -36,7 +36,9 @@ const PoolTable = ({
   poolId?: number;
   marketId: number;
 }) => {
+
   const { data: pool } = usePool(poolId != null ? { poolId } : undefined);
+
   const { data: market } = useMarket({ marketId });
   const baseAssetId = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unrightOr(undefined)
@@ -50,17 +52,18 @@ const PoolTable = ({
   const { data: basePoolBalance } = usePoolBaseBalance(poolId);
   const { data: baseAssetUsdPrice } = useAssetUsdPrice(baseAssetId);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
-  const { data: amm2Pool } = useAmm2Pool(marketId);
+  const { data: amm2Pool } = useAmm2Pool(marketId, market?.neoPool?.poolId);
 
+  
   const colors = market?.categories
     ? calcMarketColors(marketId, market.categories.length)
     : [];
-
+  console.log(amm2Pool)
   const assetIds =
     market?.scoringRule === ScoringRule.Cpmm
       ? pool?.weights?.map((weight) => parseAssetIdString(weight?.assetId))
       : amm2Pool?.assetIds;
-
+  console.log(assetIds)
   const tableData: TableData[] =
     assetIds?.map((assetId, index) => {
       let amount: Decimal | undefined;

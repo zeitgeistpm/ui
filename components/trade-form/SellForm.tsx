@@ -71,7 +71,7 @@ const SellForm = ({
     marketId,
   });
   const wallet = useWallet();
-  const { data: pool } = useAmm2Pool(marketId);
+  const { data: pool } = useAmm2Pool(marketId, market?.neoPool?.poolId);
   const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;

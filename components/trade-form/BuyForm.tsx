@@ -75,7 +75,7 @@ const BuyForm = ({
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
-  const { data: pool } = useAmm2Pool(marketId);
+  const { data: pool } = useAmm2Pool(marketId, market?.neoPool?.poolId);
 
   const { data: orders } = useOrders({
     marketId_eq: marketId,
