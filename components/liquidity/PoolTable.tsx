@@ -58,13 +58,13 @@ const PoolTable = ({
   const colors = market?.categories
     ? calcMarketColors(marketId, market.categories.length)
     : [];
-  console.log(amm2Pool)
-  const assetIds =
+
+    const assetIds =
     market?.scoringRule === ScoringRule.Cpmm
       ? pool?.weights?.map((weight) => parseAssetIdString(weight?.assetId))
       : amm2Pool?.assetIds;
-  console.log(assetIds)
-  const tableData: TableData[] =
+
+      const tableData: TableData[] =
     assetIds?.map((assetId, index) => {
       let amount: Decimal | undefined;
       let usdValue: Decimal | undefined;

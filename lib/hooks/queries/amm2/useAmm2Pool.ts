@@ -41,17 +41,17 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
     async () => {
       if (!enabled) return;
 
-      const poolIds = await sdk.api.query.neoSwaps.marketIdToPoolId(marketId);
-
-      const res = await sdk.api.query.neoSwaps.pools(poolId);
+      const legacyPoolId = Number(await sdk.api.query.neoSwaps.marketIdToPoolId(marketId));
+      console.log(Number(legacyPoolId), "poolIds");
+      const res = await sdk.api.query.neoSwaps.pools(legacyPoolId ? legacyPoolId : poolId);
       console.log(res.toHuman(), "res");
       const unwrappedRes = res.unwrap();
       if (unwrappedRes) {
         const reserves: ReserveMap = new Map();
         const assetIds: MarketOutcomeAssetId[] = [];
-
         unwrappedRes.reserves.forEach((reserve, asset) => {
           const assetId = parseAssetIdString(asset.toString());
+          // console.log(IOMarketOutcomeAssetId.is(assetId))
           if (IOMarketOutcomeAssetId.is(assetId)) {
             reserves.set(
               IOCategoricalAssetId.is(assetId)
