@@ -98,7 +98,7 @@ const MarketContextActionOutcomeSelector = ({
   }, [open, inputRef]);
 
   const [revealed, setRevealed] = useState(false);
-  
+
   return (
     <>
       <Listbox
