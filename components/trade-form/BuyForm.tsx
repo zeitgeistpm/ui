@@ -36,8 +36,11 @@ import { formatNumberCompact } from "lib/util/format-compact";
 import { selectOrdersForMarketBuy } from "lib/util/order-selection";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { perbillToNumber } from "lib/util/perbill-to-number";
+import { max } from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { isCombinatorialToken, unwrapCombinatorialToken } from "lib/types/combinatorial";
+import { CombinatorialToken } from "lib/types/combinatorial";
 
 const BuyForm = ({
   marketId,
@@ -85,12 +88,13 @@ const BuyForm = ({
   const swapFee = pool?.swapFee.div(ZTG);
   const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
 
-  const outcomeAssets = market?.outcomeAssets.map(
+  const outcomeAssets = pool?.assetIds.map(
     (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+      isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
   );
+
   const [selectedAsset, setSelectedAsset] = useState<
-    MarketOutcomeAssetId | undefined
+    MarketOutcomeAssetId | CombinatorialToken | undefined
   >(initialAsset ?? outcomeAssets?.[0]);
 
   const formAmount = getValues("amount");
@@ -98,10 +102,11 @@ const BuyForm = ({
   const amountIn = new Decimal(
     formAmount && formAmount !== "" ? formAmount : 0,
   ).mul(ZTG);
+
   const assetReserve =
     pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
 
-  const validBuy = useMemo(() => {
+    const validBuy = useMemo(() => {
     return (
       assetReserve &&
       pool.liquidity &&
@@ -123,7 +128,6 @@ const BuyForm = ({
       approximateMaxAmountInForBuy(assetReserve, pool.liquidity)
     );
   }, [assetReserve, pool?.liquidity]);
-
   const { amountOut, spotPrice, newSpotPrice, priceImpact, maxProfit } =
     useMemo(() => {
       const amountOut =
@@ -201,10 +205,15 @@ const BuyForm = ({
         approxOutcomeAmount.abs().mul(ZTG),
       );
 
-      return sdk.api.tx.neoSwaps.buy(
+      return sdk.api.tx.neoSwaps.comboBuy(
         pool?.poolId,
         market?.categories?.length,
-        selectedAsset,
+        [{ 
+          CombinatorialToken: "0x33537042a1c077e57a6e5c3b7b913b3425e76daed0a17bf7a570c868cf44d868"
+        }],
+        [{ 
+          CombinatorialToken: "0x031b0f40238e38a96d24c6466c6fcf7b1ae394d99a8d18a7b7066f2763c32bc2"
+        }],
         amountDecimal.toFixed(0),
         maxPrice.mul(ZTG).toFixed(0),
         // selectedOrders.map(({ id }) => id),
@@ -270,6 +279,7 @@ const BuyForm = ({
   const onSubmit = () => {
     send();
   };
+
   return (
     <div className="flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
       <form

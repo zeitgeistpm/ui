@@ -15,6 +15,7 @@ import LimitOrderForm, {
   LimitSellOrderForm,
 } from "./LimitOrderForm";
 import { ChevronDown } from "react-feather";
+import { init } from "next/dist/compiled/webpack/webpack";
 
 const Amm2TradeForm = ({
   marketId,
@@ -37,7 +38,7 @@ const Amm2TradeForm = ({
   const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
-
+  console.log(initialAsset)
   useEffect(() => {
     setTabType(selectedTab ?? TradeTabType.Buy);
   }, [selectedTab]);

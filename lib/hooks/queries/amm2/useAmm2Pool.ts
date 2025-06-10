@@ -9,10 +9,10 @@ import {
 import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-
+import { CombinatorialToken, CombinatorialTokenString, unwrapCombinatorialToken, getCombinatorialHash, isCombinatorialToken } from "lib/types/combinatorial";
 export const amm2PoolKey = "amm2-pool";
 
-type ReserveMap = Map<number | "Long" | "Short", Decimal>;
+type ReserveMap = Map<number | "Long" | "Short" | CombinatorialTokenString , Decimal>;
 
 export type Amm2Pool = {
   poolId: number;
@@ -22,7 +22,7 @@ export type Amm2Pool = {
   swapFee: Decimal;
   totalShares: Decimal;
   reserves: ReserveMap;
-  assetIds: MarketOutcomeAssetId[];
+  assetIds: (MarketOutcomeAssetId | CombinatorialToken)[];
   accounts: PoolAccount[];
 };
 
@@ -42,16 +42,13 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
       if (!enabled) return;
 
       const legacyPoolId = Number(await sdk.api.query.neoSwaps.marketIdToPoolId(marketId));
-      console.log(Number(legacyPoolId), "poolIds");
       const res = await sdk.api.query.neoSwaps.pools(legacyPoolId ? legacyPoolId : poolId);
-      console.log(res.toHuman(), "res");
       const unwrappedRes = res.unwrap();
       if (unwrappedRes) {
         const reserves: ReserveMap = new Map();
-        const assetIds: MarketOutcomeAssetId[] = [];
+        const assetIds: (MarketOutcomeAssetId | CombinatorialToken)[] = [];
         unwrappedRes.reserves.forEach((reserve, asset) => {
           const assetId = parseAssetIdString(asset.toString());
-          // console.log(IOMarketOutcomeAssetId.is(assetId))
           if (IOMarketOutcomeAssetId.is(assetId)) {
             reserves.set(
               IOCategoricalAssetId.is(assetId)
@@ -60,6 +57,10 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
               new Decimal(reserve.toString()),
             );
             assetIds.push(assetId);
+          } else {
+            //Combinatorial markets
+            assetIds.push(unwrapCombinatorialToken(asset.toString()))
+            reserves.set(getCombinatorialHash(asset.toString()), new Decimal(reserve.toString()))
           }
         });
 
@@ -86,7 +87,6 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
             new Decimal(0),
           ),
         };
-
         return pool;
       }
     },
@@ -110,5 +110,8 @@ export const lookupAssetReserve = (
         ? assetId.CategoricalOutcome[1]
         : assetId.ScalarOutcome[1],
     );
+  } else if (isCombinatorialToken(asset)) {
+    console.log(asset.CombinatorialToken, map)
+    return map.get(`${asset.CombinatorialToken}`);
   }
 };

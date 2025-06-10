@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import { RiArrowDownSLine } from "react-icons/ri";
+import { isCombinatorialToken } from "lib/types/combinatorial";
 
 export type MarketContextActionOutcomeSelectorProps = {
   market: FullMarketFragment;
@@ -38,16 +39,29 @@ const MarketContextActionOutcomeSelector = ({
     if (!options) return [];
     const colors = calcMarketColors(market?.marketId!, options.length);
 
-    return options.map((asset, index) => {
-      const assetIndex = getIndexOf(asset);
-      const category = market?.categories?.[assetIndex];
-      return {
-        asset,
-        assetIndex,
-        category,
-        color: colors[index],
-      };
-    });
+    if(isCombinatorialToken(options[0])) {
+      return options.map((asset, index) => {
+        const assetIndex = index;
+        const category = market?.categories?.[assetIndex];
+        return {
+          asset,
+          assetIndex,
+          category,
+          color: colors[index],
+        };
+      });
+    } else {
+      return options.map((asset, index) => {
+        const assetIndex = getIndexOf(asset) || 0;
+        const category = market?.categories?.[assetIndex];
+        return {
+          asset,
+          assetIndex,
+          category,
+          color: colors[index],
+        };
+      });
+    }
   }, [options]);
 
   const searchResults = useMemo(() => {
@@ -84,7 +98,7 @@ const MarketContextActionOutcomeSelector = ({
   }, [open, inputRef]);
 
   const [revealed, setRevealed] = useState(false);
-
+  
   return (
     <>
       <Listbox
@@ -100,11 +114,17 @@ const MarketContextActionOutcomeSelector = ({
             <div className="center gap-2 text-2xl md:text-xl lg:text-2xl">
               <TruncatedText
                 length={24}
-                text={market.categories?.[getIndexOf(selected)].name ?? ""}
+                text={isCombinatorialToken(selected) ? assetOptions.find(a => a.asset === selected)?.category?.name ?? market.categories?.[getIndexOf(selected)].name : ""}
               >
                 {(text) => {
                   const option = assetOptions.find(
-                    (a) => getIndexOf(a.asset) === getIndexOf(selected),
+                    (a) => {
+                      if(isCombinatorialToken(selected)) {
+                        return a.asset === selected
+                      } else {
+                        return getIndexOf(a.asset) === getIndexOf(selected)
+                      }
+                    }
                   );
 
                   return (

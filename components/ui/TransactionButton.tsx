@@ -41,7 +41,6 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   const [sdk] = useSdkv2();
   const accountModals = useAccountModals();
   const { locationAllowed } = useUserLocation();
-
   const extrinsicBase = useMemo(() => {
     return extrinsic && isRpcSdk(sdk) && wallet.activeAccount?.address
       ? sdk.api.tx.balances.transfer(
