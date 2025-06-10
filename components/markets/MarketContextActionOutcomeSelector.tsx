@@ -114,7 +114,13 @@ const MarketContextActionOutcomeSelector = ({
             <div className="center gap-2 text-2xl md:text-xl lg:text-2xl">
               <TruncatedText
                 length={24}
-                text={isCombinatorialToken(selected) ? assetOptions.find(a => a.asset === selected)?.category?.name ?? market.categories?.[getIndexOf(selected)].name : ""}
+                text={isCombinatorialToken(selected) 
+                  ? assetOptions.find(a => a.asset === selected)?.category?.name 
+                    ?? market.categories?.[getIndexOf(selected)]?.name 
+                    ?? ""
+                  : 'CategoricalOutcome' in selected
+                    ? market.categories?.[selected.CategoricalOutcome[1]]?.name ?? ""
+                    : selected.ScalarOutcome[1]}
               >
                 {(text) => {
                   const option = assetOptions.find(

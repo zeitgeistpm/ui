@@ -95,7 +95,13 @@ const BuyForm = ({
 
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | CombinatorialToken | undefined
-  >(initialAsset ?? outcomeAssets?.[0]);
+  >(initialAsset);
+
+  useEffect(() => {
+    if (!selectedAsset && outcomeAssets?.[0]) {
+      setSelectedAsset(outcomeAssets[0]);
+    }
+  }, [outcomeAssets, selectedAsset]);
 
   const formAmount = getValues("amount");
 
