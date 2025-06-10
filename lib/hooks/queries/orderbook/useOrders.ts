@@ -74,16 +74,16 @@ export const useOrders = (where?: InputMaybe<OrderWhereInput>) => {
             .mul(100)
             .toNumber();
 
-          const mappedOrder: Order = {
+            const mappedOrder: Order = {
             id: order.id,
             marketId: order.marketId,
             makerAddress: order.makerAccountId,
             side,
             price,
             outcomeAmount: outcomeAmount,
-            outcomeAssetId: outcomeAssetId!, // one of the assets must be MarketOutcome
+            outcomeAssetId: outcomeAssetId!,
             filledPercentage,
-            status: order.status,
+            status: (order as unknown as { status: OrderStatus }).status, // TODO: update indexer SDK types
           };
 
           return mappedOrder;

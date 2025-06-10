@@ -202,8 +202,15 @@ export async function getStaticProps({ params }) {
   const tradersWithSwaps = historicalSwaps.reduce<Traders>((traders, swap) => {
     const trades = traders[swap.accountId];
 
-    const assetInId = parseAssetId(swap.assetIn).unwrap();
-    const assetOutId = parseAssetId(swap.assetOut).unwrap();
+    let assetInId, assetOutId;
+    try {
+      assetInId = parseAssetId(swap.assetIn).unwrap();
+      assetOutId = parseAssetId(swap.assetOut).unwrap();
+    } catch (e) {
+      // Skip this swap if asset IDs are invalid
+      return traders;
+    }
+
     let baseAssetSwapType: "in" | "out" | undefined;
 
     let marketId: number | undefined;
