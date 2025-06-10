@@ -100,9 +100,12 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
 
 export const lookupAssetReserve = (
   map?: ReserveMap,
-  asset?: string | AssetId,
+  asset?: string | AssetId | CombinatorialToken,
 ) => {
   if (!map) return;
+  if (isCombinatorialToken(asset)) {
+    return map.get(asset.CombinatorialToken);
+  }
   const assetId = parseAssetIdString(asset);
   if (IOMarketOutcomeAssetId.is(assetId)) {
     return map.get(
@@ -110,8 +113,5 @@ export const lookupAssetReserve = (
         ? assetId.CategoricalOutcome[1]
         : assetId.ScalarOutcome[1],
     );
-  } else if (isCombinatorialToken(asset)) {
-    console.log(asset.CombinatorialToken, map)
-    return map.get(`${asset.CombinatorialToken}`);
   }
 };

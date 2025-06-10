@@ -16,6 +16,7 @@ import LimitOrderForm, {
 } from "./LimitOrderForm";
 import { ChevronDown } from "react-feather";
 import { init } from "next/dist/compiled/webpack/webpack";
+import { CombinatorialToken, isCombinatorialToken } from "lib/types/combinatorial";
 
 const Amm2TradeForm = ({
   marketId,
@@ -33,7 +34,7 @@ const Amm2TradeForm = ({
   const [showSuccessBox, setShowSuccessBox] = useState(false);
   const [amountReceived, setAmountReceived] = useState<Decimal>();
   const [amountIn, setAmountIn] = useState<Decimal>();
-  const [outcomeAsset, setOutcomeAsset] = useState<MarketOutcomeAssetId>();
+  const [outcomeAsset, setOutcomeAsset] = useState<MarketOutcomeAssetId | CombinatorialToken>();
   const { data: market } = useMarket({ marketId });
   const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
@@ -72,7 +73,9 @@ const Amm2TradeForm = ({
           }
           tokenName={
             outcomeAsset && market?.categories
-              ? market.categories[getIndexOf(outcomeAsset)].name ?? ""
+              ? isCombinatorialToken(outcomeAsset) 
+                ? "Combinatorial"
+                : market.categories[getIndexOf(outcomeAsset)].name ?? ""
               : ""
           }
           baseTokenAmount={

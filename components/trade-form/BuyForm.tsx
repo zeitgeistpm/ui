@@ -6,7 +6,7 @@ import {
   parseAssetId,
   ZTG,
 } from "@zeitgeistpm/sdk";
-import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
+import { MarketContextActionOutcomeSelectorWithCombinatorial } from "components/markets/MarketContextActionOutcomeSelector";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
@@ -51,7 +51,7 @@ const BuyForm = ({
   initialAsset?: MarketOutcomeAssetId;
   onSuccess: (
     data: ISubmittableResult,
-    outcomeAsset: MarketOutcomeAssetId,
+    outcomeAsset: MarketOutcomeAssetId | CombinatorialToken,
     amountIn: Decimal,
   ) => void;
 }) => {
@@ -298,7 +298,7 @@ const BuyForm = ({
           </div>
           <div>
             {market && selectedAsset && (
-              <MarketContextActionOutcomeSelector
+              <MarketContextActionOutcomeSelectorWithCombinatorial
                 market={market}
                 selected={selectedAsset}
                 options={outcomeAssets}
@@ -351,7 +351,7 @@ const BuyForm = ({
         />
         <div className="mb-[10px] flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600 ">
           <div className="h-[16px] text-xs text-vermilion">
-            <>{formState.errors["amount"]?.message}</>
+            {formState.errors["amount"]?.message?.toString()}
           </div>
           <div className="flex w-full justify-between">
             <div>Max profit:</div>
