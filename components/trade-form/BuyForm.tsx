@@ -79,6 +79,7 @@ const BuyForm = ({
   const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
   const { data: pool } = useAmm2Pool(marketId, market?.neoPool?.poolId);
+  const [sellAsset, setSellAsset] = useState<CombinatorialToken>();
 
   const { data: orders } = useOrders({
     marketId_eq: marketId,
@@ -97,6 +98,16 @@ const BuyForm = ({
     MarketOutcomeAssetId | CombinatorialToken | undefined
   >(initialAsset);
 
+  useEffect(() => {
+    if (isCombinatorialToken(selectedAsset)) {
+      const getOtherAssetId = (selectedAsset: CombinatorialToken) => {
+        const otherAsset = pool?.assetIds.find(assetId => assetId !== selectedAsset);
+        return isCombinatorialToken(otherAsset) ? otherAsset : undefined;
+      }
+      setSellAsset(getOtherAssetId(selectedAsset));
+    }
+  }, [selectedAsset, pool?.assetIds, sellAsset]);
+  
   useEffect(() => {
     if (!selectedAsset && outcomeAssets?.[0]) {
       setSelectedAsset(outcomeAssets[0]);
@@ -134,6 +145,7 @@ const BuyForm = ({
       approximateMaxAmountInForBuy(assetReserve, pool.liquidity)
     );
   }, [assetReserve, pool?.liquidity]);
+  
   const { amountOut, spotPrice, newSpotPrice, priceImpact, maxProfit } =
     useMemo(() => {
       const amountOut =
@@ -188,6 +200,7 @@ const BuyForm = ({
         amount === "" ||
         market?.categories?.length == null ||
         !selectedAsset ||
+        !sellAsset ||
         !newSpotPrice ||
         !orders
       ) {
@@ -211,15 +224,23 @@ const BuyForm = ({
         approxOutcomeAmount.abs().mul(ZTG),
       );
 
+      if (!isCombinatorialToken(selectedAsset)) {
+        return sdk.api.tx.neoSwaps.buy(
+          pool?.poolId,
+          market?.categories?.length,
+          selectedAsset,
+          new Decimal(amount).mul(ZTG).toFixed(0),
+          maxPrice.mul(ZTG).toFixed(0),
+          // selectedOrders.map(({ id }) => id),
+          // "ImmediateOrCancel",
+        );
+      }
+
       return sdk.api.tx.neoSwaps.comboBuy(
         pool?.poolId,
         market?.categories?.length,
-        [{ 
-          CombinatorialToken: "0x33537042a1c077e57a6e5c3b7b913b3425e76daed0a17bf7a570c868cf44d868"
-        }],
-        [{ 
-          CombinatorialToken: "0x031b0f40238e38a96d24c6466c6fcf7b1ae394d99a8d18a7b7066f2763c32bc2"
-        }],
+        [selectedAsset],
+        [sellAsset],
         amountDecimal.toFixed(0),
         maxPrice.mul(ZTG).toFixed(0),
         // selectedOrders.map(({ id }) => id),

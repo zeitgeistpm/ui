@@ -6,7 +6,7 @@ import {
   parseAssetId,
   ZTG,
 } from "@zeitgeistpm/sdk";
-import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
+import { MarketContextActionOutcomeSelectorWithCombinatorial } from "components/markets/MarketContextActionOutcomeSelector";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
@@ -36,6 +36,8 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { perbillToNumber } from "lib/util/perbill-to-number";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { isCombinatorialToken } from "lib/types/combinatorial";
+import { CombinatorialToken } from "lib/types/combinatorial";
 
 const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
@@ -48,7 +50,7 @@ const SellForm = ({
   initialAsset?: MarketOutcomeAssetId;
   onSuccess: (
     data: ISubmittableResult,
-    outcomeAsset: MarketOutcomeAssetId,
+    outcomeAsset: MarketOutcomeAssetId | CombinatorialToken,
     amountIn: Decimal,
   ) => void;
 }) => {
@@ -83,14 +85,27 @@ const SellForm = ({
   const swapFee = pool?.swapFee.div(ZTG);
   const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
 
-  const outcomeAssets = market?.outcomeAssets.map(
+  const outcomeAssets = pool?.assetIds.map(
     (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+      isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
   );
   const [selectedAsset, setSelectedAsset] = useState<
-    MarketOutcomeAssetId | undefined
+    MarketOutcomeAssetId | CombinatorialToken | undefined
   >(initialAsset ?? outcomeAssets?.[0]);
 
+  const [sellAsset, setSellAsset] = useState<CombinatorialToken>();
+
+  useEffect(() => {
+    if (isCombinatorialToken(selectedAsset)) {
+      const getOtherAssetId = (selectedAsset: CombinatorialToken) => {
+        const otherAsset = pool?.assetIds.find(assetId => assetId !== selectedAsset);
+        return isCombinatorialToken(otherAsset) ? otherAsset : undefined;
+      }
+      setSellAsset(getOtherAssetId(selectedAsset));
+    }
+  }, [selectedAsset, pool?.assetIds]);
+
+  // TODO: fix this to retreive combo token balance
   const { data: selectedAssetBalance } = useBalance(
     wallet.realAddress,
     selectedAsset,
@@ -167,6 +182,7 @@ const SellForm = ({
         amount === "" ||
         market?.categories?.length == null ||
         !selectedAsset ||
+        !sellAsset ||
         !newSpotPrice ||
         !orders
       ) {
@@ -188,11 +204,26 @@ const SellForm = ({
         new Decimal(amount).abs().mul(ZTG),
       );
 
-      return sdk.api.tx.neoSwaps.sell(
+      if (!isCombinatorialToken(selectedAsset)) {
+        return sdk.api.tx.neoSwaps.sell(
+          pool?.poolId,
+          market?.categories?.length,
+          selectedAsset,
+          new Decimal(amount).mul(ZTG).toFixed(0),
+          minPrice.mul(ZTG).toFixed(0),
+          // selectedOrders.map(({ id }) => id),
+          // "ImmediateOrCancel",
+        );
+      }
+
+      return sdk.api.tx.neoSwaps.comboSell(
         pool?.poolId,
         market?.categories?.length,
-        selectedAsset,
+        [selectedAsset],
+        [],
+        [sellAsset],
         new Decimal(amount).mul(ZTG).toFixed(0),
+        0,
         minPrice.mul(ZTG).toFixed(0),
         // selectedOrders.map(({ id }) => id),
         // "ImmediateOrCancel",
@@ -289,7 +320,7 @@ const SellForm = ({
           />
           <div>
             {market && selectedAsset && (
-              <MarketContextActionOutcomeSelector
+              <MarketContextActionOutcomeSelectorWithCombinatorial
                 market={market}
                 selected={selectedAsset}
                 options={outcomeAssets}
