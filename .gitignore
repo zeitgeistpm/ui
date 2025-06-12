@@ -42,3 +42,8 @@ yarn-error.log*
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+#reference
+/zeitgeist-subsquid
+/zeitgeist-runtime
+/zeitgeist-sdk
