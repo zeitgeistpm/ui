@@ -11,7 +11,7 @@ The Zeitgeist prediction markets platform consists of four main codebases:
 3. **zeitgeist-sdk** - TypeScript SDK for chain interactions (TypeScript)
 4. **zeitgeist-ui** (current) - Next.js frontend application (TypeScript/React)
 
-All codebases are located in `/Users/robhyrk/Dev/ztg/` as sibling directories.
+All codebases are located within the `/Users/robhyrk/Dev/ztg/zeitgeist-ui/` directory as subdirectories.
 
 ## Current UI Codebase (zeitgeist-ui)
 
@@ -94,7 +94,7 @@ Copy `.env.example` to `.env.local` for required environment variables including
 
 ### 1. Zeitgeist Runtime (zeitgeist-runtime)
 
-**Location**: `/Users/robhyrk/Dev/ztg/zeitgeist-runtime`
+**Location**: `/Users/robhyrk/Dev/ztg/zeitgeist-ui/zeitgeist-runtime`
 
 **Purpose**: Substrate-based Polkadot parachain implementation containing the core blockchain logic for prediction markets.
 
@@ -131,7 +131,7 @@ make try-runtime-upgrade-zeitgeist      # Test runtime upgrades
 
 ### 2. Zeitgeist SDK (zeitgeist-sdk)
 
-**Location**: `/Users/robhyrk/Dev/ztg/zeitgeist-sdk`
+**Location**: `/Users/robhyrk/Dev/ztg/zeitgeist-ui/zeitgeist-sdk`
 
 **Purpose**: TypeScript SDK providing type-safe abstractions for interacting with the Zeitgeist blockchain.
 
@@ -171,7 +171,7 @@ yarn coverage          # Run test coverage
 
 ### 3. Zeitgeist Subsquid (zeitgeist-subsquid)
 
-**Location**: `/Users/robhyrk/Dev/ztg/zeitgeist-subsquid`
+**Location**: `/Users/robhyrk/Dev/ztg/zeitgeist-ui/zeitgeist-subsquid`
 
 **Purpose**: Subsquid-based indexer that processes Zeitgeist blockchain events and provides a GraphQL API for efficient data querying.
 

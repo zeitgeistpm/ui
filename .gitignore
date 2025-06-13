@@ -47,3 +47,5 @@ yarn-error.log*
 /zeitgeist-subsquid
 /zeitgeist-runtime
 /zeitgeist-sdk
+CLAUDE.md
+/.claude
