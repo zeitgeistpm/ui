@@ -49,3 +49,4 @@ yarn-error.log*
 /zeitgeist-sdk
 CLAUDE.md
 /.claude
+/.cursor
