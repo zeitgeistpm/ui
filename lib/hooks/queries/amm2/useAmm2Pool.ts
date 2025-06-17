@@ -42,8 +42,11 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
       if (!enabled) return;
 
       const legacyPoolId = Number(await sdk.api.query.neoSwaps.marketIdToPoolId(marketId));
+      console.log('Debug pool IDs:', { marketId, legacyPoolId, poolId });
       const res = await sdk.api.query.neoSwaps.pools(legacyPoolId ? legacyPoolId : poolId);
+
       const unwrappedRes = res.unwrap();
+
       if (unwrappedRes) {
         const reserves: ReserveMap = new Map();
         const assetIds: (MarketOutcomeAssetId | CombinatorialToken)[] = [];
@@ -72,9 +75,11 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
               fees: new Decimal(node.fees.toString()),
             };
           });
+        
+        const finalPoolId = legacyPoolId === 0 ? Number(poolId) : legacyPoolId;
 
         const pool: Amm2Pool = {
-          poolId: Number(poolId),
+          poolId: finalPoolId,
           accountId: unwrappedRes.accountId.toString(),
           baseAsset: parseAssetIdString(unwrappedRes.collateral.toString())!,
           liquidity: new Decimal(unwrappedRes.liquidityParameter.toString()),
@@ -87,6 +92,7 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
             new Decimal(0),
           ),
         };
+        console.log(pool)
         return pool;
       }
     },

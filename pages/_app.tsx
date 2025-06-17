@@ -89,7 +89,7 @@ const MyApp = ({ Component, pageProps }) => {
               <Component {...pageProps} />
             </Layout>
           </DefaultLayout>
-          {/* <Devtools /> */}
+          <Devtools />
         </Hydrate>
       </QueryClientProvider>
     </div>

@@ -39,7 +39,7 @@ const Amm2TradeForm = ({
   const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
-  console.log(initialAsset)
+
   useEffect(() => {
     setTabType(selectedTab ?? TradeTabType.Buy);
   }, [selectedTab]);

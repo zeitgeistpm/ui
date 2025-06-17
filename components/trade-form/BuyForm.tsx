@@ -6,7 +6,7 @@ import {
   parseAssetId,
   ZTG,
 } from "@zeitgeistpm/sdk";
-import { MarketContextActionOutcomeSelectorWithCombinatorial } from "components/markets/MarketContextActionOutcomeSelector";
+import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
@@ -39,7 +39,7 @@ import { perbillToNumber } from "lib/util/perbill-to-number";
 import { max } from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { isCombinatorialToken, unwrapCombinatorialToken } from "lib/types/combinatorial";
+import { isCombinatorialToken } from "lib/types/combinatorial";
 import { CombinatorialToken } from "lib/types/combinatorial";
 
 const BuyForm = ({
@@ -79,7 +79,7 @@ const BuyForm = ({
   const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
   const { data: pool } = useAmm2Pool(marketId, market?.neoPool?.poolId);
-  const [sellAsset, setSellAsset] = useState<CombinatorialToken>();
+  const [sellAsset, setSellAsset] = useState<CombinatorialToken>();  
 
   const { data: orders } = useOrders({
     marketId_eq: marketId,
@@ -200,9 +200,9 @@ const BuyForm = ({
         amount === "" ||
         market?.categories?.length == null ||
         !selectedAsset ||
-        !sellAsset ||
         !newSpotPrice ||
-        !orders
+        !orders ||
+        (isCombinatorialToken(selectedAsset) && !sellAsset)
       ) {
         return;
       }
@@ -235,12 +235,11 @@ const BuyForm = ({
           // "ImmediateOrCancel",
         );
       }
-
       return sdk.api.tx.neoSwaps.comboBuy(
         pool?.poolId,
         market?.categories?.length,
         [selectedAsset],
-        [sellAsset],
+        [sellAsset!],
         amountDecimal.toFixed(0),
         maxPrice.mul(ZTG).toFixed(0),
         // selectedOrders.map(({ id }) => id),
@@ -319,7 +318,7 @@ const BuyForm = ({
           </div>
           <div>
             {market && selectedAsset && (
-              <MarketContextActionOutcomeSelectorWithCombinatorial
+              <MarketContextActionOutcomeSelector
                 market={market}
                 selected={selectedAsset}
                 options={outcomeAssets}

@@ -34,6 +34,7 @@ const marketQuery = gql`
       neoPool {
         createdAt
         collateral
+        poolId
       }
       question
       slug
@@ -111,6 +112,7 @@ export type MarketPageIndexedData = {
   neoPool?: {
     collateral: string;
     createdAt: string;
+    poolId: number;
   };
   scalarType: ScalarRangeType;
   marketType: {

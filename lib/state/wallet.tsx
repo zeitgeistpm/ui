@@ -223,7 +223,7 @@ export const supportedWallets = [
   new PolkadotjsWallet(),
   new SubWallet(),
   new TalismanWallet(),
-  ...(WC_PROJECT_ID ? [new WalletConnect()] : []),
+  // ...(WC_PROJECT_ID ? [new WalletConnect()] : []),
   web3AuthWalletInstance,
 ];
 

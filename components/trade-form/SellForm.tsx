@@ -6,7 +6,7 @@ import {
   parseAssetId,
   ZTG,
 } from "@zeitgeistpm/sdk";
-import { MarketContextActionOutcomeSelectorWithCombinatorial } from "components/markets/MarketContextActionOutcomeSelector";
+import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
@@ -105,7 +105,6 @@ const SellForm = ({
     }
   }, [selectedAsset, pool?.assetIds]);
 
-  // TODO: fix this to retreive combo token balance
   const { data: selectedAssetBalance } = useBalance(
     wallet.realAddress,
     selectedAsset,
@@ -182,7 +181,7 @@ const SellForm = ({
         amount === "" ||
         market?.categories?.length == null ||
         !selectedAsset ||
-        !sellAsset ||
+        (isCombinatorialToken(selectedAsset) && !sellAsset) ||
         !newSpotPrice ||
         !orders
       ) {
@@ -221,7 +220,7 @@ const SellForm = ({
         market?.categories?.length,
         [selectedAsset],
         [],
-        [sellAsset],
+        [sellAsset!],
         new Decimal(amount).mul(ZTG).toFixed(0),
         0,
         minPrice.mul(ZTG).toFixed(0),
@@ -320,7 +319,7 @@ const SellForm = ({
           />
           <div>
             {market && selectedAsset && (
-              <MarketContextActionOutcomeSelectorWithCombinatorial
+              <MarketContextActionOutcomeSelector
                 market={market}
                 selected={selectedAsset}
                 options={outcomeAssets}
@@ -346,7 +345,7 @@ const SellForm = ({
         />
         <div className="mb-[10px] flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600">
           <div className="h-[16px] text-xs text-vermilion">
-            <>{formState.errors["amount"]?.message}</>
+            {formState.errors["amount"]?.message?.toString()}
           </div>
           <div className="flex w-full justify-between">
             <div>Price after trade:</div>
