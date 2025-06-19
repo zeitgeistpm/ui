@@ -327,7 +327,7 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
 
     const liquidity =
       minBaseLiquidity[draft.form.currency!]?.toString() ?? "100";
-
+    console.log("liquidity", liquidity);
     const numOutcomes = draft.form.answers.answers.length;
     const ratio = 1 / numOutcomes;
     const reset =
@@ -344,7 +344,7 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
             ? baseAmount
             : draft.form.liquidity?.rows?.[index]?.amount || baseAmount,
         );
-
+        console.log("amount", new Decimal(amount).toString());
         const price = reset
           ? ratio.toString()
           : liquidity?.price?.price ?? ratio.toString();
@@ -360,7 +360,7 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
         };
       }),
     ];
-
+    console.log("rows", rows);
     update({
       ...draft,
       form: {
