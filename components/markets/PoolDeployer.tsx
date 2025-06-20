@@ -55,7 +55,7 @@ const PoolDeployer = ({
     () => {
       if (isRpcSdk(sdk) && liquidity?.amount && liquidity.rows) {
         const liquidityAmount = new Decimal(liquidity.amount).mul(ZTG).toFixed(0);
-        const asset_count = 2;
+        const asset_count = liquidity.rows.length;
         
         return sdk.api.tx.neoSwaps.deployCombinatorialPool(
           asset_count,

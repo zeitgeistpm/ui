@@ -381,7 +381,15 @@ const ComboMarketEditor: React.FC = () => {
         );
         
         if (poolDeployedEvent) {
-          const poolId = poolDeployedEvent.event.data[2].toString();
+          const eventData = poolDeployedEvent.event.data;
+          console.log("Pool deployed event data:", eventData);
+          
+          if (!eventData || eventData.length < 3) {
+            console.error("Invalid pool deployment event data structure");
+            return;
+          }
+          
+          const poolId = eventData[2].toString();
           router.push(`/combo/${poolId}`);
         }
       },

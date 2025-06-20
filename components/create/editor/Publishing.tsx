@@ -146,28 +146,35 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
           type: "Info",
           lifetime: 60,
         });
-        console.log("check", creationParams);
+        console.log("Creation params:", creationParams);
+        console.log("Fee paying asset:", IOForeignAssetId.is(feeDetails?.assetId) ? feeDetails?.assetId : undefined);
+        console.log("SDK:", sdk);
+        console.log("SDK markets model:", sdk.model.markets);
 
-        const result = await sdk.model.markets.create(
-          creationParams,
-          IOForeignAssetId.is(feeDetails?.assetId)
-            ? feeDetails?.assetId
-            : undefined,
-        );
-        console.log("result", result);
-
-        // const { market } = result.saturate().unwrap();
-        // const marketId = market.marketId;
-        
-        const marketCreationEvent = result.raw.events.find(
-          (event) => event.event.index.toString() === "0x3903"
-        );
-        
-        if (!marketCreationEvent) {
-          throw new Error("Market creation event not found");
+        let result;
+        try {
+          console.log("About to call sdk.model.markets.create...");
+          result = await sdk.model.markets.create(
+            creationParams,
+            IOForeignAssetId.is(feeDetails?.assetId)
+              ? feeDetails?.assetId
+              : undefined,
+          );
+          console.log("Create method completed successfully, result:", result);
+        } catch (createError) {
+          console.error("Error in sdk.model.markets.create:", createError);
+          console.error("Error details:", {
+            message: createError?.message,
+            stack: createError?.stack,
+            name: createError?.name,
+          });
+          throw createError; // Re-throw to be caught by outer catch
         }
-        const marketData = marketCreationEvent.event.data[2] as any;
-        const marketId = Number(marketData.marketId);
+
+        // Extract the market data using the proper SDK pattern
+        const extractedResult = result.saturate().unwrap();
+        const { market } = extractedResult;
+        const marketId = market.marketId;
 
         console.log("marketId", marketId);
         editor.published(marketId);
@@ -214,7 +221,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
         let errorMessage = "Unknown error occurred.";
 
         if (StorageError.is(error)) {
-          errorMessage = error?.message ?? "IPFS metadata upload failed.";
+          errorMessage = error?.message ?? "Metadata storage failed.";
         }
 
         if (isArray(error?.docs)) {
