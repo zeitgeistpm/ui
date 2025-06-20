@@ -382,7 +382,7 @@ const ComboMarketEditor: React.FC = () => {
         
         if (poolDeployedEvent) {
           const poolId = poolDeployedEvent.event.data[2].toString();
-          router.push(`/pools/${poolId}`);
+          router.push(`/combo/${poolId}`);
         }
       },
       onError: () => {

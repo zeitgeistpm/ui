@@ -24,6 +24,7 @@ export type Amm2Pool = {
   reserves: ReserveMap;
   assetIds: (MarketOutcomeAssetId | CombinatorialToken)[];
   accounts: PoolAccount[];
+  poolType: any; //TODO: get this from the poolType
 };
 
 type PoolAccount = {
@@ -36,15 +37,16 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
   const [sdk, id] = useSdkv2();
 
   const enabled = !!sdk && marketId != null && poolId != null && isRpcSdk(sdk);
+
   const query = useQuery(
     [id, amm2PoolKey, marketId],
     async () => {
       if (!enabled) return;
 
       const legacyPoolId = Number(await sdk.api.query.neoSwaps.marketIdToPoolId(marketId));
-      console.log('Debug pool IDs:', { marketId, legacyPoolId, poolId });
-      const res = await sdk.api.query.neoSwaps.pools(legacyPoolId ? legacyPoolId : poolId);
 
+      const res = await sdk.api.query.neoSwaps.pools(legacyPoolId ? legacyPoolId : poolId);
+      
       const unwrappedRes = res.unwrap();
 
       if (unwrappedRes) {
@@ -91,6 +93,7 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
             (total, account) => total.plus(account.shares),
             new Decimal(0),
           ),
+          poolType: JSON.parse(unwrappedRes.poolType.toString()),
         };
         console.log(pool)
         return pool;

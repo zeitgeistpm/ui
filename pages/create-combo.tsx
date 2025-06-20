@@ -18,10 +18,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const queryClient = new QueryClient();
 
   try {
-    // Use GraphQL client directly instead of initializing SDK
     const client = new GraphQLClient(graphQlEndpoint);
     
-    // Generate the same cache key that client-side hooks will use
     const endpoints = endpointOptions.map((e) => e.value);
     const sdkId = `${endpoints.join(",")}:${graphQlEndpoint}`;
     

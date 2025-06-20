@@ -398,7 +398,7 @@ const MarketHeader: FC<{
     Number(market.deadlines?.oracleDuration ?? 0),
     Number(market.deadlines?.disputeDuration ?? 0),
   );
-
+  console.log(market)
   const assetId = parseAssetId(market.baseAsset).unwrap();
   const imagePath = lookupAssetImagePath(assetId);
 
