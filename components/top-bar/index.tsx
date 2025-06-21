@@ -16,6 +16,7 @@ import {
   FiPlusSquare,
   FiList,
 } from "react-icons/fi";
+import { MdShowChart, MdStackedLineChart } from "react-icons/md";
 import { useCategoryCounts } from "lib/hooks/queries/useCategoryCounts";
 import MarketSearch from "components/markets/MarketSearch";
 import { Alerts } from "./Alerts";
@@ -107,6 +108,8 @@ const TopBar = () => {
                         )}
                       </Menu.Item>
 
+                      <CreateMarketMenuItem onSelect={close} />
+
                       <Menu.Item>
                         {({ active }) => (
                           <Link
@@ -167,23 +170,6 @@ const TopBar = () => {
 
                       <CategoriesMenuItem onSelect={close} />
 
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link href="/create" onClick={close}>
-                            <button
-                              className={`group flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
-                            >
-                              <div className="relative z-10 h-6 w-6">
-                                <FiPlusSquare size={"100%"} />
-                              </div>
-                              <h3 className="text-sm font-semibold">
-                                Create Market
-                              </h3>
-                            </button>
-                          </Link>
-                        )}
-                      </Menu.Item>
-
                       {process.env.NEXT_PUBLIC_SHOW_COURT === "true" && (
                         <Menu.Item>
                           {({ active }) => (
@@ -207,15 +193,65 @@ const TopBar = () => {
             }}
           </Menu>
 
-          <Link
-            className="md:center relative hidden gap-2 font-light text-white md:flex"
-            href="/create"
-          >
-            <div className="relative hidden md:flex flex-col items-center">
-              <FiPlusSquare size="20px" />
-              <div className="hidden md:block text-xs whitespace-nowrap">Create Market</div>
-            </div>
-          </Link>
+          <Menu as="div" className="relative hidden md:inline-block md:text-left">
+            {({ open, close }) => {
+              return (
+                <>
+                  <Menu.Button className="md:center relative hidden gap-2 font-light text-white md:flex">
+                    <div className="relative hidden md:flex flex-col items-center">
+                      <FiPlusSquare size="20px" />
+                      <div className="hidden md:block text-xs whitespace-nowrap">Create Market</div>
+                    </div>
+                  </Menu.Button>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
+                    enterTo="transform opacity-100 translate-y-0 md:scale-100"
+                    leave="transition ease-in translate-y-2 md:translate-y-0 duration-75"
+                    leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
+                    leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
+                  >
+                    <Menu.Items className="fixed left-0 mt-4 h-full w-full origin-top-right bg-white px-5 py-3 ring-1 ring-gray-200 focus:outline-none md:absolute md:mt-8 md:h-auto md:w-64 md:rounded-md">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link href="/create" onClick={close}>
+                            <button
+                              className={`group mb-4 flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
+                            >
+                              <div className="relative h-6 w-6">
+                                <MdShowChart size={"100%"} />
+                              </div>
+                              <h3 className="text-sm font-semibold">
+                                Single Market
+                              </h3>
+                            </button>
+                          </Link>
+                        )}
+                      </Menu.Item>
+
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link href="/create-combo" onClick={close}>
+                            <button
+                              className={`group flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm`}
+                            >
+                              <div className="relative h-6 w-6">
+                                <MdStackedLineChart size={"100%"} />
+                              </div>
+                              <h3 className="text-sm font-semibold">
+                                Combinatorial Market
+                              </h3>
+                            </button>
+                          </Link>
+                        )}
+                      </Menu.Item>
+                    </Menu.Items>
+                  </Transition>
+                </>
+              );
+            }}
+          </Menu>
 
           <Link
             className="md:center relative hidden gap-2 font-light text-white md:flex"
@@ -346,6 +382,40 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
   );
 };
 
+const CreateMarketMenu = ({ onSelect }: { onSelect: () => void }) => {
+  return (
+    <div className="flex flex-col gap-4">
+      <Link
+        onClick={onSelect}
+        href="/create"
+        className="flex items-center gap-3"
+      >
+        <div className="relative h-12 w-12 flex items-center justify-center overflow-hidden rounded-full border-2 border-gray-300">
+          <MdShowChart size={24} />
+        </div>
+        <div className="flex flex-col">
+          <div className="font-semibold">Single Market</div>
+          <div className="text-xs font-light text-gray-600">Create a traditional prediction market</div>
+        </div>
+      </Link>
+
+      <Link
+        onClick={onSelect}
+        href="/create-combo"
+        className="flex items-center gap-3"
+      >
+        <div className="relative h-12 w-12 flex items-center justify-center overflow-hidden rounded-full border-2 border-gray-300">
+          <MdStackedLineChart size={24} />
+        </div>
+        <div className="flex flex-col">
+          <div className="font-semibold">Combinatorial Market</div>
+          <div className="text-xs font-light text-gray-600">Create a complex multi-outcome market</div>
+        </div>
+      </Link>
+    </div>
+  );
+};
+
 const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   return (
@@ -390,6 +460,56 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
             Menu
           </div>
           <CategoriesMenu onSelect={onSelect} />
+        </div>
+      </Transition>
+    </>
+  );
+};
+
+const CreateMarketMenuItem = ({ onSelect }: { onSelect: () => void }) => {
+  const [createMarketOpen, setCreateMarketOpen] = useState(false);
+  return (
+    <>
+      <Menu.Item>
+        {({ active }) => (
+          <button
+            className={`group z-20 mb-4 flex w-full items-center gap-3 border-b-1 border-gray-300 px-2 py-2 pb-5 text-sm`}
+            onClick={(event) => {
+              event.stopPropagation();
+              event.preventDefault();
+              setCreateMarketOpen(!createMarketOpen);
+            }}
+          >
+            <div className="relative h-6 w-6">
+              <FiPlusSquare size={"100%"} />
+            </div>
+            <h3 className="flex-1 text-left text-sm font-semibold">
+              Create Market
+            </h3>
+            <FiArrowRight size={22} />
+          </button>
+        )}
+      </Menu.Item>
+
+      <Transition
+        as={Fragment}
+        show={createMarketOpen}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 translate-x-6 md:scale-95"
+        enterTo="transform opacity-100 translate-x-0 md:scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 translate-x-0 md:scale-100"
+        leaveTo="transform opacity-0 translate-x-6 md:scale-95"
+      >
+        <div className="fixed left-0 top-0 z-50 h-full w-full bg-white px-5 py-3 ring-1 ring-gray-200 md:absolute md:-right-4 md:left-auto md:ml-4 md:w-[400px] md:translate-x-[100%] md:rounded-md">
+          <div
+            className="mb-6 flex cursor-pointer items-center gap-3 border-b-1 border-gray-300 py-4 pl-2 md:hidden"
+            onClick={() => setCreateMarketOpen(false)}
+          >
+            <FiArrowLeft size={26} />
+            Menu
+          </div>
+          <CreateMarketMenu onSelect={onSelect} />
         </div>
       </Transition>
     </>
