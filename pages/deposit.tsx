@@ -403,7 +403,6 @@ const DepositPage: NextPage = () => {
                   label: "Hydra DX",
                   url: "https://app.hydration.net/trade/swap?assetIn=5&assetOut=12",
                 },
-                { label: "Gate.io", url: "https://www.gate.io/trade/ZTG_USDT" },
               ]}
             />
           )}
