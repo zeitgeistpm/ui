@@ -28,12 +28,6 @@ interface ButtonListProps {
 
 const exchangeList = [
   {
-    title: "Gate.io (CEX)",
-    disabled: false,
-    onClick: () =>
-      window.open("https://blog.zeitgeist.pm/how-to-buy-ztg-on-gateio/"),
-  },
-  {
     title: "HydraDX (DEX)",
     disabled: false,
     onClick: () => {
