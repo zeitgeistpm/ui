@@ -17,14 +17,17 @@ import LimitOrderForm, {
 import { ChevronDown } from "react-feather";
 import { init } from "next/dist/compiled/webpack/webpack";
 import { CombinatorialToken, isCombinatorialToken } from "lib/types/combinatorial";
+import { Pool } from "zeitgeist-subsquid/src/types/v51";
 
 const Amm2TradeForm = ({
   marketId,
+  poolData,
   selectedTab,
   initialAsset,
   showTabs = true,
 }: {
   marketId: number;
+  poolData?: any;
   selectedTab?: TradeTabType;
   initialAsset?: MarketOutcomeAssetId;
   showTabs?: boolean;
@@ -35,11 +38,17 @@ const Amm2TradeForm = ({
   const [amountReceived, setAmountReceived] = useState<Decimal>();
   const [amountIn, setAmountIn] = useState<Decimal>();
   const [outcomeAsset, setOutcomeAsset] = useState<MarketOutcomeAssetId | CombinatorialToken>();
-  const { data: market } = useMarket({ marketId });
-  const baseAsset = parseAssetIdString(market?.baseAsset);
+  
+  // Use poolData for combo markets, otherwise use market data
+  const { data: market } = useMarket(poolData ? undefined : { marketId });
+  
+  const baseAsset = poolData 
+    ? parseAssetIdString('ZTG') // Combo markets always use ZTG
+    : parseAssetIdString(market?.baseAsset);
+    
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
-
+  console.log(poolData)
   useEffect(() => {
     setTabType(selectedTab ?? TradeTabType.Buy);
   }, [selectedTab]);
@@ -72,10 +81,14 @@ const Amm2TradeForm = ({
               : amountIn?.div(ZTG)
           }
           tokenName={
-            outcomeAsset && market?.categories
-              ? isCombinatorialToken(outcomeAsset) 
-                ? "Combinatorial"
-                : market.categories[getIndexOf(outcomeAsset)].name ?? ""
+            outcomeAsset
+              ? poolData && isCombinatorialToken(outcomeAsset)
+                ? poolData.outcomeCombinations.find((combo: any) => 
+                    combo.assetId.CombinatorialToken === outcomeAsset.CombinatorialToken
+                  )?.name || "Combinatorial"
+                : market?.categories
+                ? market.categories[getIndexOf(outcomeAsset as MarketOutcomeAssetId)].name ?? ""
+                : ""
               : ""
           }
           baseTokenAmount={
@@ -85,7 +98,7 @@ const Amm2TradeForm = ({
           }
           baseToken={baseSymbol}
           marketId={marketId}
-          marketQuestion={market?.question ?? ""}
+          marketQuestion={poolData?.question || market?.question || ""}
           onContinueClick={() => {
             setShowSuccessBox(false);
           }}
@@ -128,28 +141,30 @@ const Amm2TradeForm = ({
           <Tab.Panels className="p-[30px]">
             {orderType === "market" ? (
               <>
-                <Tab.Panel>
-                  <BuyForm
-                    marketId={marketId}
-                    initialAsset={initialAsset}
-                    onSuccess={(data, asset, amount) => {
-                      handleSuccess(data);
-                      setOutcomeAsset(asset);
-                      setAmountIn(amount);
-                    }}
-                  />
-                </Tab.Panel>
-                <Tab.Panel>
-                  <SellForm
-                    marketId={marketId}
-                    initialAsset={initialAsset}
-                    onSuccess={(data, asset, amount) => {
-                      handleSuccess(data);
-                      setOutcomeAsset(asset);
-                      setAmountIn(amount);
-                    }}
-                  />
-                </Tab.Panel>
+                            <Tab.Panel>
+              <BuyForm
+                marketId={marketId}
+                poolData={poolData}
+                initialAsset={initialAsset}
+                onSuccess={(data, asset, amount) => {
+                  handleSuccess(data);
+                  setOutcomeAsset(asset);
+                  setAmountIn(amount);
+                }}
+              />
+            </Tab.Panel>
+            <Tab.Panel>
+              <SellForm
+                marketId={marketId}
+                poolData={poolData}
+                initialAsset={initialAsset}
+                onSuccess={(data, asset, amount) => {
+                  handleSuccess(data);
+                  setOutcomeAsset(asset);
+                  setAmountIn(amount);
+                }}
+              />
+            </Tab.Panel>
               </>
             ) : (
               <>

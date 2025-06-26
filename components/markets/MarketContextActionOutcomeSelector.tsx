@@ -19,6 +19,12 @@ export type MarketContextActionOutcomeSelectorProps = {
   disabled?: boolean;
   hideValue?: boolean;
   onChange: (selected: MarketOutcomeAssetId | CombinatorialToken) => void;
+  // For combo markets, provide the outcome combinations with names and colors
+  outcomeCombinations?: Array<{
+    assetId: CombinatorialToken;
+    name: string;
+    color: string;
+  }>;
 };
 
 const SEARCH_ITEMS_THRESHOLD = 5;
@@ -30,6 +36,7 @@ const MarketContextActionOutcomeSelector = ({
   disabled,
   hideValue,
   onChange,
+  outcomeCombinations,
 }: MarketContextActionOutcomeSelectorProps) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState<string | undefined>();
@@ -37,8 +44,24 @@ const MarketContextActionOutcomeSelector = ({
 
   const assetOptions = useMemo(() => {
     if (!options) return [];
-    const colors = calcMarketColors(market?.marketId!, options.length);
+    
+    // For combo markets, use the provided outcome combinations
+    if (outcomeCombinations) {
+      return options.map((asset, index) => {
+        const combination = outcomeCombinations.find(combo => 
+          JSON.stringify(combo.assetId) === JSON.stringify(asset)
+        );
+        return {
+          asset,
+          assetIndex: index,
+          category: combination ? { name: combination.name } : null,
+          color: combination?.color || '#000000',
+        };
+      });
+    }
 
+    // For regular markets, use the existing logic
+    const colors = calcMarketColors(market?.marketId!, options.length);
     return options.map((asset, index) => {
       const assetIndex = isCombinatorialToken(asset) ? index : getIndexOf(asset) || 0;
       const category = market?.categories?.[assetIndex];
@@ -49,7 +72,7 @@ const MarketContextActionOutcomeSelector = ({
         color: colors[index],
       };
     });
-  }, [options, market?.marketId, market?.categories]);
+  }, [options, market?.marketId, market?.categories, outcomeCombinations]);
 
   const searchResults = useMemo(() => {
     if (!search) return null;
@@ -88,7 +111,17 @@ const MarketContextActionOutcomeSelector = ({
 
   const getSelectedText = () => {
     if (isCombinatorialToken(selected)) {
-      return assetOptions.find(a => a.asset === selected)?.category?.name ?? "";
+      // For combo markets, find the matching combination
+      if (outcomeCombinations) {
+        const combination = outcomeCombinations.find(combo => 
+          JSON.stringify(combo.assetId) === JSON.stringify(selected)
+        );
+        return combination?.name ?? "";
+      }
+      // Fallback to asset options
+      return assetOptions.find(a => 
+        JSON.stringify(a.asset) === JSON.stringify(selected)
+      )?.category?.name ?? "";
     } else if ('CategoricalOutcome' in selected) {
       return market.categories?.[selected.CategoricalOutcome[1]]?.name ?? "";
     } else {
@@ -98,9 +131,9 @@ const MarketContextActionOutcomeSelector = ({
 
   const findMatchingOption = (selected: MarketOutcomeAssetId | CombinatorialToken) => {
     return assetOptions.find((a) => {
-      if (isCombinatorialToken(selected)) {
-        return a.asset === selected;
-      } else if (!isCombinatorialToken(a.asset)) {
+      if (isCombinatorialToken(selected) && isCombinatorialToken(a.asset)) {
+        return JSON.stringify(a.asset) === JSON.stringify(selected);
+      } else if (!isCombinatorialToken(selected) && !isCombinatorialToken(a.asset)) {
         return getIndexOf(a.asset) === getIndexOf(selected);
       }
       return false;

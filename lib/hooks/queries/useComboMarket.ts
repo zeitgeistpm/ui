@@ -10,8 +10,10 @@ import { ChartSeries } from "components/ui/TimeSeriesChart";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useMemo } from "react";
 
+import Decimal from "decimal.js";
+
 export interface OutcomeCombination {
-  id: string;
+  assetId: { CombinatorialToken: `0x${string}` };
   name: string;
   market1Outcome: string;
   market2Outcome: string;
@@ -20,6 +22,7 @@ export interface OutcomeCombination {
 
 export interface ComboMarketData {
   poolId: number;
+  accountId: string;
   question: string;
   description: string;
   sourceMarkets: [FullMarketFragment, FullMarketFragment];
@@ -27,6 +30,8 @@ export interface ComboMarketData {
   baseAsset: AssetId;
   chartSeries: ChartSeries[];
   marketIds: [number, number];
+  liquidity: number;
+  reserves: any;
 }
 
 export const comboMarketKey = "combo-market";
@@ -34,7 +39,7 @@ export const comboMarketKey = "combo-market";
 export const useComboMarket = (poolId: number) => {
   const [sdk, id] = useSdkv2();
   const { data: pool } = useAmm2Pool(0, poolId);
-    
+  console.log(pool)
   // Extract market IDs from the pool's poolType
   const marketIds = useMemo(() => {
     if (!pool?.poolType) {
@@ -73,21 +78,39 @@ export const useComboMarket = (poolId: number) => {
         return null;
       }
 
-      // Generate outcome combinations
+      // Filter assetIds to only include CombinatorialTokens
+      const combinatorialAssets = pool.assetIds.filter(
+        (asset): asset is { CombinatorialToken: `0x${string}` } => 
+          typeof asset === 'object' && asset !== null && 'CombinatorialToken' in asset
+      );
+
+      console.log('Pool assetIds:', pool.assetIds);
+      console.log('Filtered combinatorial assets:', combinatorialAssets);
+
+      // Generate outcome combinations with actual asset IDs
       const combinations: OutcomeCombination[] = [];
       const colors = calcMarketColors(1, 4); // Generate colors for combinations
 
       let colorIndex = 0;
+      let assetIndex = 0;
       market1.categories?.forEach((cat1, i) => {
         market2.categories?.forEach((cat2, j) => {
+          const assetId = combinatorialAssets[assetIndex];
+          console.log(`Asset index ${assetIndex}:`, assetId);
+          
+          if (!assetId) {
+            console.warn(`No asset found at index ${assetIndex}, using fallback`);
+          }
+          
           combinations.push({
-            id: `${i}-${j}`,
+            assetId: assetId,
             name: `${cat1.name} & ${cat2.name}`,
             market1Outcome: cat1.name || `Outcome ${i}`,
             market2Outcome: cat2.name || `Outcome ${j}`,
             color: colors[colorIndex % colors.length],
           });
           colorIndex++;
+          assetIndex++;
         });
       });
 
@@ -98,14 +121,20 @@ export const useComboMarket = (poolId: number) => {
         color: combination.color,
       }));
 
+      // Convert baseAsset object to AssetId - for combo markets, typically ZTG
+      const baseAssetId = parseAssetIdString('ZTG');
+
       return {
         poolId,
+        accountId: pool.accountId,
         question: `${market1.question} & ${market2.question}`,
         description: `Combinatorial market combining: "${market1.question}" and "${market2.question}". Trade on the probability of both outcomes occurring together.`,
         sourceMarkets: [market1, market2],
         outcomeCombinations: combinations,
-        baseAsset: pool.baseAsset,
+        baseAsset: baseAssetId!,
         chartSeries,
+        liquidity: new Decimal(pool.liquidity).toNumber(),
+        reserves: pool.reserves,
         marketIds: [market1.marketId, market2.marketId],
       };
     },

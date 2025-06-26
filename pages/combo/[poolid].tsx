@@ -112,7 +112,7 @@ const ComboAssetDetails = ({
     const priceChange = priceChanges?.get(index);
 
     return {
-      assetId: index, // Use index as a simple identifier
+      assetId: index,
       id: index,
       outcome: (
         <div className="flex items-center gap-2">
@@ -178,6 +178,43 @@ const SourceMarketsSection = ({
       </div>
     </div>
   );
+};
+
+// Utility function to find combined period from source markets
+const getCombinedMarketPeriod = (
+  sourceMarkets: [FullMarketFragment, FullMarketFragment]
+): { block: string[]; start: string; end: string } => {
+  let earliestStart: string | null = null;
+  let latestEnd: string | null = null;
+
+  sourceMarkets.forEach(market => {
+    if (market.period) {
+      // Extract start and end from market period
+      const marketStart = market.period.start;
+      const marketEnd = market.period.end;
+
+      if (marketStart && marketEnd) {
+        // Find earliest start
+        if (!earliestStart || parseInt(marketStart) < parseInt(earliestStart)) {
+          earliestStart = marketStart;
+        }
+
+        // Find latest end
+        if (!latestEnd || parseInt(marketEnd) > parseInt(latestEnd)) {
+          latestEnd = marketEnd;
+        }
+      }
+    }
+  });
+
+  const start = earliestStart || "0";
+  const end = latestEnd || "1000000000000";
+
+  return {
+    block: [start, end], // Include block format for compatibility
+    start,
+    end,
+  };
 };
 
 // Chart component for combo markets
@@ -299,7 +336,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     marketId_eq: poolId,
     makerAccountId_eq: realAddress,
   });
-
+  console.log(comboMarketData)
   const [showLiquidityParam, setShowLiquidityParam, unsetShowLiquidityParam] =
     useQueryParamState("showLiquidity");
 
@@ -332,7 +369,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     question: comboMarketData.question,
     description: comboMarketData.description,
     status: MarketStatus.Active,
-    oracle: "Combinatorial Market System",
+    oracle: comboMarketData.accountId, //TODO: fix to show all oracles or none
     categories: comboMarketData.outcomeCombinations.map(combo => ({
       name: combo.name,
       color: combo.color,
@@ -347,13 +384,13 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     slug: `combo-${poolId}`,
     __typename: "Market" as const,
     creation: "Proposed" as const,
-    creator: "Combinatorial Market System",
+    creator: comboMarketData.accountId,
     earlyClose: null,
     disputeMechanism: "Authorized" as const,
     hasValidMetaCategories: true,
     img: null,
     marketType: { categorical: null, scalar: null },
-    period: { block: [0, 1000000] },
+    period: getCombinedMarketPeriod(comboMarketData.sourceMarkets),
     resolvedOutcome: null,
     scalarType: null,
     tags: [],
@@ -369,7 +406,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
 
   const hasChart = Boolean(chartSeries && comboMarketData);
   const marketHasPool = true; // Combo markets always have pools
-  console.log()
+
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -458,9 +495,6 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
           {/* Source Markets Section */}
           <SourceMarketsSection sourceMarkets={comboMarketData.sourceMarkets} />
 
-          {/* Oracle Details */}
-          <AddressDetails title="System" address="Combinatorial Market System" />
-
           {/* Latest Trades */}
           {marketHasPool && (
             <div className="mt-10 flex flex-col gap-4">
@@ -517,7 +551,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
                   "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
               }}
             >
-              <Amm2TradeForm marketId={poolId} />
+              <Amm2TradeForm marketId={poolId} poolData={comboMarketData}/>
             </div>
             <SimilarMarketsSection market={virtualMarket} />
           </div>

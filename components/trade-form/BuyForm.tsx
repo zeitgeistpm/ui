@@ -44,10 +44,12 @@ import { CombinatorialToken } from "lib/types/combinatorial";
 
 const BuyForm = ({
   marketId,
+  poolData,
   initialAsset,
   onSuccess,
 }: {
   marketId: number;
+  poolData?: any;
   initialAsset?: MarketOutcomeAssetId;
   onSuccess: (
     data: ISubmittableResult,
@@ -68,31 +70,43 @@ const BuyForm = ({
     reValidateMode: "onChange",
     mode: "onChange",
   });
+
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
-  const { data: market } = useMarket({
-    marketId,
-  });
+  // Only fetch market data if poolData is not provided
+  const { data: market } = useMarket(poolData ? undefined : { marketId });
+  console.log(market)
   const wallet = useWallet();
-  const baseAsset = parseAssetIdString(market?.baseAsset);
+  const baseAsset = poolData 
+    ? parseAssetIdString('ZTG') 
+    : parseAssetIdString(market?.baseAsset);
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
-  const { data: pool } = useAmm2Pool(marketId, market?.neoPool?.poolId);
+  
+  //TODO: fix this so it's consistent among: combo markets, legacy, and new markets
+  const poolId = poolData?.poolId || (isCombinatorialToken(market?.outcomeAssets[0]) ? market?.neoPool?.poolId : undefined);
+  const { data: pool } = useAmm2Pool(poolData?.poolId ? 0 : marketId, poolId);
   const [sellAsset, setSellAsset] = useState<CombinatorialToken>();  
-
+  console.log(pool)
   const { data: orders } = useOrders({
     marketId_eq: marketId,
     status_eq: OrderStatus.Placed,
   });
 
-  const swapFee = pool?.swapFee.div(ZTG);
-  const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
+  const swapFee = poolData 
+    ? new Decimal(poolData.swapFee || 0).div(ZTG)
+    : pool?.swapFee.div(ZTG);
+  const creatorFee = poolData 
+    ? new Decimal(0) // set creator fees to 0 for combo markets
+    : new Decimal(perbillToNumber(market?.creatorFee ?? 0));
 
-  const outcomeAssets = pool?.assetIds.map(
-    (assetIdString) =>
-      isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
-  );
+  const outcomeAssets = poolData 
+    ? poolData.outcomeCombinations.map((combo: any) => combo.assetId)
+    : pool?.assetIds.map(
+        (assetIdString) =>
+          isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+      );
 
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | CombinatorialToken | undefined
@@ -120,55 +134,60 @@ const BuyForm = ({
     formAmount && formAmount !== "" ? formAmount : 0,
   ).mul(ZTG);
 
-  const assetReserve =
-    pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
+  const assetReserve = poolData?.reserves 
+    ? lookupAssetReserve(poolData.reserves, selectedAsset)
+    : pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
 
-    const validBuy = useMemo(() => {
+  const effectiveLiquidity = poolData 
+    ? new Decimal(poolData.liquidity)
+    : pool?.liquidity;
+
+  const validBuy = useMemo(() => {
     return (
       assetReserve &&
-      pool.liquidity &&
+      effectiveLiquidity &&
       swapFee &&
       isValidBuyAmount(
         assetReserve,
         amountIn,
-        pool.liquidity,
+        effectiveLiquidity,
         swapFee,
         creatorFee,
       )
     );
-  }, [assetReserve, pool?.liquidity, amountIn]);
+  }, [assetReserve, effectiveLiquidity, amountIn]);
 
   const maxAmountIn = useMemo(() => {
     return (
       assetReserve &&
-      pool &&
-      approximateMaxAmountInForBuy(assetReserve, pool.liquidity)
+      effectiveLiquidity &&
+      approximateMaxAmountInForBuy(assetReserve, effectiveLiquidity)
     );
-  }, [assetReserve, pool?.liquidity]);
+  }, [assetReserve, effectiveLiquidity]);
   
   const { amountOut, spotPrice, newSpotPrice, priceImpact, maxProfit } =
     useMemo(() => {
       const amountOut =
-        assetReserve && pool.liquidity && swapFee
+        assetReserve && effectiveLiquidity && swapFee
           ? calculateSwapAmountOutForBuy(
               assetReserve,
               amountIn,
-              pool.liquidity,
+              effectiveLiquidity,
               swapFee,
               creatorFee,
             )
           : new Decimal(0);
 
       const spotPrice =
-        assetReserve && calculateSpotPrice(assetReserve, pool?.liquidity);
+        assetReserve && effectiveLiquidity && calculateSpotPrice(assetReserve, effectiveLiquidity);
 
       const newSpotPrice =
-        pool?.liquidity &&
+        effectiveLiquidity &&
         assetReserve &&
         swapFee &&
         calculateSpotPriceAfterBuy(
           assetReserve,
-          pool.liquidity,
+          effectiveLiquidity,
           amountOut,
           amountIn,
           swapFee,
@@ -188,17 +207,20 @@ const BuyForm = ({
         priceImpact,
         maxProfit,
       };
-    }, [amountIn, pool?.liquidity, assetReserve]);
+    }, [amountIn, effectiveLiquidity, assetReserve]);
 
   const { isLoading, send, fee } = useExtrinsic(
     () => {
       const amount = getValues("amount");
+      const effectivePoolId = poolData?.poolId || pool?.poolId;
+      const categoryCount = poolData ? pool?.assetIds.length : market?.categories?.length;
+      
       if (
         !isRpcSdk(sdk) ||
-        !pool?.poolId ||
+        !effectivePoolId ||
         !amount ||
         amount === "" ||
-        market?.categories?.length == null ||
+        categoryCount == null ||
         !selectedAsset ||
         !newSpotPrice ||
         !orders ||
@@ -226,8 +248,8 @@ const BuyForm = ({
 
       if (!isCombinatorialToken(selectedAsset)) {
         return sdk.api.tx.neoSwaps.buy(
-          pool?.poolId,
-          market?.categories?.length,
+          effectivePoolId,
+          categoryCount,
           selectedAsset,
           new Decimal(amount).mul(ZTG).toFixed(0),
           maxPrice.mul(ZTG).toFixed(0),
@@ -235,9 +257,10 @@ const BuyForm = ({
           // "ImmediateOrCancel",
         );
       }
+      console.log(effectivePoolId, categoryCount, [selectedAsset] )
       return sdk.api.tx.neoSwaps.comboBuy(
-        pool?.poolId,
-        market?.categories?.length,
+        effectivePoolId,
+        categoryCount,
         [selectedAsset],
         [sellAsset!],
         amountDecimal.toFixed(0),
@@ -317,11 +340,12 @@ const BuyForm = ({
             {amountOut.div(ZTG).abs().toFixed(3)}
           </div>
           <div>
-            {market && selectedAsset && (
+            {(market || poolData) && selectedAsset && (
               <MarketContextActionOutcomeSelector
-                market={market}
+                market={poolData ? ({} as any) : market!}
                 selected={selectedAsset}
-                options={outcomeAssets}
+                options={poolData ? poolData.outcomeCombinations.map((combo: any) => combo.assetId) : outcomeAssets}
+                outcomeCombinations={poolData?.outcomeCombinations}
                 onChange={(assetId) => {
                   setSelectedAsset(assetId);
                   trigger();

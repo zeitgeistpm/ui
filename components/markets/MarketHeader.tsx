@@ -398,7 +398,6 @@ const MarketHeader: FC<{
     Number(market.deadlines?.oracleDuration ?? 0),
     Number(market.deadlines?.disputeDuration ?? 0),
   );
-  console.log(market)
   const assetId = parseAssetId(market.baseAsset).unwrap();
   const imagePath = lookupAssetImagePath(assetId);
 
@@ -412,7 +411,6 @@ const MarketHeader: FC<{
         ? market.img
         : undefined,
   });
-
   return (
     <header className="flex w-full flex-col gap-4">
       <div className="flex items-start gap-3 xl:items-center">

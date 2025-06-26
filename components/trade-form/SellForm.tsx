@@ -43,10 +43,12 @@ const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
 const SellForm = ({
   marketId,
+  poolData,
   initialAsset,
   onSuccess,
 }: {
   marketId: number;
+  poolData?: any;
   initialAsset?: MarketOutcomeAssetId;
   onSuccess: (
     data: ISubmittableResult,
@@ -69,12 +71,13 @@ const SellForm = ({
   });
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
-  const { data: market } = useMarket({
-    marketId,
-  });
+  const { data: market } = useMarket(poolData ? undefined : { marketId });
   const wallet = useWallet();
-  const { data: pool } = useAmm2Pool(marketId, market?.neoPool?.poolId);
-  const baseAsset = parseAssetIdString(market?.baseAsset);
+  const poolId = poolData?.poolId || market?.neoPool?.poolId;
+  const { data: pool } = useAmm2Pool(marketId, poolId);
+  const baseAsset = poolData 
+    ? parseAssetIdString('ZTG') 
+    : parseAssetIdString(market?.baseAsset);
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
   const { data: orders } = useOrders({
@@ -82,13 +85,19 @@ const SellForm = ({
     status_eq: OrderStatus.Placed,
   });
 
-  const swapFee = pool?.swapFee.div(ZTG);
-  const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
+  const swapFee = poolData 
+    ? new Decimal(poolData.swapFee || 0).div(ZTG)
+    : pool?.swapFee.div(ZTG);
+  const creatorFee = poolData 
+    ? new Decimal(0) // Combo markets don't have creator fees
+    : new Decimal(perbillToNumber(market?.creatorFee ?? 0));
 
-  const outcomeAssets = pool?.assetIds.map(
-    (assetIdString) =>
-      isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
-  );
+  const outcomeAssets = poolData 
+    ? poolData.outcomeCombinations.map((combo: any) => combo.assetId)
+    : pool?.assetIds.map(
+        (assetIdString) =>
+          isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+      );
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | CombinatorialToken | undefined
   >(initialAsset ?? outcomeAssets?.[0]);
@@ -115,46 +124,51 @@ const SellForm = ({
   const amountIn = new Decimal(formAmount && formAmount !== "" ? formAmount : 0)
     .mul(ZTG)
     .abs();
-  const assetReserve =
-    pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
+  const assetReserve = poolData?.reserves 
+    ? lookupAssetReserve(poolData.reserves, selectedAsset)
+    : pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
+
+  const effectiveLiquidity = poolData 
+    ? new Decimal(poolData.liquidity)
+    : pool?.liquidity;
 
   const validSell = useMemo(() => {
     return (
       assetReserve &&
-      pool.liquidity &&
+      effectiveLiquidity &&
       swapFee &&
-      isValidSellAmount(assetReserve, amountIn, pool.liquidity)
+      isValidSellAmount(assetReserve, amountIn, effectiveLiquidity)
     );
-  }, [assetReserve, pool?.liquidity, amountIn]);
+  }, [assetReserve, effectiveLiquidity, amountIn]);
 
   const maxAmountIn = useMemo(() => {
     return (
       assetReserve &&
-      pool &&
-      approximateMaxAmountInForSell(assetReserve, pool.liquidity)
+      effectiveLiquidity &&
+      approximateMaxAmountInForSell(assetReserve, effectiveLiquidity)
     );
-  }, [assetReserve, pool?.liquidity]);
+  }, [assetReserve, effectiveLiquidity]);
 
   const { amountOut, newSpotPrice, priceImpact, minAmountOut } = useMemo(() => {
     const amountOut =
-      assetReserve && pool.liquidity && swapFee
+      assetReserve && effectiveLiquidity && swapFee
         ? calculateSwapAmountOutForSell(
             assetReserve,
             amountIn,
-            pool.liquidity,
+            effectiveLiquidity,
             swapFee,
             creatorFee,
           )
         : new Decimal(0);
 
     const spotPrice =
-      assetReserve && calculateSpotPrice(assetReserve, pool?.liquidity);
+      assetReserve && effectiveLiquidity && calculateSpotPrice(assetReserve, effectiveLiquidity);
 
     const poolAmountIn = amountIn.minus(amountOut);
     const newSpotPrice =
-      pool?.liquidity &&
+      effectiveLiquidity &&
       assetReserve &&
-      calculateSpotPrice(assetReserve?.plus(poolAmountIn), pool?.liquidity);
+      calculateSpotPrice(assetReserve?.plus(poolAmountIn), effectiveLiquidity);
 
     const priceImpact = spotPrice
       ? newSpotPrice?.div(spotPrice).minus(1).mul(100)
@@ -169,17 +183,20 @@ const SellForm = ({
       priceImpact,
       minAmountOut,
     };
-  }, [amountIn, pool?.liquidity, assetReserve]);
+  }, [amountIn, effectiveLiquidity, assetReserve]);
 
   const { isLoading, send, fee } = useExtrinsic(
     () => {
       const amount = getValues("amount");
+      const effectivePoolId = poolData?.poolId || pool?.poolId;
+      const categoryCount = poolData ? 2 : market?.categories?.length; // Combo markets always have 2 categories
+      
       if (
         !isRpcSdk(sdk) ||
-        !pool?.poolId ||
+        !effectivePoolId ||
         !amount ||
         amount === "" ||
-        market?.categories?.length == null ||
+        categoryCount == null ||
         !selectedAsset ||
         (isCombinatorialToken(selectedAsset) && !sellAsset) ||
         !newSpotPrice ||
@@ -205,8 +222,8 @@ const SellForm = ({
 
       if (!isCombinatorialToken(selectedAsset)) {
         return sdk.api.tx.neoSwaps.sell(
-          pool?.poolId,
-          market?.categories?.length,
+          effectivePoolId,
+          categoryCount,
           selectedAsset,
           new Decimal(amount).mul(ZTG).toFixed(0),
           minPrice.mul(ZTG).toFixed(0),
@@ -216,8 +233,8 @@ const SellForm = ({
       }
 
       return sdk.api.tx.neoSwaps.comboSell(
-        pool?.poolId,
-        market?.categories?.length,
+        effectivePoolId,
+        categoryCount,
         [selectedAsset],
         [],
         [sellAsset!],
@@ -284,7 +301,7 @@ const SellForm = ({
     send();
   };
   return (
-    <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
+    <div className="flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex w-full flex-col items-center gap-y-4"
@@ -318,13 +335,15 @@ const SellForm = ({
             })}
           />
           <div>
-            {market && selectedAsset && (
+            {(market || poolData) && selectedAsset && (
               <MarketContextActionOutcomeSelector
-                market={market}
+                market={poolData ? ({} as any) : market!}
                 selected={selectedAsset}
-                options={outcomeAssets}
+                options={poolData ? poolData.outcomeCombinations.map((combo: any) => combo.assetId) : outcomeAssets}
+                outcomeCombinations={poolData?.outcomeCombinations}
                 onChange={(assetId) => {
                   setSelectedAsset(assetId);
+                  trigger();
                 }}
               />
             )}
