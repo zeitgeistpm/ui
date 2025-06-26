@@ -82,6 +82,8 @@ import { AiOutlineFileAdd } from "react-icons/ai";
 import { BsFillChatSquareTextFill } from "react-icons/bs";
 import { CgLivePhoto } from "react-icons/cg";
 import { FaChevronUp, FaTwitch } from "react-icons/fa";
+import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
+import { isCombinatorialToken } from "lib/types/combinatorial";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -213,6 +215,9 @@ const Market: NextPage<MarketPageProps> = ({
   const { marketid } = router.query;
   const marketId = Number(marketid);
   const { realAddress } = useWallet();
+
+  const {data: poolData} = useAmm2Pool(marketId)
+
   const { data: orders, isLoading: isOrdersLoading } = useOrders({
     marketId_eq: marketId,
     makerAccountId_eq: realAddress,
@@ -354,7 +359,7 @@ const Market: NextPage<MarketPageProps> = ({
   const poolCreationDate = new Date(
     indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
   );
-
+  
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -541,7 +546,13 @@ const Market: NextPage<MarketPageProps> = ({
           {marketHasPool === true && (
             <div className="mt-10 flex flex-col gap-4">
               <h3 className="mb-5 text-2xl">Latest Trades</h3>
-              <LatestTrades limit={3} marketId={marketId} />
+              <LatestTrades 
+                limit={3} 
+                marketId={marketId} 
+                outcomeAssets={
+                  poolData?.assetIds?.filter(isCombinatorialToken) || undefined
+                }
+              />
               <Link
                 className="w-full text-center text-ztg-blue"
                 href={`/latest-trades?marketId=${marketId}`}

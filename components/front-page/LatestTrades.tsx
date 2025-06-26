@@ -5,6 +5,8 @@ import { useLatestTrades } from "lib/hooks/queries/useLatestTrades";
 import { ZTG } from "@zeitgeistpm/sdk";
 import moment from "moment";
 import Avatar from "components/ui/Avatar";
+import { CombinatorialToken } from "lib/types/combinatorial";
+import { combinatorialTokens } from "zeitgeist-subsquid/src/mappings";
 
 const columns: TableColumn[] = [
   {
@@ -47,13 +49,15 @@ const columns: TableColumn[] = [
 const LatestTrades = ({
   limit = 3,
   marketId,
+  outcomeAssets,
 }: {
   limit?: number;
   marketId?: number;
+  outcomeAssets: CombinatorialToken[] | undefined;
 }) => {
-  const { data: trades } = useLatestTrades(limit, marketId);
+  const { data: trades } = useLatestTrades(limit, marketId, outcomeAssets);
   const now = moment();
-
+  console.log(outcomeAssets)
   const tableData: TableData[] | undefined = trades?.map((trade) => {
     return {
       trader: (

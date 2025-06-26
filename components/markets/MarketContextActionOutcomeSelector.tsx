@@ -41,7 +41,7 @@ const MarketContextActionOutcomeSelector = ({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState<string | undefined>();
   const inputRef = useRef<HTMLInputElement>(null);
-  console.log(market)
+
   const assetOptions = useMemo(() => {
     if (!options) return [];
     
@@ -62,7 +62,6 @@ const MarketContextActionOutcomeSelector = ({
       const colors = calcMarketColors(market?.marketId!, options.length);
       return options.map((asset, index) => {
         const assetIndex = isCombinatorialToken(asset) ? index : getIndexOf(asset) || 0;
-        console.log(assetIndex)
         const category = market?.categories?.[assetIndex];
         return {
           asset,

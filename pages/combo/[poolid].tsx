@@ -35,6 +35,7 @@ import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle, ChevronDown, ExternalLink, X } from "react-feather";
+import { CombinatorialToken } from "lib/types/combinatorial";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -406,7 +407,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
 
   const hasChart = Boolean(chartSeries && comboMarketData);
   const marketHasPool = true; // Combo markets always have pools
-
+console.log(comboMarketData)
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -499,7 +500,11 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
           {marketHasPool && (
             <div className="mt-10 flex flex-col gap-4">
               <h3 className="mb-5 text-2xl">Latest Trades</h3>
-              <LatestTrades limit={3} marketId={poolId} />
+              <LatestTrades 
+                limit={3} 
+                marketId={undefined}
+                outcomeAssets={comboMarketData?.outcomeCombinations.map(combo => combo.assetId)}
+              />
               <Link
                 className="w-full text-center text-ztg-blue"
                 href={`/latest-trades?marketId=${poolId}`}

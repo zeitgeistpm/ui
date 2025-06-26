@@ -331,7 +331,7 @@ const BuyForm = ({
   const onSubmit = () => {
     send();
   };
-  console.log(outcomeAssets)
+
   return (
     <div className="flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
       <form
