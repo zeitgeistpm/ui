@@ -362,7 +362,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
   if (!comboMarketData) {
     return <NotFoundPage backText="Back To Markets" backLink="/markets" />;
   }
-  console.log(comboMarketData)
+
   // Create a virtual market object for components that expect a FullMarketFragment
   const virtualMarket = {
     marketId: poolId,

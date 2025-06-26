@@ -39,27 +39,16 @@ export const comboMarketKey = "combo-market";
 export const useComboMarket = (poolId: number) => {
   const [sdk, id] = useSdkv2();
   const { data: pool } = useAmm2Pool(0, poolId);
-  console.log(pool)
-  // Extract market IDs from the pool's poolType
+
+  // Extract market IDs from the combinatorial pool
   const marketIds = useMemo(() => {
-    if (!pool?.poolType) {
+    if (!pool?.poolType?.combinatorial) {
       return [1, 2]; // Fallback for development
     }
       
-    // Check if this is a combinatorial pool (note: property is lowercase)
-    if (pool.poolType.combinatorial && Array.isArray(pool.poolType.combinatorial)) {
-      const extractedMarketIds = pool.poolType.combinatorial;
-      console.log('Extracted Market IDs:', extractedMarketIds);
-      
-      // Ensure we have at least 2 market IDs for a combinatorial market
-      if (extractedMarketIds.length >= 2) {
-        return [extractedMarketIds[0], extractedMarketIds[1]] as [number, number];
-      }
-    }
+    const extractedMarketIds = pool.poolType.combinatorial;
     
-    // Fallback if poolType doesn't have the expected structure
-    console.warn('Could not extract market IDs from poolType, using fallback');
-    return [1, 2];
+    return [extractedMarketIds[0], extractedMarketIds[1]] as [number, number];
   }, [pool?.poolType]);
 
   const { data: market1 } = useMarket({ marketId: marketIds[0] });

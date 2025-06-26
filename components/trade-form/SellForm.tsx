@@ -102,18 +102,6 @@ const SellForm = ({
     MarketOutcomeAssetId | CombinatorialToken | undefined
   >(initialAsset ?? outcomeAssets?.[0]);
 
-  const [sellAsset, setSellAsset] = useState<CombinatorialToken>();
-
-  useEffect(() => {
-    if (isCombinatorialToken(selectedAsset)) {
-      const getOtherAssetId = (selectedAsset: CombinatorialToken) => {
-        const otherAsset = pool?.assetIds.find(assetId => assetId !== selectedAsset);
-        return isCombinatorialToken(otherAsset) ? otherAsset : undefined;
-      }
-      setSellAsset(getOtherAssetId(selectedAsset));
-    }
-  }, [selectedAsset, pool?.assetIds]);
-
   const { data: selectedAssetBalance } = useBalance(
     wallet.realAddress,
     selectedAsset,
@@ -189,8 +177,9 @@ const SellForm = ({
     () => {
       const amount = getValues("amount");
       const effectivePoolId = poolData?.poolId || pool?.poolId;
-      const categoryCount = poolData ? 2 : market?.categories?.length; // Combo markets always have 2 categories
-      
+
+      const categoryCount = poolData ? poolData?.outcomeCombinations.length : market?.categories?.length;
+
       if (
         !isRpcSdk(sdk) ||
         !effectivePoolId ||
@@ -198,7 +187,7 @@ const SellForm = ({
         amount === "" ||
         categoryCount == null ||
         !selectedAsset ||
-        (isCombinatorialToken(selectedAsset) && !sellAsset) ||
+        (isCombinatorialToken(selectedAsset) && poolData?.outcomeCombinations.length <= 1) ||
         !newSpotPrice ||
         !orders
       ) {
@@ -230,20 +219,27 @@ const SellForm = ({
           // selectedOrders.map(({ id }) => id),
           // "ImmediateOrCancel",
         );
-      }
+      } else if(isCombinatorialToken(selectedAsset)) {
+      // For combo markets, we need to provide all other assets as the sell parameter
+      const allOtherAssets = poolData?.outcomeCombinations
+        .map((combo: any) => combo.assetId)
+        .filter((assetId: any) => JSON.stringify(assetId) !== JSON.stringify(selectedAsset))
+        || pool?.assetIds.filter(assetId => 
+            isCombinatorialToken(assetId) && JSON.stringify(assetId) !== JSON.stringify(selectedAsset)
+          ) 
+        || [];
 
       return sdk.api.tx.neoSwaps.comboSell(
-        effectivePoolId,
-        categoryCount,
-        [selectedAsset],
-        [],
-        [sellAsset!],
-        new Decimal(amount).mul(ZTG).toFixed(0),
-        0,
-        minPrice.mul(ZTG).toFixed(0),
-        // selectedOrders.map(({ id }) => id),
-        // "ImmediateOrCancel",
-      );
+          effectivePoolId,
+          categoryCount,
+          [selectedAsset], // buy - the asset we want to end up with more of
+          [], // keep - empty
+          allOtherAssets, // sell - all other assets we're giving up
+          new Decimal(amount).mul(ZTG).toFixed(0), // amount_buy
+          0, // amount_keep
+          minPrice.mul(ZTG).toFixed(0), // min_amount_out
+        );
+      }
     },
     {
       onSuccess: (data) => {

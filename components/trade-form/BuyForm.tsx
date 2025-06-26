@@ -86,9 +86,10 @@ const BuyForm = ({
   
   //TODO: fix this so it's consistent among: combo markets, legacy, and new markets
   const poolId = poolData?.poolId || (isCombinatorialToken(market?.outcomeAssets[0]) ? market?.neoPool?.poolId : undefined);
+  console.log()
   const { data: pool } = useAmm2Pool(poolData?.poolId ? 0 : marketId, poolId);
-  const [sellAsset, setSellAsset] = useState<CombinatorialToken>();  
-  console.log(pool)
+  const [sellAssets, setSellAssets] = useState<CombinatorialToken[]>([]);  
+
   const { data: orders } = useOrders({
     marketId_eq: marketId,
     status_eq: OrderStatus.Placed,
@@ -114,13 +115,15 @@ const BuyForm = ({
 
   useEffect(() => {
     if (isCombinatorialToken(selectedAsset)) {
-      const getOtherAssetId = (selectedAsset: CombinatorialToken) => {
-        const otherAsset = pool?.assetIds.find(assetId => assetId !== selectedAsset);
-        return isCombinatorialToken(otherAsset) ? otherAsset : undefined;
+      const getAllOtherAssets = (selectedAsset: CombinatorialToken) => {
+        const allAssets = poolData?.outcomeCombinations.map((combo: any) => combo.assetId) || pool?.assetIds || [];
+        return allAssets.filter(assetId => 
+          isCombinatorialToken(assetId) && JSON.stringify(assetId) !== JSON.stringify(selectedAsset)
+        );
       }
-      setSellAsset(getOtherAssetId(selectedAsset));
+      setSellAssets(getAllOtherAssets(selectedAsset));
     }
-  }, [selectedAsset, pool?.assetIds, sellAsset]);
+  }, [selectedAsset, pool?.assetIds, poolData?.outcomeCombinations]);
   
   useEffect(() => {
     if (!selectedAsset && outcomeAssets?.[0]) {
@@ -213,18 +216,20 @@ const BuyForm = ({
     () => {
       const amount = getValues("amount");
       const effectivePoolId = poolData?.poolId || pool?.poolId;
-      const categoryCount = poolData ? pool?.assetIds.length : market?.categories?.length;
-      
+      const assetCount = poolData ? poolData?.outcomeCombinations.length : pool?.assetIds.length;
+      console.log(assetCount)
+      console.log(effectivePoolId)
+      console.log(pool)
       if (
         !isRpcSdk(sdk) ||
         !effectivePoolId ||
         !amount ||
         amount === "" ||
-        categoryCount == null ||
+        assetCount == null ||
         !selectedAsset ||
         !newSpotPrice ||
         !orders ||
-        (isCombinatorialToken(selectedAsset) && !sellAsset)
+        (isCombinatorialToken(selectedAsset) && sellAssets.length === 0)
       ) {
         return;
       }
@@ -249,25 +254,25 @@ const BuyForm = ({
       if (!isCombinatorialToken(selectedAsset)) {
         return sdk.api.tx.neoSwaps.buy(
           effectivePoolId,
-          categoryCount,
+          assetCount,
           selectedAsset,
           new Decimal(amount).mul(ZTG).toFixed(0),
           maxPrice.mul(ZTG).toFixed(0),
           // selectedOrders.map(({ id }) => id),
           // "ImmediateOrCancel",
         );
+      } else if(isCombinatorialToken(selectedAsset)) {
+        return sdk.api.tx.neoSwaps.comboBuy(
+          effectivePoolId,
+          assetCount,
+          [selectedAsset],
+          sellAssets,
+          amountDecimal.toFixed(0),
+          maxPrice.mul(ZTG).toFixed(0),
+          // selectedOrders.map(({ id }) => id),
+          // "ImmediateOrCancel",
+        );
       }
-      console.log(effectivePoolId, categoryCount, [selectedAsset] )
-      return sdk.api.tx.neoSwaps.comboBuy(
-        effectivePoolId,
-        categoryCount,
-        [selectedAsset],
-        [sellAsset!],
-        amountDecimal.toFixed(0),
-        maxPrice.mul(ZTG).toFixed(0),
-        // selectedOrders.map(({ id }) => id),
-        // "ImmediateOrCancel",
-      );
     },
     {
       onSuccess: (data) => {

@@ -33,7 +33,7 @@ export type TradeItem = {
 
 export const useLatestTrades = (limit?: number, marketId?: number) => {
   const [sdk, id] = useSdkv2();
-
+  console.log(marketId)
   const query = useQuery(
     [id, transactionHistoryKey, limit, marketId],
     async () => {

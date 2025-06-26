@@ -48,7 +48,7 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
       const res = await sdk.api.query.neoSwaps.pools(legacyPoolId ? legacyPoolId : poolId);
       
       const unwrappedRes = res.unwrap();
-      console.log(unwrappedRes)
+
       if (unwrappedRes) {
         const reserves: ReserveMap = new Map();
         const assetIds: (MarketOutcomeAssetId | CombinatorialToken)[] = [];
@@ -95,7 +95,6 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
           ),
           poolType: JSON.parse(unwrappedRes.poolType.toString()),
         };
-        console.log(pool)
         return pool;
       }
     },
