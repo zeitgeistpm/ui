@@ -75,7 +75,7 @@ const BuyForm = ({
   const notificationStore = useNotifications();
   // Only fetch market data if poolData is not provided
   const { data: market } = useMarket(poolData ? undefined : { marketId });
-  console.log(market)
+
   const wallet = useWallet();
   const baseAsset = poolData 
     ? parseAssetIdString('ZTG') 
@@ -86,7 +86,7 @@ const BuyForm = ({
   
   //TODO: fix this so it's consistent among: combo markets, legacy, and new markets
   const poolId = poolData?.poolId || (isCombinatorialToken(market?.outcomeAssets[0]) ? market?.neoPool?.poolId : undefined);
-  console.log()
+
   const { data: pool } = useAmm2Pool(poolData?.poolId ? 0 : marketId, poolId);
   const [sellAssets, setSellAssets] = useState<CombinatorialToken[]>([]);  
 
@@ -217,9 +217,7 @@ const BuyForm = ({
       const amount = getValues("amount");
       const effectivePoolId = poolData?.poolId || pool?.poolId;
       const assetCount = poolData ? poolData?.outcomeCombinations.length : pool?.assetIds.length;
-      console.log(assetCount)
-      console.log(effectivePoolId)
-      console.log(pool)
+
       if (
         !isRpcSdk(sdk) ||
         !effectivePoolId ||
@@ -333,7 +331,7 @@ const BuyForm = ({
   const onSubmit = () => {
     send();
   };
-
+  console.log(outcomeAssets)
   return (
     <div className="flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
       <form

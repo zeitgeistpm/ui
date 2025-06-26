@@ -41,11 +41,10 @@ const MarketContextActionOutcomeSelector = ({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState<string | undefined>();
   const inputRef = useRef<HTMLInputElement>(null);
-
+  console.log(market)
   const assetOptions = useMemo(() => {
     if (!options) return [];
     
-    // For combo markets, use the provided outcome combinations
     if (outcomeCombinations) {
       return options.map((asset, index) => {
         const combination = outcomeCombinations.find(combo => 
@@ -58,20 +57,21 @@ const MarketContextActionOutcomeSelector = ({
           color: combination?.color || '#000000',
         };
       });
+    } else {
+      // For regular markets, use the existing logic
+      const colors = calcMarketColors(market?.marketId!, options.length);
+      return options.map((asset, index) => {
+        const assetIndex = isCombinatorialToken(asset) ? index : getIndexOf(asset) || 0;
+        console.log(assetIndex)
+        const category = market?.categories?.[assetIndex];
+        return {
+          asset,
+          assetIndex,
+          category,
+          color: colors[index],
+        };
+      });
     }
-
-    // For regular markets, use the existing logic
-    const colors = calcMarketColors(market?.marketId!, options.length);
-    return options.map((asset, index) => {
-      const assetIndex = isCombinatorialToken(asset) ? index : getIndexOf(asset) || 0;
-      const category = market?.categories?.[assetIndex];
-      return {
-        asset,
-        assetIndex,
-        category,
-        color: colors[index],
-      };
-    });
   }, [options, market?.marketId, market?.categories, outcomeCombinations]);
 
   const searchResults = useMemo(() => {
