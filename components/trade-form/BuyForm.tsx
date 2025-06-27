@@ -47,6 +47,8 @@ const BuyForm = ({
   poolData,
   initialAsset,
   onSuccess,
+  filteredAssets,
+  outcomeCombinations,
 }: {
   marketId: number;
   poolData?: any;
@@ -56,6 +58,12 @@ const BuyForm = ({
     outcomeAsset: MarketOutcomeAssetId | CombinatorialToken,
     amountIn: Decimal,
   ) => void;
+  filteredAssets?: (MarketOutcomeAssetId | CombinatorialToken)[];
+  outcomeCombinations?: Array<{
+    assetId: CombinatorialToken;
+    name: string;
+    color: string;
+  }>;
 }) => {
   const { data: constants } = useChainConstants();
   const {
@@ -102,12 +110,12 @@ const BuyForm = ({
     ? new Decimal(0) // set creator fees to 0 for combo markets
     : new Decimal(perbillToNumber(market?.creatorFee ?? 0));
 
-  const outcomeAssets = poolData 
-    ? poolData.outcomeCombinations.map((combo: any) => combo.assetId)
-    : pool?.assetIds.map(
-        (assetIdString) =>
-          isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
-      );
+  const outcomeAssets = filteredAssets ||
+    poolData?.outcomeCombinations?.map((combo: any) => combo.assetId) ||
+    pool?.assetIds.map(
+      (assetIdString) =>
+        isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+    );
 
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | CombinatorialToken | undefined
@@ -345,10 +353,10 @@ const BuyForm = ({
           <div>
             {(market || poolData) && selectedAsset && (
               <MarketContextActionOutcomeSelector
-                market={poolData ? ({} as any) : market!}
+                market={poolData ? undefined : market ?? undefined}
                 selected={selectedAsset}
-                options={poolData ? poolData.outcomeCombinations.map((combo: any) => combo.assetId) : outcomeAssets}
-                outcomeCombinations={poolData?.outcomeCombinations}
+                options={outcomeAssets}
+                outcomeCombinations={outcomeCombinations}
                 onChange={(assetId) => {
                   setSelectedAsset(assetId);
                   trigger();

@@ -337,7 +337,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     marketId_eq: poolId,
     makerAccountId_eq: realAddress,
   });
-  console.log(comboMarketData)
+
   const [showLiquidityParam, setShowLiquidityParam, unsetShowLiquidityParam] =
     useQueryParamState("showLiquidity");
 
@@ -407,7 +407,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
 
   const hasChart = Boolean(chartSeries && comboMarketData);
   const marketHasPool = true; // Combo markets always have pools
-console.log(comboMarketData)
+
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -504,6 +504,8 @@ console.log(comboMarketData)
                 limit={3} 
                 marketId={undefined}
                 outcomeAssets={comboMarketData?.outcomeCombinations.map(combo => combo.assetId)}
+                outcomeNames={comboMarketData?.outcomeCombinations.map(combo => combo.name)}
+                marketQuestion={comboMarketData?.question}
               />
               <Link
                 className="w-full text-center text-ztg-blue"
@@ -556,7 +558,11 @@ console.log(comboMarketData)
                   "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
               }}
             >
-              <Amm2TradeForm marketId={poolId} poolData={comboMarketData}/>
+              <Amm2TradeForm 
+                marketId={poolId} 
+                poolData={comboMarketData}
+                outcomeCombinations={comboMarketData?.outcomeCombinations}
+              />
             </div>
             <SimilarMarketsSection market={virtualMarket} />
           </div>

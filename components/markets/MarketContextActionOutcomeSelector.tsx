@@ -13,18 +13,13 @@ import { RiArrowDownSLine } from "react-icons/ri";
 import { isCombinatorialToken, CombinatorialToken } from "lib/types/combinatorial";
 
 export type MarketContextActionOutcomeSelectorProps = {
-  market: FullMarketFragment;
+  market?: FullMarketFragment;
   selected: MarketOutcomeAssetId | CombinatorialToken;
   options?: (MarketOutcomeAssetId | CombinatorialToken)[];
   disabled?: boolean;
   hideValue?: boolean;
   onChange: (selected: MarketOutcomeAssetId | CombinatorialToken) => void;
-  // For combo markets, provide the outcome combinations with names and colors
-  outcomeCombinations?: Array<{
-    assetId: CombinatorialToken;
-    name: string;
-    color: string;
-  }>;
+  outcomeCombinations?: { assetId: CombinatorialToken; name: string; color?: string }[];
 };
 
 const SEARCH_ITEMS_THRESHOLD = 5;
@@ -45,32 +40,37 @@ const MarketContextActionOutcomeSelector = ({
   const assetOptions = useMemo(() => {
     if (!options) return [];
     
-    if (outcomeCombinations) {
-      return options.map((asset, index) => {
+    // Use marketId if available, otherwise use a fallback
+    const marketId = market?.marketId || 0;
+    const colors = calcMarketColors(marketId, options.length);
+    
+    return options.map((asset, index) => {
+      const assetIndex = isCombinatorialToken(asset) ? index : getIndexOf(asset) || 0;
+      
+      // Use outcomeCombinations for combo markets, fallback to market categories
+      let category: { name: string } | null = null;
+      let color = colors[index]; // Default color
+      
+      if (isCombinatorialToken(asset) && outcomeCombinations) {
         const combination = outcomeCombinations.find(combo => 
           JSON.stringify(combo.assetId) === JSON.stringify(asset)
         );
-        return {
-          asset,
-          assetIndex: index,
-          category: combination ? { name: combination.name } : null,
-          color: combination?.color || '#000000',
-        };
-      });
-    } else {
-      // For regular markets, use the existing logic
-      const colors = calcMarketColors(market?.marketId!, options.length);
-      return options.map((asset, index) => {
-        const assetIndex = isCombinatorialToken(asset) ? index : getIndexOf(asset) || 0;
-        const category = market?.categories?.[assetIndex];
-        return {
-          asset,
-          assetIndex,
-          category,
-          color: colors[index],
-        };
-      });
-    }
+        if (combination) {
+          category = { name: combination.name };
+          color = combination.color || colors[index]; // Use combo color if available
+        }
+      } else {
+        const marketCategory = market?.categories?.[assetIndex];
+        category = marketCategory ? { name: marketCategory.name || "" } : null;
+      }
+      
+      return {
+        asset,
+        assetIndex,
+        category,
+        color,
+      };
+    });
   }, [options, market?.marketId, market?.categories, outcomeCombinations]);
 
   const searchResults = useMemo(() => {
@@ -110,19 +110,11 @@ const MarketContextActionOutcomeSelector = ({
 
   const getSelectedText = () => {
     if (isCombinatorialToken(selected)) {
-      // For combo markets, find the matching combination
-      if (outcomeCombinations) {
-        const combination = outcomeCombinations.find(combo => 
-          JSON.stringify(combo.assetId) === JSON.stringify(selected)
-        );
-        return combination?.name ?? "";
-      }
-      // Fallback to asset options
       return assetOptions.find(a => 
         JSON.stringify(a.asset) === JSON.stringify(selected)
       )?.category?.name ?? "";
     } else if ('CategoricalOutcome' in selected) {
-      return market.categories?.[selected.CategoricalOutcome[1]]?.name ?? "";
+      return market?.categories?.[selected.CategoricalOutcome[1]]?.name ?? "";
     } else {
       return selected.ScalarOutcome[1];
     }

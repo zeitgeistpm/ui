@@ -50,14 +50,23 @@ const LatestTrades = ({
   limit = 3,
   marketId,
   outcomeAssets,
+  outcomeNames,
+  marketQuestion,
 }: {
   limit?: number;
   marketId?: number;
-  outcomeAssets: CombinatorialToken[] | undefined;
+  outcomeAssets?: CombinatorialToken[];
+  outcomeNames?: string[];
+  marketQuestion?: string;
 }) => {
-  const { data: trades } = useLatestTrades(limit, marketId, outcomeAssets);
+  const { data: trades } = useLatestTrades({ 
+    limit, 
+    marketId, 
+    outcomeAssets,
+    outcomeNames,
+    marketQuestion
+  });
   const now = moment();
-  console.log(outcomeAssets)
   const tableData: TableData[] | undefined = trades?.map((trade) => {
     return {
       trader: (

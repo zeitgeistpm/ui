@@ -25,12 +25,20 @@ const Amm2TradeForm = ({
   selectedTab,
   initialAsset,
   showTabs = true,
+  filteredAssets,
+  outcomeCombinations,
 }: {
   marketId: number;
   poolData?: any;
   selectedTab?: TradeTabType;
   initialAsset?: MarketOutcomeAssetId;
   showTabs?: boolean;
+  filteredAssets?: (MarketOutcomeAssetId | CombinatorialToken)[];
+  outcomeCombinations?: Array<{
+    assetId: CombinatorialToken;
+    name: string;
+    color: string;
+  }>;
 }) => {
   const [tabType, setTabType] = useState<TradeTabType>();
   const [orderType, setOrderType] = useState<OrderType>("market");
@@ -151,6 +159,8 @@ const Amm2TradeForm = ({
                   setOutcomeAsset(asset);
                   setAmountIn(amount);
                 }}
+                filteredAssets={filteredAssets}
+                outcomeCombinations={outcomeCombinations}
               />
             </Tab.Panel>
             <Tab.Panel>
@@ -163,6 +173,8 @@ const Amm2TradeForm = ({
                   setOutcomeAsset(asset);
                   setAmountIn(amount);
                 }}
+                filteredAssets={filteredAssets}
+                outcomeCombinations={outcomeCombinations}
               />
             </Tab.Panel>
               </>

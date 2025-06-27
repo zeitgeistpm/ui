@@ -1,4 +1,3 @@
-import { Disclosure, Tab, Transition } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
 import { FullMarketFragment, MarketStatus } from "@zeitgeistpm/indexer";
 import {
@@ -84,6 +83,10 @@ import { CgLivePhoto } from "react-icons/cg";
 import { FaChevronUp, FaTwitch } from "react-icons/fa";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 import { isCombinatorialToken } from "lib/types/combinatorial";
+import { filterMarketRelevantAssets } from "lib/util/filter-market-assets";
+import { calcMarketColors } from "lib/util/color-calc";
+import { Disclosure, Tab, Transition } from "@headlessui/react";
+import { CombinatorialToken } from "lib/types/combinatorial";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -237,6 +240,86 @@ const Market: NextPage<MarketPageProps> = ({
       parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
   );
 
+  // Filter pool assets to match the market's specific outcomes
+  const relevantPoolAssets: (MarketOutcomeAssetId | CombinatorialToken)[] | undefined = useMemo(() => {
+    console.log('Filtering debug:', {
+      hasPoolData: !!poolData?.assetIds,
+      poolAssetCount: poolData?.assetIds?.length,
+      marketOutcomeAssets: indexedMarket?.outcomeAssets,
+      parsedOutcomeAssets: outcomeAssets?.length
+    });
+
+    if (!poolData?.assetIds) return undefined;
+    
+    // Check if this is a combo pool
+    const isComboPool = poolData.assetIds.some(isCombinatorialToken);
+    console.log('Is combo pool:', isComboPool);
+    
+    if (!isComboPool) {
+      // Regular pool - return all assets
+      console.log('Regular pool, returning all assets');
+      return poolData.assetIds;
+    }
+    
+    // Combo pool - need to determine if this is a regular market or combo market
+    if (!indexedMarket?.outcomeAssets || !outcomeAssets) {
+      console.log('No market outcome assets, returning all pool assets');
+      return poolData.assetIds;
+    }
+    
+    const marketAssetStrings = indexedMarket.outcomeAssets;
+    console.log('Market asset strings:', marketAssetStrings);
+    
+    // Check if market has categorical outcomes (regular market using combo pool)
+    const hasCategorialOutcomes = marketAssetStrings.some(assetString => 
+      assetString.includes('categoricalOutcome')
+    );
+    
+    if (hasCategorialOutcomes) {
+      // Regular market using combo pool - take first N combo tokens
+      console.log('Regular market using combo pool, taking first N tokens:', outcomeAssets.length);
+      const comboTokens = poolData.assetIds.filter(isCombinatorialToken);
+      return comboTokens.slice(0, outcomeAssets.length);
+    }
+    
+    // True combo market - try to match tokens
+    const filtered = poolData.assetIds.filter(poolAsset => {
+      if (isCombinatorialToken(poolAsset)) {
+        const hasMatch = marketAssetStrings.some(marketAssetString => 
+          marketAssetString.includes(poolAsset.CombinatorialToken)
+        );
+        console.log(`Combo token ${poolAsset.CombinatorialToken.slice(0, 8)}... matches:`, hasMatch);
+        return hasMatch;
+      } else {
+        const poolAssetString = JSON.stringify(poolAsset);
+        const hasMatch = marketAssetStrings.some(marketAssetString => 
+          marketAssetString === poolAssetString
+        );
+        console.log(`Regular asset ${poolAssetString} matches:`, hasMatch);
+        return hasMatch;
+      }
+    });
+    
+    console.log('Filtered result:', filtered);
+    
+    // If filtering removed everything, return all non-combo assets as fallback
+    if (filtered.length === 0) {
+      return poolData.assetIds.filter(asset => !isCombinatorialToken(asset));
+    }
+    
+    return filtered;
+  }, [poolData?.assetIds, outcomeAssets, indexedMarket?.outcomeAssets]);
+
+  // Also add some debugging to see what's happening:
+  console.log('Debug filtering:', {
+    poolAssets: poolData?.assetIds?.length,
+    marketAssets: indexedMarket?.outcomeAssets?.length,
+    filtered: relevantPoolAssets?.length,
+    outcomeAssets: outcomeAssets?.length
+  });
+
+  const hasComboAssets = relevantPoolAssets?.some(isCombinatorialToken) || false;
+
   useEffect(() => {
     tradeItem.set({
       assetId: outcomeAssets[0],
@@ -360,6 +443,28 @@ const Market: NextPage<MarketPageProps> = ({
     indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
   );
   
+  // Generate outcomeCombinations for regular markets using combo pools
+  const outcomeCombinations = useMemo(() => {
+    if (!relevantPoolAssets || !market?.categories || !market?.marketId) return undefined;
+    
+    // Only generate for markets that have combinatorial tokens but are regular markets
+    const hasComboTokens = relevantPoolAssets.some(isCombinatorialToken);
+    if (!hasComboTokens) return undefined;
+    
+    const colors = calcMarketColors(market.marketId, relevantPoolAssets.length);
+    
+    return relevantPoolAssets
+      .filter(isCombinatorialToken)
+      .map((asset, index) => {
+        const categoryIndex = index < market.categories!.length ? index : 0;
+        return {
+          assetId: asset,
+          name: market.categories![categoryIndex]?.name || `Outcome ${index}`,
+          color: market.categories![categoryIndex]?.color || colors[index],
+        };
+      });
+  }, [relevantPoolAssets, market?.categories, market?.marketId]);
+
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -550,7 +655,9 @@ const Market: NextPage<MarketPageProps> = ({
                 limit={3} 
                 marketId={marketId} 
                 outcomeAssets={
-                  poolData?.assetIds?.filter(isCombinatorialToken) || undefined
+                  relevantPoolAssets?.some(isCombinatorialToken) 
+                    ? relevantPoolAssets?.filter(isCombinatorialToken) 
+                    : undefined
                 }
               />
               <Link
@@ -611,7 +718,11 @@ const Market: NextPage<MarketPageProps> = ({
             >
               {market?.status === MarketStatus.Active ? (
                 <>
-                  <Amm2TradeForm marketId={marketId} />
+                  <Amm2TradeForm 
+                    marketId={marketId} 
+                    filteredAssets={relevantPoolAssets}
+                    outcomeCombinations={outcomeCombinations}
+                  />
                 </>
               ) : market?.status === MarketStatus.Closed && canReport ? (
                 <>
@@ -637,12 +748,23 @@ const Market: NextPage<MarketPageProps> = ({
           </div>
         </div>
       </div>
-      {market && <MobileContextButtons market={market} />}
+      {market && (
+        <MobileContextButtons 
+          market={market} 
+          relevantPoolAssets={relevantPoolAssets}
+        />
+      )}
     </div>
   );
 };
 
-const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
+const MobileContextButtons = ({ 
+  market, 
+  relevantPoolAssets 
+}: { 
+  market: FullMarketFragment;
+  relevantPoolAssets?: (MarketOutcomeAssetId | CombinatorialToken)[];
+}) => {
   const wallet = useWallet();
 
   const { data: marketStage } = useMarketStage(market);
@@ -659,6 +781,28 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
   const [open, setOpen] = useState(false);
+
+  // Generate outcomeCombinations for regular markets using combo pools
+  const outcomeCombinations = useMemo(() => {
+    if (!relevantPoolAssets || !market?.categories || !market?.marketId) return undefined;
+    
+    // Only generate for markets that have combinatorial tokens but are regular markets
+    const hasComboTokens = relevantPoolAssets.some(isCombinatorialToken);
+    if (!hasComboTokens) return undefined;
+    
+    const colors = calcMarketColors(market.marketId, relevantPoolAssets.length);
+    
+    return relevantPoolAssets
+      .filter(isCombinatorialToken)
+      .map((asset, index) => {
+        const categoryIndex = index < market.categories!.length ? index : 0;
+        return {
+          assetId: asset,
+          name: market.categories![categoryIndex]?.name || `Outcome ${index}`,
+          color: market.categories![categoryIndex]?.color || colors[index],
+        };
+      });
+  }, [relevantPoolAssets, market?.categories, market?.marketId]);
 
   return (
     <>
@@ -690,6 +834,8 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
             selectedTab={
               tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell
             }
+            filteredAssets={relevantPoolAssets}
+            outcomeCombinations={outcomeCombinations}
           />
         ) : market?.status === MarketStatus.Closed && canReport ? (
           <>
