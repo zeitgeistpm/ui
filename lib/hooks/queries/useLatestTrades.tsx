@@ -125,7 +125,7 @@ export const useLatestTrades = (
               const { asset: comboAsset, name: outcomeName } = findComboAssetWithName(
                 swap, 
                 outcomeAssets, 
-                outcomeNames || market?.categories?.map(cat => cat.name)
+                outcomeNames || market?.categories?.map(cat => cat.name).filter((name): name is string => !!name)
               );
               
               if (!comboAsset) return null;

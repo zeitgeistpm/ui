@@ -44,7 +44,7 @@ export const useMarketPriceHistory = (
     async () => {
       if (isIndexedSdk(sdk)) {
         return await getPriceHistory(
-          sdk.indexer.client,
+          sdk.indexer.client as any,
           marketId,
           timeUnit,
           timeValue,

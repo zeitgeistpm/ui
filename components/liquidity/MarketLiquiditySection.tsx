@@ -23,16 +23,18 @@ import { formatNumberCompact } from "lib/util/format-compact";
 
 export const MarketLiquiditySection = ({
   market,
-  poll,
+  pool,
+  comboMarket,
 }: {
   market: FullMarketFragment;
-  poll?: boolean;
+  pool?: boolean;
+  comboMarket?: boolean;
 }) => {
   const marketHasPool = market.neoPool != null;
-
+  console.log(market)
   return (
     <>
-      {poll && !marketHasPool && (
+      {pool && !marketHasPool && (
         <>
           <div className="center">
             <div className="center mr-4 h-12 w-12 bg-white">
@@ -50,6 +52,7 @@ export const MarketLiquiditySection = ({
           <PoolTable
             poolId={market.pool?.poolId ?? market.neoPool?.poolId}
             marketId={Number(market.marketId)}
+            marketData={comboMarket ? market : undefined}
           />
         </>
       )}
@@ -90,8 +93,10 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { pool, neoPool } = market;
 
   const { data: stats } = useMarketsStats([market.marketId]);
-
-  const liquidity = new Decimal(stats?.[0].liquidity ? neoPool?.totalStake : 0);
+  
+  const neoPoolLiquidity = neoPool?.totalStake ?? neoPool?.liquidityParameter ?? neoPool?.liquidity
+  // console.log(neoPool?.liquidity)
+  const liquidity = new Decimal(stats?.[0].liquidity ? neoPoolLiquidity : 0);
 
   const swapFee = new Decimal(Number(pool?.swapFee ?? neoPool?.swapFee ?? 0))
     .div(ZTG)
@@ -162,12 +167,12 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           </LiquidityHeaderButtonItem>
         ) : (
           <>
-            <LiquidityHeaderButtonItem className="border-b-1 sm:border-b-0 sm:border-r-1 md:mr-6 md:border-r-1">
+            {/* <LiquidityHeaderButtonItem className="border-b-1 sm:border-b-0 sm:border-r-1 md:mr-6 md:border-r-1">
               <BuySellFullSetsButton
                 marketId={market.marketId}
                 buttonClassName="h-8 border-gray-300 border-1 rounded-full text-ztg-10-150 px-1 w-full md:w-auto sm:px-6 mx-auto"
               />
-            </LiquidityHeaderButtonItem>
+            </LiquidityHeaderButtonItem> */}
             <LiquidityHeaderButtonItem className="lg:-ml-14">
               <SecondaryButton
                 onClick={() => setManageLiquidityOpen(true)}

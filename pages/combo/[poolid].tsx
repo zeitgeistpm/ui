@@ -36,6 +36,7 @@ import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle, ChevronDown, ExternalLink, X } from "react-feather";
 import { CombinatorialToken } from "lib/types/combinatorial";
+import { poolDeployed } from "zeitgeist-subsquid/src/mappings/neo-swaps";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -337,6 +338,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     marketId_eq: poolId,
     makerAccountId_eq: realAddress,
   });
+  const { data: poolData } = useAmm2Pool(0, poolId)
 
   const [showLiquidityParam, setShowLiquidityParam, unsetShowLiquidityParam] =
     useQueryParamState("showLiquidity");
@@ -363,7 +365,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
   if (!comboMarketData) {
     return <NotFoundPage backText="Back To Markets" backLink="/markets" />;
   }
-
+  console.log(comboMarketData)
   // Create a virtual market object for components that expect a FullMarketFragment
   const virtualMarket = {
     marketId: poolId,
@@ -377,11 +379,10 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     })),
     baseAsset: comboMarketData.baseAsset,
     outcomeAssets: comboMarketData.outcomeCombinations.map((_, index) => `${poolId}-${index}`),
-    pool: {
-      createdAt: new Date().toISOString(), // Use current date as fallback
-      baseAsset: comboMarketData.baseAsset,
+    pool: null,
+    neoPool: {
+      ...poolData
     },
-    neoPool: null, // Not needed for display purposes
     slug: `combo-${poolId}`,
     __typename: "Market" as const,
     creation: "Proposed" as const,
@@ -396,7 +397,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     scalarType: null,
     tags: [],
     volume: "0",
-    liquidity: "1000", // Default value since we don't have direct access
+    liquidity: poolData?.liquidity, // Default value since we don't have direct access
     report: null,
     disputes: [],
     rejectReason: null,
@@ -407,7 +408,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
 
   const hasChart = Boolean(chartSeries && comboMarketData);
   const marketHasPool = true; // Combo markets always have pools
-
+  console.log(virtualMarket)
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -542,7 +543,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
                 leaveTo="transform opacity-0 "
                 show={showLiquidity && Boolean(marketHasPool)}
               >
-                <MarketLiquiditySection poll={false} market={virtualMarket} />
+                <MarketLiquiditySection pool={true} market={virtualMarket} comboMarket={true}/>
               </Transition>
             </div>
           )}

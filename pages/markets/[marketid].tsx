@@ -242,33 +242,23 @@ const Market: NextPage<MarketPageProps> = ({
 
   // Filter pool assets to match the market's specific outcomes
   const relevantPoolAssets: (MarketOutcomeAssetId | CombinatorialToken)[] | undefined = useMemo(() => {
-    console.log('Filtering debug:', {
-      hasPoolData: !!poolData?.assetIds,
-      poolAssetCount: poolData?.assetIds?.length,
-      marketOutcomeAssets: indexedMarket?.outcomeAssets,
-      parsedOutcomeAssets: outcomeAssets?.length
-    });
 
     if (!poolData?.assetIds) return undefined;
     
     // Check if this is a combo pool
     const isComboPool = poolData.assetIds.some(isCombinatorialToken);
-    console.log('Is combo pool:', isComboPool);
     
     if (!isComboPool) {
       // Regular pool - return all assets
-      console.log('Regular pool, returning all assets');
       return poolData.assetIds;
     }
     
     // Combo pool - need to determine if this is a regular market or combo market
     if (!indexedMarket?.outcomeAssets || !outcomeAssets) {
-      console.log('No market outcome assets, returning all pool assets');
       return poolData.assetIds;
     }
     
     const marketAssetStrings = indexedMarket.outcomeAssets;
-    console.log('Market asset strings:', marketAssetStrings);
     
     // Check if market has categorical outcomes (regular market using combo pool)
     const hasCategorialOutcomes = marketAssetStrings.some(assetString => 
@@ -277,7 +267,6 @@ const Market: NextPage<MarketPageProps> = ({
     
     if (hasCategorialOutcomes) {
       // Regular market using combo pool - take first N combo tokens
-      console.log('Regular market using combo pool, taking first N tokens:', outcomeAssets.length);
       const comboTokens = poolData.assetIds.filter(isCombinatorialToken);
       return comboTokens.slice(0, outcomeAssets.length);
     }
@@ -288,19 +277,16 @@ const Market: NextPage<MarketPageProps> = ({
         const hasMatch = marketAssetStrings.some(marketAssetString => 
           marketAssetString.includes(poolAsset.CombinatorialToken)
         );
-        console.log(`Combo token ${poolAsset.CombinatorialToken.slice(0, 8)}... matches:`, hasMatch);
         return hasMatch;
       } else {
         const poolAssetString = JSON.stringify(poolAsset);
         const hasMatch = marketAssetStrings.some(marketAssetString => 
           marketAssetString === poolAssetString
         );
-        console.log(`Regular asset ${poolAssetString} matches:`, hasMatch);
         return hasMatch;
       }
     });
     
-    console.log('Filtered result:', filtered);
     
     // If filtering removed everything, return all non-combo assets as fallback
     if (filtered.length === 0) {
@@ -309,14 +295,6 @@ const Market: NextPage<MarketPageProps> = ({
     
     return filtered;
   }, [poolData?.assetIds, outcomeAssets, indexedMarket?.outcomeAssets]);
-
-  // Also add some debugging to see what's happening:
-  console.log('Debug filtering:', {
-    poolAssets: poolData?.assetIds?.length,
-    marketAssets: indexedMarket?.outcomeAssets?.length,
-    filtered: relevantPoolAssets?.length,
-    outcomeAssets: outcomeAssets?.length
-  });
 
   const hasComboAssets = relevantPoolAssets?.some(isCombinatorialToken) || false;
 
@@ -464,7 +442,7 @@ const Market: NextPage<MarketPageProps> = ({
         };
       });
   }, [relevantPoolAssets, market?.categories, market?.marketId]);
-
+  console.log(market)
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -691,7 +669,6 @@ const Market: NextPage<MarketPageProps> = ({
                   }`}
                 />
               </div>
-
               <Transition
                 enter="transition ease-out duration-100"
                 enterFrom="transform opacity-0 "
@@ -701,7 +678,7 @@ const Market: NextPage<MarketPageProps> = ({
                 leaveTo="transform opacity-0 "
                 show={showLiquidity && Boolean(marketHasPool || poolDeployed)}
               >
-                <MarketLiquiditySection poll={poolDeployed} market={market} />
+                <MarketLiquiditySection pool={poolDeployed} market={market} comboMarket={false}/>
               </Transition>
             </div>
           )}
