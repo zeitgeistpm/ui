@@ -1,6 +1,7 @@
 import { getIndexOf, ZTG, MarketOutcomeAssetId } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
-import { parseAssetIdString } from "./parse-asset-id";
+import { parseAssetIdString, parseAssetIdStringWithCombinatorial } from "./parse-asset-id";
+import { isCombinatorialToken } from "../types/combinatorial";
 
 export const getCurrentPrediction = (
   assets: { price: number; assetId?: string }[],
@@ -20,11 +21,24 @@ export const getCurrentPrediction = (
 
   if (market?.marketType?.categorical) {
     let [highestPrice, highestPriceIndex] = [0, 0];
-    assets.sort(
-      (a, b) =>
-        getIndexOf(parseAssetIdString(a?.assetId) as MarketOutcomeAssetId) -
-        getIndexOf(parseAssetIdString(b?.assetId) as MarketOutcomeAssetId),
-    );
+    
+    // Sort assets by their index, handling both regular assets and combinatorial tokens
+    assets.sort((a, b) => {
+      const assetA = parseAssetIdStringWithCombinatorial(a?.assetId || "");
+      const assetB = parseAssetIdStringWithCombinatorial(b?.assetId || "");
+      
+      // If both are combinatorial tokens, preserve original order
+      if (isCombinatorialToken(assetA) && isCombinatorialToken(assetB)) {
+        return 0;
+      }
+      
+      // If only one is combinatorial, put combinatorial tokens last
+      if (isCombinatorialToken(assetA)) return 1;
+      if (isCombinatorialToken(assetB)) return -1;
+      
+      // Both are regular market outcome assets, use getIndexOf
+      return getIndexOf(assetA as MarketOutcomeAssetId) - getIndexOf(assetB as MarketOutcomeAssetId);
+    });
 
     assets.forEach((asset, index) => {
       if (asset.price > highestPrice) {

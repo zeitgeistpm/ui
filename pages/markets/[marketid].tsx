@@ -68,7 +68,7 @@ import {
   isValidMarketReport,
 } from "lib/types";
 import { MarketDispute } from "lib/types/markets";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { parseAssetIdString, parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -237,7 +237,7 @@ const Market: NextPage<MarketPageProps> = ({
 
   const outcomeAssets = indexedMarket?.outcomeAssets?.map(
     (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+      parseAssetIdStringWithCombinatorial(assetIdString),
   );
 
   // Filter pool assets to match the market's specific outcomes
@@ -752,7 +752,7 @@ const MobileContextButtons = ({
 
   const outcomeAssets = market.outcomeAssets.map(
     (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+      parseAssetIdStringWithCombinatorial(assetIdString),
   );
 
   const { data: tradeItem, set: setTradeItem } = useTradeItem();

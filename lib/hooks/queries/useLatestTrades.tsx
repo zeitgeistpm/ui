@@ -13,7 +13,7 @@ import Decimal from "decimal.js";
 import { BLOCK_TIME_SECONDS } from "lib/constants";
 import { lookupAssetSymbol } from "lib/constants/foreign-asset";
 import { getMarketHeaders, MarketHeader } from "lib/gql/market-header";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { parseAssetIdString, parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 import { useSdkv2 } from "../useSdkv2";
 import { swapsMetaFilter } from "./constants";
 import { CombinatorialToken, isCombinatorialToken } from "lib/types/combinatorial";
@@ -118,8 +118,8 @@ export const useLatestTrades = (
           const trades: TradeItem[] = historicalSwaps
             .map((swap) => {
               const costSymbol = findBaseAssetSymbol(swap.assetIn, swap.assetOut);
-              const assetInId = parseAssetId(swap.assetIn).unwrap();
-              const assetInIsBaseAsset = IOBaseAssetId.is(assetInId);
+              const assetInId = parseAssetIdStringWithCombinatorial(swap.assetIn);
+              const assetInIsBaseAsset = !isCombinatorialToken(assetInId) && IOBaseAssetId.is(assetInId);
 
               // Find which combo token was traded and get its name
               const { asset: comboAsset, name: outcomeName } = findComboAssetWithName(
@@ -156,12 +156,12 @@ export const useLatestTrades = (
           const marketIds = new Set<number>();
 
           historicalSwaps.forEach((swap) => {
-            const assetInId = parseAssetId(swap.assetIn).unwrap();
-            const assetOutId = parseAssetId(swap.assetOut).unwrap();
+            const assetInId = parseAssetIdStringWithCombinatorial(swap.assetIn);
+            const assetOutId = parseAssetIdStringWithCombinatorial(swap.assetOut);
 
-            if (IOMarketOutcomeAssetId.is(assetInId)) {
+            if (!isCombinatorialToken(assetInId) && IOMarketOutcomeAssetId.is(assetInId)) {
               marketIds.add(getMarketIdOf(assetInId));
-            } else if (IOMarketOutcomeAssetId.is(assetOutId)) {
+            } else if (!isCombinatorialToken(assetOutId) && IOMarketOutcomeAssetId.is(assetOutId)) {
               marketIds.add(getMarketIdOf(assetOutId));
             }
           });
@@ -183,8 +183,8 @@ export const useLatestTrades = (
               }
 
               const costSymbol = findBaseAssetSymbol(swap.assetIn, swap.assetOut);
-              const assetInId = parseAssetId(swap.assetIn).unwrap();
-              const assetInIsBaseAsset = IOBaseAssetId.is(assetInId);
+              const assetInId = parseAssetIdStringWithCombinatorial(swap.assetIn);
+              const assetInIsBaseAsset = !isCombinatorialToken(assetInId) && IOBaseAssetId.is(assetInId);
 
               const item: TradeItem = {
                 traderAddress: swap.accountId,
@@ -243,9 +243,17 @@ const findComboAssetWithName = (
 };
 
 const lookupOutcomeAsset = (asset: string, markets: MarketHeader[]) => {
-  const assetId = parseAssetId(asset).unwrap();
+  const assetId = parseAssetIdStringWithCombinatorial(asset);
   const market = lookupMarket(asset, markets);
   console.log(assetId, market)
+  
+  // Handle combinatorial tokens
+  if (isCombinatorialToken(assetId)) {
+    // For combinatorial tokens, we can't use getIndexOf
+    // Return a generic name or try to find it in the market categories
+    return "Combinatorial Outcome";
+  }
+  
   if (IOMarketOutcomeAssetId.is(assetId)) {
     const index = getIndexOf(assetId);
     return market && market.categories[index].name;
@@ -266,7 +274,14 @@ const findBaseAssetSymbol = (asset1: string, asset2: string) => {
 };
 
 const lookupMarket = (asset: string, markets: MarketHeader[]) => {
-  const assetId = parseAssetId(asset).unwrap();
+  const assetId = parseAssetIdStringWithCombinatorial(asset);
+
+  // Handle combinatorial tokens
+  if (isCombinatorialToken(assetId)) {
+    // For combinatorial tokens, we can't use getMarketIdOf
+    // Return null or handle differently based on your needs
+    return null;
+  }
 
   if (IOMarketOutcomeAssetId.is(assetId)) {
     const marketId = getMarketIdOf(assetId);
