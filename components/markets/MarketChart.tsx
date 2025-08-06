@@ -57,7 +57,7 @@ export const CategoricalMarketChart = ({
     //hack to make data end on same time as now
     startDateISOString,
   );
-  console.log(prices)
+
   const chartData = prices
     ?.filter((data) => data.prices.every((p) => p.price != null))
     .map((price) => {

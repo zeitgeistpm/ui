@@ -328,7 +328,7 @@ const Market: NextPage<MarketPageProps> = ({
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
   const baseAsset = parseAssetIdString(indexedMarket?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAsset);
-
+  console.log(metadata)
   const [showTwitchChat, setShowTwitchChat] = useState(true);
 
   const wallet = useWallet();
@@ -442,7 +442,8 @@ const Market: NextPage<MarketPageProps> = ({
         };
       });
   }, [relevantPoolAssets, market?.categories, market?.marketId]);
-  console.log(market)
+  console.log(token)
+
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -653,7 +654,6 @@ const Market: NextPage<MarketPageProps> = ({
               onPoolDeployed={handlePoolDeployed}
             />
           )}
-
           {market && (marketHasPool || poolDeployed) && (
             <div className="my-12">
               <div

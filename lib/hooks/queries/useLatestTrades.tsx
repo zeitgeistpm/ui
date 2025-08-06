@@ -245,7 +245,6 @@ const findComboAssetWithName = (
 const lookupOutcomeAsset = (asset: string, markets: MarketHeader[]) => {
   const assetId = parseAssetIdStringWithCombinatorial(asset);
   const market = lookupMarket(asset, markets);
-  console.log(assetId, market)
   
   // Handle combinatorial tokens
   if (isCombinatorialToken(assetId)) {

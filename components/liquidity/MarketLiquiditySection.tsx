@@ -31,7 +31,6 @@ export const MarketLiquiditySection = ({
   comboMarket?: boolean;
 }) => {
   const marketHasPool = market.neoPool != null;
-  console.log(market)
   return (
     <>
       {pool && !marketHasPool && (
@@ -93,9 +92,8 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { pool, neoPool } = market;
 
   const { data: stats } = useMarketsStats([market.marketId]);
-  
-  const neoPoolLiquidity = neoPool?.totalStake ?? neoPool?.liquidityParameter ?? neoPool?.liquidity
-  // console.log(neoPool?.liquidity)
+
+  const neoPoolLiquidity = neoPool?.totalStake ?? neoPool?.liquidityParameter
   const liquidity = new Decimal(stats?.[0].liquidity ? neoPoolLiquidity : 0);
 
   const swapFee = new Decimal(Number(pool?.swapFee ?? neoPool?.swapFee ?? 0))

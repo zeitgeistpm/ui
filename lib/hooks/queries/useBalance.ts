@@ -47,7 +47,6 @@ export const fetchAssetBalance = async (
   address: string,
   assetId: AssetId | CombinatorialToken,
 ) => {
-  console.log(assetId)
   if (IOZtgAssetId.is(assetId)) {
     const { data } = await api.query.system.account(address);
     return calculateFreeBalance(

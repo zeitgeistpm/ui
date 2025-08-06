@@ -102,7 +102,7 @@ export const MarketCard = ({
         ? img
         : undefined,
   });
-
+  console.log(prediction)
   const { data: cmsMetadata } = useMarketCmsMetadata(marketId);
 
   return (
