@@ -10,14 +10,15 @@ import Decimal from "decimal.js";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-import LimitOrderForm, {
-  LimitBuyOrderForm,
-  LimitSellOrderForm,
-} from "./LimitOrderForm";
-import { ChevronDown } from "react-feather";
-import { init } from "next/dist/compiled/webpack/webpack";
+// Limit orders disabled - commenting out unused imports
+// import LimitOrderForm, {
+//   LimitBuyOrderForm,
+//   LimitSellOrderForm,
+// } from "./LimitOrderForm";
+// import { ChevronDown } from "react-feather";
+// import { init } from "next/dist/compiled/webpack/webpack";
 import { CombinatorialToken, isCombinatorialToken } from "lib/types/combinatorial";
-import { Pool } from "zeitgeist-subsquid/src/types/v51";
+// import { Pool } from "zeitgeist-subsquid/src/types/v51";
 
 const Amm2TradeForm = ({
   marketId,
@@ -41,7 +42,8 @@ const Amm2TradeForm = ({
   }>;
 }) => {
   const [tabType, setTabType] = useState<TradeTabType>();
-  const [orderType, setOrderType] = useState<OrderType>("market");
+  // Limit orders disabled - always use market orders
+  // const [orderType, setOrderType] = useState<OrderType>("market");
   const [showSuccessBox, setShowSuccessBox] = useState(false);
   const [amountReceived, setAmountReceived] = useState<Decimal>();
   const [amountIn, setAmountIn] = useState<Decimal>();
@@ -120,7 +122,7 @@ const Amm2TradeForm = ({
         >
           <div className="flex">
             <Tab.List
-              className={`h-[51px] w-[75%] text-center text-ztg-18-150 font-medium ${
+              className={`h-[51px] w-full text-center text-ztg-18-150 font-medium ${
                 showTabs ? "flex" : "hidden"
               }`}
             >
@@ -139,17 +141,17 @@ const Amm2TradeForm = ({
                 Sell
               </Tab>
             </Tab.List>
-            <OrderTypeSelector
+            {/* Limit orders disabled - hiding order type selector */}
+            {/* <OrderTypeSelector
               onTypeSelected={(type) => {
                 setOrderType(type);
               }}
               value={orderType}
-            />
+            /> */}
           </div>
           <Tab.Panels className="p-[30px]">
-            {orderType === "market" ? (
-              <>
-                            <Tab.Panel>
+            {/* Limit orders disabled - only show market order forms */}
+            <Tab.Panel>
               <BuyForm
                 marketId={marketId}
                 poolData={poolData}
@@ -177,8 +179,8 @@ const Amm2TradeForm = ({
                 outcomeCombinations={outcomeCombinations}
               />
             </Tab.Panel>
-              </>
-            ) : (
+            {/* Limit order forms disabled
+            {orderType === "limit" && (
               <>
                 <Tab.Panel>
                   <LimitBuyOrderForm
@@ -194,6 +196,7 @@ const Amm2TradeForm = ({
                 </Tab.Panel>
               </>
             )}
+            */}
           </Tab.Panels>
         </Tab.Group>
       )}
@@ -201,70 +204,67 @@ const Amm2TradeForm = ({
   );
 };
 
-type OrderType = "market" | "limit";
+// Limit orders disabled - commenting out OrderType and OrderTypeSelector
+// type OrderType = "market" | "limit";
 
-const OrderTypeSelector = ({
-  onTypeSelected,
-  value,
-}: {
-  onTypeSelected: (type: OrderType) => void;
-  value: OrderType;
-}) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+// const OrderTypeSelector = ({
+//   onTypeSelected,
+//   value,
+// }: {
+//   onTypeSelected: (type: OrderType) => void;
+//   value: OrderType;
+// }) => {
+//   const [menuOpen, setMenuOpen] = useState(false);
+//   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const handleTypeClick = (type: OrderType) => {
-    onTypeSelected(type);
-    setMenuOpen(false);
-  };
+//   const handleTypeClick = (type: OrderType) => {
+//     onTypeSelected(type);
+//     setMenuOpen(false);
+//   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [wrapperRef]);
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+//         setMenuOpen(false);
+//       }
+//     };
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => {
+//       document.removeEventListener("mousedown", handleClickOutside);
+//     };
+//   }, [wrapperRef]);
 
-  return (
-    <div className="relative flex w-[25%] items-center justify-center">
-      <button
-        onClick={() => setMenuOpen((open) => !open)}
-        className="flex w-full items-center justify-center px-5"
-      >
-        <div>{value === "market" ? "Market" : "Limit"}</div>
-        <ChevronDown className="ml-auto" size={16} />
-      </button>
+//   return (
+//     <div className="relative flex w-[25%] items-center justify-center">
+//       <button
+//         onClick={() => setMenuOpen((open) => !open)}
+//         className="flex w-full items-center justify-center px-5">
+//         <div>{value === "market" ? "Market" : "Limit"}</div>
+//         <ChevronDown className="ml-auto" size={16} />
+//       </button>
 
-      {menuOpen && (
-        <div
-          ref={wrapperRef}
-          className="absolute top-[52px] flex w-32 flex-col gap-y-3 rounded-lg bg-white p-4 shadow-[0px_4px_20px_0px_#00000040]"
-        >
-          <button
-            className={`${
-              value === "market" ? "font-medium text-black" : "text-sky-600"
-            } `}
-            onClick={() => handleTypeClick("market")}
-          >
-            Market
-          </button>
-          <button
-            className={`${
-              value === "limit" ? "font-medium text-black" : "text-sky-600"
-            } `}
-            onClick={() => handleTypeClick("limit")}
-          >
-            Limit
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
+//       {menuOpen && (
+//         <div
+//           ref={wrapperRef}
+//           className="absolute top-[52px] flex w-32 flex-col gap-y-3 rounded-lg bg-white p-4 shadow-[0px_4px_20px_0px_#00000040]">
+//           <button
+//             className={`${
+//               value === "market" ? "font-medium text-black" : "text-sky-600"
+//             } `}
+//             onClick={() => handleTypeClick("market")}>
+//             Market
+//           </button>
+//           <button
+//             className={`${
+//               value === "limit" ? "font-medium text-black" : "text-sky-600"
+//             } `}
+//             onClick={() => handleTypeClick("limit")}>
+//             Limit
+//           </button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
 
 export default Amm2TradeForm;

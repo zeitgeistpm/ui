@@ -45,21 +45,33 @@ const MarketContextActionOutcomeSelector = ({
     const colors = calcMarketColors(marketId, options.length);
     
     return options.map((asset, index) => {
-      const assetIndex = isCombinatorialToken(asset) ? index : getIndexOf(asset) || 0;
-      
-      // Use outcomeCombinations for combo markets, fallback to market categories
+      let assetIndex: number;
       let category: { name: string } | null = null;
       let color = colors[index]; // Default color
       
-      if (isCombinatorialToken(asset) && outcomeCombinations) {
-        const combination = outcomeCombinations.find(combo => 
-          JSON.stringify(combo.assetId) === JSON.stringify(asset)
-        );
-        if (combination) {
-          category = { name: combination.name };
-          color = combination.color || colors[index]; // Use combo color if available
+      if (isCombinatorialToken(asset)) {
+        if (outcomeCombinations) {
+          // Find the combination that matches this asset
+          const combination = outcomeCombinations.find(combo => 
+            JSON.stringify(combo.assetId) === JSON.stringify(asset)
+          );
+          if (combination) {
+            category = { name: combination.name };
+            color = combination.color || colors[index];
+            assetIndex = index; // Use current position for combinatorial with outcomeCombinations
+          } else {
+            assetIndex = index;
+          }
+        } else {
+          // For combinatorial tokens without outcomeCombinations, use the index directly
+          // since assets are now in natural order matching categories
+          assetIndex = index;
+          const marketCategory = market?.categories?.[assetIndex];
+          category = marketCategory ? { name: marketCategory.name || "" } : null;
         }
       } else {
+        // For regular assets, use getIndexOf
+        assetIndex = getIndexOf(asset) || 0;
         const marketCategory = market?.categories?.[assetIndex];
         category = marketCategory ? { name: marketCategory.name || "" } : null;
       }

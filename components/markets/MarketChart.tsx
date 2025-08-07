@@ -35,6 +35,7 @@ export const CategoricalMarketChart = ({
   resolutionDate: Date;
 }) => {
   const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[1]);
+  const { data: market } = useMarket({ marketId });
 
   const baseAssetId = parseAssetId(baseAsset).unrightOr(undefined);
   const { data: metadata } = useAssetMetadata(baseAssetId);
@@ -62,7 +63,50 @@ export const CategoricalMarketChart = ({
     ?.filter((data) => data.prices.every((p) => p.price != null))
     .map((price) => {
       const time = new Date(price.timestamp).getTime();
-      const assetPrices = price.prices.reduce((obj, val, index) => {
+      
+      // For combinatorial markets, we need to ensure the price data order matches the category order
+      let orderedPrices = price.prices;
+      
+      if (market?.outcomeAssets && market.outcomeAssets.length > 0) {
+        // Check if this is a combinatorial market
+        const firstAsset = market.outcomeAssets[0];
+        const isCombinatorialMarket = typeof firstAsset === 'string' && 
+          (firstAsset.includes('combinatorialToken') || firstAsset.startsWith('0x'));
+        
+        if (isCombinatorialMarket) {
+          // Sort the price data to match market.outcomeAssets order
+          // This ensures v0, v1, etc. correspond to the correct category indices
+          orderedPrices = [...price.prices].sort((a, b) => {
+            const aIndex = market.outcomeAssets.findIndex((marketAsset: any) => {
+              if (typeof marketAsset === 'string') {
+                try {
+                  const parsed = JSON.parse(marketAsset);
+                  return parsed.combinatorialToken && a.assetId.includes(parsed.combinatorialToken);
+                } catch {
+                  return false;
+                }
+              }
+              return a.assetId.includes(JSON.stringify(marketAsset));
+            });
+            
+            const bIndex = market.outcomeAssets.findIndex((marketAsset: any) => {
+              if (typeof marketAsset === 'string') {
+                try {
+                  const parsed = JSON.parse(marketAsset);
+                  return parsed.combinatorialToken && b.assetId.includes(parsed.combinatorialToken);
+                } catch {
+                  return false;
+                }
+              }
+              return b.assetId.includes(JSON.stringify(marketAsset));
+            });
+            
+            return aIndex - bIndex;
+          });
+        }
+      }
+      
+      const assetPrices = orderedPrices.reduce((obj, val, index) => {
         // adjust prices over 1
         return { ...obj, ["v" + index]: val.price > 1 ? 1 : val.price };
       }, {});

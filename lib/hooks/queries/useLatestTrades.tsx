@@ -68,7 +68,7 @@ export const useLatestTrades = (
   const hasComboTokens = outcomeAssets && outcomeAssets.length > 0 && 
     outcomeAssets.every(asset => isCombinatorialToken(asset));
 
-  const query = useQuery(
+    const query = useQuery(
     [id, transactionHistoryKey, limit, marketId, outcomeAssets, outcomeNames],
     async () => {
       if (isIndexedSdk(sdk)) {
@@ -112,7 +112,7 @@ export const useLatestTrades = (
           order: HistoricalSwapOrderByInput.BlockNumberDesc,
           where: whereFilter,
         });
-
+        console.log(historicalSwaps);
         if (hasComboTokens) {
           // Handle combinatorial token trades
           const trades: TradeItem[] = historicalSwaps

@@ -48,6 +48,41 @@ const MarketAssetDetails = ({
 
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
+  
+  // For combinatorial markets, fix the price data ordering
+  const { orderedCategories, orderedSpotPrices, orderedPriceChanges } = (() => {
+    const cats = categories ?? market?.categories;
+    if (!cats || !market?.outcomeAssets || !spotPrices) {
+      return { orderedCategories: cats, orderedSpotPrices: spotPrices, orderedPriceChanges: priceChanges };
+    }
+    
+    const isCombinatorialMarket = market.outcomeAssets.some((asset: any) => 
+      typeof asset === 'string' && asset.includes('combinatorialToken')
+    );
+    
+    if (!isCombinatorialMarket) {
+      return { orderedCategories: cats, orderedSpotPrices: spotPrices, orderedPriceChanges: priceChanges };
+    }
+    
+    // For combinatorial markets, swap the price data to match category order
+    const newSpotPrices = new Map();
+    const newPriceChanges = new Map();
+    
+    newSpotPrices.set(0, spotPrices.get(1));
+    newSpotPrices.set(1, spotPrices.get(0));
+    
+    if (priceChanges) {
+      newPriceChanges.set(0, priceChanges.get(1));
+      newPriceChanges.set(1, priceChanges.get(0));
+    }
+    
+    return { 
+      orderedCategories: cats,
+      orderedSpotPrices: newSpotPrices,
+      orderedPriceChanges: priceChanges ? newPriceChanges : priceChanges 
+    };
+  })();
+  
 
   const totalAssetPrice = spotPrices
     ? Array.from(spotPrices.values()).reduce(
@@ -55,14 +90,15 @@ const MarketAssetDetails = ({
         new Decimal(0),
       )
     : new Decimal(0);
-
-  const tableData: TableData[] | undefined = (
-    categories ?? market?.categories
-  )?.map((category, index) => {
+  const tableData: TableData[] | undefined = orderedCategories?.map((category, index) => {
     const outcomeName = category?.name;
-    const currentPrice = spotPrices?.get(index)?.toNumber();
-    const priceChange = priceChanges?.get(index);
+    const currentPrice = orderedSpotPrices?.get(index)?.toNumber();
+    const priceChange = orderedPriceChanges?.get(index);
+    const impliedPercent = currentPrice != null
+      ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
+      : null;
 
+    console.log(tableData)
     return {
       assetId: market?.pool?.weights[index]?.assetId,
       id: index,
@@ -73,14 +109,10 @@ const MarketAssetDetails = ({
           currentPrice ? usdPrice?.mul(currentPrice) ?? 0 : 0,
         ).toNumber(),
       },
-      pre:
-        currentPrice != null
-          ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
-          : null,
+      pre: impliedPercent,
       change: priceChange,
     };
   });
-
   return <Table columns={columns} data={tableData} />;
 };
 

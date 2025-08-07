@@ -411,7 +411,7 @@ const MarketHeader: FC<{
         ? market.img
         : undefined,
   });
-  console.log(token)
+
   return (
     <header className="flex w-full flex-col gap-4">
       <div className="flex items-start gap-3 xl:items-center">

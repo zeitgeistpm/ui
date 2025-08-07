@@ -6,7 +6,6 @@ import { ZTG } from "@zeitgeistpm/sdk";
 import moment from "moment";
 import Avatar from "components/ui/Avatar";
 import { CombinatorialToken } from "lib/types/combinatorial";
-import { combinatorialTokens } from "zeitgeist-subsquid/src/mappings";
 
 const columns: TableColumn[] = [
   {

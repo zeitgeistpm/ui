@@ -365,7 +365,6 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
   if (!comboMarketData) {
     return <NotFoundPage backText="Back To Markets" backLink="/markets" />;
   }
-  console.log(comboMarketData)
   // Create a virtual market object for components that expect a FullMarketFragment
   const virtualMarket = {
     marketId: poolId,
@@ -408,7 +407,6 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
 
   const hasChart = Boolean(chartSeries && comboMarketData);
   const marketHasPool = true; // Combo markets always have pools
-  console.log(virtualMarket)
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -504,8 +502,8 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
               <LatestTrades 
                 limit={3} 
                 marketId={undefined}
-                outcomeAssets={comboMarketData?.outcomeCombinations.map(combo => combo.assetId)}
-                outcomeNames={comboMarketData?.outcomeCombinations.map(combo => combo.name)}
+                outcomeAssets={comboMarketData?.outcomeCombinations?.map(combo => combo.assetId) || []}
+                outcomeNames={comboMarketData?.outcomeCombinations?.map(combo => combo.name) || []}
                 marketQuestion={comboMarketData?.question}
               />
               <Link

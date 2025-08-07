@@ -24,7 +24,7 @@ export const assetMetadataRootKey = "asset-metadata";
 export const useAssetMetadata = (assetId?: AssetId) => {
   const [sdk, id] = useSdkv2();
   const { data: constants } = useChainConstants();
-  console.log(id, assetMetadataRootKey, assetId, constants)
+
   const query = useQuery(
     [id, assetMetadataRootKey, assetId, constants?.tokenSymbol],
     async () => {
@@ -71,7 +71,6 @@ export const useAssetMetadata = (assetId?: AssetId) => {
       staleTime: Infinity,
     },
   );
-  console.log(query)
   return query;
 };
 

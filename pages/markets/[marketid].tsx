@@ -325,10 +325,10 @@ const Market: NextPage<MarketPageProps> = ({
 
   const { data: marketStage } = useMarketStage(market ?? undefined);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
-  const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
+
   const baseAsset = parseAssetIdString(indexedMarket?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAsset);
-  console.log(metadata)
+
   const [showTwitchChat, setShowTwitchChat] = useState(true);
 
   const wallet = useWallet();
@@ -442,7 +442,6 @@ const Market: NextPage<MarketPageProps> = ({
         };
       });
   }, [relevantPoolAssets, market?.categories, market?.marketId]);
-  console.log(token)
 
   return (
     <div className="mt-6">
@@ -633,9 +632,35 @@ const Market: NextPage<MarketPageProps> = ({
               <LatestTrades 
                 limit={3} 
                 marketId={marketId} 
-                outcomeAssets={
-                  relevantPoolAssets?.some(isCombinatorialToken) 
-                    ? relevantPoolAssets?.filter(isCombinatorialToken) 
+                outcomeAssets={(() => {
+                  if (!relevantPoolAssets?.some(isCombinatorialToken)) return undefined;
+                  
+                  const comboAssets = relevantPoolAssets.filter(isCombinatorialToken);
+                  
+                  // Apply consistent ordering to match market.outcomeAssets
+                  if (!indexedMarket?.outcomeAssets) return comboAssets;
+                  
+                  return comboAssets.sort((a, b) => {
+                    const aIndex = indexedMarket.outcomeAssets.findIndex(marketAsset => {
+                      if (typeof marketAsset === 'string' && marketAsset.includes(a.CombinatorialToken)) {
+                        return true;
+                      }
+                      return JSON.stringify(marketAsset).includes(a.CombinatorialToken);
+                    });
+                    
+                    const bIndex = indexedMarket.outcomeAssets.findIndex(marketAsset => {
+                      if (typeof marketAsset === 'string' && marketAsset.includes(b.CombinatorialToken)) {
+                        return true;
+                      }
+                      return JSON.stringify(marketAsset).includes(b.CombinatorialToken);
+                    });
+                    
+                    return aIndex - bIndex;
+                  });
+                })()}
+                outcomeNames={
+                  relevantPoolAssets?.some(isCombinatorialToken)
+                    ? indexedMarket?.categories?.map(cat => cat.name)
                     : undefined
                 }
               />

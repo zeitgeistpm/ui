@@ -100,12 +100,89 @@ const SellForm = ({
     ? new Decimal(0) // Combo markets don't have creator fees
     : new Decimal(perbillToNumber(market?.creatorFee ?? 0));
 
-  const outcomeAssets = filteredAssets ||
-    poolData?.outcomeCombinations?.map((combo: any) => combo.assetId) ||
-    pool?.assetIds.map(
-      (assetIdString) =>
-        isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
-    );
+  // Sort assets to match the order in market.outcomeAssets  
+  const applyConsistentOrdering = (assets: (MarketOutcomeAssetId | CombinatorialToken)[]) => {
+    if (!market?.outcomeAssets) return assets;
+    
+    // For combinatorial tokens, sort to match market.outcomeAssets order
+    const hasCombinatorialTokens = assets.some(asset => isCombinatorialToken(asset));
+    if (hasCombinatorialTokens) {
+      const sortedAssets = [...assets].sort((a, b) => {
+        if (!isCombinatorialToken(a) || !isCombinatorialToken(b)) return 0;
+        
+        // Find indices in market.outcomeAssets
+        const aIndex = market.outcomeAssets.findIndex(marketAsset => {
+          if (typeof marketAsset === 'string') {
+            try {
+              const parsed = JSON.parse(marketAsset);
+              return parsed.combinatorialToken === a.CombinatorialToken;
+            } catch {
+              return false;
+            }
+          }
+          return JSON.stringify(marketAsset) === JSON.stringify(a);
+        });
+        
+        const bIndex = market.outcomeAssets.findIndex(marketAsset => {
+          if (typeof marketAsset === 'string') {
+            try {
+              const parsed = JSON.parse(marketAsset);
+              return parsed.combinatorialToken === b.CombinatorialToken;
+            } catch {
+              return false;
+            }
+          }
+          return JSON.stringify(marketAsset) === JSON.stringify(b);
+        });
+        
+        return aIndex - bIndex;
+      });
+      
+      return sortedAssets;
+    }
+    
+    return assets;
+  };
+  
+  const outcomeAssets = (() => {
+    if (filteredAssets) {
+      return applyConsistentOrdering(filteredAssets);
+    }
+    
+    if (poolData?.outcomeCombinations) {
+      const assets = poolData.outcomeCombinations.map((combo: any) => combo.assetId);
+      return applyConsistentOrdering(assets);
+    }
+    
+    if (pool?.assetIds) {
+      const assets = pool.assetIds.map(
+        (assetIdString) =>
+          isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+      );
+      return applyConsistentOrdering(assets);
+    }
+    
+    return undefined;
+  })();
+
+  // Reorder outcomeCombinations to match the reordered assets
+  const reorderedOutcomeCombinations = (() => {
+    if (!outcomeCombinations || !outcomeAssets) return outcomeCombinations;
+    
+    // Create a new outcomeCombinations array that matches the order of outcomeAssets
+    return outcomeAssets.map(asset => {
+      if (!isCombinatorialToken(asset)) return null;
+      
+      const matchingCombo = outcomeCombinations.find(combo => 
+        JSON.stringify(combo.assetId) === JSON.stringify(asset)
+      );
+      return matchingCombo || null;
+    }).filter(combo => combo !== null) as Array<{
+      assetId: CombinatorialToken;
+      name: string;
+      color: string;
+    }>;
+  })();
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | CombinatorialToken | undefined
   >(initialAsset ?? outcomeAssets?.[0]);
@@ -341,10 +418,10 @@ const SellForm = ({
           <div>
             {(market || poolData) && selectedAsset && (
               <MarketContextActionOutcomeSelector
-                market={poolData ? undefined : market ?? undefined}
+                market={market ?? undefined}
                 selected={selectedAsset}
                 options={outcomeAssets}
-                outcomeCombinations={outcomeCombinations}
+                outcomeCombinations={undefined}
                 onChange={(assetId) => {
                   setSelectedAsset(assetId);
                   trigger();
