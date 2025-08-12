@@ -112,7 +112,7 @@ export const useLatestTrades = (
           order: HistoricalSwapOrderByInput.BlockNumberDesc,
           where: whereFilter,
         });
-        console.log(historicalSwaps);
+
         if (hasComboTokens) {
           // Handle combinatorial token trades
           const trades: TradeItem[] = historicalSwaps

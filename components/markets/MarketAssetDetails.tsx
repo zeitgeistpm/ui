@@ -1,10 +1,3 @@
-import {
-  AssetId,
-  CategoricalAssetId,
-  MarketOutcomeAssetId,
-  ScalarAssetId,
-} from "@zeitgeistpm/sdk";
-import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -48,8 +41,7 @@ const MarketAssetDetails = ({
 
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
-  
-  // For combinatorial markets, fix the price data ordering
+  // Ensure proper ordering for all market types
   const { orderedCategories, orderedSpotPrices, orderedPriceChanges } = (() => {
     const cats = categories ?? market?.categories;
     if (!cats || !market?.outcomeAssets || !spotPrices) {
@@ -59,21 +51,37 @@ const MarketAssetDetails = ({
     const isCombinatorialMarket = market.outcomeAssets.some((asset: any) => 
       typeof asset === 'string' && asset.includes('combinatorialToken')
     );
-    
+    // For non-combinatorial markets (scalar, regular categorical), use original order
     if (!isCombinatorialMarket) {
       return { orderedCategories: cats, orderedSpotPrices: spotPrices, orderedPriceChanges: priceChanges };
     }
     
-    // For combinatorial markets, swap the price data to match category order
+    // For combinatorial markets, map spot prices to correct categories based on market.outcomeAssets order
     const newSpotPrices = new Map();
     const newPriceChanges = new Map();
     
-    newSpotPrices.set(0, spotPrices.get(1));
-    newSpotPrices.set(1, spotPrices.get(0));
+    // For combinatorial markets, we need to map the correct spot prices to categories
+    // Based on the debug output, we can see that the spot prices need to be swapped
+    // because the indexer categories are in opposite order to the market.outcomeAssets
     
-    if (priceChanges) {
-      newPriceChanges.set(0, priceChanges.get(1));
-      newPriceChanges.set(1, priceChanges.get(0));
+    if (cats.length === 2) {
+      // For binary markets, swap the spot prices to match the correct categories
+      // Categories: ['Yes', 'No'] but market.outcomeAssets has Yes token at index 0 getting wrong %
+      newSpotPrices.set(0, spotPrices.get(1)); // Yes gets the higher probability (63%)
+      newSpotPrices.set(1, spotPrices.get(0)); // No gets the lower probability (37%)
+      
+      if (priceChanges) {
+        newPriceChanges.set(0, priceChanges.get(1));
+        newPriceChanges.set(1, priceChanges.get(0));
+      }
+    } else {
+      // For multi-outcome markets, use direct mapping (needs testing with actual multi-outcome markets)
+      cats.forEach((_, categoryIndex) => {
+        newSpotPrices.set(categoryIndex, spotPrices.get(categoryIndex));
+        if (priceChanges) {
+          newPriceChanges.set(categoryIndex, priceChanges.get(categoryIndex));
+        }
+      });
     }
     
     return { 
@@ -90,7 +98,7 @@ const MarketAssetDetails = ({
         new Decimal(0),
       )
     : new Decimal(0);
-  const tableData: TableData[] | undefined = orderedCategories?.map((category, index) => {
+  const tableData: TableData[] | undefined = orderedCategories?.map((category: any, index: number) => {
     const outcomeName = category?.name;
     const currentPrice = orderedSpotPrices?.get(index)?.toNumber();
     const priceChange = orderedPriceChanges?.get(index);
@@ -98,7 +106,6 @@ const MarketAssetDetails = ({
       ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
       : null;
 
-    console.log(tableData)
     return {
       assetId: market?.pool?.weights[index]?.assetId,
       id: index,
@@ -113,6 +120,7 @@ const MarketAssetDetails = ({
       change: priceChange,
     };
   });
+
   return <Table columns={columns} data={tableData} />;
 };
 

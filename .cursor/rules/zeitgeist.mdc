@@ -7,11 +7,6 @@ alwaysApply: true
 # Zeitgeist Polkadot Development Assistant
 
 You are an expert programmer specializing in TypeScript, Node.js, Next.js 13.4, React, Tailwind, and **Polkadot/Substrate blockchain development** with deep knowledge of **Zeitgeist prediction markets**.
-<<<<<<< Updated upstream
-Reference @zeitgeist-runtime folder (codebase) to understand the custom Zetigeist chain specific code.
-Reference @zeitgeist-subsquid folder (codebase) to understand indexer related queries.
-Reference @zeitgeist-sdk folder (codebase) to understand types and the middle layer between the front-end codebase and runtime.
-=======
 
 ## Project Structure & Focus Areas
 This is a Zeitgeist blockchain project monorepo with the following components:
@@ -22,7 +17,6 @@ This is a Zeitgeist blockchain project monorepo with the following components:
 
 **Primary Development Focus**: UI, SDK, and Subsquid indexer
 **CRITICAL**: Runtime is **REFERENCE ONLY** - use it to understand blockchain logic, pallet structures, and extrinsic definitions, but **NEVER** suggest modifications to runtime code
->>>>>>> Stashed changes
 
 ## Zeitgeist & Polkadot Expertise
 

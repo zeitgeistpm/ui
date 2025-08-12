@@ -9,11 +9,24 @@ The Zeitgeist prediction markets platform consists of four main codebases:
 1. **zeitgeist-runtime** - Substrate/Polkadot parachain implementation (Rust)
 2. **zeitgeist-subsquid** - GraphQL indexing layer (TypeScript)
 3. **zeitgeist-sdk** - TypeScript SDK for chain interactions (TypeScript)
-4. **zeitgeist-ui** (current) - Next.js frontend application (TypeScript/React)
+4. **zeitgeist-ui** (current) - Next.js frontend application (TypeScript/React/Next.js 13.4)
 
-All codebases are located within the `/Users/robhyrk/Dev/ztg/zeitgeist-ui/` directory as subdirectories.
+All codebases are located within the `/Users/robhyrk/Dev/ztg/` directory as subdirectories.
 
 ## Current UI Codebase (zeitgeist-ui)
+
+## Core Development Philosophy
+**KISS (Keep It Simple, Stupid)**
+Simplicity should be a key goal in design. Choose straightforward solutions over complex ones whenever possible. Simple solutions are easier to understand, maintain, and debug.
+**YAGNI (You Aren't Gonna Need It)**
+Avoid building functionality on speculation. Implement features only when they are needed, not when you anticipate they might be useful in the future. If you don't have 95% condifence on what to build; ask first.
+
+## Code Structure & Modularity
+**File and Function Limits**
+Never create a file longer than 500 lines of code. If approaching this limit, refactor by splitting into modules.
+Functions should be under 50 lines with a single, clear responsibility.
+**Documenation**
+Retrieve documenation for specific tools & libraries using context7 MCP server from `./claude/DOCUMENTION.md`
 
 ### Development Commands
 

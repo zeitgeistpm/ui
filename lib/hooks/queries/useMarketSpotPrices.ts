@@ -84,8 +84,7 @@ const calcMarketPricesAmm2 = (pool: Amm2Pool, market?: any) => {
   );
   
   if (isCombinatorialMarket) {
-    // For combinatorial markets, we need to sort the assets to match the market.outcomeAssets order
-    // This ensures that the spot prices are returned in the correct order for category mapping
+
     let orderedAssetIds = [...pool.assetIds];
     
     if (market?.outcomeAssets) {
