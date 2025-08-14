@@ -23,7 +23,6 @@ const AssetTradingButtons = ({
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
   const marketId = getMarketIdOf(assetId);
   const { data: market } = useMarket({ marketId });
-  console.log(assetId)
   return (
     <>
       <div className="flex justify-end gap-x-2">

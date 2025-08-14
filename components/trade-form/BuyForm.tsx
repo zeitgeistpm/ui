@@ -320,7 +320,6 @@ const BuyForm = ({
 
       const maxPrice = newSpotPrice.plus(DEFAULT_SLIPPAGE_PERCENTAGE / 100); // adjust by slippage
       const approxOutcomeAmount = amountDecimal.mul(maxPrice); // this will be slightly higher than the expect amount out and therefore may pick up extra order suggestions
-      console.log(selectedAsset, sellAssets);
       const selectedOrders = selectOrdersForMarketBuy(
         maxPrice,
         orders

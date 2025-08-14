@@ -97,7 +97,6 @@ export const useChainConstants = () => {
           appealBond: consts.court.appealBond.toNumber() / ZTG,
         },
       };
-      console.log(config)
       return config;
     },
     {
