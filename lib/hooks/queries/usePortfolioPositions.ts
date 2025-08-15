@@ -3,7 +3,6 @@ import {
   AssetId,
   CategoricalAssetId,
   Context,
-  parseAssetId,
   getAssetWeight,
   getIndexOf,
   getMarketIdOf,
@@ -17,6 +16,8 @@ import {
   IOForeignAssetId,
   IOCategoricalAssetId,
   IOScalarAssetId,
+  parseAssetId,
+  MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import Decimal from "decimal.js";
@@ -41,6 +42,11 @@ import {
   lookupAssetPrice,
   useAmm2MarketSpotPrices,
 } from "./useAmm2MarketSpotPrices";
+import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
+import {
+  CombinatorialToken,
+  isCombinatorialToken,
+} from "lib/types/combinatorial";
 
 export type UsePortfolioPositions = {
   /**
@@ -175,7 +181,8 @@ export const usePortfolioPositions = (
 
   const filter = rawPositions.data
     ?.map((position) => {
-      const assetId = parseAssetId(position.assetId).unwrap();
+      const assetId: MarketOutcomeAssetId | CombinatorialToken =
+        position.assetId;
       if (IOMarketOutcomeAssetId.is(assetId)) {
         return {
           marketId: getMarketIdOf(assetId),
@@ -185,6 +192,9 @@ export const usePortfolioPositions = (
         return {
           poolId: assetId.PoolShare,
         };
+      }
+      if (isCombinatorialToken(assetId)) {
+        return null;
       }
       return null;
     })
@@ -216,7 +226,7 @@ export const usePortfolioPositions = (
   const poolAssetBalancesFilter =
     rawPositions.data
       ?.flatMap((position) => {
-        const assetId = parseAssetId(position.assetId).unwrap();
+        const assetId = position.assetId;
         const pool = pools.data?.find((pool) => {
           if (IOPoolShareAssetId.is(assetId)) {
             return pool.poolId === assetId.PoolShare;
@@ -224,12 +234,18 @@ export const usePortfolioPositions = (
           if (IOMarketOutcomeAssetId.is(assetId)) {
             return pool.marketId === getMarketIdOf(assetId);
           }
+          if (isCombinatorialToken(assetId)) {
+            return null;
+          }
         });
 
         if (!pool) return null;
 
         const assetIds = pool.weights
-          .map((w) => parseAssetId(w.assetId).unwrap())
+          .map((w) => {
+            const assetId = parseAssetIdStringWithCombinatorial(w.assetId);
+            return assetId;
+          })
           .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
 
         return assetIds.map((assetId) => ({
@@ -250,7 +266,7 @@ export const usePortfolioPositions = (
 
   const userAssetBalances = useAccountAssetBalances(
     rawPositions.data?.map((position) => ({
-      assetId: parseAssetId(position.assetId).unwrap(),
+      assetId: position.assetId,
       account: address,
     })) ?? [],
   );
@@ -274,7 +290,7 @@ export const usePortfolioPositions = (
     let positionsData: Position[] = [];
 
     for (const position of rawPositions?.data ?? []) {
-      const assetId = parseAssetId(position.assetId).unwrap();
+      const assetId = position.assetId;
 
       let pool: IndexedPool<Context> | undefined;
       let marketId: number | undefined;
@@ -337,8 +353,8 @@ export const usePortfolioPositions = (
       }
 
       let outcome = IOCategoricalAssetId.is(assetId)
-        ? market.categories?.[getIndexOf(assetId)]?.name ??
-          JSON.stringify(assetId.CategoricalOutcome)
+        ? (market.categories?.[getIndexOf(assetId)]?.name ??
+          JSON.stringify(assetId.CategoricalOutcome))
         : IOScalarAssetId.is(assetId)
           ? getIndexOf(assetId) == 1
             ? "Short"
@@ -346,7 +362,7 @@ export const usePortfolioPositions = (
           : "unknown";
 
       let color = IOScalarAssetId.is(assetId)
-        ? market.categories?.[getIndexOf(assetId)]?.color ?? "#ffffff"
+        ? (market.categories?.[getIndexOf(assetId)]?.color ?? "#ffffff")
         : IOScalarAssetId.is(assetId)
           ? getIndexOf(assetId) == 1
             ? "rgb(255, 0, 0)"

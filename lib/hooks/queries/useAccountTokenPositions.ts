@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 import { useSdkv2 } from "../useSdkv2";
 
 export const positionsRootKey = "account-token-positions";
@@ -22,7 +22,7 @@ export const useAccountTokenPositions = (address?: string) => {
         });
 
         return accountBalances.map(({ assetId, balance }) => ({
-          assetId: parseAssetIdString(assetId)!,
+          assetId: parseAssetIdStringWithCombinatorial(assetId)!,
           balance,
         }));
       }
