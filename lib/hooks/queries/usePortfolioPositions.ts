@@ -292,6 +292,7 @@ export const usePortfolioPositions = (
 
     for (const position of rawPositions?.data ?? []) {
       const assetId = position.assetId;
+      // TODO: console.log(assetId);
 
       let pool: IndexedPool<Context> | undefined;
       let marketId: number | undefined;
@@ -315,6 +316,9 @@ export const usePortfolioPositions = (
 
       if (isCombinatorialToken(assetId)) {
         // allow combinatorial tokens
+        // TODO query all associated markets for a combinatorial token
+        // TODO: How to show combinatorial tokens if there are multiple markets associated to them?
+        // TODO: query the market information from the indexer
       }
 
       if (!market) {
