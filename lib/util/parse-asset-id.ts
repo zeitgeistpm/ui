@@ -1,5 +1,8 @@
 import { AssetId, parseAssetId, MarketOutcomeAssetId } from "@zeitgeistpm/sdk";
-import { CombinatorialToken, isCombinatorialToken } from "lib/types/combinatorial";
+import {
+  CombinatorialToken,
+  isCombinatorialToken,
+} from "lib/types/combinatorial";
 
 export const parseAssetIdString = (
   assetId?: string | AssetId,
@@ -14,22 +17,24 @@ export const parseAssetIdString = (
  */
 export const parseAssetIdStringWithCombinatorial = (
   assetIdString: string,
-): MarketOutcomeAssetId | CombinatorialToken => {
+): AssetId | CombinatorialToken => {
   // First check if it's a combinatorial token
-  if (typeof assetIdString === 'string') {
+  if (typeof assetIdString === "string") {
     try {
       const parsed = JSON.parse(assetIdString);
-      
+
       // Check if it has the lowercase 'combinatorialToken' field
       if (parsed.combinatorialToken) {
         const hexValue = parsed.combinatorialToken;
-        const formattedHex = hexValue.startsWith('0x') ? hexValue : `0x${hexValue}`;
-        
+        const formattedHex = hexValue.startsWith("0x")
+          ? hexValue
+          : `0x${hexValue}`;
+
         return {
-          CombinatorialToken: formattedHex as `0x${string}`
+          CombinatorialToken: formattedHex as `0x${string}`,
         };
       }
-      
+
       // Check if it's already in the correct format
       if (isCombinatorialToken(parsed)) {
         return parsed;
@@ -38,7 +43,7 @@ export const parseAssetIdStringWithCombinatorial = (
       // Not valid JSON, continue to regular parsing
     }
   }
-  
+
   // Fall back to regular asset ID parsing
-  return parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId;
+  return parseAssetId(assetIdString).unwrap() as AssetId;
 };

@@ -67,7 +67,9 @@ export type UsePortfolioPositions = {
   breakdown?: PorfolioBreakdown;
 };
 
-export type Position<T extends AssetId = AssetId> = {
+export type Position<
+  T extends AssetId | CombinatorialToken = AssetId | CombinatorialToken,
+> = {
   /**
    * The asset id of the position.
    */
@@ -181,8 +183,7 @@ export const usePortfolioPositions = (
 
   const filter = rawPositions.data
     ?.map((position) => {
-      const assetId: MarketOutcomeAssetId | CombinatorialToken =
-        position.assetId;
+      const assetId: AssetId | CombinatorialToken = position.assetId;
       if (IOMarketOutcomeAssetId.is(assetId)) {
         return {
           marketId: getMarketIdOf(assetId),
@@ -235,7 +236,7 @@ export const usePortfolioPositions = (
             return pool.marketId === getMarketIdOf(assetId);
           }
           if (isCombinatorialToken(assetId)) {
-            return null;
+            return true;
           }
         });
 
@@ -310,6 +311,10 @@ export const usePortfolioPositions = (
         marketId = getMarketIdOf(assetId);
         market = markets.data?.find((m) => m.marketId === marketId);
         pool = pools.data?.find((pool) => pool.marketId === marketId);
+      }
+
+      if (isCombinatorialToken(assetId)) {
+        // allow combinatorial tokens
       }
 
       if (!market) {

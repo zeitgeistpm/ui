@@ -12,7 +12,7 @@ export type UseAccountAssetBalances = {
    */
   get: (
     account: string,
-    assetId: AssetId,
+    assetId: AssetId | CombinatorialToken,
   ) =>
     | UseQueryResult<
         {
@@ -44,7 +44,7 @@ export type UseAccountAssetBalances = {
  */
 export type AccountAssetIdPair = {
   account?: string;
-  assetId: MarketOutcomeAssetId | CombinatorialToken;
+  assetId: AssetId | CombinatorialToken;
 };
 
 export const accountAssetBalanceRootKey = "account-asset-balance";
