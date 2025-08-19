@@ -155,7 +155,6 @@ const Portfolio: NextPageWithLayout = () => {
                     }
 
                     if (marketPositions.length === 0) return <></>;
-
                     return (
                       <MarketPositions
                         key={market.marketId}
@@ -174,7 +173,7 @@ const Portfolio: NextPageWithLayout = () => {
                 )
               ) : (
                 <EmptyPortfolio
-                  headerText="You don't have any assets"
+                  headerText="You don't have any assets right now"
                   bodyText="View markets to trade assets"
                   buttonText="View Markets"
                   buttonLink="/markets"
