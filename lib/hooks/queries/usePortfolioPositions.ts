@@ -3,6 +3,7 @@ import {
   AssetId,
   CategoricalAssetId,
   Context,
+  parseAssetId,
   getAssetWeight,
   getIndexOf,
   getMarketIdOf,
@@ -16,8 +17,6 @@ import {
   IOForeignAssetId,
   IOCategoricalAssetId,
   IOScalarAssetId,
-  parseAssetId,
-  MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import Decimal from "decimal.js";
@@ -195,7 +194,11 @@ export const usePortfolioPositions = (
         };
       }
       if (isCombinatorialToken(assetId)) {
-        return null;
+        // TODO: getPoolIdOf should return the pool id of the combinatorial pool associated to the combinatorialToken.
+        // TODO: For this, at combinatorial pool creation (CombinatorialPoolDeployed event) the indexer should store a mapping from combinatorial token hash to relevant information
+        return {
+          poolId: getPoolIdOf(assetId.CombinatorialToken),
+        };
       }
       return null;
     })
@@ -218,6 +221,7 @@ export const usePortfolioPositions = (
     block24HoursAgo,
   );
 
+  // TODO: This does not include the neo-swaps pool account ids, only the old swap pools. Query the neo-swap pool account ids from the indexer through the PoolDeployed event for legacy pools and CombinatorialPoolDeployed account_id for the combi pools.
   const poolAccountIds = usePoolAccountIds(pools.data);
 
   const poolsTotalIssuance = useTotalIssuanceForPools(
@@ -236,17 +240,15 @@ export const usePortfolioPositions = (
             return pool.marketId === getMarketIdOf(assetId);
           }
           if (isCombinatorialToken(assetId)) {
-            return true;
+            // TODO: getPoolIdOf should return the pool id of the combinatorial pool associated to the combinatorialToken.
+            return pool.poolId === getPoolIdOf(assetId.CombinatorialToken);
           }
         });
 
         if (!pool) return null;
 
         const assetIds = pool.weights
-          .map((w) => {
-            const assetId = parseAssetIdStringWithCombinatorial(w.assetId);
-            return assetId;
-          })
+          .map((w) => parseAssetIdStringWithCombinatorial(w.assetId))
           .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
 
         return assetIds.map((assetId) => ({
@@ -292,11 +294,12 @@ export const usePortfolioPositions = (
 
     for (const position of rawPositions?.data ?? []) {
       const assetId = position.assetId;
-      // TODO: console.log(assetId);
 
       let pool: IndexedPool<Context> | undefined;
       let marketId: number | undefined;
       let market: FullMarketFragment | undefined;
+      let marketsForCombiPool: FullMarketFragment[] | undefined;
+      let marketIdsForCombiPool: number[] | undefined;
 
       if (IOZtgAssetId.is(assetId) || IOForeignAssetId.is(assetId)) {
         continue;
@@ -311,14 +314,15 @@ export const usePortfolioPositions = (
       if (IOMarketOutcomeAssetId.is(assetId)) {
         marketId = getMarketIdOf(assetId);
         market = markets.data?.find((m) => m.marketId === marketId);
+        // TODO: beware: there could be multiple combinatorial pools with this marketId. So, find the legacy (standard) pool
         pool = pools.data?.find((pool) => pool.marketId === marketId);
       }
 
       if (isCombinatorialToken(assetId)) {
-        // allow combinatorial tokens
-        // TODO query all associated markets for a combinatorial token
-        // TODO: How to show combinatorial tokens if there are multiple markets associated to them?
-        // TODO: query the market information from the indexer
+        // allow combinatorial tokens that can have multiple markets associated with them 
+        pool = pools.data?.find((pool) => pool.poolId === getPoolIdOf(assetId.CombinatorialToken));
+        marketsForCombiPool = markets.data?.filter((m) => m.marketId in pool?.poolType?.combinatorial ? pool?.poolType?.combinatorial : false);
+        marketIdsForCombiPool = marketsForCombiPool?.map((m) => m.marketId);
       }
 
       if (!market) {
@@ -362,8 +366,8 @@ export const usePortfolioPositions = (
       }
 
       let outcome = IOCategoricalAssetId.is(assetId)
-        ? (market.categories?.[getIndexOf(assetId)]?.name ??
-          JSON.stringify(assetId.CategoricalOutcome))
+        ? market.categories?.[getIndexOf(assetId)]?.name ??
+          JSON.stringify(assetId.CategoricalOutcome)
         : IOScalarAssetId.is(assetId)
           ? getIndexOf(assetId) == 1
             ? "Short"
@@ -371,7 +375,7 @@ export const usePortfolioPositions = (
           : "unknown";
 
       let color = IOScalarAssetId.is(assetId)
-        ? (market.categories?.[getIndexOf(assetId)]?.color ?? "#ffffff")
+        ? market.categories?.[getIndexOf(assetId)]?.color ?? "#ffffff"
         : IOScalarAssetId.is(assetId)
           ? getIndexOf(assetId) == 1
             ? "rgb(255, 0, 0)"
