@@ -11,6 +11,7 @@ import { memoize } from "lodash-es";
 import * as batshit from "@yornaath/batshit";
 import { useSdkv2 } from "../useSdkv2";
 import { marketMetaFilter } from "./constants";
+import { isCombinatorialToken, CombinatorialToken, getCombinatorialHash,  } from "lib/types/combinatorial";
 
 export const marketsRootQuery = "markets";
 
@@ -94,9 +95,12 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
 
 export const lookupAssetMetadata = (
   market: FullMarketFragment,
-  assetId: MarketOutcomeAssetId,
+  assetId: MarketOutcomeAssetId | CombinatorialToken,
 ) => {
-  if (IOCategoricalAssetId.is(assetId)) {
+  if(isCombinatorialToken(assetId)) {
+    const index = market.outcomeAssets.findIndex((asset) => asset.includes(assetId.CombinatorialToken));
+    return market.categories?.[index];
+  }else if (IOCategoricalAssetId.is(assetId)) {
     return market.categories?.[assetId.CategoricalOutcome[1]];
   } else {
     const scalarIndex = assetId.ScalarOutcome[1] === "Long" ? 0 : 1;
