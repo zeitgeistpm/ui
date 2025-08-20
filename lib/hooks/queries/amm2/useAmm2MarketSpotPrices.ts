@@ -3,17 +3,17 @@ import { AssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { calculateSpotPrice } from "lib/util/amm2";
 import { getApiAtBlock } from "lib/util/get-api-at";
-import { useSdkv2 } from "../useSdkv2";
+import { useSdkv2 } from "../../useSdkv2";
 
 export const amm2MarketSpotPricesRootKey = "amm2-market-spot-prices";
 
 export const useAmm2MarketSpotPrices = (
-  marketIds?: number[],
+  poolIds?: number[],
   blockNumber?: number,
 ) => {
   const [sdk, id] = useSdkv2();
 
-  const enabled = !!sdk && !!marketIds && isRpcSdk(sdk);
+  const enabled = !!sdk && !!poolIds && isRpcSdk(sdk);
   const query = useQuery(
     [id, amm2MarketSpotPricesRootKey, blockNumber],
 
@@ -22,7 +22,7 @@ export const useAmm2MarketSpotPrices = (
       const api = await getApiAtBlock(sdk.api, blockNumber);
 
       const pools = await Promise.all(
-        marketIds.map((marketId) => api.query.neoSwaps.pools(marketId)),
+        poolIds.map((poolId) => api.query.neoSwaps.pools(poolId)),
       );
 
       const prices: { [key: string]: Decimal } = {};

@@ -45,6 +45,7 @@ const batcher = memoize((sdk: Sdk<RpcContext>) => {
     name: poolTotalIssuanceRootQueryKey,
     fetcher: async (ids) => {
       const data = await sdk.api.query.tokens.totalIssuance.multi(
+        // TODO: Does not work for neo-swaps, since it uses a liquidity tree and not PoolShare
         ids.map((id) => ({ PoolShare: id })),
       );
 

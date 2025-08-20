@@ -40,12 +40,13 @@ import { ScoringRule } from "@zeitgeistpm/indexer";
 import {
   lookupAssetPrice,
   useAmm2MarketSpotPrices,
-} from "./useAmm2MarketSpotPrices";
+} from "./amm2/useAmm2MarketSpotPrices";
 import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 import {
   CombinatorialToken,
   isCombinatorialToken,
 } from "lib/types/combinatorial";
+import { useAmm2MarketIdsToLegacyPoolIds } from "./amm2/useAmm2MarketIdsToLegacyPoolIds";
 
 export type UsePortfolioPositions = {
   /**
@@ -213,17 +214,20 @@ export const usePortfolioPositions = (
         market.scoringRule === ScoringRule.Lmsr,
     )
     .map((m) => m.marketId);
+  const { data: amm2MarketIdsToLegacyPoolIds } = useAmm2MarketIdsToLegacyPoolIds(amm2MarketIds);
 
-  const { data: amm2SpotPrices } = useAmm2MarketSpotPrices(amm2MarketIds);
+  // TODO: It should also include the prices of the combi pool tokens and not just legacy pool tokens.
+  const { data: amm2SpotPrices } = useAmm2MarketSpotPrices(amm2MarketIdsToLegacyPoolIds);
 
   const { data: amm2SpotPrices24HoursAgo } = useAmm2MarketSpotPrices(
-    amm2MarketIds,
+    amm2MarketIdsToLegacyPoolIds,
     block24HoursAgo,
   );
 
   // TODO: This does not include the neo-swaps pool account ids, only the old swap pools. Query the neo-swap pool account ids from the indexer through the PoolDeployed event for legacy pools and CombinatorialPoolDeployed account_id for the combi pools.
   const poolAccountIds = usePoolAccountIds(pools.data);
 
+  // TODO: This does not work for neo-swaps, since it uses a liquidity tree and not PoolShare
   const poolsTotalIssuance = useTotalIssuanceForPools(
     pools.data?.map((p) => p.poolId) ?? [],
   );
@@ -253,6 +257,7 @@ export const usePortfolioPositions = (
 
         return assetIds.map((assetId) => ({
           assetId,
+          // TODO: This should be the pool account id for the pool id associated to the assetId
           account: poolAccountIds[pool.poolId],
         }));
       })
@@ -315,6 +320,7 @@ export const usePortfolioPositions = (
         marketId = getMarketIdOf(assetId);
         market = markets.data?.find((m) => m.marketId === marketId);
         // TODO: beware: there could be multiple combinatorial pools with this marketId. So, find the legacy (standard) pool
+        // TODO: "pools" does not include neo-swaps pools, but it should
         pool = pools.data?.find((pool) => pool.marketId === marketId);
       }
 

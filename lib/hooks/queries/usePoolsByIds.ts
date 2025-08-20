@@ -20,6 +20,7 @@ export const usePoolsByIds = (poolQueries?: PoolGetQuery[]) => {
     [id, rootKey, poolQueries],
     async () => {
       if (poolQueries && isIndexedSdk(sdk)) {
+        // TODO: Does this include neo-swaps pools? If not, then we should also query the neo-swaps pools.
         return sdk.model.swaps.listPools({
           where: {
             OR: [
