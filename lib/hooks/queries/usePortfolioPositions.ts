@@ -205,7 +205,7 @@ export const usePortfolioPositions = (
     })
     .filter(isNotNull);
 
-  const pools = usePoolsByIds(filter);
+  const oldSwapPools = usePoolsByIds(filter);
   const markets = useMarketsByIds(filter);
   const amm2MarketIds = markets.data
     ?.filter(
@@ -217,6 +217,7 @@ export const usePortfolioPositions = (
   const { data: amm2MarketIdsToLegacyPoolIds } = useAmm2MarketIdsToLegacyPoolIds(amm2MarketIds);
 
   // TODO: It should also include the prices of the combi pool tokens and not just legacy pool tokens.
+  // TODO: find all combinatorial pool ids from the combinatorial tokens and put them in here too!
   const { data: amm2SpotPrices } = useAmm2MarketSpotPrices(amm2MarketIdsToLegacyPoolIds);
 
   const { data: amm2SpotPrices24HoursAgo } = useAmm2MarketSpotPrices(
@@ -225,49 +226,45 @@ export const usePortfolioPositions = (
   );
 
   // TODO: This does not include the neo-swaps pool account ids, only the old swap pools. Query the neo-swap pool account ids from the indexer through the PoolDeployed event for legacy pools and CombinatorialPoolDeployed account_id for the combi pools.
-  const poolAccountIds = usePoolAccountIds(pools.data);
+  const oldSwapPoolAccountIds = usePoolAccountIds(oldSwapPools.data);
 
   // TODO: This does not work for neo-swaps, since it uses a liquidity tree and not PoolShare
-  const poolsTotalIssuance = useTotalIssuanceForPools(
-    pools.data?.map((p) => p.poolId) ?? [],
+  const oldSwapPoolsTotalIssuance = useTotalIssuanceForPools(
+    oldSwapPools.data?.map((p) => p.poolId) ?? [],
   );
 
-  const poolAssetBalancesFilter =
+  const oldSwapPoolAssetBalancesFilter =
     rawPositions.data
       ?.flatMap((position) => {
         const assetId = position.assetId;
-        const pool = pools.data?.find((pool) => {
+        const oldSwapPool = oldSwapPools.data?.find((pool) => {
           if (IOPoolShareAssetId.is(assetId)) {
             return pool.poolId === assetId.PoolShare;
           }
           if (IOMarketOutcomeAssetId.is(assetId)) {
             return pool.marketId === getMarketIdOf(assetId);
           }
-          if (isCombinatorialToken(assetId)) {
-            // TODO: getPoolIdOf should return the pool id of the combinatorial pool associated to the combinatorialToken.
-            return pool.poolId === getPoolIdOf(assetId.CombinatorialToken);
-          }
+          // combinatorial tokens should not be present in old swap pools
         });
 
-        if (!pool) return null;
+        if (!oldSwapPool) return null;
 
-        const assetIds = pool.weights
-          .map((w) => parseAssetIdStringWithCombinatorial(w.assetId))
+        const assetIds = oldSwapPool.weights
+          .map((w) => parseAssetId(w.assetId))
           .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
 
         return assetIds.map((assetId) => ({
           assetId,
-          // TODO: This should be the pool account id for the pool id associated to the assetId
-          account: poolAccountIds[pool.poolId],
+          account: oldSwapPoolAccountIds[oldSwapPool.poolId],
         }));
       })
       .filter(isNotNull) ?? [];
 
   //Todo: we can use useAccountTokenPositions for this to reduce it to a single query issue #1945
-  const poolAssetBalances = useAccountAssetBalances(poolAssetBalancesFilter);
+  const oldSwapPoolAssetBalances = useAccountAssetBalances(oldSwapPoolAssetBalancesFilter);
 
   const poolAssetBalances24HoursAgo = useAccountAssetBalances(
-    poolAssetBalancesFilter,
+    oldSwapPoolAssetBalancesFilter,
     block24HoursAgo,
     { enabled: Boolean(now?.block) },
   );
@@ -282,11 +279,11 @@ export const usePortfolioPositions = (
   const positions = useMemo<Position[] | null>(() => {
     const stillLoading =
       rawPositions.isLoading ||
-      pools.isLoading ||
+      oldSwapPools.isLoading ||
       markets.isLoading ||
       !ztgPrice ||
-      poolAssetBalances.isLoading ||
-      !poolsTotalIssuance ||
+      oldSwapPoolAssetBalances.isLoading ||
+      !oldSwapPoolsTotalIssuance ||
       userAssetBalances.isLoading ||
       poolAssetBalances24HoursAgo.isLoading ||
       isTradeHistoryLoading;
@@ -311,7 +308,7 @@ export const usePortfolioPositions = (
       }
 
       if (IOPoolShareAssetId.is(assetId)) {
-        pool = pools?.data?.find((pool) => pool.poolId === assetId.PoolShare);
+        pool = oldSwapPools?.data?.find((pool) => pool.poolId === assetId.PoolShare);
         marketId = pool?.marketId;
         market = markets.data?.find((m) => m.marketId === marketId);
       }
@@ -321,7 +318,7 @@ export const usePortfolioPositions = (
         market = markets.data?.find((m) => m.marketId === marketId);
         // TODO: beware: there could be multiple combinatorial pools with this marketId. So, find the legacy (standard) pool
         // TODO: "pools" does not include neo-swaps pools, but it should
-        pool = pools.data?.find((pool) => pool.marketId === marketId);
+        pool = oldSwapPools.data?.find((pool) => pool.marketId === marketId);
       }
 
       if (isCombinatorialToken(assetId)) {

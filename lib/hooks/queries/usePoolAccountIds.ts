@@ -19,7 +19,6 @@ export const usePoolAccountIds = (pools?: Pool<Context>[]) => {
               return {
                 poolId: pool.poolId,
                 accountId: (
-                  // TODO: This does only work for the old swap pools, not for neo-swap pools
                   await sdk.api.rpc.swaps.poolAccountId(pool.poolId)
                 ).toString(),
               };

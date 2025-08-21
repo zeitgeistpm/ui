@@ -4,7 +4,7 @@ import SecondaryButton from "components/ui/SecondaryButton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import { useAccountAmm2Pool } from "lib/hooks/queries/useAccountAmm2Pools";
+import { useAccountAmm2Pool } from "lib/hooks/queries/amm2/useAccountAmm2Pools";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";

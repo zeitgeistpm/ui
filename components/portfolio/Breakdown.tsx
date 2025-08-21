@@ -4,7 +4,7 @@ import Decimal from "decimal.js";
 import { PorfolioBreakdown } from "lib/hooks/queries/usePortfolioPositions";
 import { formatNumberLocalized } from "lib/util";
 import { useMemo } from "react";
-import { useAccountAmm2Pool } from "lib/hooks/queries/useAccountAmm2Pools";
+import { useAccountAmm2Pool } from "lib/hooks/queries/amm2/useAccountAmm2Pools";
 
 export type PortfolioBreakdownProps =
   | {

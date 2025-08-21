@@ -2,11 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { ZTG, isIndexedSdk } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { calculateSpotPrice } from "lib/util/amm2";
-import { useSdkv2 } from "../useSdkv2";
+import { useSdkv2 } from "../../useSdkv2";
 import { getMarketHeaders } from "lib/gql/market-header";
-import { useAllForeignAssetUsdPrices } from "./useAssetUsdPrice";
+import { useAllForeignAssetUsdPrices } from "../useAssetUsdPrice";
 import { lookUpAssetPrice } from "lib/util/lookup-price";
-import { useZtgPrice } from "./useZtgPrice";
+import { useZtgPrice } from "../useZtgPrice";
 
 export const accountAmm2PoolsKey = "account-amm2-pools";
 
