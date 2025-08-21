@@ -49,7 +49,8 @@ export const useAmm2Pool = (marketId: number, poolId: number, activeMarket?: any
 
       const res = await sdk.api.query.neoSwaps.pools(poolIdToUse);
       
-      const unwrappedRes = res && res.unwrap()
+      // Check if the result is Some before unwrapping
+      const unwrappedRes = res && res.isSome ? res.unwrap() : null;
 
       if (unwrappedRes) {
         const reserves: ReserveMap = new Map();
@@ -75,7 +76,6 @@ export const useAmm2Pool = (marketId: number, poolId: number, activeMarket?: any
 
         // Sort assets to match market.outcomeAssets order
         const sortedAssetIds = sortAssetsByMarketOrder(assetIds, activeMarket?.outcomeAssets);
-        console.log(sortedAssetIds)
         // Replace assetIds with sorted version if different
         if (sortedAssetIds !== assetIds) {
           assetIds.length = 0;
@@ -121,6 +121,9 @@ export const useAmm2Pool = (marketId: number, poolId: number, activeMarket?: any
         };
         return pool;
       }
+      
+      // Return null if pool doesn't exist
+      return null;
     },
     {
       enabled: enabled,

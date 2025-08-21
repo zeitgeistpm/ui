@@ -38,7 +38,6 @@ const PoolTable = ({
   marketId: number;
   marketData?: any; // The complete pool data from combo markets
 }) => {
-  console.log(marketData)
   // Only fetch data if marketData is not provided
   const { data: pool } = usePool(!marketData && poolId != null ? { poolId } : undefined);
   const { data: market } = useMarket(!marketData ? { marketId } : undefined);
@@ -61,7 +60,6 @@ const PoolTable = ({
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   
   // Only fetch amm2Pool if we don't have marketData
-  console.log(activeMarket)
   const { data: amm2Pool, isLoading: isAmm2PoolLoading } = useAmm2Pool(
     !marketData ? marketId : activeMarket?.neoPool?.poolId ?? undefined, 
     !marketData ? poolId ?? 0 : 0,

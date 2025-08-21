@@ -60,7 +60,7 @@ export const useMarketSpotPrices = (
         market?.status !== "Resolved"
           ? market.scoringRule === ScoringRule.AmmCdaHybrid ||
             market.scoringRule === ScoringRule.Lmsr
-            ? calcMarketPricesAmm2(amm2Pool!, market)
+            ? amm2Pool ? calcMarketPricesAmm2(amm2Pool, market) : new Map()
             : calcMarketPrices(market, basePoolBalance!, balances!)
           : calcResolvedMarketPrices(market);
 
@@ -76,6 +76,11 @@ export const useMarketSpotPrices = (
 
 const calcMarketPricesAmm2 = (pool: Amm2Pool, market?: any) => {
   const spotPrices: MarketPrices = new Map();
+  
+  // Return empty map if pool doesn't have reserves
+  if (!pool || !pool.reserves) {
+    return spotPrices;
+  }
   
   // Check if this is a combinatorial market (all keys are hex strings)
   const isCombinatorialMarket = Array.from(pool.reserves.keys()).every(

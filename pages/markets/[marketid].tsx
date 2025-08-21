@@ -218,7 +218,6 @@ const Market: NextPage<MarketPageProps> = ({
   const { marketid } = router.query;
   const marketId = Number(marketid);
   const { realAddress } = useWallet();
-  console.log(marketId)
   const {data: poolData} = useAmm2Pool(marketId, 0)
 
   const { data: orders, isLoading: isOrdersLoading } = useOrders({
