@@ -38,9 +38,13 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
 
   const updateQuery = useCallback<MarketListQueryUpdater>(
     (update) => {
-      const filters = update.filters ?? query.filters;
-      const ordering = update.ordering ?? query.ordering;
-      const liquidityOnly = update.liquidityOnly ?? query.liquidityOnly;
+      // Get the current query from the URL at the time of calling
+      const currentQueryParams = getQueryParams(router.asPath);
+      const currentQuery = parseQuery(currentQueryParams);
+      
+      const filters = update.filters ?? currentQuery.filters;
+      const ordering = update.ordering ?? currentQuery.ordering;
+      const liquidityOnly = update.liquidityOnly ?? currentQuery.liquidityOnly;
       const newQuery = { filters, ordering, liquidityOnly };
       router.replace(
         {
@@ -50,7 +54,7 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
         { shallow: true, scroll: false },
       );
     },
-    [routerPath, query],
+    [router], // Only depend on router, not on query
   );
 
   return { ...query, updateQuery };

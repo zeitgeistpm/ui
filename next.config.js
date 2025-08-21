@@ -16,4 +16,18 @@ module.exports = withPlaiceholder({
     ],
   },
   staticPageGenerationTimeout: 300, //5 mins
+  webpack: (config, { isServer, dev }) => {
+    if (dev && !isServer) {
+      // Suppress React warnings about fetchPriority in development
+      const originalEntry = config.entry;
+      config.entry = async () => {
+        const entries = await originalEntry();
+        if (entries['main.js'] && !entries['main.js'].includes('./lib/suppress-warnings.js')) {
+          entries['main.js'].unshift('./lib/suppress-warnings.js');
+        }
+        return entries;
+      };
+    }
+    return config;
+  },
 });

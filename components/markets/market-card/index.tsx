@@ -20,7 +20,7 @@ import { useMarketImage } from "lib/hooks/useMarketImage";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import dynamic from "next/dynamic";
-import Image from "next/image";
+import SimpleImage from "components/ui/SimpleImage";
 import { getCurrentPrediction } from "lib/util/assets";
 
 const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
@@ -128,8 +128,7 @@ export const MarketCard = ({
               <MarketFavoriteToggle marketId={marketId} />
             </div>
             <div className="relative min-h-[54px] min-w-[54px] rounded-lg bg-gray-400 bg-opacity-30">
-              <Image
-                priority
+              <SimpleImage
                 alt={"Market image"}
                 src={image}
                 fill
@@ -138,7 +137,6 @@ export const MarketCard = ({
                   objectFit: "cover",
                   objectPosition: "50% 50%",
                 }}
-                sizes={"54px"}
               />
             </div>
             <h5 className="line-clamp-2 h-fit w-full pr-4 text-base duration-200">
@@ -302,12 +300,11 @@ const MarketCardDetails = ({
         ) : (
           <Skeleton width={30} height={12} />
         )}
-        <Image
-          width={12}
-          height={12}
+        <SimpleImage
           src={imagePath}
           alt="Currency token logo"
           className="rounded-full"
+          style={{ width: "12px", height: "12px" }}
         />
       </div>
     </div>

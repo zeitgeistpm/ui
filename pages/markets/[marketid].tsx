@@ -495,7 +495,7 @@ const Market: NextPage<MarketPageProps> = ({
                   )}
                 </Tab>
                 <div className="flex flex-1 items-center">
-                  <button className="ml-auto flex items-center gap-1">
+                  <div className="ml-auto flex items-center gap-1">
                     <Toggle
                       className="w-6"
                       checked={showTwitchChat}
@@ -510,7 +510,7 @@ const Market: NextPage<MarketPageProps> = ({
                         showTwitchChat ? "text-twitch-purple" : "text-gray-400"
                       }
                     />
-                  </button>
+                  </div>
                 </div>
               </Tab.List>
 

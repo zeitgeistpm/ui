@@ -1,3 +1,4 @@
+import "lib/suppress-warnings";
 import "react-datetime/css/react-datetime.css";
 import "styles/index.css";
 
@@ -24,8 +25,11 @@ const hotjarSiteId = process.env["NEXT_PUBLIC_HOTJAR_SITE_ID"];
 const isProduction =
   process.env.NEXT_PUBLIC_SITE_URL === "https://app.zeitgeist.pm";
 
+// Wrapper component that safely handles props for Fragment
+const FragmentWrapper = ({ children }) => <>{children}</>;
+
 const MyApp = ({ Component, pageProps }) => {
-  const Layout = Component.Layout ? Component.Layout : React.Fragment;
+  const Layout = Component.Layout || FragmentWrapper;
   const router = useRouter();
   const wallet = useWallet();
   const { initWeb3Auth } = useWeb3Wallet();

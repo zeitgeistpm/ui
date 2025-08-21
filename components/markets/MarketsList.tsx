@@ -1,5 +1,5 @@
 import { ScalarRangeType } from "@zeitgeistpm/sdk";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Decimal from "decimal.js";
 import { useInView } from "react-intersection-observer";
 
@@ -27,6 +27,12 @@ const useChangeQuery = (
   withLiquidityOnly?: boolean,
 ) => {
   const queryState = useMarketsUrlQuery();
+  const updateQueryRef = useRef(queryState.updateQuery);
+  
+  // Keep ref updated
+  useEffect(() => {
+    updateQueryRef.current = queryState.updateQuery;
+  });
 
   useEffect(() => {
     if (filters == null) {
@@ -37,7 +43,7 @@ const useChangeQuery = (
       const filterByType = filters.filter((f) => f.type === filterType);
       newFilters[filterType] = filterByType.map((f) => f.value);
     }
-    queryState?.updateQuery({
+    updateQueryRef.current({
       filters: newFilters,
     });
   }, [filters]);
@@ -46,14 +52,14 @@ const useChangeQuery = (
     if (orderBy == null) {
       return;
     }
-    queryState?.updateQuery({ ordering: orderBy });
+    updateQueryRef.current({ ordering: orderBy });
   }, [orderBy]);
 
   useEffect(() => {
     if (withLiquidityOnly == null) {
       return;
     }
-    queryState?.updateQuery({ liquidityOnly: withLiquidityOnly });
+    updateQueryRef.current({ liquidityOnly: withLiquidityOnly });
   }, [withLiquidityOnly]);
 };
 
