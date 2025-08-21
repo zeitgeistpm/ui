@@ -51,7 +51,7 @@ export const MarketLiquiditySection = ({
           <PoolTable
             poolId={market.pool?.poolId ?? market.neoPool?.poolId}
             marketId={Number(market.marketId)}
-            marketData={comboMarket ? market : undefined}
+            marketData={market}
           />
         </>
       )}

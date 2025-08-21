@@ -34,7 +34,8 @@ const LiquidityModalAmm2 = ({
   marketId: number;
 }) => {
   const wallet = useWallet();
-  const { data: pool } = useAmm2Pool(marketId);
+
+  const { data: pool } = useAmm2Pool(marketId, 0);
   const baseAsset = pool && parseAssetId(pool.baseAsset).unrightOr(undefined);
   const { data: metadata } = useAssetMetadata(baseAsset);
 

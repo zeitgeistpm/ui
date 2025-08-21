@@ -10,6 +10,7 @@ import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { CombinatorialToken, CombinatorialTokenString, unwrapCombinatorialToken, getCombinatorialHash, isCombinatorialToken } from "lib/types/combinatorial";
+import { sortAssetsByMarketOrder } from "lib/util/sort-assets-by-market";
 export const amm2PoolKey = "amm2-pool";
 
 type ReserveMap = Map<number | "Long" | "Short" | CombinatorialTokenString , Decimal>;
@@ -33,39 +34,64 @@ type PoolAccount = {
   fees: Decimal;
 };
 
-export const useAmm2Pool = (marketId?: number, poolId?: number) => {
+export const useAmm2Pool = (marketId: number, poolId: number, activeMarket?: any) => {
   const [sdk, id] = useSdkv2();
 
   const enabled = !!sdk && marketId != null && poolId != null && isRpcSdk(sdk);
-
+  //TODO: improve this logic in the futre. right now we know legacy markets have the same poolId as marketId
+  const legacy = marketId === poolId
   const query = useQuery(
     [id, amm2PoolKey, marketId],
     async () => {
       if (!enabled) return;
 
-      const legacyPoolId = Number(await sdk.api.query.neoSwaps.marketIdToPoolId(marketId));
+      const poolIdToUse = legacy ? Number(await sdk.api.query.neoSwaps.marketIdToPoolId(marketId)) : poolId;
 
-      const res = await sdk.api.query.neoSwaps.pools(legacyPoolId ? legacyPoolId : poolId);
+      const res = await sdk.api.query.neoSwaps.pools(poolIdToUse);
       
-      const unwrappedRes = res.unwrap();
+      const unwrappedRes = res && res.unwrap()
 
       if (unwrappedRes) {
         const reserves: ReserveMap = new Map();
         const assetIds: (MarketOutcomeAssetId | CombinatorialToken)[] = [];
+        // Temporary storage for reserves
+        const tempReserves: Map<string | number | "Long" | "Short", Decimal> = new Map();
+        
         unwrappedRes.reserves.forEach((reserve, asset) => {
           const assetId = parseAssetIdString(asset.toString());
           if (IOMarketOutcomeAssetId.is(assetId)) {
-            reserves.set(
-              IOCategoricalAssetId.is(assetId)
-                ? assetId.CategoricalOutcome[1]
-                : assetId.ScalarOutcome[1],
-              new Decimal(reserve.toString()),
-            );
+            const key = IOCategoricalAssetId.is(assetId)
+              ? assetId.CategoricalOutcome[1]
+              : assetId.ScalarOutcome[1];
+            tempReserves.set(key, new Decimal(reserve.toString()));
             assetIds.push(assetId);
           } else {
             //Combinatorial markets
-            assetIds.push(unwrapCombinatorialToken(asset.toString()))
-            reserves.set(getCombinatorialHash(asset.toString()), new Decimal(reserve.toString()))
+            const unwrappedToken = unwrapCombinatorialToken(asset.toString());
+            assetIds.push(unwrappedToken);
+            tempReserves.set(unwrappedToken.CombinatorialToken, new Decimal(reserve.toString()));
+          }
+        });
+
+        // Sort assets to match market.outcomeAssets order
+        const sortedAssetIds = sortAssetsByMarketOrder(assetIds, activeMarket?.outcomeAssets);
+        console.log(sortedAssetIds)
+        // Replace assetIds with sorted version if different
+        if (sortedAssetIds !== assetIds) {
+          assetIds.length = 0;
+          assetIds.push(...sortedAssetIds);
+        }
+
+        // Build reserves Map in the sorted order
+        assetIds.forEach(asset => {
+          const key = IOMarketOutcomeAssetId.is(asset)
+            ? (IOCategoricalAssetId.is(asset) 
+                ? asset.CategoricalOutcome[1] 
+                : asset.ScalarOutcome[1])
+            : asset.CombinatorialToken;
+          const value = tempReserves.get(key);
+          if (value) {
+            reserves.set(key, value);
           }
         });
 
@@ -77,11 +103,9 @@ export const useAmm2Pool = (marketId?: number, poolId?: number) => {
               fees: new Decimal(node.fees.toString()),
             };
           });
-        
-        const finalPoolId = legacyPoolId === 0 ? Number(poolId) : legacyPoolId;
 
         const pool: Amm2Pool = {
-          poolId: finalPoolId,
+          poolId: poolIdToUse,
           accountId: unwrappedRes.accountId.toString(),
           baseAsset: parseAssetIdString(unwrappedRes.collateral.toString())!,
           liquidity: new Decimal(unwrappedRes.liquidityParameter.toString()),

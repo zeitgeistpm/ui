@@ -345,7 +345,7 @@ const LimitOrderForm = ({
                   selected={asset}
                   options={outcomeAssets}
                   onChange={(assetId) => {
-                    onAssetChange?.(assetId);
+                    onAssetChange?.(assetId as any); //TODO: remove any
                   }}
                 />
               )}

@@ -50,7 +50,6 @@ const JoinPoolForm = ({
             ? "0"
             : new Decimal(assetAmount).mul(ZTG).toFixed(0);
         });
-
         try {
           return sdk.api.tx.neoSwaps.join(
             marketId,

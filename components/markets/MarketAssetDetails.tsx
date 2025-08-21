@@ -6,6 +6,7 @@ import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { sortCategoriesByMarketOrder } from "lib/util/sort-assets-by-market";
 import dynamic from "next/dynamic";
 
 const columns: TableColumn[] = [
@@ -41,56 +42,14 @@ const MarketAssetDetails = ({
 
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
-  // Ensure proper ordering for all market types
-  const { orderedCategories, orderedSpotPrices, orderedPriceChanges } = (() => {
-    const cats = categories ?? market?.categories;
-    if (!cats || !market?.outcomeAssets || !spotPrices) {
-      return { orderedCategories: cats, orderedSpotPrices: spotPrices, orderedPriceChanges: priceChanges };
-    }
-    
-    const isCombinatorialMarket = market.outcomeAssets.some((asset: any) => 
-      typeof asset === 'string' && asset.includes('combinatorialToken')
-    );
-    // For non-combinatorial markets (scalar, regular categorical), use original order
-    if (!isCombinatorialMarket) {
-      return { orderedCategories: cats, orderedSpotPrices: spotPrices, orderedPriceChanges: priceChanges };
-    }
-    
-    // For combinatorial markets, map spot prices to correct categories based on market.outcomeAssets order
-    const newSpotPrices = new Map();
-    const newPriceChanges = new Map();
-    
-    // For combinatorial markets, we need to map the correct spot prices to categories
-    // Based on the debug output, we can see that the spot prices need to be swapped
-    // because the indexer categories are in opposite order to the market.outcomeAssets
-    
-    if (cats.length === 2) {
-      // For binary markets, swap the spot prices to match the correct categories
-      // Categories: ['Yes', 'No'] but market.outcomeAssets has Yes token at index 0 getting wrong %
-      newSpotPrices.set(0, spotPrices.get(1)); // Yes gets the higher probability (63%)
-      newSpotPrices.set(1, spotPrices.get(0)); // No gets the lower probability (37%)
-      
-      if (priceChanges) {
-        newPriceChanges.set(0, priceChanges.get(1));
-        newPriceChanges.set(1, priceChanges.get(0));
-      }
-    } else {
-      // For multi-outcome markets, use direct mapping (needs testing with actual multi-outcome markets)
-      cats.forEach((_, categoryIndex) => {
-        newSpotPrices.set(categoryIndex, spotPrices.get(categoryIndex));
-        if (priceChanges) {
-          newPriceChanges.set(categoryIndex, priceChanges.get(categoryIndex));
-        }
-      });
-    }
-    
-    return { 
-      orderedCategories: cats,
-      orderedSpotPrices: newSpotPrices,
-      orderedPriceChanges: priceChanges ? newPriceChanges : priceChanges 
-    };
-  })();
   
+  // Use utility function to handle all ordering logic
+  const { orderedCategories, orderedSpotPrices, orderedPriceChanges } = sortCategoriesByMarketOrder(
+    categories ?? market?.categories ?? [],
+    spotPrices ?? undefined,
+    priceChanges ?? undefined,
+    market?.outcomeAssets
+  );
 
   const totalAssetPrice = spotPrices
     ? Array.from(spotPrices.values()).reduce(

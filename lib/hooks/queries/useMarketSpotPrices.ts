@@ -23,7 +23,7 @@ export const marketSpotPricesKey = "market-spot-prices";
 export type MarketPrices = Map<number, Decimal>;
 
 export const useMarketSpotPrices = (
-  marketId?: number,
+  marketId: number,
   blockNumber?: number,
 ) => {
   const [sdk, id] = useSdkv2();
@@ -41,8 +41,7 @@ export const useMarketSpotPrices = (
     pool?.poolId,
     blockNumber,
   );
-
-  const { data: amm2Pool } = useAmm2Pool(marketId, market?.neoPool?.poolId);
+  const { data: amm2Pool } = useAmm2Pool(marketId, market?.neoPool?.poolId ?? 0);
 
   const enabled = isRpcSdk(sdk) && marketId != null && !!market;
   const query = useQuery(

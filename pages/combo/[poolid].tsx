@@ -36,7 +36,6 @@ import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle, ChevronDown, ExternalLink, X } from "react-feather";
 import { CombinatorialToken } from "lib/types/combinatorial";
-import { poolDeployed } from "zeitgeist-subsquid/src/mappings/neo-swaps";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,

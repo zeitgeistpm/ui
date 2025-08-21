@@ -15,7 +15,6 @@ import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
 import { calcMarketColors } from "lib/util/color-calc";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { FullMarketFragment, ScoringRule } from "@zeitgeistpm/indexer";
-import { isCombinatorialToken } from "lib/types/combinatorial";
 
 const poolTableColums: TableColumn[] = [
   {
@@ -39,6 +38,7 @@ const PoolTable = ({
   marketId: number;
   marketData?: any; // The complete pool data from combo markets
 }) => {
+  console.log(marketData)
   // Only fetch data if marketData is not provided
   const { data: pool } = usePool(!marketData && poolId != null ? { poolId } : undefined);
   const { data: market } = useMarket(!marketData ? { marketId } : undefined);
@@ -61,89 +61,124 @@ const PoolTable = ({
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   
   // Only fetch amm2Pool if we don't have marketData
-  const { data: amm2Pool } = useAmm2Pool(
-    !marketData ? (poolId ? 0 : marketId) : undefined, 
-    !marketData ? (poolId ? poolId : activeMarket?.neoPool?.poolId) : undefined
-  );
-
-  // Get asset IDs from the appropriate source
-  const rawAssetIds = marketData 
-    ? marketData.neoPool?.assetIds
-    : activeMarket?.scoringRule === ScoringRule.Cpmm
-      ? pool?.weights?.map((weight) => parseAssetIdString(weight?.assetId))
-      : amm2Pool?.assetIds;
+  console.log(activeMarket)
+  const { data: amm2Pool, isLoading: isAmm2PoolLoading } = useAmm2Pool(
+    !marketData ? marketId : activeMarket?.neoPool?.poolId ?? undefined, 
+    !marketData ? poolId ?? 0 : 0,
+    activeMarket,
+  );    
 
   // Get categories from marketData if available
   const categories = marketData?.categories || activeMarket?.categories;
 
-  // Apply consistent ordering for combinatorial tokens to match category order
-  const assetIds = rawAssetIds && activeMarket?.outcomeAssets && rawAssetIds.some(isCombinatorialToken)
-    ? rawAssetIds.sort((a, b) => {
-        if (!isCombinatorialToken(a) || !isCombinatorialToken(b)) return 0;
+  // Build table data based on data source
+  const tableData: TableData[] = [];
+  
+  if (marketData?.neoPool?.account?.balances) {
+    // Use marketData balances (includes correct asset IDs and balances)
+    const balances = marketData.neoPool.account.balances;
+    
+    // Sort the balances to match market.outcomeAssets order
+    const sortedBalances = [...balances].sort((a, b) => {
+      // Skip base assets (ZTG) in sorting
+      if (a.assetId === "Ztg" || b.assetId === "Ztg") return 0;
+      
+      try {
+        const aAsset = JSON.parse(a.assetId);
+        const bAsset = JSON.parse(b.assetId);
         
-        const aIndex = activeMarket.outcomeAssets.findIndex((marketAsset: any) => {
-          if (typeof marketAsset === 'string' && marketAsset.includes(a.CombinatorialToken)) {
+        if (!aAsset.combinatorialToken || !bAsset.combinatorialToken) return 0;
+        
+        const aIndex = activeMarket?.outcomeAssets?.findIndex((marketAsset: any) => {
+          if (typeof marketAsset === 'string' && marketAsset.includes(aAsset.combinatorialToken)) {
             return true;
           }
-          return JSON.stringify(marketAsset).includes(a.CombinatorialToken);
-        });
+          return JSON.stringify(marketAsset).includes(aAsset.combinatorialToken);
+        }) ?? -1;
         
-        const bIndex = activeMarket.outcomeAssets.findIndex((marketAsset: any) => {
-          if (typeof marketAsset === 'string' && marketAsset.includes(b.CombinatorialToken)) {
+        const bIndex = activeMarket?.outcomeAssets?.findIndex((marketAsset: any) => {
+          if (typeof marketAsset === 'string' && marketAsset.includes(bAsset.combinatorialToken)) {
             return true;
           }
-          return JSON.stringify(marketAsset).includes(b.CombinatorialToken);
-        });
+          return JSON.stringify(marketAsset).includes(bAsset.combinatorialToken);
+        }) ?? -1;
         
         return aIndex - bIndex;
-      })
-    : rawAssetIds;
-
-  const tableData: TableData[] =
-    assetIds?.map((assetId, index) => {
-      let amount: Decimal | undefined;
-      let usdValue: Decimal | undefined;
-      let category;
-
-      if (IOBaseAssetId.is(assetId)) {
-        // Base asset handling
-        amount = basePoolBalance ?? undefined;
-        usdValue = basePoolBalance?.mul(baseAssetUsdPrice ?? 0);
-        category = { color: "#ffffff", name: metadata?.symbol };
-      } else {
-        // Outcome asset handling - since assets are now properly ordered, use direct index mapping
-        category = categories?.[index];
-        
-        if (marketData) {
-          // For marketData, distribute liquidity equally among assets as approximation
-          const totalAssets = assetIds.length;
-          const poolLiquidity = new Decimal(marketData.neoPool?.liquidity || 0);
-          amount = poolLiquidity.div(totalAssets);
-        } else {
-          // Original logic for fetched data
-          amount = activeMarket?.scoringRule === ScoringRule.Cpmm
-            ? new Decimal(balances?.[index]?.free.toString() ?? 0)
-            : lookupAssetReserve(amm2Pool?.reserves, assetId);
-        }
-        
-        usdValue = amount
-          ?.mul(spotPrices?.get(index) ?? 0)
-          ?.mul(baseAssetUsdPrice ?? 0);
+      } catch {
+        return 0;
       }
-
-      return {
+    });
+    
+    let outcomeIndex = 0;
+    
+    sortedBalances.forEach((balanceEntry) => {
+      // Skip base asset
+      if (balanceEntry.assetId === "Ztg") return;
+      
+      const category = categories?.[outcomeIndex];
+      if (!category?.name) {
+        outcomeIndex++;
+        return;
+      }
+      
+      const amount = new Decimal(balanceEntry.balance);
+      const usdValue = amount
+        ?.mul(spotPrices?.get(outcomeIndex) ?? 0)
+        ?.mul(baseAssetUsdPrice ?? 0);
+      
+      tableData.push({
         token: {
           token: true as const,
-          color: category?.color || "#ffffff",
-          label: category?.name || `Asset ${index}`,
+          label: category?.name,
         },
         poolBalance: {
           value: amount?.div(ZTG).toDecimalPlaces(2).toNumber() ?? 0,
           usdValue: usdValue?.div(ZTG).toDecimalPlaces(2).toNumber(),
         },
-        categoryName: category?.name,
-      };
-    })?.filter(row => row.categoryName)?.map(({ categoryName, ...row }) => row) ?? [];
+      });
+      
+      outcomeIndex++;
+    });
+  } else {
+    // Fallback to original logic for non-marketData sources
+    const assetIds = activeMarket?.scoringRule === ScoringRule.Cpmm
+      ? pool?.weights?.map((weight) => parseAssetIdString(weight?.assetId))
+      : amm2Pool?.assetIds;
+      
+    let outcomeIndex = 0;
+    
+    assetIds?.forEach((assetId, assetIndex) => {
+      // Skip base assets
+      if (IOBaseAssetId.is(assetId)) return;
+      
+      const category = categories?.[outcomeIndex];
+      if (!category?.name) {
+        outcomeIndex++;
+        return;
+      }
+      
+      const amount = activeMarket?.scoringRule === ScoringRule.Cpmm
+        ? new Decimal(balances?.[assetIndex]?.free.toString() ?? 0)
+        : lookupAssetReserve(amm2Pool?.reserves, assetId);
+      
+      const usdValue = amount
+        ?.mul(spotPrices?.get(outcomeIndex) ?? 0)
+        ?.mul(baseAssetUsdPrice ?? 0);
+      
+      tableData.push({
+        token: {
+          token: true as const,
+          label: category.name,
+        },
+        poolBalance: {
+          value: amount?.div(ZTG).toDecimalPlaces(2).toNumber() ?? 0,
+          usdValue: usdValue?.div(ZTG).toDecimalPlaces(2).toNumber(),
+        },
+      });
+      
+      outcomeIndex++;
+    });
+  }
 
   return <Table data={tableData} columns={poolTableColums} />;
 };

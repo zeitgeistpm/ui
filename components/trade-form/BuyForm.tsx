@@ -40,6 +40,7 @@ import { max } from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { isCombinatorialToken } from "lib/types/combinatorial";
+import { sortAssetsByMarketOrder } from "lib/util/sort-assets-by-market";
 import { CombinatorialToken } from "lib/types/combinatorial";
 
 const BuyForm = ({
@@ -94,9 +95,9 @@ const BuyForm = ({
   //TODO: fix this so it's consistent among: combo markets, legacy, and new markets
   const poolId = poolData?.poolId || (isCombinatorialToken(market?.outcomeAssets[0]) ? market?.neoPool?.poolId : undefined);
 
-  const { data: pool } = useAmm2Pool(poolData?.poolId ? 0 : marketId, poolId);
+  const { data: pool } = useAmm2Pool(poolData?.poolId ? 0 : marketId, poolId ?? 0);
   const [sellAssets, setSellAssets] = useState<CombinatorialToken[]>([]);  
-
+  
   const { data: orders } = useOrders({
     marketId_eq: marketId,
     status_eq: OrderStatus.Placed,
@@ -108,59 +109,16 @@ const BuyForm = ({
   const creatorFee = poolData 
     ? new Decimal(0) // set creator fees to 0 for combo markets
     : new Decimal(perbillToNumber(market?.creatorFee ?? 0));
-
   // Sort assets to match the order in market.outcomeAssets
-  const applyConsistentOrdering = (assets: (MarketOutcomeAssetId | CombinatorialToken)[]) => {
-    if (!market?.outcomeAssets) return assets;
-    
-    // For combinatorial tokens, sort to match market.outcomeAssets order
-    const hasCombinatorialTokens = assets.some(asset => isCombinatorialToken(asset));
-    if (hasCombinatorialTokens) {
-      const sortedAssets = [...assets].sort((a, b) => {
-        if (!isCombinatorialToken(a) || !isCombinatorialToken(b)) return 0;
-        
-        // Find indices in market.outcomeAssets
-        const aIndex = market.outcomeAssets.findIndex(marketAsset => {
-          if (typeof marketAsset === 'string') {
-            try {
-              const parsed = JSON.parse(marketAsset);
-              return parsed.combinatorialToken === a.CombinatorialToken;
-            } catch {
-              return false;
-            }
-          }
-          return JSON.stringify(marketAsset) === JSON.stringify(a);
-        });
-        
-        const bIndex = market.outcomeAssets.findIndex(marketAsset => {
-          if (typeof marketAsset === 'string') {
-            try {
-              const parsed = JSON.parse(marketAsset);
-              return parsed.combinatorialToken === b.CombinatorialToken;
-            } catch {
-              return false;
-            }
-          }
-          return JSON.stringify(marketAsset) === JSON.stringify(b);
-        });
-        
-        return aIndex - bIndex;
-      });
-      
-      return sortedAssets;
-    }
-    
-    return assets;
-  };
   
   const outcomeAssets = (() => {
     if (filteredAssets) {
-      return applyConsistentOrdering(filteredAssets);
+      return sortAssetsByMarketOrder(filteredAssets, market?.outcomeAssets);
     }
     
     if (poolData?.outcomeCombinations) {
       const assets = poolData.outcomeCombinations.map((combo: any) => combo.assetId);
-      return applyConsistentOrdering(assets);
+      return sortAssetsByMarketOrder(assets, market?.outcomeAssets);
     }
     
     if (pool?.assetIds) {
@@ -168,31 +126,11 @@ const BuyForm = ({
         (assetIdString) =>
           isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
       );
-      return applyConsistentOrdering(assets);
+      return sortAssetsByMarketOrder(assets, market?.outcomeAssets);
     }
     
     return undefined;
   })();
-
-  // Reorder outcomeCombinations to match the reordered assets
-  const reorderedOutcomeCombinations = (() => {
-    if (!outcomeCombinations || !outcomeAssets) return outcomeCombinations;
-    
-    // Create a new outcomeCombinations array that matches the order of outcomeAssets
-    return outcomeAssets.map(asset => {
-      if (!isCombinatorialToken(asset)) return null;
-      
-      const matchingCombo = outcomeCombinations.find(combo => 
-        JSON.stringify(combo.assetId) === JSON.stringify(asset)
-      );
-      return matchingCombo || null;
-    }).filter(combo => combo !== null) as Array<{
-      assetId: CombinatorialToken;
-      name: string;
-      color: string;
-    }>;
-  })();
-
 
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | CombinatorialToken | undefined
@@ -332,9 +270,9 @@ const BuyForm = ({
           })),
         approxOutcomeAmount.abs().mul(ZTG),
       );
+      console.log(selectedAsset)
 
       if (!isCombinatorialToken(selectedAsset)) {
-        console.log(selectedAsset)
         return sdk.api.tx.neoSwaps.buy(
           effectivePoolId,
           assetCount,
