@@ -234,15 +234,22 @@ const Inner = ({
       setFinalAmounts({ asset: assetAmount, base: baseAmount });
       setPercentageDisplay("0");
 
-      if (tradeItem.action === "buy" && wallet.realAddress) {
-        awaitIndexer(() => {
-          queryClient.invalidateQueries([
-            id,
-            positionsRootKey,
-            wallet.realAddress,
-          ]);
-        });
-      }
+      // Immediately invalidate spot prices and AMM pool data to show updated state
+      queryClient.invalidateQueries({
+        queryKey: [id, "market-spot-prices", market?.marketId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [id, "amm2-pool", market?.marketId],
+      });
+      
+      // Wait for indexer to process the trade before invalidating positions
+      awaitIndexer(() => {
+        if (wallet.realAddress) {
+          queryClient.invalidateQueries({
+            queryKey: [id, positionsRootKey, wallet.realAddress],
+          });
+        }
+      });
     },
   });
 

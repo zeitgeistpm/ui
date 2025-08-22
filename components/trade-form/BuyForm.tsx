@@ -95,7 +95,7 @@ const BuyForm = ({
   //TODO: fix this so it's consistent among: combo markets, legacy, and new markets
   const poolId = poolData?.poolId || (isCombinatorialToken(market?.outcomeAssets[0]) ? market?.neoPool?.poolId : undefined);
 
-  const { data: pool } = useAmm2Pool(poolData?.poolId ? 0 : marketId, poolId ?? 0);
+  const { data: pool } = useAmm2Pool(poolData?.poolId ? 0 : marketId, poolId ?? null);
   const [sellAssets, setSellAssets] = useState<CombinatorialToken[]>([]);  
   
   const { data: orders } = useOrders({
@@ -270,7 +270,7 @@ const BuyForm = ({
           })),
         approxOutcomeAmount.abs().mul(ZTG),
       );
-      console.log(selectedAsset)
+      console.log('asset', selectedAsset)
 
       if (!isCombinatorialToken(selectedAsset)) {
         return sdk.api.tx.neoSwaps.buy(

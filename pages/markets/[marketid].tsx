@@ -216,32 +216,46 @@ const Market: NextPage<MarketPageProps> = ({
 }) => {
   const router = useRouter();
   const { marketid } = router.query;
-  const marketId = Number(marketid);
+  
+  const marketId = indexedMarket?.marketId ?? (router.isReady ? Number(marketid) : undefined);
   const { realAddress } = useWallet();
-  const {data: poolData} = useAmm2Pool(marketId, 0)
+  const marketData = indexedMarket;
+
+  const { data: poolData } = useAmm2Pool(
+    marketId || 0, 
+    marketData?.neoPool?.poolId ?? null
+  );
 
   const { data: orders, isLoading: isOrdersLoading } = useOrders({
     marketId_eq: marketId,
     makerAccountId_eq: realAddress,
   });
 
-  const referendumChain = cmsMetadata?.referendumRef?.chain;
   const referendumIndex = cmsMetadata?.referendumRef?.referendumIndex;
 
   const tradeItem = useTradeItem();
 
-  if (indexedMarket == null) {
+  if (!marketData) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
 
-  const outcomeAssets = indexedMarket?.outcomeAssets?.map(
+  const outcomeAssets = marketData?.outcomeAssets?.map(
     (assetIdString) =>
       parseAssetIdStringWithCombinatorial(assetIdString),
   );
 
   // Filter pool assets to match the market's specific outcomes
   const relevantPoolAssets: (MarketOutcomeAssetId | CombinatorialToken)[] | undefined = useMemo(() => {
-
+    // Fallback: If pool data is not available but we have outcome assets, use them
+    if (!poolData?.assetIds && outcomeAssets && outcomeAssets.length > 0) {
+      console.log('[Using Fallback Assets]', { 
+        outcomeAssetsLength: outcomeAssets.length,
+        reason: 'Pool data unavailable'
+      });
+      return outcomeAssets;
+    }
+    
+    // If pool data is not available, return undefined
     if (!poolData?.assetIds) return undefined;
     
     // Check if this is a combo pool
@@ -253,14 +267,14 @@ const Market: NextPage<MarketPageProps> = ({
     }
     
     // Combo pool - need to determine if this is a regular market or combo market
-    if (!indexedMarket?.outcomeAssets || !outcomeAssets) {
+    if (!marketData?.outcomeAssets || !outcomeAssets) {
       return poolData.assetIds;
     }
     
-    const marketAssetStrings = indexedMarket.outcomeAssets;
+    const marketAssetStrings = marketData.outcomeAssets;
     
     // Check if market has categorical outcomes (regular market using combo pool)
-    const hasCategorialOutcomes = marketAssetStrings.some(assetString => 
+    const hasCategorialOutcomes = marketAssetStrings.some((assetString: string) => 
       assetString.includes('categoricalOutcome')
     );
     
@@ -273,19 +287,18 @@ const Market: NextPage<MarketPageProps> = ({
     // True combo market - try to match tokens
     const filtered = poolData.assetIds.filter(poolAsset => {
       if (isCombinatorialToken(poolAsset)) {
-        const hasMatch = marketAssetStrings.some(marketAssetString => 
+        const hasMatch = marketAssetStrings.some((marketAssetString: string) => 
           marketAssetString.includes(poolAsset.CombinatorialToken)
         );
         return hasMatch;
       } else {
         const poolAssetString = JSON.stringify(poolAsset);
-        const hasMatch = marketAssetStrings.some(marketAssetString => 
+        const hasMatch = marketAssetStrings.some((marketAssetString: string) => 
           marketAssetString === poolAssetString
         );
         return hasMatch;
       }
     });
-    
     
     // If filtering removed everything, return all non-combo assets as fallback
     if (filtered.length === 0) {
@@ -293,16 +306,18 @@ const Market: NextPage<MarketPageProps> = ({
     }
     
     return filtered;
-  }, [poolData?.assetIds, outcomeAssets, indexedMarket?.outcomeAssets]);
+  }, [poolData?.assetIds, outcomeAssets, marketData?.outcomeAssets]);
 
-  const hasComboAssets = relevantPoolAssets?.some(isCombinatorialToken) || false;
 
+  // Set initial trade item when market loads
   useEffect(() => {
-    tradeItem.set({
-      assetId: outcomeAssets[0],
-      action: "buy",
-    });
-  }, [marketId]);
+    if (outcomeAssets && outcomeAssets.length > 0 && marketId) {
+      tradeItem.set({
+        assetId: outcomeAssets[0],
+        action: "buy",
+      });
+    }
+  }, [marketId]); // Only depend on marketId to avoid re-setting on every render
 
   const [showLiquidityParam, setShowLiquidityParam, unsetShowLiquidityParam] =
     useQueryParamState("showLiquidity");
@@ -311,30 +326,36 @@ const Market: NextPage<MarketPageProps> = ({
 
   const [poolDeployed, setPoolDeployed] = useState(false);
 
-  const { data: market, isLoading: marketIsLoading } = useMarket(
-    {
-      marketId,
-    },
+  const { data: market, isLoading: marketIsLoading, refetch: refetchMarket } = useMarket(
+    marketId ? { marketId } : undefined,
     {
       refetchInterval: poolDeployed ? 1000 : false,
     },
   );
 
-  const { data: disputes } = useMarketDisputes(marketId);
+  const { data: disputes } = useMarketDisputes(marketId || 0);
 
   const { data: marketStage } = useMarketStage(market ?? undefined);
-  const { data: spotPrices } = useMarketSpotPrices(marketId);
+  const { data: spotPrices, refetch: refetchSpotPrices } = useMarketSpotPrices(marketId || 0);
 
-  const baseAsset = parseAssetIdString(indexedMarket?.baseAsset);
+  const baseAsset = parseAssetIdString(marketData?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAsset);
 
   const [showTwitchChat, setShowTwitchChat] = useState(true);
 
   const wallet = useWallet();
+  
+  // Market pool status - must be declared early for use in JSX
+  // Use static data if available, fallback to dynamic data
+  const marketHasPool = (marketData?.neoPool != null) || (market?.neoPool != null);
+  
 
   const handlePoolDeployed = () => {
     setPoolDeployed(true);
     setShowLiquidityParam("");
+    // Refetch market data after pool deployment
+    refetchMarket();
+    refetchSpotPrices();
   };
 
   const toggleLiquiditySection = () => {
@@ -386,7 +407,7 @@ const Market: NextPage<MarketPageProps> = ({
   }, [market?.report, disputes]);
 
   const hasChart = Boolean(
-    chartSeries && (indexedMarket?.pool || indexedMarket.neoPool),
+    chartSeries && (marketData?.pool || marketData.neoPool),
   );
 
   const twitchStreamChannelName = extractChannelName(
@@ -397,59 +418,59 @@ const Market: NextPage<MarketPageProps> = ({
 
   const activeTabsCount = [hasChart, hasTwitchStream].filter(Boolean).length;
 
-  const { data: hasLiveTwitchStreamClient } = useQuery(
-    [],
-    async () => {
+  const { data: hasLiveTwitchStreamClient } = useQuery({
+    queryKey: ["twitch-stream", twitchStreamChannelName],
+    queryFn: async () => {
       if (!twitchStreamChannelName) return undefined;
       return isLive(twitchStreamChannelName);
     },
-    {
-      enabled: Boolean(hasTwitchStream),
-      refetchInterval: 1000 * 30,
-      refetchOnWindowFocus: false,
-      initialData: hasLiveTwitchStreamServer,
-    },
-  );
+    enabled: Boolean(hasTwitchStream),
+    refetchInterval: 1000 * 30,
+    refetchOnWindowFocus: false,
+    initialData: hasLiveTwitchStreamServer,
+  });
 
   const hasLiveTwitchStream =
     hasLiveTwitchStreamClient || hasLiveTwitchStreamServer;
 
-  const marketHasPool = market?.neoPool != null;
-
   const poolCreationDate = new Date(
-    indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
+    marketData.pool?.createdAt ?? marketData.neoPool?.createdAt ?? "",
   );
   
   // Generate outcomeCombinations for regular markets using combo pools
   const outcomeCombinations = useMemo(() => {
-    if (!relevantPoolAssets || !market?.categories || !market?.marketId) return undefined;
+    // Use available data - prefer market data but fallback to marketData (static props)
+    const categories = market?.categories || marketData?.categories;
+    const marketIdValue = market?.marketId || marketData?.marketId;
+    
+    if (!relevantPoolAssets || !categories || !marketIdValue) return undefined;
     
     // Only generate for markets that have combinatorial tokens but are regular markets
     const hasComboTokens = relevantPoolAssets.some(isCombinatorialToken);
     if (!hasComboTokens) return undefined;
     
-    const colors = calcMarketColors(market.marketId, relevantPoolAssets.length);
+    const colors = calcMarketColors(marketIdValue, relevantPoolAssets.length);
     
     return relevantPoolAssets
       .filter(isCombinatorialToken)
       .map((asset, index) => {
-        const categoryIndex = index < market.categories!.length ? index : 0;
+        const categoryIndex = index < categories.length ? index : 0;
         return {
           assetId: asset,
-          name: market.categories![categoryIndex]?.name || `Outcome ${index}`,
-          color: market.categories![categoryIndex]?.color || colors[index],
+          name: categories[categoryIndex]?.name || `Outcome ${index}`,
+          color: categories[categoryIndex]?.color || colors[index],
         };
       });
-  }, [relevantPoolAssets, market?.categories, market?.marketId]);
+  }, [relevantPoolAssets, market?.categories, market?.marketId, marketData?.categories, marketData?.marketId]);
 
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
         <div className="flex-1 overflow-hidden">
-          <MarketMeta market={indexedMarket} />
+          <MarketMeta market={marketData} />
 
           <MarketHeader
-            market={indexedMarket}
+            market={marketData}
             resolvedOutcome={market?.resolvedOutcome ?? undefined}
             report={report}
             disputes={lastDispute}
@@ -517,23 +538,23 @@ const Market: NextPage<MarketPageProps> = ({
               <Tab.Panels className="mt-2">
                 {hasChart ? (
                   <Tab.Panel key="chart">
-                    {indexedMarket.scalarType === "number" ? (
+                    {marketData.scalarType === "number" ? (
                       <ScalarMarketChart
-                        marketId={indexedMarket.marketId}
+                        marketId={marketData.marketId}
                         poolCreationDate={poolCreationDate}
-                        marketStatus={indexedMarket.status}
+                        marketStatus={marketData.status}
                         resolutionDate={new Date(resolutionTimestamp)}
                       />
                     ) : (
                       <CategoricalMarketChart
-                        marketId={indexedMarket.marketId}
+                        marketId={marketData.marketId}
                         chartSeries={chartSeries}
                         baseAsset={
-                          indexedMarket.pool?.baseAsset ??
-                          indexedMarket.neoPool?.collateral
+                          marketData.pool?.baseAsset ??
+                          marketData.neoPool?.collateral
                         }
                         poolCreationDate={poolCreationDate}
-                        marketStatus={indexedMarket.status}
+                        marketStatus={marketData.status}
                         resolutionDate={new Date(resolutionTimestamp)}
                       />
                     )}
@@ -591,40 +612,40 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           )}
           <div className="my-8">
-            {indexedMarket?.marketType?.scalar !== null && (
+            {marketData?.marketType?.scalar !== null && (
               <div className="mx-auto mb-8 max-w-[800px]">
                 {marketIsLoading ||
-                (!spotPrices?.get(1) && indexedMarket.status !== "Proposed") ||
-                (!spotPrices?.get(0) && indexedMarket.status !== "Proposed") ? (
+                (!spotPrices?.get(1) && marketData.status !== "Proposed") ||
+                (!spotPrices?.get(0) && marketData.status !== "Proposed") ? (
                   <Skeleton height="40px" width="100%" />
                 ) : (
                   <ScalarPriceRange
                     className="rounded-lg"
-                    scalarType={indexedMarket.scalarType}
-                    lowerBound={new Decimal(indexedMarket.marketType.scalar[0])
+                    scalarType={marketData.scalarType}
+                    lowerBound={new Decimal(marketData.marketType.scalar[0])
                       .div(ZTG)
                       .toNumber()}
-                    upperBound={new Decimal(indexedMarket.marketType.scalar[1])
+                    upperBound={new Decimal(marketData.marketType.scalar[1])
                       .div(ZTG)
                       .toNumber()}
                     shortPrice={spotPrices?.get(1)?.toNumber()}
                     longPrice={spotPrices?.get(0)?.toNumber()}
-                    status={indexedMarket.status}
+                    status={marketData.status}
                   />
                 )}
               </div>
             )}
             <MarketAssetDetails
-              marketId={Number(marketid)}
-              categories={indexedMarket.categories}
+              marketId={marketId ?? 0}
+              categories={marketData.categories}
             />
           </div>
 
           <div className="mb-12 max-w-[90vw]">
-            <MarketDescription market={indexedMarket} />
+            <MarketDescription market={marketData} />
           </div>
 
-          <AddressDetails title="Oracle" address={indexedMarket.oracle} />
+          <AddressDetails title="Oracle" address={marketData.oracle} />
           {marketHasPool === true && (
             <div className="mt-10 flex flex-col gap-4">
               <h3 className="mb-5 text-2xl">Latest Trades</h3>
@@ -637,17 +658,17 @@ const Market: NextPage<MarketPageProps> = ({
                   const comboAssets = relevantPoolAssets.filter(isCombinatorialToken);
                   
                   // Apply consistent ordering to match market.outcomeAssets
-                  if (!indexedMarket?.outcomeAssets) return comboAssets;
+                  if (!marketData?.outcomeAssets) return comboAssets;
                   
                   return comboAssets.sort((a, b) => {
-                    const aIndex = indexedMarket.outcomeAssets.findIndex(marketAsset => {
+                    const aIndex = marketData.outcomeAssets.findIndex(marketAsset => {
                       if (typeof marketAsset === 'string' && marketAsset.includes(a.CombinatorialToken)) {
                         return true;
                       }
                       return JSON.stringify(marketAsset).includes(a.CombinatorialToken);
                     });
                     
-                    const bIndex = indexedMarket.outcomeAssets.findIndex(marketAsset => {
+                    const bIndex = marketData.outcomeAssets.findIndex(marketAsset => {
                       if (typeof marketAsset === 'string' && marketAsset.includes(b.CombinatorialToken)) {
                         return true;
                       }
@@ -659,7 +680,7 @@ const Market: NextPage<MarketPageProps> = ({
                 })()}
                 outcomeNames={
                   relevantPoolAssets?.some(isCombinatorialToken)
-                    ? indexedMarket?.categories?.map(cat => cat.name)
+                    ? marketData?.categories?.map(cat => cat.name)
                     : undefined
                 }
               />
@@ -717,7 +738,7 @@ const Market: NextPage<MarketPageProps> = ({
                   "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
               }}
             >
-              {market?.status === MarketStatus.Active ? (
+              {(market?.status === MarketStatus.Active || marketData?.status === "Active") ? (
                 <>
                   <Amm2TradeForm 
                     marketId={marketId} 
@@ -725,7 +746,7 @@ const Market: NextPage<MarketPageProps> = ({
                     outcomeCombinations={outcomeCombinations}
                   />
                 </>
-              ) : market?.status === MarketStatus.Closed && canReport ? (
+              ) : (market?.status === MarketStatus.Closed || marketData?.status === "Closed") && canReport && market ? (
                 <>
                   <ReportForm market={market} />
                 </>
@@ -749,10 +770,11 @@ const Market: NextPage<MarketPageProps> = ({
           </div>
         </div>
       </div>
-      {market && (
+      {(market || marketData) && (
         <MobileContextButtons 
           market={market} 
           relevantPoolAssets={relevantPoolAssets}
+          marketData={marketData}
         />
       )}
     </div>
@@ -761,21 +783,23 @@ const Market: NextPage<MarketPageProps> = ({
 
 const MobileContextButtons = ({ 
   market, 
-  relevantPoolAssets 
+  relevantPoolAssets,
+  marketData
 }: { 
-  market: FullMarketFragment;
+  market: FullMarketFragment | null | undefined;
   relevantPoolAssets?: (MarketOutcomeAssetId | CombinatorialToken)[];
+  marketData?: any; // Allow any type for marketData since it comes from static props
 }) => {
   const wallet = useWallet();
 
-  const { data: marketStage } = useMarketStage(market);
+  const { data: marketStage } = useMarketStage(market ?? undefined);
   const isOracle = market?.oracle === wallet.realAddress;
   const canReport =
     marketStage?.type === "OpenReportingPeriod" ||
     (marketStage?.type === "OracleReportingPeriod" && isOracle);
 
-  const outcomeAssets = market.outcomeAssets.map(
-    (assetIdString) =>
+  const outcomeAssets = (market?.outcomeAssets || marketData?.outcomeAssets || []).map(
+    (assetIdString: string) =>
       parseAssetIdStringWithCombinatorial(assetIdString),
   );
 
@@ -785,22 +809,26 @@ const MobileContextButtons = ({
 
   // Generate outcomeCombinations for regular markets using combo pools
   const outcomeCombinations = useMemo(() => {
-    if (!relevantPoolAssets || !market?.categories || !market?.marketId) return undefined;
+    // Use available categories data
+    const categories = market?.categories;
+    const marketIdValue = market?.marketId;
+    
+    if (!relevantPoolAssets || !categories || !marketIdValue) return undefined;
     
     // Only generate for markets that have combinatorial tokens but are regular markets
     const hasComboTokens = relevantPoolAssets.some(isCombinatorialToken);
     if (!hasComboTokens) return undefined;
     
-    const colors = calcMarketColors(market.marketId, relevantPoolAssets.length);
+    const colors = calcMarketColors(marketIdValue, relevantPoolAssets.length);
     
     return relevantPoolAssets
       .filter(isCombinatorialToken)
       .map((asset, index) => {
-        const categoryIndex = index < market.categories!.length ? index : 0;
+        const categoryIndex = index < categories.length ? index : 0;
         return {
           assetId: asset,
-          name: market.categories![categoryIndex]?.name || `Outcome ${index}`,
-          color: market.categories![categoryIndex]?.color || colors[index],
+          name: categories[categoryIndex]?.name || `Outcome ${index}`,
+          color: categories[categoryIndex]?.color || colors[index],
         };
       });
   }, [relevantPoolAssets, market?.categories, market?.marketId]);
@@ -828,9 +856,9 @@ const MobileContextButtons = ({
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        {market?.status === MarketStatus.Active ? (
+        {(market?.status === MarketStatus.Active || marketData?.status === "Active") ? (
           <Amm2TradeForm
-            marketId={market.marketId}
+            marketId={market?.marketId || marketData?.marketId || 0}
             showTabs={false}
             selectedTab={
               tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell
@@ -838,9 +866,9 @@ const MobileContextButtons = ({
             filteredAssets={relevantPoolAssets}
             outcomeCombinations={outcomeCombinations}
           />
-        ) : market?.status === MarketStatus.Closed && canReport ? (
+        ) : (market?.status === MarketStatus.Closed || marketData?.status === "Closed") && canReport ? (
           <>
-            <ReportForm market={market} />
+            <ReportForm market={market!} />
           </>
         ) : market?.status === MarketStatus.Reported ? (
           <>
@@ -851,12 +879,12 @@ const MobileContextButtons = ({
         )}
       </div>
 
-      {(market?.status === MarketStatus.Active ||
-        market?.status === MarketStatus.Closed ||
-        market?.status === MarketStatus.Reported) && (
+      {((market?.status === MarketStatus.Active || marketData?.status === "Active") ||
+        (market?.status === MarketStatus.Closed || marketData?.status === "Closed") ||
+        (market?.status === MarketStatus.Reported || marketData?.status === "Reported")) && (
         <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
           <div className="flex h-20 cursor-pointer text-lg font-semibold">
-            {market?.status === MarketStatus.Active ? (
+            {(market?.status === MarketStatus.Active || marketData?.status === "Active") ? (
               <>
                 <div
                   className={`center h-full flex-1  ${

@@ -61,8 +61,8 @@ const PoolTable = ({
   
   // Only fetch amm2Pool if we don't have marketData
   const { data: amm2Pool, isLoading: isAmm2PoolLoading } = useAmm2Pool(
-    !marketData ? marketId : activeMarket?.neoPool?.poolId ?? undefined, 
-    !marketData ? poolId ?? 0 : 0,
+    !marketData ? marketId : activeMarket?.neoPool?.poolId ?? 0, 
+    !marketData ? poolId ?? null : null,
     activeMarket,
   );    
 

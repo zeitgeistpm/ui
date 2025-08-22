@@ -6,6 +6,7 @@ import { ZTG } from "@zeitgeistpm/sdk";
 import moment from "moment";
 import Avatar from "components/ui/Avatar";
 import { CombinatorialToken } from "lib/types/combinatorial";
+import { useMemo } from "react";
 
 const columns: TableColumn[] = [
   {
@@ -65,39 +66,38 @@ const LatestTrades = ({
     outcomeNames,
     marketQuestion
   });
-  const now = moment();
-  const tableData: TableData[] | undefined = trades?.map((trade) => {
-    return {
+
+  const tableData: TableData[] | undefined = useMemo(() => {
+    if (!trades?.length) return undefined;
+
+    const now = moment();
+    return trades.map((trade) => ({
       trader: (
-        <Link href={`/portfolio/${trade.traderAddress}`} className="">
+        <Link href={`/portfolio/${trade.traderAddress}`}>
           <Avatar address={trade.traderAddress} />
         </Link>
       ),
       question: (
         <Link href={`/markets/${trade.marketId}`} className="text-[14px]">
-          {trade?.question}
+          {trade.question}
         </Link>
       ),
       outcome: trade.outcomeName,
       trade: trade.type === "buy" ? "Buy" : "Sell",
-      cost: `${formatNumberLocalized(trade.cost.div(ZTG).toNumber())} ${
-        trade.costSymbol
-      }`,
+      cost: `${formatNumberLocalized(trade.cost.div(ZTG).toNumber())} ${trade.costSymbol}`,
       price: formatNumberLocalized(trade.outcomePrice.toNumber()),
       time: `${moment.duration(now.diff(trade.time)).humanize()} ago`,
-    };
-  });
+    }));
+  }, [trades]);
 
   return (
-    <div className="">
-      <div className="rounded-xl shadow-lg">
-        <Table
-          columns={columns}
-          data={tableData}
-          noDataMessage="No trades"
-          loadingNumber={limit}
-        />
-      </div>
+    <div className="rounded-xl shadow-lg">
+      <Table
+        columns={columns}
+        data={tableData}
+        noDataMessage="No trades"
+        loadingNumber={limit}
+      />
     </div>
   );
 };

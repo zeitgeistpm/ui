@@ -34,10 +34,10 @@ type PoolAccount = {
   fees: Decimal;
 };
 
-export const useAmm2Pool = (marketId: number, poolId: number, activeMarket?: any) => {
+export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarket?: any) => {
   const [sdk, id] = useSdkv2();
-
-  const enabled = !!sdk && marketId != null && poolId != null && isRpcSdk(sdk);
+  
+  const enabled = !!sdk && marketId != null && poolId != undefined && isRpcSdk(sdk);
   //TODO: improve this logic in the futre. right now we know legacy markets have the same poolId as marketId
   const legacy = marketId === poolId
   const query = useQuery(
@@ -45,10 +45,8 @@ export const useAmm2Pool = (marketId: number, poolId: number, activeMarket?: any
     async () => {
       if (!enabled) return;
 
-      const poolIdToUse = legacy ? Number(await sdk.api.query.neoSwaps.marketIdToPoolId(marketId)) : poolId;
-
+      const poolIdToUse = legacy ? Number(await sdk.api.query.neoSwaps.marketIdToPoolId(marketId)) : poolId!;
       const res = await sdk.api.query.neoSwaps.pools(poolIdToUse);
-      
       // Check if the result is Some before unwrapping
       const unwrappedRes = res && res.isSome ? res.unwrap() : null;
 
@@ -127,6 +125,9 @@ export const useAmm2Pool = (marketId: number, poolId: number, activeMarket?: any
     },
     {
       enabled: enabled,
+      staleTime: 60 * 1000, // Data is fresh for 1 minute
+      cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+      refetchOnWindowFocus: false, // Don't refetch on window focus
     },
   );
 

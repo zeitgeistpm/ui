@@ -41,7 +41,7 @@ export const useMarketSpotPrices = (
     pool?.poolId,
     blockNumber,
   );
-  const { data: amm2Pool } = useAmm2Pool(marketId, market?.neoPool?.poolId ?? 0);
+  const { data: amm2Pool } = useAmm2Pool(marketId, market?.neoPool?.poolId ?? null);
 
   const enabled = isRpcSdk(sdk) && marketId != null && !!market;
   const query = useQuery(
@@ -68,6 +68,9 @@ export const useMarketSpotPrices = (
     },
     {
       enabled: enabled,
+      staleTime: 30 * 1000, // Data is fresh for 30 seconds
+      cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+      refetchOnWindowFocus: false, // Don't refetch on window focus
     },
   );
 

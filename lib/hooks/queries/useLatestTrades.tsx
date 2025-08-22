@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { HistoricalSwapOrderByInput } from "@zeitgeistpm/indexer";
 import {
   getIndexOf,
@@ -59,38 +60,61 @@ export const useLatestTrades = (
 
   const { limit, marketId, outcomeAssets, outcomeNames, marketQuestion } = params;
 
-  // Fetch market data if we have marketId but no outcomeNames
+  // Fetch market data if we have marketId but no outcomeNames/outcomeAssets
   const { data: market } = useMarket(
-    marketId && !outcomeNames ? { marketId } : undefined
+    marketId && !outcomeNames && !outcomeAssets ? { marketId } : undefined
   );
   
-  // Check if we have combinatorial tokens to filter by
-  const hasComboTokens = outcomeAssets && outcomeAssets.length > 0 && 
-    outcomeAssets.every(asset => isCombinatorialToken(asset));
+  // Determine if we're dealing with combinatorial tokens
+  const hasExplicitComboTokens = Boolean(outcomeAssets?.length && 
+    outcomeAssets.every(asset => isCombinatorialToken(asset)));
+  
+  const marketUsesComboTokens = Boolean(market?.outcomeAssets.some(assetString => {
+    const parsedAsset = parseAssetIdStringWithCombinatorial(assetString);
+    return isCombinatorialToken(parsedAsset);
+  }));
 
-    const query = useQuery(
-    [id, transactionHistoryKey, limit, marketId, outcomeAssets, outcomeNames],
+  const isComboMarket = hasExplicitComboTokens || marketUsesComboTokens;
+
+  // Parse combo assets once for reuse in processing
+  const comboAssetsForProcessing = useMemo(() => {
+    if (hasExplicitComboTokens) return outcomeAssets!;
+    
+    if (marketUsesComboTokens && market) {
+      return market.outcomeAssets
+        .map(assetString => {
+          const parsed = parseAssetIdStringWithCombinatorial(assetString);
+          return isCombinatorialToken(parsed) ? parsed : null;
+        })
+        .filter((asset): asset is CombinatorialToken => asset !== null);
+    }
+    
+    return [];
+  }, [hasExplicitComboTokens, marketUsesComboTokens, outcomeAssets, market?.outcomeAssets]);
+
+  const query = useQuery(
+    [id, transactionHistoryKey, limit, marketId, outcomeAssets, outcomeNames, isComboMarket],
     async () => {
       if (isIndexedSdk(sdk)) {
         let whereFilter = {};
 
-        if (hasComboTokens) {
-          // Filter by combinatorial token hashes
-          const comboFilters = outcomeAssets.map(asset => ({
+        // Build where filter based on market type
+        if (isComboMarket) {
+          const tokensToFilter = hasExplicitComboTokens
+            ? outcomeAssets!.map(asset => asset.CombinatorialToken)
+            : market!.outcomeAssets;
+
+          const comboFilters = tokensToFilter.map(token => ({
             OR: [
-              { assetIn_contains: asset.CombinatorialToken },
-              { assetOut_contains: asset.CombinatorialToken },
+              { assetIn_contains: token },
+              { assetOut_contains: token },
             ]
           }));
 
           whereFilter = {
-            AND: [
-              swapsMetaFilter,
-              { OR: comboFilters }
-            ]
+            AND: [swapsMetaFilter, { OR: comboFilters }]
           };
         } else if (marketId != null) {
-          // Fall back to legacy market ID filtering
           whereFilter = {
             AND: [
               swapsMetaFilter,
@@ -103,7 +127,6 @@ export const useLatestTrades = (
             ]
           };
         } else {
-          // No specific filtering, get all swaps
           whereFilter = swapsMetaFilter;
         }
 
@@ -113,7 +136,7 @@ export const useLatestTrades = (
           where: whereFilter,
         });
 
-        if (hasComboTokens) {
+        if (isComboMarket) {
           // Handle combinatorial token trades
           const trades: TradeItem[] = historicalSwaps
             .map((swap) => {
@@ -124,7 +147,7 @@ export const useLatestTrades = (
               // Find which combo token was traded and get its name
               const { asset: comboAsset, name: outcomeName } = findComboAssetWithName(
                 swap, 
-                outcomeAssets, 
+                comboAssetsForProcessing,
                 outcomeNames || market?.categories?.map(cat => cat.name).filter((name): name is string => !!name)
               );
               
@@ -216,14 +239,19 @@ export const useLatestTrades = (
     },
     {
       keepPreviousData: true,
-      enabled: Boolean(sdk && isIndexedSdk(sdk)),
+      enabled: Boolean(
+        sdk && 
+        isIndexedSdk(sdk) && 
+        // If marketId is provided but no explicit outcomeAssets, wait for market data
+        (marketId == null || outcomeAssets != null || market != null)
+      ),
       refetchInterval: BLOCK_TIME_SECONDS * 1000 * 3,
       staleTime: Infinity,
     },
   );
 
   return query;
-};
+}
 
 const findComboAssetWithName = (
   swap: any, 

@@ -35,6 +35,12 @@ const marketQuery = gql`
         createdAt
         collateral
         poolId
+        account {
+          accountId
+        }
+        totalStake
+        liquidityParameter
+        swapFee
       }
       question
       slug

@@ -38,7 +38,7 @@ export const comboMarketKey = "combo-market";
 
 export const useComboMarket = (poolId: number) => {
   const [sdk, id] = useSdkv2();
-  const { data: pool } = useAmm2Pool(0, poolId);
+  const { data: pool } = useAmm2Pool(0, poolId); // marketId=0 for combo pools, poolId is the actual pool
 
   // Extract market IDs from the combinatorial pool
   const marketIds = useMemo(() => {

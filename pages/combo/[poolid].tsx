@@ -337,7 +337,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     marketId_eq: poolId,
     makerAccountId_eq: realAddress,
   });
-  const { data: poolData } = useAmm2Pool(0, poolId)
+  const { data: poolData } = useAmm2Pool(0, poolId) // marketId=0 for combo pools
 
   const [showLiquidityParam, setShowLiquidityParam, unsetShowLiquidityParam] =
     useQueryParamState("showLiquidity");
