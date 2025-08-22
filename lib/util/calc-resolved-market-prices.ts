@@ -1,6 +1,9 @@
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import Decimal from "decimal.js";
-import { MarketPrices } from "lib/hooks/queries/useMarketSpotPrices";
+import {
+  MarketPrices,
+  useMarketSpotPrices,
+} from "lib/hooks/queries/useMarketSpotPrices";
 import { calcScalarResolvedPrices } from "./calc-scalar-winnings";
 import { parseAssetIdString } from "./parse-asset-id";
 import { IOBaseAssetId, MarketId } from "@zeitgeistpm/sdk";
@@ -12,7 +15,10 @@ export const calcResolvedMarketPrices = (
     .map((a) => parseAssetIdString(a.assetId))
     .filter((assetId) => IOBaseAssetId.is(assetId) === false);
 
-  const spotPrices: MarketPrices = new Map();
+  const { data } = useMarketSpotPrices(market.marketId);
+  if (!data) return new Map();
+
+  const spotPrices: MarketPrices = data;
 
   if (market.resolvedOutcome == null) return spotPrices;
 

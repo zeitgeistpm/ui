@@ -182,12 +182,14 @@ export const usePortfolioPositions = (
   const rawPositions = useAccountTokenPositions(address);
 
   type FilterItem = { marketId: number } | { poolId: number };
-  const { filter, combiTokens, combiPoolIdSet } = (
+  const { filter, combiTokens, combiPoolMap } = (
     rawPositions.data ?? []
   ).reduce<{
     filter: Set<FilterItem>;
     combiTokens: Set<CombinatorialToken>;
-    combiPoolIdSet: Set<number>;
+    // TODO replace any type with combi pool item
+    // map combi pool id to pool information
+    combiPoolMap: Map<number, any>;
   }>(
     (acc, position) => {
       const assetId: AssetId | CombinatorialToken = position.assetId;
@@ -205,10 +207,11 @@ export const usePortfolioPositions = (
         if (!acc.combiTokens.has(assetId)) {
           acc.combiTokens.add(assetId);
 
-          // TODO: use indexer to get the mapping from combinatorial token to pool information (including market ids)
+          // TODO: use indexer to get the mapping from combinatorial token to pool information (pool id, including market ids, pool account id)
+          /*
           const combiPool = getCombiPoolOf(assetId);
-          if (!acc.combiPoolIdSet.has(combiPool.poolId)) {
-            acc.combiPoolIdSet.add(combiPool.poolId);
+          if (!acc.combiPoolMap.has(combiPool.poolId)) {
+            acc.combiPoolMap.set(combiPool.poolId, combiPool);
 
             const combiPoolMarketIds = getMarketIdsOfCombiPool(
               combiPool.poolId,
@@ -219,6 +222,7 @@ export const usePortfolioPositions = (
               }
             }
           }
+          */
         }
       }
       return acc;
@@ -226,7 +230,7 @@ export const usePortfolioPositions = (
     {
       filter: new Set<FilterItem>(),
       combiTokens: new Set<CombinatorialToken>(),
-      combiPoolIdSet: new Set<number>(),
+      combiPoolMap: new Map<number, any>(),
     },
   );
 
@@ -243,56 +247,19 @@ export const usePortfolioPositions = (
     useAmm2MarketIdsToLegacyPoolIds(amm2MarketIds);
 
   const { data: amm2SpotPrices } = useAmm2MarketSpotPrices(
-    (amm2MarketIdsToLegacyPoolIds ?? []).concat([...combiPoolIdSet]),
+    (amm2MarketIdsToLegacyPoolIds ?? []).concat([...combiPoolMap.keys()]),
   );
 
   const { data: amm2SpotPrices24HoursAgo } = useAmm2MarketSpotPrices(
-    (amm2MarketIdsToLegacyPoolIds ?? []).concat([...combiPoolIdSet]),
+    (amm2MarketIdsToLegacyPoolIds ?? []).concat([...combiPoolMap.keys()]),
     block24HoursAgo,
   );
 
-  const oldSwapPoolAccountIds = usePoolAccountIds(oldSwapPools.data);
-
+  // the total issuance of pool shares in the amm2 pool is not available
+  // TODO: it's rather important to know how much amount a liquidity provider has in the liquidity tree
+  // TODO: also, the combinatorial token issuance could be queried
   const oldSwapPoolsTotalIssuance = useTotalIssuanceForPools(
     oldSwapPools.data?.map((p) => p.poolId) ?? [],
-  );
-
-  const oldSwapPoolAssetBalancesFilter =
-    rawPositions.data
-      ?.flatMap((position) => {
-        const assetId = position.assetId;
-        const oldSwapPool = oldSwapPools.data?.find((pool) => {
-          if (IOPoolShareAssetId.is(assetId)) {
-            return pool.poolId === assetId.PoolShare;
-          }
-          if (IOMarketOutcomeAssetId.is(assetId)) {
-            return pool.marketId === getMarketIdOf(assetId);
-          }
-          // combinatorial tokens should not be present in old swap pools
-        });
-
-        if (!oldSwapPool) return null;
-
-        const assetIds = oldSwapPool.weights
-          .map((w) => parseAssetIdStringWithCombinatorial(w.assetId))
-          .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
-
-        return assetIds.map((assetId) => ({
-          assetId,
-          account: oldSwapPoolAccountIds[oldSwapPool.poolId],
-        }));
-      })
-      .filter(isNotNull) ?? [];
-
-  //Todo: we can use useAccountTokenPositions for this to reduce it to a single query issue #1945
-  const oldSwapPoolAssetBalances = useAccountAssetBalances(
-    oldSwapPoolAssetBalancesFilter,
-  );
-
-  const oldSwapPoolAssetBalances24HoursAgo = useAccountAssetBalances(
-    oldSwapPoolAssetBalancesFilter,
-    block24HoursAgo,
-    { enabled: Boolean(now?.block) },
   );
 
   const userAssetBalances = useAccountAssetBalances(
@@ -308,10 +275,8 @@ export const usePortfolioPositions = (
       oldSwapPools.isLoading ||
       markets.isLoading ||
       !ztgPrice ||
-      oldSwapPoolAssetBalances.isLoading ||
       !oldSwapPoolsTotalIssuance ||
       userAssetBalances.isLoading ||
-      oldSwapPoolAssetBalances24HoursAgo.isLoading ||
       isTradeHistoryLoading;
 
     if (stillLoading) {
@@ -345,12 +310,13 @@ export const usePortfolioPositions = (
         marketId = getMarketIdOf(assetId);
         market = markets.data?.find((m) => m.marketId === marketId);
         // TODO: beware: there could be multiple combinatorial pools with this marketId. So, find the legacy (standard) pool
-        // TODO: "oldSwapPools" does not include neo-swaps pools, but it should
+        // TODO: "oldSwapPools" does not include neo-swaps pools
         pool = oldSwapPools.data?.find((pool) => pool.marketId === marketId);
       }
 
       if (isCombinatorialToken(assetId)) {
-        // allow combinatorial tokens that can have multiple markets associated with them
+        // TODO: allow combinatorial tokens that can have multiple markets associated with them
+        /*
         pool = pools.data?.find(
           (pool) => pool.poolId === getPoolIdOf(assetId.CombinatorialToken),
         );
@@ -360,6 +326,7 @@ export const usePortfolioPositions = (
             : false,
         );
         marketIdsForCombiPool = marketsForCombiPool?.map((m) => m.marketId);
+        */
       }
 
       if (!market) {
@@ -371,8 +338,6 @@ export const usePortfolioPositions = (
         : undefined;
       const totalIssuanceForPoolQuery =
         pool && oldSwapPoolsTotalIssuance[pool.poolId];
-      const totalIssuanceData =
-        pool && oldSwapPoolsTotalIssuance[pool.poolId]?.data;
 
       const userBalance = balance ?? new Decimal(0);
 
@@ -570,8 +535,6 @@ export const usePortfolioPositions = (
     ztgPrice,
     oldSwapPoolsTotalIssuance,
     userAssetBalances,
-    oldSwapPoolAssetBalances,
-    oldSwapPoolAssetBalances24HoursAgo,
     isTradeHistoryLoading,
   ]);
 
