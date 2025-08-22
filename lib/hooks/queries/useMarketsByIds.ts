@@ -14,7 +14,6 @@ export const useMarketsByIds = (marketQueries?: UseMarketFilter[]) => {
     [id, rootKey, marketQueries],
     async () => {
       if (marketQueries && isIndexedSdk(sdk)) {
-        // TODO: look what underlying indexer query is used for this (Does it include neo-swaps poolIds?)
         return sdk.model.markets.list({
           where: {
             AND: [
