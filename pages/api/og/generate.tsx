@@ -101,18 +101,18 @@ export default async function GenerateOgImage(request: NextRequest) {
             src={cmsImageUrl ?? fallbackImagePath}
             tw="rounded-[5px]"
           />
-          <div 
+          <div
             tw={`ml-6 font-bold ${questionClass}`}
-            style={{ 
-              maxWidth: '800px',
-              display: 'flex',
-              flexDirection: 'column',
+            style={{
+              maxWidth: "800px",
+              display: "flex",
+              flexDirection: "column",
               lineHeight: 1.3,
-              wordBreak: 'break-word',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
+              wordBreak: "break-word",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
               WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical'
+              WebkitBoxOrient: "vertical",
             }}
           >
             {question}
@@ -129,8 +129,8 @@ export default async function GenerateOgImage(request: NextRequest) {
               ? market.marketType.categorical
                 ? `${prediction.name} (${prediction.percentage}%)`
                 : `${Intl.NumberFormat("en-US", {
-                  maximumSignificantDigits: 3,
-                }).format(Number(prediction.name))}`
+                    maximumSignificantDigits: 3,
+                  }).format(Number(prediction.name))}`
               : "No Prediction"}
           </div>
         </div>

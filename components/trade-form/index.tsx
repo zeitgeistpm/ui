@@ -241,7 +241,7 @@ const Inner = ({
       queryClient.invalidateQueries({
         queryKey: [id, "amm2-pool", market?.marketId],
       });
-      
+
       // Wait for indexer to process the trade before invalidating positions
       awaitIndexer(() => {
         if (wallet.realAddress) {

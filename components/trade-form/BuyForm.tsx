@@ -86,49 +86,59 @@ const BuyForm = ({
   const { data: market } = useMarket(poolData ? undefined : { marketId });
 
   const wallet = useWallet();
-  const baseAsset = poolData 
-    ? parseAssetIdString('ZTG') 
+  const baseAsset = poolData
+    ? parseAssetIdString("ZTG")
     : parseAssetIdString(market?.baseAsset);
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
   //TODO: fix this so it's consistent among: combo markets, legacy, and new markets
-  const poolId = poolData?.poolId || (isCombinatorialToken(market?.outcomeAssets[0]) ? market?.neoPool?.poolId : undefined);
+  const poolId =
+    poolData?.poolId ||
+    (isCombinatorialToken(market?.outcomeAssets[0])
+      ? market?.neoPool?.poolId
+      : undefined);
 
-  const { data: pool } = useAmm2Pool(poolData?.poolId ? 0 : marketId, poolId ?? null);
-  const [sellAssets, setSellAssets] = useState<CombinatorialToken[]>([]);  
-  
+  const { data: pool } = useAmm2Pool(
+    poolData?.poolId ? 0 : marketId,
+    poolId ?? null,
+  );
+  const [sellAssets, setSellAssets] = useState<CombinatorialToken[]>([]);
+
   const { data: orders } = useOrders({
     marketId_eq: marketId,
     status_eq: OrderStatus.Placed,
   });
 
-  const swapFee = poolData 
+  const swapFee = poolData
     ? new Decimal(poolData.swapFee || 0).div(ZTG)
     : pool?.swapFee.div(ZTG);
-  const creatorFee = poolData 
+  const creatorFee = poolData
     ? new Decimal(0) // set creator fees to 0 for combo markets
     : new Decimal(perbillToNumber(market?.creatorFee ?? 0));
   // Sort assets to match the order in market.outcomeAssets
-  
+
   const outcomeAssets = (() => {
     if (filteredAssets) {
       return sortAssetsByMarketOrder(filteredAssets, market?.outcomeAssets);
     }
-    
+
     if (poolData?.outcomeCombinations) {
-      const assets = poolData.outcomeCombinations.map((combo: any) => combo.assetId);
-      return sortAssetsByMarketOrder(assets, market?.outcomeAssets);
-    }
-    
-    if (pool?.assetIds) {
-      const assets = pool.assetIds.map(
-        (assetIdString) =>
-          isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+      const assets = poolData.outcomeCombinations.map(
+        (combo: any) => combo.assetId,
       );
       return sortAssetsByMarketOrder(assets, market?.outcomeAssets);
     }
-    
+
+    if (pool?.assetIds) {
+      const assets = pool.assetIds.map((assetIdString) =>
+        isCombinatorialToken(assetIdString)
+          ? assetIdString
+          : (parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId),
+      );
+      return sortAssetsByMarketOrder(assets, market?.outcomeAssets);
+    }
+
     return undefined;
   })();
 
@@ -139,15 +149,20 @@ const BuyForm = ({
   useEffect(() => {
     if (isCombinatorialToken(selectedAsset)) {
       const getAllOtherAssets = (selectedAsset: CombinatorialToken) => {
-        const allAssets = poolData?.outcomeCombinations.map((combo: any) => combo.assetId) || pool?.assetIds || [];
-        return allAssets.filter(assetId => 
-          isCombinatorialToken(assetId) && JSON.stringify(assetId) !== JSON.stringify(selectedAsset)
+        const allAssets =
+          poolData?.outcomeCombinations.map((combo: any) => combo.assetId) ||
+          pool?.assetIds ||
+          [];
+        return allAssets.filter(
+          (assetId) =>
+            isCombinatorialToken(assetId) &&
+            JSON.stringify(assetId) !== JSON.stringify(selectedAsset),
         );
-      }
+      };
       setSellAssets(getAllOtherAssets(selectedAsset));
     }
   }, [selectedAsset, pool?.assetIds, poolData?.outcomeCombinations]);
-  
+
   useEffect(() => {
     if (!selectedAsset && outcomeAssets?.[0]) {
       setSelectedAsset(outcomeAssets[0]);
@@ -160,11 +175,11 @@ const BuyForm = ({
     formAmount && formAmount !== "" ? formAmount : 0,
   ).mul(ZTG);
 
-  const assetReserve = poolData?.reserves 
+  const assetReserve = poolData?.reserves
     ? lookupAssetReserve(poolData.reserves, selectedAsset)
     : pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
 
-  const effectiveLiquidity = poolData 
+  const effectiveLiquidity = poolData
     ? new Decimal(poolData.liquidity)
     : pool?.liquidity;
 
@@ -190,7 +205,7 @@ const BuyForm = ({
       approximateMaxAmountInForBuy(assetReserve, effectiveLiquidity)
     );
   }, [assetReserve, effectiveLiquidity]);
-  
+
   const { amountOut, spotPrice, newSpotPrice, priceImpact, maxProfit } =
     useMemo(() => {
       const amountOut =
@@ -205,7 +220,9 @@ const BuyForm = ({
           : new Decimal(0);
 
       const spotPrice =
-        assetReserve && effectiveLiquidity && calculateSpotPrice(assetReserve, effectiveLiquidity);
+        assetReserve &&
+        effectiveLiquidity &&
+        calculateSpotPrice(assetReserve, effectiveLiquidity);
 
       const newSpotPrice =
         effectiveLiquidity &&
@@ -239,7 +256,9 @@ const BuyForm = ({
     () => {
       const amount = getValues("amount");
       const effectivePoolId = poolData?.poolId || pool?.poolId;
-      const assetCount = poolData ? poolData?.outcomeCombinations.length : pool?.assetIds.length;
+      const assetCount = poolData
+        ? poolData?.outcomeCombinations.length
+        : pool?.assetIds.length;
 
       if (
         !isRpcSdk(sdk) ||
@@ -270,7 +289,7 @@ const BuyForm = ({
           })),
         approxOutcomeAmount.abs().mul(ZTG),
       );
-      console.log('asset', selectedAsset)
+      console.log("asset", selectedAsset);
 
       if (!isCombinatorialToken(selectedAsset)) {
         return sdk.api.tx.neoSwaps.buy(
@@ -282,7 +301,7 @@ const BuyForm = ({
           // selectedOrders.map(({ id }) => id),
           // "ImmediateOrCancel",
         );
-      } else if(isCombinatorialToken(selectedAsset)) {
+      } else if (isCombinatorialToken(selectedAsset)) {
         return sdk.api.tx.neoSwaps.comboBuy(
           effectivePoolId,
           assetCount,

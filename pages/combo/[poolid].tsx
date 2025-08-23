@@ -18,7 +18,11 @@ import { Transition } from "@headlessui/react";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
 import { graphQlEndpoint } from "lib/constants";
-import { useComboMarket, ComboMarketData, OutcomeCombination } from "lib/hooks/queries/useComboMarket";
+import {
+  useComboMarket,
+  ComboMarketData,
+  OutcomeCombination,
+} from "lib/hooks/queries/useComboMarket";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
@@ -70,11 +74,11 @@ type ComboMarketPageProps = {
 };
 
 // Asset details table for combo market outcomes
-const ComboAssetDetails = ({ 
-  combinations, 
+const ComboAssetDetails = ({
+  combinations,
   poolId,
-  baseAsset
-}: { 
+  baseAsset,
+}: {
   combinations: OutcomeCombination[];
   poolId: number;
   baseAsset: AssetId;
@@ -108,51 +112,56 @@ const ComboAssetDetails = ({
     },
   ];
 
-  const tableData: TableData[] | undefined = combinations?.map((combination, index) => {
-    const currentPrice = spotPrices?.get(index)?.toNumber();
-    const priceChange = priceChanges?.get(index);
+  const tableData: TableData[] | undefined = combinations?.map(
+    (combination, index) => {
+      const currentPrice = spotPrices?.get(index)?.toNumber();
+      const priceChange = priceChanges?.get(index);
 
-    return {
-      assetId: index,
-      id: index,
-      outcome: (
-        <div className="flex items-center gap-2">
-          <div
-            className="w-3 h-3 rounded-full"
-            style={{ backgroundColor: combination.color }}
-          />
-          <span className="font-medium">{combination.name}</span>
-        </div>
-      ),
-      totalValue: {
-        value: currentPrice ?? 0,
-        usdValue: new Decimal(
-          currentPrice ? usdPrice?.mul(currentPrice) ?? 0 : 0,
-        ).toNumber(),
-      },
-      pre:
-        currentPrice != null
-          ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
-          : null,
-      change: priceChange,
-    };
-  });
+      return {
+        assetId: index,
+        id: index,
+        outcome: (
+          <div className="flex items-center gap-2">
+            <div
+              className="h-3 w-3 rounded-full"
+              style={{ backgroundColor: combination.color }}
+            />
+            <span className="font-medium">{combination.name}</span>
+          </div>
+        ),
+        totalValue: {
+          value: currentPrice ?? 0,
+          usdValue: new Decimal(
+            currentPrice ? (usdPrice?.mul(currentPrice) ?? 0) : 0,
+          ).toNumber(),
+        },
+        pre:
+          currentPrice != null
+            ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
+            : null,
+        change: priceChange,
+      };
+    },
+  );
 
   return <Table columns={columns} data={tableData} />;
 };
 
 // Source markets section styled like market description
-const SourceMarketsSection = ({ 
-  sourceMarkets 
-}: { 
-  sourceMarkets: [FullMarketFragment, FullMarketFragment] 
+const SourceMarketsSection = ({
+  sourceMarkets,
+}: {
+  sourceMarkets: [FullMarketFragment, FullMarketFragment];
 }) => {
   return (
     <div className="mb-8">
       <h3 className="mb-4 text-lg font-semibold">Source Markets</h3>
       <div className="space-y-4">
         {sourceMarkets.map((market, index) => (
-          <div key={market.marketId} className="rounded-lg border bg-white p-4 shadow-sm">
+          <div
+            key={market.marketId}
+            className="rounded-lg border bg-white p-4 shadow-sm"
+          >
             <div className="mb-3 flex items-center justify-between">
               <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">
                 Market {index + 1} (ID: {market.marketId})
@@ -164,14 +173,15 @@ const SourceMarketsSection = ({
                 View Market <ExternalLink size={14} className="ml-1" />
               </Link>
             </div>
-            <h4 className="mb-2 font-medium line-clamp-2">{market.question}</h4>
+            <h4 className="mb-2 line-clamp-2 font-medium">{market.question}</h4>
             <div className="text-sm text-gray-500">
               <div className="mb-1">
                 <span className="font-medium">Outcomes:</span>{" "}
-                {market.categories?.map(cat => cat.name).join(', ')}
+                {market.categories?.map((cat) => cat.name).join(", ")}
               </div>
               <div>
-                <span className="font-medium">Base Asset:</span> {market.baseAsset}
+                <span className="font-medium">Base Asset:</span>{" "}
+                {market.baseAsset}
               </div>
             </div>
           </div>
@@ -183,12 +193,12 @@ const SourceMarketsSection = ({
 
 // Utility function to find combined period from source markets
 const getCombinedMarketPeriod = (
-  sourceMarkets: [FullMarketFragment, FullMarketFragment]
+  sourceMarkets: [FullMarketFragment, FullMarketFragment],
 ): { block: string[]; start: string; end: string } => {
   let earliestStart: string | null = null;
   let latestEnd: string | null = null;
 
-  sourceMarkets.forEach(market => {
+  sourceMarkets.forEach((market) => {
     if (market.period) {
       // Extract start and end from market period
       const marketStart = market.period.start;
@@ -219,11 +229,7 @@ const getCombinedMarketPeriod = (
 };
 
 // Chart component for combo markets
-const ComboChart = ({ 
-  chartSeries 
-}: { 
-  chartSeries: ChartSeries[];
-}) => {
+const ComboChart = ({ chartSeries }: { chartSeries: ChartSeries[] }) => {
   return (
     <TimeSeriesChart
       data={[]} // This would need to be populated with actual price data
@@ -337,7 +343,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     marketId_eq: poolId,
     makerAccountId_eq: realAddress,
   });
-  const { data: poolData } = useAmm2Pool(0, poolId) // marketId=0 for combo pools
+  const { data: poolData } = useAmm2Pool(0, poolId); // marketId=0 for combo pools
 
   const [showLiquidityParam, setShowLiquidityParam, unsetShowLiquidityParam] =
     useQueryParamState("showLiquidity");
@@ -355,7 +361,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="flex h-64 items-center justify-center">
         <Skeleton height="400px" width="100%" />
       </div>
     );
@@ -371,15 +377,17 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     description: comboMarketData.description,
     status: MarketStatus.Active,
     oracle: comboMarketData.accountId, //TODO: fix to show all oracles or none
-    categories: comboMarketData.outcomeCombinations.map(combo => ({
+    categories: comboMarketData.outcomeCombinations.map((combo) => ({
       name: combo.name,
       color: combo.color,
     })),
     baseAsset: comboMarketData.baseAsset,
-    outcomeAssets: comboMarketData.outcomeCombinations.map((_, index) => `${poolId}-${index}`),
+    outcomeAssets: comboMarketData.outcomeCombinations.map(
+      (_, index) => `${poolId}-${index}`,
+    ),
     pool: null,
     neoPool: {
-      ...poolData
+      ...poolData,
     },
     slug: `combo-${poolId}`,
     __typename: "Market" as const,
@@ -438,7 +446,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
                   {hasChart ? (
                     <ComboChart chartSeries={chartSeries} />
                   ) : (
-                    <div className="flex h-[400px] items-center justify-center bg-gray-100 rounded-lg">
+                    <div className="flex h-[400px] items-center justify-center rounded-lg bg-gray-100">
                       <div className="text-center text-gray-500">
                         <AlertTriangle size={48} className="mx-auto mb-2" />
                         <p>Chart data not available</p>
@@ -472,15 +480,16 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
                 <AlertTriangle size={20} />
               </div>
               <div className="ml-ztg-10 text-ztg-12-120">
-                This combinatorial market doesn't have a liquidity pool and therefore cannot be traded
+                This combinatorial market doesn't have a liquidity pool and
+                therefore cannot be traded
               </div>
             </div>
           )}
 
           {/* Asset Details Table */}
           <div className="my-8">
-            <ComboAssetDetails 
-              combinations={comboMarketData.outcomeCombinations} 
+            <ComboAssetDetails
+              combinations={comboMarketData.outcomeCombinations}
               poolId={poolId}
               baseAsset={comboMarketData.baseAsset}
             />
@@ -498,11 +507,19 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
           {marketHasPool && (
             <div className="mt-10 flex flex-col gap-4">
               <h3 className="mb-5 text-2xl">Latest Trades</h3>
-              <LatestTrades 
-                limit={3} 
+              <LatestTrades
+                limit={3}
                 marketId={undefined}
-                outcomeAssets={comboMarketData?.outcomeCombinations?.map(combo => combo.assetId) || []}
-                outcomeNames={comboMarketData?.outcomeCombinations?.map(combo => combo.name) || []}
+                outcomeAssets={
+                  comboMarketData?.outcomeCombinations?.map(
+                    (combo) => combo.assetId,
+                  ) || []
+                }
+                outcomeNames={
+                  comboMarketData?.outcomeCombinations?.map(
+                    (combo) => combo.name,
+                  ) || []
+                }
                 marketQuestion={comboMarketData?.question}
               />
               <Link
@@ -540,7 +557,11 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
                 leaveTo="transform opacity-0 "
                 show={showLiquidity && Boolean(marketHasPool)}
               >
-                <MarketLiquiditySection pool={true} market={virtualMarket} comboMarket={true}/>
+                <MarketLiquiditySection
+                  pool={true}
+                  market={virtualMarket}
+                  comboMarket={true}
+                />
               </Transition>
             </div>
           )}
@@ -556,8 +577,8 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
                   "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
               }}
             >
-              <Amm2TradeForm 
-                marketId={poolId} 
+              <Amm2TradeForm
+                marketId={poolId}
                 poolData={comboMarketData}
                 outcomeCombinations={comboMarketData?.outcomeCombinations}
               />
@@ -571,4 +592,4 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
   );
 };
 
-export default ComboMarket; 
+export default ComboMarket;

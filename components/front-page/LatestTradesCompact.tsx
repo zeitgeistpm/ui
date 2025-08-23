@@ -8,12 +8,34 @@ import Image from "next/image";
 import Link from "next/link";
 
 const LatestTradesCompact = () => {
-  const { data: trades } = useLatestTrades(4);
+  const { data: trades, isLoading } = useLatestTrades(4);
+
+  if (isLoading || trades === undefined) {
+    return (
+      <div className="flex w-full flex-col divide-y divide-solid overflow-hidden rounded-lg bg-white">
+        {/* Simple loading state - could be enhanced with skeleton */}
+        <div className="p-4 text-center text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
+  if (trades.length === 0) {
+    return (
+      <div className="flex w-full flex-col divide-y divide-solid overflow-hidden rounded-lg bg-white">
+        <div className="p-4 text-center text-gray-500">No trades</div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="flex w-full flex-col divide-y divide-solid overflow-hidden rounded-lg bg-white">
-        {trades?.map((trade) => <LatestTradeRow trade={trade} />)}
+        {trades.map((trade) => (
+          <LatestTradeRow
+            key={`${trade.marketId}-${trade.traderAddress}-${trade.time}`}
+            trade={trade}
+          />
+        ))}
       </div>
     </div>
   );

@@ -8,7 +8,9 @@ import {
   RpcContext,
   ZTG,
   isFullSdk,
+  isRpcSdk,
 } from "@zeitgeistpm/sdk";
+import { prepareCombinatorialPoolParams } from "lib/state/market-creation/types/form";
 import { StorageError } from "@zeitgeistpm/web3.storage";
 import Modal from "components/ui/Modal";
 import TransactionButton from "components/ui/TransactionButton";
@@ -147,6 +149,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
           lifetime: 60,
         });
 
+        // Step 1: Create the market
         const result = await sdk.model.markets.create(
           creationParams,
           IOForeignAssetId.is(feeDetails?.assetId)
@@ -154,24 +157,82 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
             : undefined,
         );
 
-        // const extractedResult = result.saturate().unwrap();
-        // const { market } = extractedResult;
-        // const marketId = market.marketId;
-
         const marketCreationEvent = result.raw.events.find(
-          (event) => event.event.index.toString() === "0x3903"
+          (event) => event.event.index.toString() === "0x3903",
         );
-        
+
         if (!marketCreationEvent) {
           throw new Error("Market creation event not found");
         }
         const marketData = marketCreationEvent.event.data[2] as any;
         const marketId = Number(marketData.marketId);
 
+        notifications.pushNotification(
+          "Market created! Now deploying combinatorial pool...",
+          {
+            autoRemove: true,
+            type: "Info",
+            lifetime: 60,
+          },
+        );
+
+        // Step 2: Deploy combinatorial pool if liquidity is enabled
+        const poolParams = prepareCombinatorialPoolParams(editor.form);
+        if (poolParams && isRpcSdk(sdk)) {
+          try {
+            // For combinatorial pools, we need to specify this is a single market
+            // The asset count is the number of outcomes
+            const outcomeCount =
+              editor.form.answers.type === "scalar"
+                ? 2
+                : editor.form.answers.answers.length;
+
+            // Deploy the combinatorial pool
+            const deployPoolTx = sdk.api.tx.neoSwaps.deployCombinatorialPool(
+              outcomeCount,
+              [marketId], // Single market for now, can be extended for multi-market combinations
+              poolParams.amount,
+              poolParams.spotPrices,
+              poolParams.swapFee,
+              { total: 16, consumeAll: true }, // Default fuel
+            );
+
+            // Import the signAndSend utility function from lib/util/tx
+            const { signAndSend } = await import("lib/util/tx");
+
+            // Use the signer from creationParams
+            const signer = creationParams.proxy || creationParams.signer;
+            if (!signer) throw new Error("No active signer");
+
+            // Use the utility function which handles signer types correctly
+            await signAndSend(deployPoolTx, signer);
+
+            notifications.pushNotification(
+              "Combinatorial pool deployed successfully!",
+              {
+                autoRemove: true,
+                type: "Success",
+                lifetime: 10,
+              },
+            );
+          } catch (poolError) {
+            // Pool deployment failed, but market was created
+            console.error("Pool deployment failed:", poolError);
+            notifications.pushNotification(
+              "Market created but pool deployment failed. You can deploy the pool later.",
+              {
+                autoRemove: true,
+                type: "Warning",
+                lifetime: 15,
+              },
+            );
+          }
+        }
+
         editor.published(marketId);
 
         notifications.pushNotification(
-          "Transaction successful! Awaiting indexer.",
+          "Market creation complete! Awaiting indexer.",
           {
             autoRemove: true,
             type: "Info",
@@ -181,7 +242,10 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
 
         const indexedStatus = await poll(
           async () => {
-            return checkMarketExists(sdk.indexer.client as unknown as GraphQLClient, marketId);
+            return checkMarketExists(
+              sdk.indexer.client as unknown as GraphQLClient,
+              marketId,
+            );
           },
           {
             intervall: 1000,
@@ -236,7 +300,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
       setIsTransacting(false);
     }
   };
-  
+
   return (
     <>
       <div className="">

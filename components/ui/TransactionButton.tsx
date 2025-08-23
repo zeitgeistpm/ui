@@ -8,7 +8,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useAccountModals } from "lib/state/account";
 import { useWallet } from "lib/state/wallet";
-import { FC, PropsWithChildren, useMemo } from "react";
+import { FC, PropsWithChildren, useMemo, useState, useEffect } from "react";
 import { Loader } from "./Loader";
 
 interface TransactionButtonProps {
@@ -40,7 +40,13 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   const wallet = useWallet();
   const [sdk] = useSdkv2();
   const accountModals = useAccountModals();
-  const { locationAllowed } = useUserLocation();
+  const { locationAllowed, isLoading: locationLoading } = useUserLocation();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const extrinsicBase = useMemo(() => {
     return extrinsic && isRpcSdk(sdk) && wallet.activeAccount?.address
       ? sdk.api.tx.balances.transfer(
@@ -48,7 +54,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
           ZTG.toFixed(0),
         )
       : undefined;
-  }, [extrinsic, sdk]);
+  }, [extrinsic, sdk, wallet.activeAccount?.address]);
 
   const { data: fee } = useExtrinsicFee(extrinsicBase);
 
@@ -66,36 +72,88 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   };
 
   const isDisabled = useMemo(() => {
+    // During SSR, use safe default to prevent hydration mismatch
+    if (!mounted) {
+      return false; // Always enabled on server to match client initial state
+    }
+
+    // During location loading, only disable based on basic conditions
+    if (locationLoading) {
+      return disabled;
+    }
+
+    // After fully mounted and location determined
     if (locationAllowed !== true || !isRpcSdk(sdk) || insufficientFeeBalance) {
       return true;
     } else if (!wallet.connected) {
       return false;
     }
     return disabled;
-  }, [locationAllowed, sdk, wallet, insufficientFeeBalance]);
+  }, [
+    mounted,
+    locationLoading,
+    locationAllowed,
+    sdk,
+    wallet.connected,
+    insufficientFeeBalance,
+    disabled,
+  ]);
 
-  const colorClass =
-    locationAllowed !== true || insufficientFeeBalance
+  const colorClass = useMemo(() => {
+    // During SSR, use safe default color
+    if (!mounted) {
+      return "bg-ztg-blue"; // Default color on server
+    }
+
+    // During location loading, use default color
+    if (locationLoading) {
+      return "bg-ztg-blue";
+    }
+
+    // After fully mounted and location determined
+    return locationAllowed !== true || insufficientFeeBalance
       ? "bg-vermilion"
       : "bg-ztg-blue";
+  }, [mounted, locationLoading, locationAllowed, insufficientFeeBalance]);
 
   const getButtonChildren = () => {
-    if (locationAllowed !== true) {
-      return "Location Blocked";
-    } else if (insufficientFeeBalance) {
-      return `Insufficient ${fee.symbol}`;
-    } else if (loading) {
-      return (
-        <div className="center w-full rounded-full bg-inherit">
-          <Loader variant={"Dark"} className="z-20 h-6 w-6" loading />
-        </div>
-      );
-    } else if (wallet.connected) {
-      return children;
-    } else {
-      return connectText;
-    }
+    // Always wrap content in consistent structure for hydration
+    const content = (() => {
+      // During SSR or initial client render, always show simple loading or default state
+      // to prevent hydration mismatches
+      if (!mounted) {
+        // On server, show connect text as default safe state
+        return connectText;
+      }
+
+      // After mounting, show loading if explicitly loading
+      if (loading) {
+        return <Loader variant={"Dark"} className="z-20 h-6 w-6" loading />;
+      }
+
+      // During location loading, show current children
+      if (locationLoading) {
+        return wallet.connected ? children : connectText;
+      }
+
+      // After fully mounted and location checked, show appropriate state
+      if (locationAllowed !== true) {
+        return "Location Blocked";
+      } else if (insufficientFeeBalance && fee?.symbol) {
+        return `Insufficient ${fee.symbol}`;
+      } else if (wallet.connected) {
+        return children;
+      } else {
+        return connectText;
+      }
+    })();
+
+    // Always wrap in consistent div structure for hydration consistency
+    return (
+      <div className="center w-full rounded-full bg-inherit">{content}</div>
+    );
   };
+
   return (
     <button
       type={type}

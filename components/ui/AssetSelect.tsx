@@ -66,7 +66,9 @@ const SingleValue = (props: SingleValueProps<AssetOption, false>) => {
       ) : (
         <div className="mr-3 h-[36px] w-[36px] rounded-full bg-ztg-blue"></div>
       )}
-      <span>{label} ({lookupAssetOriginChain(value)})</span>
+      <span>
+        {label} ({lookupAssetOriginChain(value)})
+      </span>
     </div>
   );
 };
@@ -92,11 +94,12 @@ const Option = (props: OptionProps<AssetOption, false>) => {
           alt={label}
           quality={100}
         />
-
       ) : (
         <div className="mr-3 h-[36px] w-[36px] rounded-full bg-ztg-blue"></div>
       )}
-      <span>{label} ({lookupAssetOriginChain(value)})</span>
+      <span>
+        {label} ({lookupAssetOriginChain(value)})
+      </span>
       {balance && (
         <div className="ml-auto text-xs">
           Balance: {formatNumberLocalized(balance.div(ZTG).toNumber())}

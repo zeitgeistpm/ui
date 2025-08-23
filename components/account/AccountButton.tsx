@@ -48,7 +48,8 @@ const BalanceRow = ({
         className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold ${className}`}
       >
         {balance &&
-          `${formatNumberLocalized(balance?.div(ZTG).abs().toNumber())} ${units ?? ""
+          `${formatNumberLocalized(balance?.div(ZTG).abs().toNumber())} ${
+            units ?? ""
           }`}
       </div>
     </div>
@@ -179,16 +180,18 @@ const AccountButton: FC<{
                   <div className="relative flex h-11">
                     <Menu.Button>
                       <div
-                        className={`relative z-30 flex	h-full flex-1 cursor-pointer items-center justify-end rounded-full  ${open
-                          ? "border-orange-500"
-                          : pathname === "/"
-                            ? " border-white"
-                            : "border-black"
-                          }`}
+                        className={`relative z-30 flex	h-full flex-1 cursor-pointer items-center justify-end rounded-full  ${
+                          open
+                            ? "border-orange-500"
+                            : pathname === "/"
+                              ? " border-white"
+                              : "border-black"
+                        }`}
                       >
                         <div
-                          className={`flex h-full items-center rounded-full border-2 bg-black py-1 pl-1.5 text-white transition-all md:py-0 ${open ? "border-sunglow-2" : "border-white"
-                            }`}
+                          className={`flex h-full items-center rounded-full border-2 bg-black py-1 pl-1.5 text-white transition-all md:py-0 ${
+                            open ? "border-sunglow-2" : "border-white"
+                          }`}
                         >
                           <div className={`rounded-full ring-2`}>
                             {activeAccount?.address && (
@@ -200,8 +203,9 @@ const AccountButton: FC<{
                             )}
                           </div>
                           <span
-                            className={`hidden h-full pl-2 text-sm font-medium leading-[40px] transition-all md:block ${open ? "text-sunglow-2" : "text-white"
-                              }`}
+                            className={`hidden h-full pl-2 text-sm font-medium leading-[40px] transition-all md:block ${
+                              open ? "text-sunglow-2" : "text-white"
+                            }`}
                           >
                             {activeAccount &&
                               shortenAddress(activeAccount?.address, 6, 4)}
@@ -211,8 +215,9 @@ const AccountButton: FC<{
                             <ChevronDown
                               size={16}
                               viewBox="4 3 16 16"
-                              className={`box-content px-2 ${open && "rotate-180 text-sunglow-2"
-                                }`}
+                              className={`box-content px-2 ${
+                                open && "rotate-180 text-sunglow-2"
+                              }`}
                             />
                           </div>
                         </div>
@@ -224,10 +229,11 @@ const AccountButton: FC<{
                           <>
                             <Popover.Button className="relative z-20 focus:outline-none">
                               <div
-                                className={`z-rounded-r-full z-50 -ml-4 h-11 pl-6 ${open
-                                  ? "bg-gradient-to-r from-purple-500 to-purple-500"
-                                  : "bg-gradient-to-r from-purple-700 to-purple-500"
-                                  } center rounded-r-full pr-4 text-purple-900`}
+                                className={`z-rounded-r-full z-50 -ml-4 h-11 pl-6 ${
+                                  open
+                                    ? "bg-gradient-to-r from-purple-500 to-purple-500"
+                                    : "bg-gradient-to-r from-purple-700 to-purple-500"
+                                } center rounded-r-full pr-4 text-purple-900`}
                               >
                                 <FaNetworkWired size={18} />
                               </div>
@@ -303,14 +309,12 @@ const AccountButton: FC<{
                             units="USDC.wh"
                             balance={usdcMoonbeamBalance}
                             className="text-xs font-medium"
-
                           />
                           <BalanceRow
                             imgPath="/currencies/dot.png"
                             units="DOT"
                             balance={polkadotBalance}
                             className="text-xs font-medium"
-
                           />
                         </div>
                         <Menu.Item>

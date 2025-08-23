@@ -30,10 +30,10 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
     if (addressFromRoute) {
       setHasAddress(true);
       setIsAccountAddress(addressFromRoute === wallet.activeAccount?.address);
-      
+
       const targetPath = `/portfolio/${addressFromRoute}`;
       const currentPath = router.pathname;
-      
+
       if (currentPath !== targetPath) {
         router.replace(
           { pathname: targetPath, query: queryParams },
@@ -47,10 +47,10 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
     } else if (wallet.activeAccount?.address && wallet.realAddress) {
       setHasAddress(true);
       setIsAccountAddress(true);
-      
+
       const targetPath = `/portfolio/${wallet.realAddress}`;
       const currentPath = router.pathname;
-      
+
       if (currentPath !== targetPath) {
         router.replace(
           {

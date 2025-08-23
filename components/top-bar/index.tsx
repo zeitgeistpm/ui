@@ -38,8 +38,8 @@ const AccountButton = dynamic(
     loading: () => (
       <div
         className="center flex h-[44px] w-[76px] rounded-full border-2 border-white bg-black py-1 pl-1.5 text-white transition-all md:w-[186px] md:py-0"
-      // height={"44px"}
-      // width={"186px"}
+        // height={"44px"}
+        // width={"186px"}
       >
         <div className="animate-pulse text-xs">...</div>
       </div>
@@ -65,9 +65,9 @@ const TopBar = () => {
                 <>
                   <div className="flex gap-2">
                     <Menu.Button className="center relative flex gap-2 font-light text-white">
-                      <div className="relative hidden md:flex flex-col items-center">
+                      <div className="relative hidden flex-col items-center md:flex">
                         <FiGrid size="20px" />
-                        <div className="hidden md:block text-xs">Markets</div>
+                        <div className="hidden text-xs md:block">Markets</div>
                       </div>
                       <div className="block md:hidden">
                         <MenuIcon />
@@ -193,14 +193,19 @@ const TopBar = () => {
             }}
           </Menu>
 
-          <Menu as="div" className="relative hidden md:inline-block md:text-left">
+          <Menu
+            as="div"
+            className="relative hidden md:inline-block md:text-left"
+          >
             {({ open, close }) => {
               return (
                 <>
                   <Menu.Button className="md:center relative hidden gap-2 font-light text-white md:flex">
-                    <div className="relative hidden md:flex flex-col items-center">
+                    <div className="relative hidden flex-col items-center md:flex">
                       <FiPlusSquare size="20px" />
-                      <div className="hidden md:block text-xs whitespace-nowrap">Create Market</div>
+                      <div className="hidden whitespace-nowrap text-xs md:block">
+                        Create Market
+                      </div>
                     </div>
                   </Menu.Button>
                   <Transition
@@ -257,12 +262,11 @@ const TopBar = () => {
             className="md:center relative hidden gap-2 font-light text-white md:flex"
             href="/leaderboard/year"
           >
-            <div className="relative hidden md:flex flex-col items-center">
+            <div className="relative hidden flex-col items-center md:flex">
               <FiAward size="20px" />
-              <div className="hidden md:block text-xs">Leaderboard</div>
+              <div className="hidden text-xs md:block">Leaderboard</div>
             </div>
           </Link>
-
         </div>
         <MarketSearch />
         <div className="center relative ml-auto gap-3">
@@ -390,12 +394,14 @@ const CreateMarketMenu = ({ onSelect }: { onSelect: () => void }) => {
         href="/create"
         className="flex items-center gap-3"
       >
-        <div className="relative h-12 w-12 flex items-center justify-center overflow-hidden rounded-full border-2 border-gray-300">
+        <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border-2 border-gray-300">
           <MdShowChart size={24} />
         </div>
         <div className="flex flex-col">
           <div className="font-semibold">Single Market</div>
-          <div className="text-xs font-light text-gray-600">Create a traditional prediction market</div>
+          <div className="text-xs font-light text-gray-600">
+            Create a traditional prediction market
+          </div>
         </div>
       </Link>
 
@@ -404,12 +410,14 @@ const CreateMarketMenu = ({ onSelect }: { onSelect: () => void }) => {
         href="/create-combo"
         className="flex items-center gap-3"
       >
-        <div className="relative h-12 w-12 flex items-center justify-center overflow-hidden rounded-full border-2 border-gray-300">
+        <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border-2 border-gray-300">
           <MdStackedLineChart size={24} />
         </div>
         <div className="flex flex-col">
           <div className="font-semibold">Combinatorial Market</div>
-          <div className="text-xs font-light text-gray-600">Create a complex multi-outcome market</div>
+          <div className="text-xs font-light text-gray-600">
+            Create a complex multi-outcome market
+          </div>
         </div>
       </Link>
     </div>

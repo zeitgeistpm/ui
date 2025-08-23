@@ -166,15 +166,15 @@ const CurrenciesTable = ({ address }: { address: string }) => {
               imagePath={lookupAssetImagePath(
                 balance.foreignAssetId != null
                   ? {
-                    ForeignAsset: balance.foreignAssetId,
-                  }
+                      ForeignAsset: balance.foreignAssetId,
+                    }
                   : null,
               )}
             />
           ),
           balance: amount.div(ZTG).toFixed(3),
           button: (
-            <div className="flex flex-col gap-2 w-full py-2 whitespace-nowrap">
+            <div className="flex w-full flex-col gap-2 whitespace-nowrap py-2">
               <MoveButton
                 chain={balance.chain}
                 sourceChain={balance.sourceChain}

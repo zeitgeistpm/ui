@@ -451,12 +451,14 @@ const Stats = () => {
 
   const totalStake = useCourtTotalStakedAmount();
 
-  const activeCaseCount = courtCases?.filter((c) => c.case.status.isOpen)
-    .length;
+  const activeCaseCount = courtCases?.filter(
+    (c) => c.case.status.isOpen,
+  ).length;
 
   const jurorCount = participants?.filter((p) => p.type === "Juror").length;
-  const delegatorCount = participants?.filter((p) => p.type === "Delegator")
-    .length;
+  const delegatorCount = participants?.filter(
+    (p) => p.type === "Delegator",
+  ).length;
 
   return (
     <>

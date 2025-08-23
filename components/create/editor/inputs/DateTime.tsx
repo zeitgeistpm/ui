@@ -90,7 +90,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
           <div className="relative px-8 py-3">
             <div>
               {!value
-                ? placeholder ?? "Set Date"
+                ? (placeholder ?? "Set Date")
                 : momentFn(value).format("MMM D, YYYY, h:mm:ss A")}
             </div>
             <Input

@@ -19,16 +19,16 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
   try {
     const client = new GraphQLClient(graphQlEndpoint);
-    
+
     const endpoints = endpointOptions.map((e) => e.value);
     const sdkId = `${endpoints.join(",")}:${graphQlEndpoint}`;
-    
+
     // Filter for markets created from June 20, 2025 onwards
     // This should work in interim until the indexer is updated to include combinatorial markets
-    const targetDate = new Date('2025-06-20T00:00:00.000Z');
+    const targetDate = new Date("2025-06-20T00:00:00.000Z");
     const targetDateISO = targetDate.toISOString();
 
-          // Fetch active markets created from June 20, 2025 onwards
+    // Fetch active markets created from June 20, 2025 onwards
     const response = await client.request<{ markets: any[] }>(`
       query GetActiveMarkets {
         markets(
@@ -58,7 +58,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
     // Pre-load active markets with the correct cache key
     queryClient.setQueryData([sdkId, activeMarketsKey], response.markets);
-    
   } catch (error) {
     console.error("Failed to pre-load markets:", error);
     // Don't fail the page if pre-loading fails, just log the error

@@ -68,7 +68,10 @@ import {
   isValidMarketReport,
 } from "lib/types";
 import { MarketDispute } from "lib/types/markets";
-import { parseAssetIdString, parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
+import {
+  parseAssetIdString,
+  parseAssetIdStringWithCombinatorial,
+} from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -216,14 +219,15 @@ const Market: NextPage<MarketPageProps> = ({
 }) => {
   const router = useRouter();
   const { marketid } = router.query;
-  
-  const marketId = indexedMarket?.marketId ?? (router.isReady ? Number(marketid) : undefined);
+
+  const marketId =
+    indexedMarket?.marketId ?? (router.isReady ? Number(marketid) : undefined);
   const { realAddress } = useWallet();
   const marketData = indexedMarket;
 
   const { data: poolData } = useAmm2Pool(
-    marketId || 0, 
-    marketData?.neoPool?.poolId ?? null
+    marketId || 0,
+    marketData?.neoPool?.poolId ?? null,
   );
 
   const { data: orders, isLoading: isOrdersLoading } = useOrders({
@@ -239,75 +243,66 @@ const Market: NextPage<MarketPageProps> = ({
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
 
-  const outcomeAssets = marketData?.outcomeAssets?.map(
-    (assetIdString) =>
-      parseAssetIdStringWithCombinatorial(assetIdString),
+  const outcomeAssets = marketData?.outcomeAssets?.map((assetIdString) =>
+    parseAssetIdStringWithCombinatorial(assetIdString),
   );
 
   // Filter pool assets to match the market's specific outcomes
-  const relevantPoolAssets: (MarketOutcomeAssetId | CombinatorialToken)[] | undefined = useMemo(() => {
-    // Fallback: If pool data is not available but we have outcome assets, use them
-    if (!poolData?.assetIds && outcomeAssets && outcomeAssets.length > 0) {
-      console.log('[Using Fallback Assets]', { 
-        outcomeAssetsLength: outcomeAssets.length,
-        reason: 'Pool data unavailable'
-      });
-      return outcomeAssets;
-    }
-    
+  const relevantPoolAssets:
+    | (MarketOutcomeAssetId | CombinatorialToken)[]
+    | undefined = useMemo(() => {
     // If pool data is not available, return undefined
     if (!poolData?.assetIds) return undefined;
-    
+
     // Check if this is a combo pool
     const isComboPool = poolData.assetIds.some(isCombinatorialToken);
-    
+
     if (!isComboPool) {
       // Regular pool - return all assets
       return poolData.assetIds;
     }
-    
+
     // Combo pool - need to determine if this is a regular market or combo market
     if (!marketData?.outcomeAssets || !outcomeAssets) {
       return poolData.assetIds;
     }
-    
+
     const marketAssetStrings = marketData.outcomeAssets;
-    
+
     // Check if market has categorical outcomes (regular market using combo pool)
-    const hasCategorialOutcomes = marketAssetStrings.some((assetString: string) => 
-      assetString.includes('categoricalOutcome')
+    const hasCategorialOutcomes = marketAssetStrings.some(
+      (assetString: string) => assetString.includes("categoricalOutcome"),
     );
-    
+
     if (hasCategorialOutcomes) {
       // Regular market using combo pool - take first N combo tokens
       const comboTokens = poolData.assetIds.filter(isCombinatorialToken);
       return comboTokens.slice(0, outcomeAssets.length);
     }
-    
+
     // True combo market - try to match tokens
-    const filtered = poolData.assetIds.filter(poolAsset => {
+    const filtered = poolData.assetIds.filter((poolAsset) => {
       if (isCombinatorialToken(poolAsset)) {
-        const hasMatch = marketAssetStrings.some((marketAssetString: string) => 
-          marketAssetString.includes(poolAsset.CombinatorialToken)
+        const hasMatch = marketAssetStrings.some((marketAssetString: string) =>
+          marketAssetString.includes(poolAsset.CombinatorialToken),
         );
         return hasMatch;
       } else {
         const poolAssetString = JSON.stringify(poolAsset);
-        const hasMatch = marketAssetStrings.some((marketAssetString: string) => 
-          marketAssetString === poolAssetString
+        const hasMatch = marketAssetStrings.some(
+          (marketAssetString: string) => marketAssetString === poolAssetString,
         );
         return hasMatch;
       }
     });
-    
+
     // If filtering removed everything, return all non-combo assets as fallback
     if (filtered.length === 0) {
-      return poolData.assetIds.filter(asset => !isCombinatorialToken(asset));
+      return poolData.assetIds.filter((asset) => !isCombinatorialToken(asset));
     }
-    
+
     return filtered;
   }, [poolData?.assetIds, outcomeAssets, marketData?.outcomeAssets]);
-
 
   // Set initial trade item when market loads
   useEffect(() => {
@@ -326,17 +321,20 @@ const Market: NextPage<MarketPageProps> = ({
 
   const [poolDeployed, setPoolDeployed] = useState(false);
 
-  const { data: market, isLoading: marketIsLoading, refetch: refetchMarket } = useMarket(
-    marketId ? { marketId } : undefined,
-    {
-      refetchInterval: poolDeployed ? 1000 : false,
-    },
-  );
+  const {
+    data: market,
+    isLoading: marketIsLoading,
+    refetch: refetchMarket,
+  } = useMarket(marketId ? { marketId } : undefined, {
+    refetchInterval: poolDeployed ? 1000 : false,
+  });
 
   const { data: disputes } = useMarketDisputes(marketId || 0);
 
   const { data: marketStage } = useMarketStage(market ?? undefined);
-  const { data: spotPrices, refetch: refetchSpotPrices } = useMarketSpotPrices(marketId || 0);
+  const { data: spotPrices, refetch: refetchSpotPrices } = useMarketSpotPrices(
+    marketId || 0,
+  );
 
   const baseAsset = parseAssetIdString(marketData?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAsset);
@@ -344,11 +342,10 @@ const Market: NextPage<MarketPageProps> = ({
   const [showTwitchChat, setShowTwitchChat] = useState(true);
 
   const wallet = useWallet();
-  
+
   // Market pool status - must be declared early for use in JSX
   // Use static data if available, fallback to dynamic data
-  const marketHasPool = (marketData?.neoPool != null) || (market?.neoPool != null);
-  
+  const marketHasPool = marketData?.neoPool != null || market?.neoPool != null;
 
   const handlePoolDeployed = () => {
     setPoolDeployed(true);
@@ -436,21 +433,21 @@ const Market: NextPage<MarketPageProps> = ({
   const poolCreationDate = new Date(
     marketData.pool?.createdAt ?? marketData.neoPool?.createdAt ?? "",
   );
-  
+
   // Generate outcomeCombinations for regular markets using combo pools
   const outcomeCombinations = useMemo(() => {
     // Use available data - prefer market data but fallback to marketData (static props)
     const categories = market?.categories || marketData?.categories;
     const marketIdValue = market?.marketId || marketData?.marketId;
-    
+
     if (!relevantPoolAssets || !categories || !marketIdValue) return undefined;
-    
+
     // Only generate for markets that have combinatorial tokens but are regular markets
     const hasComboTokens = relevantPoolAssets.some(isCombinatorialToken);
     if (!hasComboTokens) return undefined;
-    
+
     const colors = calcMarketColors(marketIdValue, relevantPoolAssets.length);
-    
+
     return relevantPoolAssets
       .filter(isCombinatorialToken)
       .map((asset, index) => {
@@ -461,7 +458,13 @@ const Market: NextPage<MarketPageProps> = ({
           color: categories[categoryIndex]?.color || colors[index],
         };
       });
-  }, [relevantPoolAssets, market?.categories, market?.marketId, marketData?.categories, marketData?.marketId]);
+  }, [
+    relevantPoolAssets,
+    market?.categories,
+    market?.marketId,
+    marketData?.categories,
+    marketData?.marketId,
+  ]);
 
   return (
     <div className="mt-6">
@@ -649,38 +652,54 @@ const Market: NextPage<MarketPageProps> = ({
           {marketHasPool === true && (
             <div className="mt-10 flex flex-col gap-4">
               <h3 className="mb-5 text-2xl">Latest Trades</h3>
-              <LatestTrades 
-                limit={3} 
-                marketId={marketId} 
+              <LatestTrades
+                limit={3}
+                marketId={marketId}
                 outcomeAssets={(() => {
-                  if (!relevantPoolAssets?.some(isCombinatorialToken)) return undefined;
-                  
-                  const comboAssets = relevantPoolAssets.filter(isCombinatorialToken);
-                  
+                  if (!relevantPoolAssets?.some(isCombinatorialToken))
+                    return undefined;
+
+                  const comboAssets =
+                    relevantPoolAssets.filter(isCombinatorialToken);
+
                   // Apply consistent ordering to match market.outcomeAssets
                   if (!marketData?.outcomeAssets) return comboAssets;
-                  
+
                   return comboAssets.sort((a, b) => {
-                    const aIndex = marketData.outcomeAssets.findIndex(marketAsset => {
-                      if (typeof marketAsset === 'string' && marketAsset.includes(a.CombinatorialToken)) {
-                        return true;
-                      }
-                      return JSON.stringify(marketAsset).includes(a.CombinatorialToken);
-                    });
-                    
-                    const bIndex = marketData.outcomeAssets.findIndex(marketAsset => {
-                      if (typeof marketAsset === 'string' && marketAsset.includes(b.CombinatorialToken)) {
-                        return true;
-                      }
-                      return JSON.stringify(marketAsset).includes(b.CombinatorialToken);
-                    });
-                    
+                    const aIndex = marketData.outcomeAssets.findIndex(
+                      (marketAsset) => {
+                        if (
+                          typeof marketAsset === "string" &&
+                          marketAsset.includes(a.CombinatorialToken)
+                        ) {
+                          return true;
+                        }
+                        return JSON.stringify(marketAsset).includes(
+                          a.CombinatorialToken,
+                        );
+                      },
+                    );
+
+                    const bIndex = marketData.outcomeAssets.findIndex(
+                      (marketAsset) => {
+                        if (
+                          typeof marketAsset === "string" &&
+                          marketAsset.includes(b.CombinatorialToken)
+                        ) {
+                          return true;
+                        }
+                        return JSON.stringify(marketAsset).includes(
+                          b.CombinatorialToken,
+                        );
+                      },
+                    );
+
                     return aIndex - bIndex;
                   });
                 })()}
                 outcomeNames={
                   relevantPoolAssets?.some(isCombinatorialToken)
-                    ? marketData?.categories?.map(cat => cat.name)
+                    ? marketData?.categories?.map((cat) => cat.name)
                     : undefined
                 }
               />
@@ -723,7 +742,11 @@ const Market: NextPage<MarketPageProps> = ({
                 leaveTo="transform opacity-0 "
                 show={showLiquidity && Boolean(marketHasPool || poolDeployed)}
               >
-                <MarketLiquiditySection pool={poolDeployed} market={market} comboMarket={false}/>
+                <MarketLiquiditySection
+                  pool={poolDeployed}
+                  market={market}
+                  comboMarket={false}
+                />
               </Transition>
             </div>
           )}
@@ -738,15 +761,19 @@ const Market: NextPage<MarketPageProps> = ({
                   "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
               }}
             >
-              {(market?.status === MarketStatus.Active || marketData?.status === "Active") ? (
+              {market?.status === MarketStatus.Active ||
+              marketData?.status === "Active" ? (
                 <>
-                  <Amm2TradeForm 
-                    marketId={marketId} 
+                  <Amm2TradeForm
+                    marketId={marketId}
                     filteredAssets={relevantPoolAssets}
                     outcomeCombinations={outcomeCombinations}
                   />
                 </>
-              ) : (market?.status === MarketStatus.Closed || marketData?.status === "Closed") && canReport && market ? (
+              ) : (market?.status === MarketStatus.Closed ||
+                  marketData?.status === "Closed") &&
+                canReport &&
+                market ? (
                 <>
                   <ReportForm market={market} />
                 </>
@@ -771,8 +798,8 @@ const Market: NextPage<MarketPageProps> = ({
         </div>
       </div>
       {(market || marketData) && (
-        <MobileContextButtons 
-          market={market} 
+        <MobileContextButtons
+          market={market}
           relevantPoolAssets={relevantPoolAssets}
           marketData={marketData}
         />
@@ -781,11 +808,11 @@ const Market: NextPage<MarketPageProps> = ({
   );
 };
 
-const MobileContextButtons = ({ 
-  market, 
+const MobileContextButtons = ({
+  market,
   relevantPoolAssets,
-  marketData
-}: { 
+  marketData,
+}: {
   market: FullMarketFragment | null | undefined;
   relevantPoolAssets?: (MarketOutcomeAssetId | CombinatorialToken)[];
   marketData?: any; // Allow any type for marketData since it comes from static props
@@ -798,9 +825,12 @@ const MobileContextButtons = ({
     marketStage?.type === "OpenReportingPeriod" ||
     (marketStage?.type === "OracleReportingPeriod" && isOracle);
 
-  const outcomeAssets = (market?.outcomeAssets || marketData?.outcomeAssets || []).map(
-    (assetIdString: string) =>
-      parseAssetIdStringWithCombinatorial(assetIdString),
+  const outcomeAssets = (
+    market?.outcomeAssets ||
+    marketData?.outcomeAssets ||
+    []
+  ).map((assetIdString: string) =>
+    parseAssetIdStringWithCombinatorial(assetIdString),
   );
 
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
@@ -812,15 +842,15 @@ const MobileContextButtons = ({
     // Use available categories data
     const categories = market?.categories;
     const marketIdValue = market?.marketId;
-    
+
     if (!relevantPoolAssets || !categories || !marketIdValue) return undefined;
-    
+
     // Only generate for markets that have combinatorial tokens but are regular markets
     const hasComboTokens = relevantPoolAssets.some(isCombinatorialToken);
     if (!hasComboTokens) return undefined;
-    
+
     const colors = calcMarketColors(marketIdValue, relevantPoolAssets.length);
-    
+
     return relevantPoolAssets
       .filter(isCombinatorialToken)
       .map((asset, index) => {
@@ -856,7 +886,8 @@ const MobileContextButtons = ({
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        {(market?.status === MarketStatus.Active || marketData?.status === "Active") ? (
+        {market?.status === MarketStatus.Active ||
+        marketData?.status === "Active" ? (
           <Amm2TradeForm
             marketId={market?.marketId || marketData?.marketId || 0}
             showTabs={false}
@@ -866,7 +897,9 @@ const MobileContextButtons = ({
             filteredAssets={relevantPoolAssets}
             outcomeCombinations={outcomeCombinations}
           />
-        ) : (market?.status === MarketStatus.Closed || marketData?.status === "Closed") && canReport ? (
+        ) : (market?.status === MarketStatus.Closed ||
+            marketData?.status === "Closed") &&
+          canReport ? (
           <>
             <ReportForm market={market!} />
           </>
@@ -879,12 +912,16 @@ const MobileContextButtons = ({
         )}
       </div>
 
-      {((market?.status === MarketStatus.Active || marketData?.status === "Active") ||
-        (market?.status === MarketStatus.Closed || marketData?.status === "Closed") ||
-        (market?.status === MarketStatus.Reported || marketData?.status === "Reported")) && (
+      {(market?.status === MarketStatus.Active ||
+        marketData?.status === "Active" ||
+        market?.status === MarketStatus.Closed ||
+        marketData?.status === "Closed" ||
+        market?.status === MarketStatus.Reported ||
+        marketData?.status === "Reported") && (
         <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
           <div className="flex h-20 cursor-pointer text-lg font-semibold">
-            {(market?.status === MarketStatus.Active || marketData?.status === "Active") ? (
+            {market?.status === MarketStatus.Active ||
+            marketData?.status === "Active" ? (
               <>
                 <div
                   className={`center h-full flex-1  ${

@@ -93,8 +93,9 @@ const Stepper = ({ start, end, currentStep, onStepClick }: StepperProps) => {
           key={step}
           onClick={() => onStepClick(step)}
           disabled={step === currentStep}
-          className={`h-[5px] w-full ${step === currentStep ? "bg-black" : "bg-mystic"
-            }`}
+          className={`h-[5px] w-full ${
+            step === currentStep ? "bg-black" : "bg-mystic"
+          }`}
         ></button>
       ))}
     </div>
@@ -133,10 +134,11 @@ const TextSection = ({
         <div className="flex h-[56px] w-full gap-x-5 font-medium">
           {leftButton && (
             <button
-              className={`w-full rounded-[100px] bg-mystic hover:bg-gray-100 ${leftButton.disabled === true
-                ? "cursor-default bg-gray-light-2"
-                : "border"
-                }`}
+              className={`w-full rounded-[100px] bg-mystic hover:bg-gray-100 ${
+                leftButton.disabled === true
+                  ? "cursor-default bg-gray-light-2"
+                  : "border"
+              }`}
               onClick={leftButton.onClick}
             >
               {leftButton.text}
@@ -144,10 +146,11 @@ const TextSection = ({
           )}
           {rightButton && (
             <button
-              className={`w-full rounded-[100px] bg-ztg-blue text-white hover:bg-black ${rightButton.disabled === true
-                ? "cursor-default bg-gray-light-2"
-                : "border"
-                }`}
+              className={`w-full rounded-[100px] bg-ztg-blue text-white hover:bg-black ${
+                rightButton.disabled === true
+                  ? "cursor-default bg-gray-light-2"
+                  : "border"
+              }`}
               onClick={rightButton.onClick}
             >
               {rightButton.text}
@@ -172,15 +175,18 @@ export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
                 key={index}
                 disabled={button.disabled || !isDisclaimerChecked}
                 onClick={button.onClick}
-                className={`flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${button?.className} ${button.disabled === true || !isDisclaimerChecked ? "bg-gray-light-2 cursor-not-allowed opacity-50" : "border"
-                  }`}
+                className={`flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${button?.className} ${
+                  button.disabled === true || !isDisclaimerChecked
+                    ? "cursor-not-allowed bg-gray-light-2 opacity-50"
+                    : "border"
+                }`}
               >
                 <div className="ml-4 flex items-center gap-2 text-lg font-medium">
                   <span>{button.title}</span>
                   <span>{button?.icon}</span>
                 </div>
               </button>
-              <div className="flex items-center mt-2">
+              <div className="mt-2 flex items-center">
                 <input
                   type="checkbox"
                   id="banxa-disclaimer"
@@ -188,7 +194,9 @@ export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
                   onChange={() => setIsDisclaimerChecked(!isDisclaimerChecked)}
                 />
                 <label htmlFor="banxa-disclaimer" className="ml-2 text-sm">
-                  I understand that I will be redirected to Banxa, a third-party website to complete the payment and will be subject to their terms of service.
+                  I understand that I will be redirected to Banxa, a third-party
+                  website to complete the payment and will be subject to their
+                  terms of service.
                 </label>
               </div>
             </>
@@ -199,8 +207,9 @@ export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
               key={index}
               disabled={button.disabled}
               onClick={button.onClick}
-              className={`flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${button?.className} ${button.disabled === true ? "bg-gray-light-2" : "border"
-                }`}
+              className={`flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${button?.className} ${
+                button.disabled === true ? "bg-gray-light-2" : "border"
+              }`}
             >
               <div className="ml-4 flex items-center gap-2 text-lg font-medium">
                 <span>{button.title}</span>
@@ -223,8 +232,9 @@ export const ResourceList: React.FC<ButtonListProps> = ({ buttonList }) => {
             key={index}
             disabled={resource.disabled}
             onClick={resource.onClick}
-            className={`col-span-3 flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${resource.disabled === true ? "bg-gray-light-2" : "border"
-              }`}
+            className={`col-span-3 flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${
+              resource.disabled === true ? "bg-gray-light-2" : "border"
+            }`}
           >
             <span className="ml-4 flex items-center gap-2 text-lg font-medium">
               {resource.title}

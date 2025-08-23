@@ -59,16 +59,20 @@ const LatestTrades = ({
   outcomeNames?: string[];
   marketQuestion?: string;
 }) => {
-  const { data: trades } = useLatestTrades({ 
-    limit, 
-    marketId, 
+  const { data: trades, isLoading } = useLatestTrades({
+    limit,
+    marketId,
     outcomeAssets,
     outcomeNames,
-    marketQuestion
+    marketQuestion,
   });
 
   const tableData: TableData[] | undefined = useMemo(() => {
-    if (!trades?.length) return undefined;
+    // If still loading, return undefined to show skeleton
+    if (isLoading || trades === undefined) return undefined;
+
+    // If no trades, return empty array to show "No trades" message
+    if (!trades.length) return [];
 
     const now = moment();
     return trades.map((trade) => ({
@@ -88,7 +92,7 @@ const LatestTrades = ({
       price: formatNumberLocalized(trade.outcomePrice.toNumber()),
       time: `${moment.duration(now.diff(trade.time)).humanize()} ago`,
     }));
-  }, [trades]);
+  }, [trades, isLoading]);
 
   return (
     <div className="rounded-xl shadow-lg">

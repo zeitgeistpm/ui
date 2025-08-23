@@ -17,7 +17,10 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 // } from "./LimitOrderForm";
 // import { ChevronDown } from "react-feather";
 // import { init } from "next/dist/compiled/webpack/webpack";
-import { CombinatorialToken, isCombinatorialToken } from "lib/types/combinatorial";
+import {
+  CombinatorialToken,
+  isCombinatorialToken,
+} from "lib/types/combinatorial";
 // import { Pool } from "zeitgeist-subsquid/src/types/v51";
 
 const Amm2TradeForm = ({
@@ -47,15 +50,17 @@ const Amm2TradeForm = ({
   const [showSuccessBox, setShowSuccessBox] = useState(false);
   const [amountReceived, setAmountReceived] = useState<Decimal>();
   const [amountIn, setAmountIn] = useState<Decimal>();
-  const [outcomeAsset, setOutcomeAsset] = useState<MarketOutcomeAssetId | CombinatorialToken>();
-  
+  const [outcomeAsset, setOutcomeAsset] = useState<
+    MarketOutcomeAssetId | CombinatorialToken
+  >();
+
   // Use poolData for combo markets, otherwise use market data
   const { data: market } = useMarket(poolData ? undefined : { marketId });
-  
-  const baseAsset = poolData 
-    ? parseAssetIdString('ZTG') // Combo markets always use ZTG
+
+  const baseAsset = poolData
+    ? parseAssetIdString("ZTG") // Combo markets always use ZTG
     : parseAssetIdString(market?.baseAsset);
-    
+
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
 
@@ -93,12 +98,16 @@ const Amm2TradeForm = ({
           tokenName={
             outcomeAsset
               ? poolData && isCombinatorialToken(outcomeAsset)
-                ? poolData.outcomeCombinations.find((combo: any) => 
-                    combo.assetId.CombinatorialToken === outcomeAsset.CombinatorialToken
+                ? poolData.outcomeCombinations.find(
+                    (combo: any) =>
+                      combo.assetId.CombinatorialToken ===
+                      outcomeAsset.CombinatorialToken,
                   )?.name || "Combinatorial"
                 : market?.categories
-                ? market.categories[getIndexOf(outcomeAsset as MarketOutcomeAssetId)].name ?? ""
-                : ""
+                  ? (market.categories[
+                      getIndexOf(outcomeAsset as MarketOutcomeAssetId)
+                    ].name ?? "")
+                  : ""
               : ""
           }
           baseTokenAmount={

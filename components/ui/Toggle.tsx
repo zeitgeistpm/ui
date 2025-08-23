@@ -27,8 +27,8 @@ export const Toggle = ({
         ${disabled && "!cursor-not-allowed !bg-gray-400"}
         ${
           checked
-            ? activeClassName ?? "bg-black"
-            : deActiveClassName ?? "bg-black"
+            ? (activeClassName ?? "bg-black")
+            : (deActiveClassName ?? "bg-black")
         }
         ${className}`}
     >

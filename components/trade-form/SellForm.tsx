@@ -84,8 +84,8 @@ const SellForm = ({
   const wallet = useWallet();
   const poolId = poolData?.poolId || market?.neoPool?.poolId;
   const { data: pool } = useAmm2Pool(marketId, poolId);
-  const baseAsset = poolData 
-    ? parseAssetIdString('ZTG') 
+  const baseAsset = poolData
+    ? parseAssetIdString("ZTG")
     : parseAssetIdString(market?.baseAsset);
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
@@ -94,33 +94,36 @@ const SellForm = ({
     status_eq: OrderStatus.Placed,
   });
 
-  const swapFee = poolData 
+  const swapFee = poolData
     ? new Decimal(poolData.swapFee || 0).div(ZTG)
     : pool?.swapFee.div(ZTG);
-  const creatorFee = poolData 
+  const creatorFee = poolData
     ? new Decimal(0) // Combo markets don't have creator fees
     : new Decimal(perbillToNumber(market?.creatorFee ?? 0));
 
-  // Sort assets to match the order in market.outcomeAssets  
-  
+  // Sort assets to match the order in market.outcomeAssets
+
   const outcomeAssets = (() => {
     if (filteredAssets) {
       return sortAssetsByMarketOrder(filteredAssets, market?.outcomeAssets);
     }
-    
+
     if (poolData?.outcomeCombinations) {
-      const assets = poolData.outcomeCombinations.map((combo: any) => combo.assetId);
-      return sortAssetsByMarketOrder(assets, market?.outcomeAssets);
-    }
-    
-    if (pool?.assetIds) {
-      const assets = pool.assetIds.map(
-        (assetIdString) =>
-          isCombinatorialToken(assetIdString) ? assetIdString : parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+      const assets = poolData.outcomeCombinations.map(
+        (combo: any) => combo.assetId,
       );
       return sortAssetsByMarketOrder(assets, market?.outcomeAssets);
     }
-    
+
+    if (pool?.assetIds) {
+      const assets = pool.assetIds.map((assetIdString) =>
+        isCombinatorialToken(assetIdString)
+          ? assetIdString
+          : (parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId),
+      );
+      return sortAssetsByMarketOrder(assets, market?.outcomeAssets);
+    }
+
     return undefined;
   })();
 
@@ -138,11 +141,11 @@ const SellForm = ({
   const amountIn = new Decimal(formAmount && formAmount !== "" ? formAmount : 0)
     .mul(ZTG)
     .abs();
-  const assetReserve = poolData?.reserves 
+  const assetReserve = poolData?.reserves
     ? lookupAssetReserve(poolData.reserves, selectedAsset)
     : pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
 
-  const effectiveLiquidity = poolData 
+  const effectiveLiquidity = poolData
     ? new Decimal(poolData.liquidity)
     : pool?.liquidity;
 
@@ -176,7 +179,9 @@ const SellForm = ({
         : new Decimal(0);
 
     const spotPrice =
-      assetReserve && effectiveLiquidity && calculateSpotPrice(assetReserve, effectiveLiquidity);
+      assetReserve &&
+      effectiveLiquidity &&
+      calculateSpotPrice(assetReserve, effectiveLiquidity);
 
     const poolAmountIn = amountIn.minus(amountOut);
     const newSpotPrice =
@@ -204,7 +209,9 @@ const SellForm = ({
       const amount = getValues("amount");
       const effectivePoolId = poolData?.poolId || pool?.poolId;
 
-      const categoryCount = poolData ? poolData?.outcomeCombinations.length : market?.categories?.length;
+      const categoryCount = poolData
+        ? poolData?.outcomeCombinations.length
+        : market?.categories?.length;
 
       if (
         !isRpcSdk(sdk) ||
@@ -213,7 +220,8 @@ const SellForm = ({
         amount === "" ||
         categoryCount == null ||
         !selectedAsset ||
-        (isCombinatorialToken(selectedAsset) && poolData?.outcomeCombinations.length <= 1) ||
+        (isCombinatorialToken(selectedAsset) &&
+          poolData?.outcomeCombinations.length <= 1) ||
         !newSpotPrice ||
         !orders
       ) {
@@ -245,17 +253,23 @@ const SellForm = ({
           // selectedOrders.map(({ id }) => id),
           // "ImmediateOrCancel",
         );
-      } else if(isCombinatorialToken(selectedAsset)) {
-      // For combo markets, we need to provide all other assets as the sell parameter
-      const allOtherAssets = poolData?.outcomeCombinations
-        .map((combo: any) => combo.assetId)
-        .filter((assetId: any) => JSON.stringify(assetId) !== JSON.stringify(selectedAsset))
-        || pool?.assetIds.filter(assetId => 
-            isCombinatorialToken(assetId) && JSON.stringify(assetId) !== JSON.stringify(selectedAsset)
-          ) 
-        || [];
+      } else if (isCombinatorialToken(selectedAsset)) {
+        // For combo markets, we need to provide all other assets as the sell parameter
+        const allOtherAssets =
+          poolData?.outcomeCombinations
+            .map((combo: any) => combo.assetId)
+            .filter(
+              (assetId: any) =>
+                JSON.stringify(assetId) !== JSON.stringify(selectedAsset),
+            ) ||
+          pool?.assetIds.filter(
+            (assetId) =>
+              isCombinatorialToken(assetId) &&
+              JSON.stringify(assetId) !== JSON.stringify(selectedAsset),
+          ) ||
+          [];
 
-      return sdk.api.tx.neoSwaps.comboSell(
+        return sdk.api.tx.neoSwaps.comboSell(
           effectivePoolId,
           categoryCount,
           [selectedAsset], // buy - the asset we want to end up with more of

@@ -42,14 +42,15 @@ const MarketAssetDetails = ({
 
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
-  
+
   // Use utility function to handle all ordering logic
-  const { orderedCategories, orderedSpotPrices, orderedPriceChanges } = sortCategoriesByMarketOrder(
-    categories ?? market?.categories ?? [],
-    spotPrices ?? undefined,
-    priceChanges ?? undefined,
-    market?.outcomeAssets
-  );
+  const { orderedCategories, orderedSpotPrices, orderedPriceChanges } =
+    sortCategoriesByMarketOrder(
+      categories ?? market?.categories ?? [],
+      spotPrices ?? undefined,
+      priceChanges ?? undefined,
+      market?.outcomeAssets,
+    );
 
   const totalAssetPrice = spotPrices
     ? Array.from(spotPrices.values()).reduce(
@@ -57,28 +58,31 @@ const MarketAssetDetails = ({
         new Decimal(0),
       )
     : new Decimal(0);
-  const tableData: TableData[] | undefined = orderedCategories?.map((category: any, index: number) => {
-    const outcomeName = category?.name;
-    const currentPrice = orderedSpotPrices?.get(index)?.toNumber();
-    const priceChange = orderedPriceChanges?.get(index);
-    const impliedPercent = currentPrice != null
-      ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
-      : null;
+  const tableData: TableData[] | undefined = orderedCategories?.map(
+    (category: any, index: number) => {
+      const outcomeName = category?.name;
+      const currentPrice = orderedSpotPrices?.get(index)?.toNumber();
+      const priceChange = orderedPriceChanges?.get(index);
+      const impliedPercent =
+        currentPrice != null
+          ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
+          : null;
 
-    return {
-      assetId: market?.pool?.weights[index]?.assetId,
-      id: index,
-      outcome: outcomeName,
-      totalValue: {
-        value: currentPrice ?? 0,
-        usdValue: new Decimal(
-          currentPrice ? usdPrice?.mul(currentPrice) ?? 0 : 0,
-        ).toNumber(),
-      },
-      pre: impliedPercent,
-      change: priceChange,
-    };
-  });
+      return {
+        assetId: market?.pool?.weights[index]?.assetId,
+        id: index,
+        outcome: outcomeName,
+        totalValue: {
+          value: currentPrice ?? 0,
+          usdValue: new Decimal(
+            currentPrice ? (usdPrice?.mul(currentPrice) ?? 0) : 0,
+          ).toNumber(),
+        },
+        pre: impliedPercent,
+        change: priceChange,
+      };
+    },
+  );
 
   return <Table columns={columns} data={tableData} />;
 };

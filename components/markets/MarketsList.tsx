@@ -28,7 +28,7 @@ const useChangeQuery = (
 ) => {
   const queryState = useMarketsUrlQuery();
   const updateQueryRef = useRef(queryState.updateQuery);
-  
+
   // Keep ref updated
   useEffect(() => {
     updateQueryRef.current = queryState.updateQuery;

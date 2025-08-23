@@ -37,7 +37,9 @@ const DepositButton = ({
 
   return (
     <>
-      <SecondaryButton onClick={() => setIsOpen(true)}>Transfer to Zeitgeist</SecondaryButton>
+      <SecondaryButton onClick={() => setIsOpen(true)}>
+        Transfer to Zeitgeist
+      </SecondaryButton>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <DepositModal
           sourceChain={sourceChain}
@@ -191,7 +193,7 @@ const DepositModal = ({
                     value={
                       countDecimals(field.value ? Number(field.value) : 0) > 3
                         ? Number(field.value).toFixed(3)
-                        : field.value ?? 0
+                        : (field.value ?? 0)
                     }
                   />
                 );

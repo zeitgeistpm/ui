@@ -10,7 +10,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import { RiArrowDownSLine } from "react-icons/ri";
-import { isCombinatorialToken, CombinatorialToken } from "lib/types/combinatorial";
+import {
+  isCombinatorialToken,
+  CombinatorialToken,
+} from "lib/types/combinatorial";
 
 export type MarketContextActionOutcomeSelectorProps = {
   market?: FullMarketFragment;
@@ -19,7 +22,11 @@ export type MarketContextActionOutcomeSelectorProps = {
   disabled?: boolean;
   hideValue?: boolean;
   onChange: (selected: MarketOutcomeAssetId | CombinatorialToken) => void;
-  outcomeCombinations?: { assetId: CombinatorialToken; name: string; color?: string }[];
+  outcomeCombinations?: {
+    assetId: CombinatorialToken;
+    name: string;
+    color?: string;
+  }[];
 };
 
 const SEARCH_ITEMS_THRESHOLD = 5;
@@ -39,21 +46,21 @@ const MarketContextActionOutcomeSelector = ({
 
   const assetOptions = useMemo(() => {
     if (!options) return [];
-    
+
     // Use marketId if available, otherwise use a fallback
     const marketId = market?.marketId || 0;
     const colors = calcMarketColors(marketId, options.length);
-    
+
     return options.map((asset, index) => {
       let assetIndex: number;
       let category: { name: string } | null = null;
       let color = colors[index]; // Default color
-      
+
       if (isCombinatorialToken(asset)) {
         if (outcomeCombinations) {
           // Find the combination that matches this asset
-          const combination = outcomeCombinations.find(combo => 
-            JSON.stringify(combo.assetId) === JSON.stringify(asset)
+          const combination = outcomeCombinations.find(
+            (combo) => JSON.stringify(combo.assetId) === JSON.stringify(asset),
           );
           if (combination) {
             category = { name: combination.name };
@@ -67,7 +74,9 @@ const MarketContextActionOutcomeSelector = ({
           // since assets are now in natural order matching categories
           assetIndex = index;
           const marketCategory = market?.categories?.[assetIndex];
-          category = marketCategory ? { name: marketCategory.name || "" } : null;
+          category = marketCategory
+            ? { name: marketCategory.name || "" }
+            : null;
         }
       } else {
         // For regular assets, use getIndexOf
@@ -75,7 +84,7 @@ const MarketContextActionOutcomeSelector = ({
         const marketCategory = market?.categories?.[assetIndex];
         category = marketCategory ? { name: marketCategory.name || "" } : null;
       }
-      
+
       return {
         asset,
         assetIndex,
@@ -122,21 +131,28 @@ const MarketContextActionOutcomeSelector = ({
 
   const getSelectedText = () => {
     if (isCombinatorialToken(selected)) {
-      return assetOptions.find(a => 
-        JSON.stringify(a.asset) === JSON.stringify(selected)
-      )?.category?.name ?? "";
-    } else if ('CategoricalOutcome' in selected) {
+      return (
+        assetOptions.find(
+          (a) => JSON.stringify(a.asset) === JSON.stringify(selected),
+        )?.category?.name ?? ""
+      );
+    } else if ("CategoricalOutcome" in selected) {
       return market?.categories?.[selected.CategoricalOutcome[1]]?.name ?? "";
     } else {
       return selected.ScalarOutcome[1];
     }
   };
 
-  const findMatchingOption = (selected: MarketOutcomeAssetId | CombinatorialToken) => {
+  const findMatchingOption = (
+    selected: MarketOutcomeAssetId | CombinatorialToken,
+  ) => {
     return assetOptions.find((a) => {
       if (isCombinatorialToken(selected) && isCombinatorialToken(a.asset)) {
         return JSON.stringify(a.asset) === JSON.stringify(selected);
-      } else if (!isCombinatorialToken(selected) && !isCombinatorialToken(a.asset)) {
+      } else if (
+        !isCombinatorialToken(selected) &&
+        !isCombinatorialToken(a.asset)
+      ) {
         return getIndexOf(a.asset) === getIndexOf(selected);
       }
       return false;
@@ -156,10 +172,7 @@ const MarketContextActionOutcomeSelector = ({
         <div className="center gap-3">
           <Listbox.Button onClick={() => setOpen(!open)}>
             <div className="center gap-2 text-2xl md:text-xl lg:text-2xl">
-              <TruncatedText
-                length={24}
-                text={getSelectedText()}
-              >
+              <TruncatedText length={24} text={getSelectedText()}>
                 {(text) => {
                   const option = findMatchingOption(selected);
 

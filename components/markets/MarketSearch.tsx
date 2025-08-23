@@ -81,8 +81,9 @@ const MarketSearch = () => {
       </Link>
       <div className="hidden items-center lg:flex">
         <div
-          className={`relative w-full overflow-hidden transition-all ${showSearch ? "max-w-[500px] px-3" : "max-w-[0px]"
-            }`}
+          className={`relative w-full overflow-hidden transition-all ${
+            showSearch ? "max-w-[500px] px-3" : "max-w-[0px]"
+          }`}
         >
           <input
             ref={inputRef}
@@ -171,10 +172,11 @@ const MarketSearch = () => {
                     {market.question}
                   </div>
                   <div
-                    className={`w-16 rounded-md px-2 py-1 text-center text-xs text-white ${market.status === MarketStatus.Active
+                    className={`w-16 rounded-md px-2 py-1 text-center text-xs text-white ${
+                      market.status === MarketStatus.Active
                         ? "bg-green-400"
                         : "bg-gray-400"
-                      }`}
+                    }`}
                   >
                     {market.status === MarketStatus.Active
                       ? "Active"

@@ -74,7 +74,7 @@ export const OracleInput = forwardRef(
     const accountname =
       proxy && proxy?.enabled
         ? "Proxied"
-        : wallet.activeAccount?.name ?? "Account";
+        : (wallet.activeAccount?.name ?? "Account");
 
     return (
       <div className={`relative ${className}`}>
