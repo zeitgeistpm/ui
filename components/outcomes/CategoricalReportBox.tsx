@@ -8,6 +8,7 @@ import {
   Market,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
+import { CombinatorialToken, isCombinatorialToken } from "lib/types/combinatorial";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TransactionButton from "components/ui/TransactionButton";
 import TruncatedText from "components/ui/TruncatedText";
@@ -17,6 +18,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { MarketCategoricalOutcome } from "lib/types";
 import { calcMarketColors } from "lib/util/color-calc";
+import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 import { useState } from "react";
 import { RiArrowDownSLine } from "react-icons/ri";
 
@@ -30,33 +32,56 @@ const CategoricalReportBox = ({
   const [sdk] = useSdkv2();
   const wallet = useWallet();
   const notificationStore = useNotifications();
-
   if (!market) return null;
 
   const outcomeAssets = market.outcomeAssets.map(
-    (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
+    (assetIdString) => parseAssetIdStringWithCombinatorial(assetIdString)
   );
 
-  const [selectedOutcome, setSelectedOutcome] = useState(outcomeAssets[0]);
+  // Filter to only categorical and combinatorial tokens, exclude scalar outcomes
+  const categoricalOutcomeAssets = outcomeAssets.filter(
+    (asset): asset is CategoricalAssetId | CombinatorialToken => 
+      !('ScalarOutcome' in asset)
+  );
+
+  const [selectedOutcome, setSelectedOutcome] = useState<CategoricalAssetId | CombinatorialToken>(categoricalOutcomeAssets[0]);
+
+  // Helper function to get the categorical index from either outcome type
+  const getCategoricalIndex = (outcome: CategoricalAssetId | CombinatorialToken): number | undefined => {
+    if (isCombinatorialToken(outcome)) {
+      // Find the index of this combinatorial token in the outcomeAssets array
+      const index = outcomeAssets.findIndex(asset => 
+        isCombinatorialToken(asset) && asset.CombinatorialToken === outcome.CombinatorialToken
+      );
+      return index >= 0 ? index : undefined;
+    } else if (IOCategoricalAssetId.is(outcome)) {
+      return getIndexOf(outcome);
+    }
+    return undefined;
+  };
 
   const { send, isLoading, isBroadcasting, isSuccess } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk)) return;
 
-      if (!IOCategoricalAssetId.is(selectedOutcome)) return;
+      // Get the categorical index regardless of token type
+      const categoricalIndex = getCategoricalIndex(selectedOutcome);
+      if (categoricalIndex === undefined) return;
 
-      const ID = selectedOutcome.CategoricalOutcome[1];
-
+      // Always report as Categorical with the index
       return sdk.api.tx.predictionMarkets.report(market.marketId, {
-        Categorical: ID,
+        Categorical: categoricalIndex,
       });
     },
     {
       onBroadcast: () => {},
       onSuccess: () => {
         if (onReport) {
-          onReport?.({ categorical: getIndexOf(selectedOutcome) });
+          // Always pass the categorical index
+          const categoricalIndex = getCategoricalIndex(selectedOutcome);
+          if (categoricalIndex !== undefined) {
+            onReport?.({ categorical: categoricalIndex });
+          }
         } else {
           notificationStore.pushNotification("Outcome Reported", {
             type: "Success",
@@ -79,12 +104,13 @@ const CategoricalReportBox = ({
             selected={selectedOutcome}
             options={outcomeAssets}
             onChange={(assetId) => {
-              setSelectedOutcome(assetId as CategoricalAssetId);
+              setSelectedOutcome(assetId as CategoricalAssetId | CombinatorialToken);
             }}
           />
         )}
       </div>
-
+      {console.log(selectedOutcome)}
+      {console.log(market.categories)}
       <TransactionButton
         className="center my-ztg-10 shadow-ztg-2"
         onClick={handleSignTransaction}
@@ -94,7 +120,10 @@ const CategoricalReportBox = ({
         <span className="mr-1">Report Outcome</span>
         <TruncatedText
           length={12}
-          text={market.categories?.[getIndexOf(selectedOutcome)]?.name ?? ""}
+          text={
+            // Use the categorical index to get the category name for both types
+            market.categories?.[getCategoricalIndex(selectedOutcome) ?? 0]?.name ?? ""
+          }
         >
           {(text) => <>{text}</>}
         </TruncatedText>

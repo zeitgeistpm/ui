@@ -28,17 +28,30 @@ export const getServerSideProps: GetServerSideProps = async () => {
     const targetDate = new Date("2025-06-20T00:00:00.000Z");
     const targetDateISO = targetDate.toISOString();
 
-    // Fetch active markets created from June 20, 2025 onwards
+    // Fetch active markets with pools created from June 20, 2025 onwards
     const response = await client.request<{ markets: any[] }>(`
       query GetActiveMarkets {
         markets(
           where: {
             AND: [
               { status_eq: Active }
-              { createdAt_gte: "${targetDateISO}" }
+              { 
+                OR: [
+                  { 
+                    pool: {
+                      createdAt_gte: "${targetDateISO}"
+                    }
+                  }
+                  { 
+                    neoPool: {
+                      createdAt_gte: "${targetDateISO}"
+                    }
+                  }
+                ]
+              }
             ]
           }
-          order: ${MarketOrderByInput.IdDesc}
+          orderBy: ${MarketOrderByInput.IdDesc}
           limit: 100
         ) {
           marketId
@@ -46,12 +59,17 @@ export const getServerSideProps: GetServerSideProps = async () => {
           description
           status
           baseAsset
-          createdAt
           categories {
             name
             ticker
           }
           img
+          pool {
+            createdAt
+          }
+          neoPool {
+            createdAt
+          }
         }
       }
     `);
