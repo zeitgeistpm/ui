@@ -144,10 +144,11 @@ export const getForeignAssetPriceServerSide = async (
 export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
   const coinGeckoId =
     FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
-
   const response = await fetch(`/api/usd-price?asset=${coinGeckoId}`);
   const json = await response.json();
-
+  if (!json.body || !json.body.price) {
+    return new Decimal(0);
+  }
   return new Decimal(json.body.price);
 };
 
