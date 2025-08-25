@@ -15,12 +15,12 @@ export const calcResolvedMarketPrices = (
     .map((a) => parseAssetIdString(a.assetId))
     .filter((assetId) => IOBaseAssetId.is(assetId) === false);
 
-  const { data } = useMarketSpotPrices(market.marketId);
-  if (!data) return new Map();
+  const spotPrices: MarketPrices = new Map();
 
-  const spotPrices: MarketPrices = data;
-
-  if (market.resolvedOutcome == null) return spotPrices;
+  if (market.resolvedOutcome == null) {
+    const { data } = useMarketSpotPrices(market.marketId);
+    return data ?? new Map();
+  }
 
   if (
     market.marketType.scalar &&

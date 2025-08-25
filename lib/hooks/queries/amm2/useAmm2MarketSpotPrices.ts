@@ -15,7 +15,7 @@ export const useAmm2MarketSpotPrices = (
 
   const enabled = !!sdk && !!poolIds && isRpcSdk(sdk);
   const query = useQuery(
-    [id, amm2MarketSpotPricesRootKey, blockNumber],
+    [id, amm2MarketSpotPricesRootKey, poolIds, blockNumber],
 
     async () => {
       if (!enabled) return;
