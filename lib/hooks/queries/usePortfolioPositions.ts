@@ -47,6 +47,7 @@ import {
   isCombinatorialToken,
 } from "lib/types/combinatorial";
 import { useAmm2MarketIdsToLegacyPoolIds } from "./amm2/useAmm2MarketIdsToLegacyPoolIds";
+import { useAmm2CombinatorialTokenPools } from "./amm2/useAmm2CombinatorialTokenPools";
 
 export type UsePortfolioPositions = {
   /**
@@ -182,14 +183,9 @@ export const usePortfolioPositions = (
   const rawPositions = useAccountTokenPositions(address);
 
   type FilterItem = { marketId: number } | { poolId: number };
-  const { filter, combiTokens, combiPoolMap } = (
-    rawPositions.data ?? []
-  ).reduce<{
+  const { filter, combiTokens } = (rawPositions.data ?? []).reduce<{
     filter: Set<FilterItem>;
     combiTokens: Set<CombinatorialToken>;
-    // TODO replace any type with combi pool item
-    // map combi pool id to pool information
-    combiPoolMap: Map<number, any>;
   }>(
     (acc, position) => {
       const assetId: AssetId | CombinatorialToken = position.assetId;
@@ -206,23 +202,6 @@ export const usePortfolioPositions = (
       } else if (isCombinatorialToken(assetId)) {
         if (!acc.combiTokens.has(assetId)) {
           acc.combiTokens.add(assetId);
-
-          // TODO: use indexer to get the mapping from combinatorial token to pool information (pool id, including market ids, pool account id)
-          /*
-          const combiPool = getCombiPoolOf(assetId);
-          if (!acc.combiPoolMap.has(combiPool.poolId)) {
-            acc.combiPoolMap.set(combiPool.poolId, combiPool);
-
-            const combiPoolMarketIds = getMarketIdsOfCombiPool(
-              combiPool.poolId,
-            );
-            for (const marketId of combiPoolMarketIds) {
-              if (!acc.filter.has({ marketId })) {
-                acc.filter.add({ marketId });
-              }
-            }
-          }
-          */
         }
       }
       return acc;
@@ -230,9 +209,11 @@ export const usePortfolioPositions = (
     {
       filter: new Set<FilterItem>(),
       combiTokens: new Set<CombinatorialToken>(),
-      combiPoolMap: new Map<number, any>(),
     },
   );
+
+  const { combiPoolMap, combiTokensMap } =
+    useAmm2CombinatorialTokenPools(combiTokens);
 
   const oldSwapPools = usePoolsByIds([...filter]);
   const markets = useMarketsByIds([...filter]);
@@ -574,6 +555,8 @@ export const usePortfolioPositions = (
       foreignAssetPrices,
       ztgPrice,
     );
+    console.log(`Total trading positions: ${tradingPositionsTotal}`);
+
     const tradingPositionsTotal24HoursAgo = totalPositionsValue(
       marketPositions,
       "price24HoursAgo",
@@ -592,6 +575,7 @@ export const usePortfolioPositions = (
       foreignAssetPrices,
       ztgPrice,
     );
+    console.log(`Total subsidy positions: ${subsidyPositionsTotal}`);
 
     const subsidyPositionsTotal24HoursAgo = totalPositionsValue(
       subsidyPositions,
@@ -609,10 +593,13 @@ export const usePortfolioPositions = (
       marketBonds && marketBonds?.length > 0
         ? calcTotalBondsValue(marketBonds)
         : new Decimal(0);
+    console.log(`Total bonds: ${bondsTotal}`);
 
     const positionsTotal = tradingPositionsTotal
       .plus(subsidyPositionsTotal)
       .plus(bondsTotal);
+
+    console.log(`Total positions: ${positionsTotal}`);
     const positionsTotal24HoursAgo = tradingPositionsTotal24HoursAgo
       .plus(subsidyPositionsTotal24HoursAgo)
       .plus(bondsTotal);
