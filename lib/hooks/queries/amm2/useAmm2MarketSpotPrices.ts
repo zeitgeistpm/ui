@@ -4,6 +4,7 @@ import Decimal from "decimal.js";
 import { calculateSpotPrice } from "lib/util/amm2";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../../useSdkv2";
+import { CombinatorialToken } from "lib/types/combinatorial";
 
 export const amm2MarketSpotPricesRootKey = "amm2-market-spot-prices";
 
@@ -51,7 +52,7 @@ export const useAmm2MarketSpotPrices = (
 };
 
 export const lookupAssetPrice = (
-  assetId: AssetId,
+  assetId: AssetId | CombinatorialToken,
   prices?: { [key: string]: Decimal },
 ): Decimal | undefined => {
   return prices?.[JSON.stringify(assetId).toLowerCase()];

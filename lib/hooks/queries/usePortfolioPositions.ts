@@ -308,6 +308,18 @@ export const usePortfolioPositions = (
         );
         marketIdsForCombiPool = marketsForCombiPool?.map((m) => m.marketId);
         */
+        const combiPoolId = combiTokensMap.get(
+          JSON.stringify(assetId.CombinatorialToken),
+        );
+        if (!combiPoolId) {
+          console.warn(
+            "No pool id found for combinatorial token",
+            assetId.CombinatorialToken,
+          );
+          continue;
+        }
+        const combiPool = combiPoolMap.get(combiPoolId);
+        market = markets.data?.find((m) => m.marketId === combiPool.marketId);
       }
 
       if (!market) {
@@ -350,6 +362,11 @@ export const usePortfolioPositions = (
         }
       }
 
+      if (isCombinatorialToken(assetId)) {
+        price = lookupAssetPrice(assetId, amm2SpotPrices);
+        price24HoursAgo = lookupAssetPrice(assetId, amm2SpotPrices24HoursAgo);
+      }
+
       let outcome = IOCategoricalAssetId.is(assetId)
         ? (market.categories?.[getIndexOf(assetId)]?.name ??
           JSON.stringify(assetId.CategoricalOutcome))
@@ -370,6 +387,11 @@ export const usePortfolioPositions = (
       if (IOPoolShareAssetId.is(assetId)) {
         outcome = "Pool Share";
         color = "#DF0076";
+      }
+
+      if (isCombinatorialToken(assetId)) {
+        outcome = JSON.stringify(assetId.CombinatorialToken);
+        color = "#000000";
       }
 
       const avgCost = tradeHistory
@@ -520,12 +542,17 @@ export const usePortfolioPositions = (
   ]);
 
   const marketPositions = useMemo<
-    Position<CategoricalAssetId | ScalarAssetId>[] | null
+    Position<CategoricalAssetId | ScalarAssetId | CombinatorialToken>[] | null
   >(
     () =>
       positions?.filter(
-        (position): position is Position<CategoricalAssetId | ScalarAssetId> =>
-          IOMarketOutcomeAssetId.is(position.assetId),
+        (
+          position,
+        ): position is Position<
+          CategoricalAssetId | ScalarAssetId | CombinatorialToken
+        > =>
+          IOMarketOutcomeAssetId.is(position.assetId) ||
+          isCombinatorialToken(position.assetId),
       ) ?? null,
     [positions],
   );
@@ -555,7 +582,6 @@ export const usePortfolioPositions = (
       foreignAssetPrices,
       ztgPrice,
     );
-    console.log(`Total trading positions: ${tradingPositionsTotal}`);
 
     const tradingPositionsTotal24HoursAgo = totalPositionsValue(
       marketPositions,
@@ -575,7 +601,6 @@ export const usePortfolioPositions = (
       foreignAssetPrices,
       ztgPrice,
     );
-    console.log(`Total subsidy positions: ${subsidyPositionsTotal}`);
 
     const subsidyPositionsTotal24HoursAgo = totalPositionsValue(
       subsidyPositions,
@@ -593,13 +618,11 @@ export const usePortfolioPositions = (
       marketBonds && marketBonds?.length > 0
         ? calcTotalBondsValue(marketBonds)
         : new Decimal(0);
-    console.log(`Total bonds: ${bondsTotal}`);
 
     const positionsTotal = tradingPositionsTotal
       .plus(subsidyPositionsTotal)
       .plus(bondsTotal);
 
-    console.log(`Total positions: ${positionsTotal}`);
     const positionsTotal24HoursAgo = tradingPositionsTotal24HoursAgo
       .plus(subsidyPositionsTotal24HoursAgo)
       .plus(bondsTotal);

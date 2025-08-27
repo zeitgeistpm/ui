@@ -48,12 +48,12 @@ export function useAmm2CombinatorialTokenPools(
       const pools = query?.data;
       if (pools && pools.length > 0) {
         for (const pool of pools) {
+          combiTokensMap.set(
+            JSON.stringify(token.CombinatorialToken),
+            pool.poolId,
+          );
           if (!combiPoolMap.has(pool.poolId)) {
             combiPoolMap.set(pool.poolId, pool);
-            combiTokensMap.set(
-              JSON.stringify(token.CombinatorialToken),
-              pool.poolId,
-            );
           }
         }
       }
