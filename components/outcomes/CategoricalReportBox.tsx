@@ -109,8 +109,6 @@ const CategoricalReportBox = ({
           />
         )}
       </div>
-      {console.log(selectedOutcome)}
-      {console.log(market.categories)}
       <TransactionButton
         className="center my-ztg-10 shadow-ztg-2"
         onClick={handleSignTransaction}

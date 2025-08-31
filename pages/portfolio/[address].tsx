@@ -22,6 +22,7 @@ import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useCrossChainApis } from "lib/state/cross-chain";
 import { isValidPolkadotAddress } from "lib/util";
+import { isCombinatorialToken } from "lib/types/combinatorial";
 import { groupBy, range } from "lodash-es";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
@@ -65,7 +66,7 @@ const Portfolio: NextPageWithLayout = () => {
     useQueryParamState<MarketsTabItem>("marketsTab");
 
   const { markets, breakdown } = usePortfolioPositions(address);
-
+  console.log("markets", markets);
   const { data: ztgPrice } = useZtgPrice();
 
   const marketPositionsByMarket = useMemo(
@@ -80,7 +81,7 @@ const Portfolio: NextPageWithLayout = () => {
   if (isValidPolkadotAddress(address) === false) {
     return <NotFoundPage />;
   }
-
+  
   return (
     <div className="mt-8 overflow-hidden">
       {address && <PortfolioIdentity address={address} />}
@@ -148,9 +149,15 @@ const Portfolio: NextPageWithLayout = () => {
                       market.marketType.categorical
                     ) {
                       marketPositions = marketPositions.filter(
-                        (position) =>
-                          getIndexOf(position.assetId) ===
-                          Number(market.resolvedOutcome),
+                        (position) => {
+                          // Handle combinatorial tokens - for now, include all combinatorial tokens for resolved markets
+                          // TODO: Need to determine how to match combinatorial tokens to resolved outcomes
+                          if (isCombinatorialToken(position.assetId)) {
+                            return true; // Include all combinatorial tokens for resolved markets for now
+                          }
+                          // Handle regular market outcome assets
+                          return getIndexOf(position.assetId) === Number(market.resolvedOutcome);
+                        }
                       );
                     }
 

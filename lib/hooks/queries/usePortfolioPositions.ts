@@ -41,6 +41,9 @@ import {
   lookupAssetPrice,
   useAmm2MarketSpotPrices,
 } from "./useAmm2MarketSpotPrices";
+import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
+import { isCombinatorialToken } from "lib/types/combinatorial";
+import { useCombinatorialTokenMarketIds } from "./useCombinatorialTokenMarketIds";
 
 export type UsePortfolioPositions = {
   /**
@@ -173,9 +176,25 @@ export const usePortfolioPositions = (
 
   const rawPositions = useAccountTokenPositions(address);
 
+  
+  // Extract all combinatorial tokens
+  const combinatorialTokens = rawPositions.data
+    ?.map((position) => {
+      const assetId = parseAssetIdStringWithCombinatorial(position.assetId);
+      if (isCombinatorialToken(assetId)) {
+        return assetId.CombinatorialToken;
+      }
+      return null;
+    })
+    .filter(isNotNull) ?? [];
+
+  // Fetch market IDs for all combinatorial tokens
+  const { data: combinatorialMarketIds } = useCombinatorialTokenMarketIds(combinatorialTokens);
+
   const filter = rawPositions.data
     ?.map((position) => {
-      const assetId = parseAssetId(position.assetId).unwrap();
+      const assetId = parseAssetIdStringWithCombinatorial(position.assetId);
+
       if (IOMarketOutcomeAssetId.is(assetId)) {
         return {
           marketId: getMarketIdOf(assetId),
@@ -186,12 +205,24 @@ export const usePortfolioPositions = (
           poolId: assetId.PoolShare,
         };
       }
+      if (isCombinatorialToken(assetId)) {
+        // Look up the market ID from our fetched data
+        const marketId = combinatorialMarketIds?.[assetId.CombinatorialToken];
+        if (marketId != null) {
+          return {
+            marketId: marketId,
+          };
+        }
+        return null;
+      }
       return null;
     })
     .filter(isNotNull);
+  
 
   const pools = usePoolsByIds(filter);
   const markets = useMarketsByIds(filter);
+
   const amm2MarketIds = markets.data
     ?.filter(
       (market) =>
@@ -201,7 +232,7 @@ export const usePortfolioPositions = (
     .map((m) => m.marketId);
 
   const { data: amm2SpotPrices } = useAmm2MarketSpotPrices(amm2MarketIds);
-
+  console.log("amm2SpotPrices", amm2SpotPrices);
   const { data: amm2SpotPrices24HoursAgo } = useAmm2MarketSpotPrices(
     amm2MarketIds,
     block24HoursAgo,
@@ -216,7 +247,7 @@ export const usePortfolioPositions = (
   const poolAssetBalancesFilter =
     rawPositions.data
       ?.flatMap((position) => {
-        const assetId = parseAssetId(position.assetId).unwrap();
+        const assetId = parseAssetIdStringWithCombinatorial(position.assetId);
         const pool = pools.data?.find((pool) => {
           if (IOPoolShareAssetId.is(assetId)) {
             return pool.poolId === assetId.PoolShare;
@@ -229,7 +260,7 @@ export const usePortfolioPositions = (
         if (!pool) return null;
 
         const assetIds = pool.weights
-          .map((w) => parseAssetId(w.assetId).unwrap())
+          .map((w) => parseAssetIdStringWithCombinatorial(w.assetId))
           .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
 
         return assetIds.map((assetId) => ({
@@ -250,7 +281,7 @@ export const usePortfolioPositions = (
 
   const userAssetBalances = useAccountAssetBalances(
     rawPositions.data?.map((position) => ({
-      assetId: parseAssetId(position.assetId).unwrap(),
+      assetId: parseAssetIdStringWithCombinatorial(position.assetId),
       account: address,
     })) ?? [],
   );
@@ -274,7 +305,7 @@ export const usePortfolioPositions = (
     let positionsData: Position[] = [];
 
     for (const position of rawPositions?.data ?? []) {
-      const assetId = parseAssetId(position.assetId).unwrap();
+      const assetId = parseAssetIdStringWithCombinatorial(position.assetId);
 
       let pool: IndexedPool<Context> | undefined;
       let marketId: number | undefined;
@@ -294,6 +325,15 @@ export const usePortfolioPositions = (
         marketId = getMarketIdOf(assetId);
         market = markets.data?.find((m) => m.marketId === marketId);
         pool = pools.data?.find((pool) => pool.marketId === marketId);
+      }
+
+      if (isCombinatorialToken(assetId)) {
+        // Look up the market ID from our fetched data
+        marketId = combinatorialMarketIds?.[assetId.CombinatorialToken];
+        if (marketId != null) {
+          market = markets.data?.find((m) => m.marketId === marketId);
+          pool = pools.data?.find((pool) => pool.marketId === marketId);
+        }
       }
 
       if (!market) {
@@ -336,6 +376,26 @@ export const usePortfolioPositions = (
         }
       }
 
+      // Handle combinatorial tokens
+      if (isCombinatorialToken(assetId)) {
+        if (market.status === "Resolved") {
+          // TODO: Handle resolved combinatorial token prices
+          price = new Decimal(0);
+          price24HoursAgo = price;
+        } else {
+          if (
+            market.scoringRule === ScoringRule.AmmCdaHybrid ||
+            market.scoringRule === ScoringRule.Lmsr
+          ) {
+            price = lookupAssetPrice(assetId, amm2SpotPrices);
+            price24HoursAgo = lookupAssetPrice(
+              assetId,
+              amm2SpotPrices24HoursAgo,
+            );
+          }
+        }
+      }
+
       let outcome = IOCategoricalAssetId.is(assetId)
         ? market.categories?.[getIndexOf(assetId)]?.name ??
           JSON.stringify(assetId.CategoricalOutcome)
@@ -343,14 +403,53 @@ export const usePortfolioPositions = (
           ? getIndexOf(assetId) == 1
             ? "Short"
             : "Long"
+          : isCombinatorialToken(assetId)
+          ? (() => {
+              // For combinatorial tokens, find the index in outcomeAssets
+              // The assetId has uppercase CombinatorialToken, but outcomeAssets has lowercase
+              const tokenHash = assetId.CombinatorialToken;
+              
+              const index = market.outcomeAssets?.findIndex(
+                (outcomeAsset) => {
+                  // outcomeAsset is a JSON string like "{\"combinatorialToken\":\"0x...\"}"
+                  // We need to check if it contains the same hash
+                  return outcomeAsset.includes(tokenHash);
+                }
+              );
+              
+              if (index !== undefined && index >= 0 && market.categories?.[index]) {
+                return market.categories[index].name;
+              }
+              
+              // No mapping found - show N/A
+              return "N/A";
+            })()
           : "unknown";
 
-      let color = IOScalarAssetId.is(assetId)
+      let color = IOCategoricalAssetId.is(assetId)
         ? market.categories?.[getIndexOf(assetId)]?.color ?? "#ffffff"
         : IOScalarAssetId.is(assetId)
           ? getIndexOf(assetId) == 1
             ? "rgb(255, 0, 0)"
             : "rgb(36, 255, 0)"
+          : isCombinatorialToken(assetId)
+          ? (() => {
+              // For combinatorial tokens, find the index in outcomeAssets
+              const tokenHash = assetId.CombinatorialToken;
+              
+              const index = market.outcomeAssets?.findIndex(
+                (outcomeAsset) => {
+                  // Check if outcomeAsset contains the same hash
+                  return outcomeAsset.includes(tokenHash);
+                }
+              );
+              
+              if (index !== undefined && index >= 0 && market.categories?.[index]) {
+                return market.categories[index].color || "#999999";
+              }
+              
+              return "#999999"; // Gray for unknown combinatorial tokens
+            })()
           : "unknown";
 
       if (IOPoolShareAssetId.is(assetId)) {
@@ -511,10 +610,10 @@ export const usePortfolioPositions = (
     Position<CategoricalAssetId | ScalarAssetId>[] | null
   >(
     () =>
-      positions?.filter(
-        (position): position is Position<CategoricalAssetId | ScalarAssetId> =>
-          IOMarketOutcomeAssetId.is(position.assetId),
-      ) ?? null,
+      (positions?.filter(
+        (position) =>
+          IOMarketOutcomeAssetId.is(position.assetId) || isCombinatorialToken(position.assetId),
+      ) as Position<CategoricalAssetId | ScalarAssetId>[]) ?? null,
     [positions],
   );
 
@@ -641,7 +740,7 @@ export const totalPositionsValue = <
   ztgPrice: Decimal,
 ): Decimal => {
   return positions.reduce((acc, position) => {
-    const assetId = parseAssetId(position.market.baseAsset).unwrap();
+    const assetId = parseAssetIdStringWithCombinatorial(position.market.baseAsset);
 
     const priceMultiplier = IOForeignAssetId.is(assetId)
       ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)

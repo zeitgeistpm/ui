@@ -1,4 +1,3 @@
-import "lib/suppress-warnings";
 import "react-datetime/css/react-datetime.css";
 import "styles/index.css";
 

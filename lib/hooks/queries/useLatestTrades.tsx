@@ -68,9 +68,9 @@ export const useLatestTrades = (
   const { limit, marketId, outcomeAssets, outcomeNames, marketQuestion } =
     params;
 
-  // Fetch market data if we have marketId but no outcomeNames/outcomeAssets
+    // Fetch market data if we have marketId
   const { data: market } = useMarket(
-    marketId && !outcomeNames && !outcomeAssets ? { marketId } : undefined,
+    marketId ? { marketId } : undefined,
   );
 
   // Determine if we're dealing with combinatorial tokens
@@ -159,6 +159,7 @@ export const useLatestTrades = (
         });
 
         if (isComboMarket) {
+          console.log(market)
           // Handle combinatorial token trades
           const trades: TradeItem[] = historicalSwaps
             .map((swap) => {
@@ -188,11 +189,9 @@ export const useLatestTrades = (
               const item: TradeItem = {
                 traderAddress: swap.accountId,
                 marketId: marketId || 0,
-                question:
-                  marketQuestion || market?.question || "Combinatorial Market",
+                question: market?.question || marketQuestion || "",
                 outcomeName:
-                  outcomeName ||
-                  `Combo ${comboAsset.CombinatorialToken.slice(0, 8)}...`,
+                  outcomeName || "",
                 type: assetInIsBaseAsset ? "buy" : "sell",
                 time: new Date(swap.timestamp),
                 cost: assetInIsBaseAsset

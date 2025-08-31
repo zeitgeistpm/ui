@@ -58,9 +58,9 @@ const AccountModalContent: FC = () => {
                 balance
               </div>
               <div className="font-mono text-sm font-bold text-blue">
-                {`${formatNumberLocalized(Number(activeBalance?.div(ZTG)))} ${
-                  constants?.tokenSymbol ?? ""
-                }` ?? "---"}
+                {activeBalance && constants?.tokenSymbol
+                  ? `${formatNumberLocalized(Number(activeBalance.div(ZTG)))} ${constants.tokenSymbol}`
+                  : "---"}
               </div>
             </div>
           </div>

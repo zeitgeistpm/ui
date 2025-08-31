@@ -57,20 +57,20 @@ const COLUMNS: TableColumn[] = [
     infobox:
       "This is the current worth of your holdings for a specific asset. It's calculated by multiplying the amount of the asset you own (your balance) by the asset's current market price.",
   },
-  {
-    header: "Unrealized PnL",
-    accessor: "upnl",
-    type: "currency",
-    infobox:
-      "This is the profit or loss you would make if you were to sell your assets at the current market price. It's the difference between the current market price and the average cost of your assets, multiplied by the amount of the asset you own. Note: this amount doesn't reflect slippage or trading fees.",
-  },
-  {
-    header: "Realized PnL",
-    accessor: "rpnl",
-    type: "currency",
-    infobox:
-      "This is the actual profit or loss you've made from selling assets in your portfolio. It's the difference between the price you sold your assets at and the average cost of those assets, multiplied by the quantity of the asset that you sold.",
-  },
+  // {
+  //   header: "Unrealized PnL",
+  //   accessor: "upnl",
+  //   type: "currency",
+  //   infobox:
+  //     "This is the profit or loss you would make if you were to sell your assets at the current market price. It's the difference between the current market price and the average cost of your assets, multiplied by the amount of the asset you own. Note: this amount doesn't reflect slippage or trading fees.",
+  // },
+  // {
+  //   header: "Realized PnL",
+  //   accessor: "rpnl",
+  //   type: "currency",
+  //   infobox:
+  //     "This is the actual profit or loss you've made from selling assets in your portfolio. It's the difference between the price you sold your assets at and the average cost of those assets, multiplied by the quantity of the asset that you sold.",
+  // },
   {
     header: "24 Hrs",
     accessor: "change",
@@ -213,18 +213,18 @@ export const MarketPositions = ({
                     .mul(baseAssetUsdPrice ?? 0)
                     .toNumber(),
                 },
-                upnl: {
-                  value: upnl,
-                  usdValue: new Decimal(upnl)
-                    .mul(baseAssetUsdPrice ?? 0)
-                    .toNumber(),
-                },
-                rpnl: {
-                  value: rpnl,
-                  usdValue: new Decimal(rpnl)
-                    .mul(baseAssetUsdPrice ?? 0)
-                    .toNumber(),
-                },
+                // upnl: {
+                //   value: upnl,
+                //   usdValue: new Decimal(upnl)
+                //     .mul(baseAssetUsdPrice ?? 0)
+                //     .toNumber(),
+                // },
+                // rpnl: {
+                //   value: rpnl,
+                //   usdValue: new Decimal(rpnl)
+                //     .mul(baseAssetUsdPrice ?? 0)
+                //     .toNumber(),
+                // },
                 value: {
                   value: userBalance.mul(price).div(ZTG).toNumber(),
                   usdValue: userBalance

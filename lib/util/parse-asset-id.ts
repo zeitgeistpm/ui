@@ -13,9 +13,10 @@ export const parseAssetIdString = (
  * @returns MarketOutcomeAssetId or CombinatorialToken
  */
 export const parseAssetIdStringWithCombinatorial = (
-  assetIdString: string,
+  assetIdString: string | AssetId,
 ): MarketOutcomeAssetId | CombinatorialToken => {
   // First check if it's a combinatorial token
+  // console.log("assetIdString", assetIdString);
   if (typeof assetIdString === 'string') {
     try {
       const parsed = JSON.parse(assetIdString);
@@ -35,10 +36,13 @@ export const parseAssetIdStringWithCombinatorial = (
         return parsed;
       }
     } catch {
+      // console.log("not valid json")
       // Not valid JSON, continue to regular parsing
     }
+  } else if (isCombinatorialToken(assetIdString)) {
+    return assetIdString as CombinatorialToken;
   }
   
   // Fall back to regular asset ID parsing
-  return parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId;
+  return parseAssetIdString(assetIdString) as MarketOutcomeAssetId;
 };
