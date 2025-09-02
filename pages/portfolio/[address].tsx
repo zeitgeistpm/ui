@@ -151,7 +151,12 @@ const Portfolio: NextPageWithLayout = () => {
                       market.status === "Resolved" &&
                       market.marketType.categorical
                     ) {
-                      // TODO Map combinatorial hash to resolved Categorical or Scalar outcome!
+                      // TODO Map combinatorial hash to a number
+                      // TODO first partition (index 0) belongs to the first (index 0) combinatorial token hash in `assetsOut` for the TokenSplit event
+                      // TODO The index set of each partition belongs to the outcomes of the market
+                      // TODO The first bool in the index set belongs to the first outcome in the market
+                      // TODO The second bool in the index set belongs to the second outcome in the market
+                      // TODO If the market outcomes contain two Categorical outcomes 0 and 1, the index set [true, false] belongs to outcome 0 and the index set [false, true] belongs to outcome 1
                       marketPositions = marketPositions.filter((position) =>
                         IOCategoricalAssetId.is(position.assetId) ||
                         IOScalarAssetId.is(position.assetId)
