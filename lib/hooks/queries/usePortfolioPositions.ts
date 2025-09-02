@@ -57,7 +57,7 @@ export type UsePortfolioPositions = {
   /**
    * The trading positions in the portfolio.
    */
-  markets?: Position<CategoricalAssetId | ScalarAssetId>[];
+  markets?: Position<CategoricalAssetId | ScalarAssetId | CombinatorialToken>[];
   /**
    * The pool share positions(liquidity) in the portfolio.
    */
@@ -215,6 +215,12 @@ export const usePortfolioPositions = (
   const { combiPoolMap, combiTokensMap } =
     useAmm2CombinatorialTokenPools(combiTokens);
 
+  for (const pool of combiPoolMap.values()) {
+    if (!filter.has({ marketId: pool.marketId })) {
+      filter.add({ marketId: Number(pool.marketId) });
+    }
+  }
+
   const oldSwapPools = usePoolsByIds([...filter]);
   const markets = useMarketsByIds([...filter]);
   const amm2MarketIds = markets.data
@@ -297,6 +303,7 @@ export const usePortfolioPositions = (
 
       if (isCombinatorialToken(assetId)) {
         // TODO: allow combinatorial tokens that can have multiple markets associated with them
+        // TODO: Don't use subsquid `assets` query because neoPools already allows for combi hash to pool id query
         /*
         pool = pools.data?.find(
           (pool) => pool.poolId === getPoolIdOf(assetId.CombinatorialToken),

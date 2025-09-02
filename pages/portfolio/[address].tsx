@@ -1,5 +1,9 @@
 import { Tab } from "@headlessui/react";
-import { getIndexOf } from "@zeitgeistpm/sdk";
+import {
+  getIndexOf,
+  IOCategoricalAssetId,
+  IOScalarAssetId,
+} from "@zeitgeistpm/sdk";
 import OrdersTable from "components/orderbook/OrdersTable";
 import AccountPoolsTable from "components/portfolio/AccountPoolsTable";
 import BondsTable from "components/portfolio/BondsTable";
@@ -147,10 +151,13 @@ const Portfolio: NextPageWithLayout = () => {
                       market.status === "Resolved" &&
                       market.marketType.categorical
                     ) {
-                      marketPositions = marketPositions.filter(
-                        (position) =>
-                          getIndexOf(position.assetId) ===
-                          Number(market.resolvedOutcome),
+                      // TODO Map combinatorial hash to resolved Categorical or Scalar outcome!
+                      marketPositions = marketPositions.filter((position) =>
+                        IOCategoricalAssetId.is(position.assetId) ||
+                        IOScalarAssetId.is(position.assetId)
+                          ? getIndexOf(position.assetId) ===
+                            Number(market.resolvedOutcome)
+                          : null,
                       );
                     }
 
