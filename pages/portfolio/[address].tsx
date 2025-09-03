@@ -28,26 +28,28 @@ import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useMemo } from "react";
 
-type MainTabItem = "Predictions" | "Balances" | "Markets" | "History" | "Court";
+// type MainTabItem = "Predictions" | "Balances" | "Markets" | "History" | "Court";
+type MainTabItem = "Predictions" | "Balances" | "Markets" | "History";
+
 
 const mainTabItems: MainTabItem[] = [
   "Predictions",
   ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true" ? ["Balances"] : []),
   "Markets",
   "History",
-  "Court",
+  // "Court",
 ] as MainTabItem[];
 
 type MarketsTabItem =
   | "Created Markets"
   | "Liquidity"
   | "Creator Fee Payouts"
-  | "Orders";
+  // | "Orders";
 const marketsTabItems: MarketsTabItem[] = [
   "Created Markets",
   "Liquidity",
   "Creator Fee Payouts",
-  "Orders",
+  // "Orders",
 ];
 
 const Portfolio: NextPageWithLayout = () => {
@@ -110,7 +112,7 @@ const Portfolio: NextPageWithLayout = () => {
                   : []),
                 "Markets",
                 "History",
-                "Court",
+                // "Court",
               ].map((title, index) => (
                 <Tab className="text-sm sm:text-xl" key={index}>
                   {({ selected }) => (

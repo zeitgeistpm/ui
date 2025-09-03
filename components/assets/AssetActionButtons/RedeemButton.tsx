@@ -23,7 +23,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-
+import { CombinatorialToken, isCombinatorialToken } from "lib/types/combinatorial";
 import { useMemo } from "react";
 
 export type RedeemButtonProps = {
@@ -44,6 +44,7 @@ export const RedeemButtonByAssetId = ({
   market: Market<IndexerContext>;
   assetId: AssetId;
 }) => {
+
   const wallet = useWallet();
   const realAddress = wallet?.realAddress;
 
@@ -87,6 +88,20 @@ export const RedeemButtonByAssetId = ({
       const balance = getAccountAssetBalance(realAddress, resolvedAssetId)?.data
         ?.balance;
       return balance?.div(ZTG);
+    } else if (isCombinatorialToken(assetId)) {
+      // Get the index of this combo token in market.outcomeAssets
+      const tokenIndex = market.outcomeAssets.findIndex(
+        asset => asset.includes(assetId.CombinatorialToken)
+      );
+  
+      // Check if this token represents the winning outcome
+      if (tokenIndex === Number(market.resolvedOutcome)) {
+        // Get balance of the combinatorial token
+        const balance = getAccountAssetBalance(realAddress, assetId)?.data?.balance;
+        return balance?.div(ZTG) || zero;
+      }
+  
+      return zero;
     } else {
       const shortBalance = getAccountAssetBalance(realAddress, {
         ScalarOutcome: [market.marketId as MarketId, "Short"],
@@ -114,16 +129,18 @@ export const RedeemButtonByAssetId = ({
   }, [market, assetId, isLoadingAssetBalance, getAccountAssetBalance]);
 
   return (
-    <RedeemButtonByValue market={market} value={value ?? new Decimal(0)} />
+    <RedeemButtonByValue market={market} value={value ?? new Decimal(0)} assetId={assetId} />
   );
 };
 
 const RedeemButtonByValue = ({
   market,
   value,
+  assetId,
 }: {
   market: Market<IndexerContext>;
   value: Decimal;
+  assetId: AssetId | CombinatorialToken;
 }) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
@@ -132,10 +149,29 @@ const RedeemButtonByValue = ({
   const baseAsset = parseAssetIdString(market.baseAsset);
   const { data: baseAssetMetadata } = useAssetMetadata(baseAsset);
 
+  const tokenIndex = useMemo(() => {
+    if(isCombinatorialToken(assetId)) {
+      const index = market.outcomeAssets.findIndex(asset => asset.includes(assetId.CombinatorialToken));
+      const indexSet = Array(market.outcomeAssets.length).fill(false);
+      indexSet[index] = true;
+      return indexSet;
+    }
+    return [];
+  }, [assetId, market.outcomeAssets]);
+
+
+  const isCombinatorialMarket = market.outcomeAssets.some(asset => asset.includes("combinatorialToken"));
+  console.log("market", market, isCombinatorialMarket, assetId, tokenIndex, value.toString());
+
   const { isLoading, isSuccess, send } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk) || !signer) return;
-      return sdk.api.tx.predictionMarkets.redeemShares(market.marketId);
+      if(isCombinatorialMarket) 
+      {
+        return sdk.api.tx.combinatorialTokens.redeemPosition(null, market.marketId.toString(), tokenIndex,{ total: 16, consumeAll: true });
+      } else {
+        return sdk.api.tx.predictionMarkets.redeemShares(market.marketId);
+      }
     },
     {
       onSuccess: () => {
