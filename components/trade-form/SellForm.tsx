@@ -376,7 +376,7 @@ const SellForm = ({
                 market={market ?? undefined}
                 selected={selectedAsset}
                 options={outcomeAssets}
-                outcomeCombinations={undefined}
+                outcomeCombinations={outcomeCombinations}
                 onChange={(assetId) => {
                   setSelectedAsset(assetId);
                   trigger();

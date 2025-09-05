@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { useEffect, useState } from "react";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
@@ -15,7 +16,10 @@ const getBlock24hrsAgo = (blockTimeSec: number, currentBlock: number) => {
   return currentBlock - dayBlocks;
 };
 
-export const useMarket24hrPriceChanges = (marketId: number) => {
+export const useMarket24hrPriceChanges = (
+  marketId: number,
+  virtualMarket?: FullMarketFragment,
+) => {
   const [sdk, id] = useSdkv2();
   const [debouncedBlockNumber, setDebouncedBlockNumber] = useState<number>();
 
@@ -38,8 +42,8 @@ export const useMarket24hrPriceChanges = (marketId: number) => {
     debouncedBlockNumber &&
     getBlock24hrsAgo(constants?.blockTimeSec, debouncedBlockNumber);
 
-  const { data: pricesNow } = useMarketSpotPrices(marketId);
-  const { data: prices24hrsAgo } = useMarketSpotPrices(marketId, block24hrsAgo);
+  const { data: pricesNow } = useMarketSpotPrices(marketId, undefined, virtualMarket);
+  const { data: prices24hrsAgo } = useMarketSpotPrices(marketId, block24hrsAgo, virtualMarket);
 
   const enabled =
     isRpcSdk(sdk) &&
@@ -49,7 +53,7 @@ export const useMarket24hrPriceChanges = (marketId: number) => {
     !!prices24hrsAgo;
 
   const query = useQuery(
-    [id, market24hrPriceChangesKey],
+    [id, market24hrPriceChangesKey, marketId, virtualMarket?.marketId],
     async () => {
       if (!enabled) return null;
       const priceChanges = new Map<number, number>();

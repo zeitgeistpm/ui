@@ -36,7 +36,7 @@ type PoolAccount = {
 
 export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarket?: any) => {
   const [sdk, id] = useSdkv2();
-  
+  console.log(marketId, poolId);
   const enabled = !!sdk && marketId != null && poolId != undefined && isRpcSdk(sdk);
   //TODO: improve this logic in the futre. right now we know legacy markets have the same poolId as marketId
   const legacy = marketId === poolId

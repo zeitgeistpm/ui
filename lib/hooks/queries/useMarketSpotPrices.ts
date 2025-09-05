@@ -25,13 +25,18 @@ export type MarketPrices = Map<number, Decimal>;
 export const useMarketSpotPrices = (
   marketId: number,
   blockNumber?: number,
+  virtualMarket?: FullMarketFragment,
 ) => {
   const [sdk, id] = useSdkv2();
 
   const { data: market } = useMarket(
-    marketId != null ? { marketId } : undefined,
+    marketId != null && !virtualMarket ? { marketId } : undefined,
   );
-  const pool = market?.pool ?? undefined;
+  // Use virtualMarket if provided, otherwise use fetched market
+  const marketData = virtualMarket || market;
+  const isCombiMarket = !!virtualMarket;
+   
+  const pool = marketData?.pool ?? undefined;
   const { data: balances } = useAccountPoolAssetBalances(
     pool?.account.accountId,
     pool,
@@ -41,9 +46,12 @@ export const useMarketSpotPrices = (
     pool?.poolId,
     blockNumber,
   );
-  const { data: amm2Pool } = useAmm2Pool(marketId, market?.neoPool?.poolId ?? null);
+  const poolId = isCombiMarket ? marketId : marketData?.pool?.poolId;
+  const marketIdToUse = isCombiMarket ? 0 : marketId;
 
-  const enabled = isRpcSdk(sdk) && marketId != null && !!market;
+  const { data: amm2Pool } = useAmm2Pool(marketIdToUse, poolId ?? null);
+
+  const enabled = isRpcSdk(sdk) && marketId != null && (!!marketData || (isCombiMarket && !!amm2Pool));
   const query = useQuery(
     [
       id,
@@ -53,16 +61,27 @@ export const useMarketSpotPrices = (
       balances,
       basePoolBalance,
       amm2Pool,
+      isCombiMarket,
+      virtualMarket?.marketId,
     ],
     async () => {
       if (!enabled) return;
+      
+      // For combo markets with amm2Pool, calculate prices directly
+      if (isCombiMarket && amm2Pool) {
+        return calcMarketPricesAmm2(amm2Pool, marketData || undefined);
+      }
+      
+      // For regular markets, use the existing logic
+      if (!marketData) return new Map();
+      
       const spotPrices: MarketPrices =
-        market?.status !== "Resolved"
-          ? market.scoringRule === ScoringRule.AmmCdaHybrid ||
-            market.scoringRule === ScoringRule.Lmsr
-            ? amm2Pool ? calcMarketPricesAmm2(amm2Pool, market) : new Map()
-            : calcMarketPrices(market, basePoolBalance!, balances!)
-          : calcResolvedMarketPrices(market);
+        marketData.status !== "Resolved"
+          ? marketData.scoringRule === ScoringRule.AmmCdaHybrid ||
+            marketData.scoringRule === ScoringRule.Lmsr
+            ? amm2Pool ? calcMarketPricesAmm2(amm2Pool, marketData) : new Map()
+            : calcMarketPrices(marketData, basePoolBalance!, balances!)
+          : calcResolvedMarketPrices(marketData);
 
       return spotPrices;
     },
@@ -73,7 +92,6 @@ export const useMarketSpotPrices = (
       refetchOnWindowFocus: false, // Don't refetch on window focus
     },
   );
-
   return query;
 };
 

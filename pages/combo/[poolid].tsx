@@ -12,15 +12,14 @@ import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
 import { TradeTabType } from "components/trade-form/TradeTab";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
+import TimeFilters, { TimeFilter } from "components/ui/TimeFilters";
+import { useMarketPriceHistory } from "lib/hooks/queries/useMarketPriceHistory";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import Skeleton from "components/ui/Skeleton";
-import Toggle from "components/ui/Toggle";
 import { Transition } from "@headlessui/react";
 import Decimal from "decimal.js";
-import { GraphQLClient } from "graphql-request";
-import { graphQlEndpoint } from "lib/constants";
 import {
   useComboMarket,
-  ComboMarketData,
   OutcomeCombination,
 } from "lib/hooks/queries/useComboMarket";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
@@ -31,20 +30,12 @@ import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { useTradeItem } from "lib/hooks/trade";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useWallet } from "lib/state/wallet";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AlertTriangle, ChevronDown, ExternalLink, X } from "react-feather";
-import { CombinatorialToken } from "lib/types/combinatorial";
-
-const TradeForm = dynamic(() => import("../../components/trade-form"), {
-  ssr: false,
-  loading: () => <div style={{ width: "100%", height: "606px" }} />,
-});
 
 const SimilarMarketsSection = dynamic(
   () => import("../../components/markets/SimilarMarketsSection"),
@@ -58,7 +49,6 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const client = new GraphQLClient(graphQlEndpoint);
   const poolId = params.poolid;
 
   return {
@@ -78,13 +68,16 @@ const ComboAssetDetails = ({
   combinations,
   poolId,
   baseAsset,
+  virtualMarket,
 }: {
   combinations: OutcomeCombination[];
   poolId: number;
   baseAsset: AssetId;
+  virtualMarket?: FullMarketFragment;
 }) => {
-  const { data: spotPrices } = useMarketSpotPrices(poolId);
-  const { data: priceChanges } = useMarket24hrPriceChanges(poolId);
+
+  const { data: spotPrices } = useMarketSpotPrices(poolId, 0, virtualMarket);
+  const { data: priceChanges } = useMarket24hrPriceChanges(poolId, virtualMarket);
   const { data: usdPrice } = useAssetUsdPrice(baseAsset);
 
   const totalAssetPrice = spotPrices
@@ -143,7 +136,6 @@ const ComboAssetDetails = ({
       };
     },
   );
-
   return <Table columns={columns} data={tableData} />;
 };
 
@@ -229,15 +221,71 @@ const getCombinedMarketPeriod = (
 };
 
 // Chart component for combo markets
-const ComboChart = ({ chartSeries }: { chartSeries: ChartSeries[] }) => {
+const ComboChart = ({ 
+  chartSeries,
+  poolId,
+  baseAsset,
+}: { 
+  chartSeries: ChartSeries[];
+  poolId: number;
+  baseAsset?: AssetId;
+}) => {
+  const [chartFilter, setChartFilter] = useState<TimeFilter>({
+    label: "All",
+    intervalUnit: "Day",
+    intervalValue: 1,
+  });
+  
+  const baseAssetId = baseAsset;
+  const { data: metadata } = useAssetMetadata(baseAssetId);
+  
+  // For combo markets, we use the poolId as marketId for price history
+  const startDateString = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(); // Default to 30 days ago
+
+  const { data: prices, isLoading } = useMarketPriceHistory(
+    poolId,
+    chartFilter.intervalUnit,
+    chartFilter.intervalValue,
+    startDateString,
+  );
+  console.log(prices);
+  const chartData = prices
+    ?.filter((data) => data.prices.every((p) => p.price != null))
+    .map((price) => {
+      const time = new Date(price.timestamp).getTime();
+      
+      // Map prices to chart data format
+      const assetPrices = price.prices.reduce((obj, val, index) => {
+        // Ensure prices don't exceed 1
+        return { ...obj, ["v" + index]: val.price > 1 ? 1 : val.price };
+      }, {});
+
+      return {
+        t: time,
+        ...assetPrices,
+      };
+    });
+  console.log(chartData);
+  const handleFilterChange = (filter: TimeFilter) => {
+    setChartFilter(filter);
+  };
+
+  // Use colors from chartSeries or generate new ones
+  const colors = chartSeries.map(s => s.color || "#000");
+
   return (
-    <TimeSeriesChart
-      data={[]} // This would need to be populated with actual price data
-      series={chartSeries}
-      yDomain={[0, 1]}
-      yUnits="ZTG"
-      isLoading={false}
-    />
+    <div className="-ml-ztg-25 flex flex-col">
+      <div className="ml-auto">
+        <TimeFilters onClick={handleFilterChange} value={chartFilter} />
+      </div>
+      <TimeSeriesChart
+        data={chartData || []}
+        series={chartSeries.map((s, i) => ({ ...s, color: colors[i] }))}
+        yDomain={[0, 1]}
+        yUnits={metadata?.symbol || "ZTG"}
+        isLoading={isLoading}
+      />
+    </div>
   );
 };
 
@@ -336,7 +384,6 @@ const MobileContextButtons = ({ poolId }: { poolId: number }) => {
 };
 
 const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
-  const router = useRouter();
   const { realAddress } = useWallet();
   const { data: comboMarketData, isLoading } = useComboMarket(poolId);
   const { data: orders, isLoading: isOrdersLoading } = useOrders({
@@ -414,6 +461,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
 
   const hasChart = Boolean(chartSeries && comboMarketData);
   const marketHasPool = true; // Combo markets always have pools
+  console.log(virtualMarket);
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -444,7 +492,11 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
               <Tab.Panels className="mt-2">
                 <Tab.Panel>
                   {hasChart ? (
-                    <ComboChart chartSeries={chartSeries} />
+                    <ComboChart 
+                      chartSeries={chartSeries} 
+                      poolId={poolId}
+                      baseAsset={comboMarketData.baseAsset}
+                    />
                   ) : (
                     <div className="flex h-[400px] items-center justify-center rounded-lg bg-gray-100">
                       <div className="text-center text-gray-500">
@@ -492,6 +544,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
               combinations={comboMarketData.outcomeCombinations}
               poolId={poolId}
               baseAsset={comboMarketData.baseAsset}
+              virtualMarket={virtualMarket}
             />
           </div>
 
