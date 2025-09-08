@@ -316,7 +316,7 @@ const LimitOrderForm = ({
       >
         <div>
           <div className="mb-1 text-sm">Amount</div>
-          <div className="flex w-full items-center justify-center rounded-md bg-white pr-2 font-mono">
+          <div className="flex w-full items-center justify-center rounded-md bg-white pr-2">
             <Input
               type="number"
               className="w-full bg-transparent outline-none"

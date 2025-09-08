@@ -13,7 +13,7 @@ import { TradeTabType } from "components/trade-form/TradeTab";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
 import TimeFilters, { TimeFilter } from "components/ui/TimeFilters";
-import { useMarketPriceHistory } from "lib/hooks/queries/useMarketPriceHistory";
+import { useComboMarketPriceHistory } from "lib/hooks/queries/useMarketPriceHistory";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import Skeleton from "components/ui/Skeleton";
 import { Transition } from "@headlessui/react";
@@ -34,7 +34,7 @@ import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import NotFoundPage from "pages/404";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { AlertTriangle, ChevronDown, ExternalLink, X } from "react-feather";
 
 const SimilarMarketsSection = dynamic(
@@ -184,11 +184,12 @@ const SourceMarketsSection = ({
 };
 
 // Utility function to find combined period from source markets
+// For combo pools: earliest start, EARLIEST end (pool closes when first market closes)
 const getCombinedMarketPeriod = (
   sourceMarkets: [FullMarketFragment, FullMarketFragment],
 ): { block: string[]; start: string; end: string } => {
   let earliestStart: string | null = null;
-  let latestEnd: string | null = null;
+  let earliestEnd: string | null = null;
 
   sourceMarkets.forEach((market) => {
     if (market.period) {
@@ -202,21 +203,51 @@ const getCombinedMarketPeriod = (
           earliestStart = marketStart;
         }
 
-        // Find latest end
-        if (!latestEnd || parseInt(marketEnd) > parseInt(latestEnd)) {
-          latestEnd = marketEnd;
+        // Find earliest end (combo pool closes when first underlying market closes)
+        if (!earliestEnd || parseInt(marketEnd) < parseInt(earliestEnd)) {
+          earliestEnd = marketEnd;
         }
       }
     }
   });
 
   const start = earliestStart || "0";
-  const end = latestEnd || "1000000000000";
+  const end = earliestEnd || "1000000000000";
 
   return {
     block: [start, end], // Include block format for compatibility
     start,
     end,
+  };
+};
+
+// Determine combo pool status based on source markets
+// Combo pool is only Active when ALL source markets are Active
+const getCombinedMarketStatus = (
+  sourceMarkets: [FullMarketFragment, FullMarketFragment],
+): MarketStatus => {
+  // If any source market is not Active, combo pool should be Closed
+  const hasInactiveMarket = sourceMarkets.some(market => market.status !== MarketStatus.Active);
+  return hasInactiveMarket ? MarketStatus.Closed : MarketStatus.Active;
+};
+
+// Get combined deadlines using deadlines from the market that closed first
+const getCombinedMarketDeadlines = (
+  sourceMarkets: [FullMarketFragment, FullMarketFragment],
+) => {
+  // Find the market with the earliest end time (the one that closed first)
+  const marketWithEarliestEnd = sourceMarkets.reduce((earliest, current) => 
+    Number(current.period?.end || 0) < Number(earliest.period?.end || 0) ? current : earliest
+  );
+
+  // Debug: uncomment to see which market's deadlines are being used
+  // console.log('Using deadlines from market:', marketWithEarliestEnd.marketId, marketWithEarliestEnd.deadlines);
+
+  // Use the deadlines from the market that closed first
+  return {
+    gracePeriod: marketWithEarliestEnd.deadlines?.gracePeriod,
+    oracleDuration: marketWithEarliestEnd.deadlines?.oracleDuration, 
+    disputeDuration: marketWithEarliestEnd.deadlines?.disputeDuration,
   };
 };
 
@@ -240,39 +271,45 @@ const ComboChart = ({
   const { data: metadata } = useAssetMetadata(baseAssetId);
   
   // For combo markets, we use the poolId as marketId for price history
-  const startDateString = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(); // Default to 30 days ago
+  // Use useMemo to prevent startDateString from changing on every render
+  const startDateString = useMemo(() => {
+    return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(); // Default to 30 days ago
+  }, []);
 
-  const { data: prices, isLoading } = useMarketPriceHistory(
+  const priceHistoryQuery = useComboMarketPriceHistory(
     poolId,
     chartFilter.intervalUnit,
     chartFilter.intervalValue,
     startDateString,
   );
-  console.log(prices);
-  const chartData = prices
-    ?.filter((data) => data.prices.every((p) => p.price != null))
-    .map((price) => {
-      const time = new Date(price.timestamp).getTime();
-      
-      // Map prices to chart data format
-      const assetPrices = price.prices.reduce((obj, val, index) => {
-        // Ensure prices don't exceed 1
-        return { ...obj, ["v" + index]: val.price > 1 ? 1 : val.price };
-      }, {});
+  
+  const { data: prices, isLoading, isSuccess } = priceHistoryQuery;
+  
+  const chartData = isSuccess && prices
+    ? prices
+        .filter((data) => data.prices.every((p) => p.price != null))
+        .map((price) => {
+          const time = new Date(price.timestamp).getTime();
+          
+          // Map prices to chart data format
+          const assetPrices = price.prices.reduce((obj, val, index) => {
+            // Ensure prices don't exceed 1
+            return { ...obj, ["v" + index]: val.price > 1 ? 1 : val.price };
+          }, {});
 
-      return {
-        t: time,
-        ...assetPrices,
-      };
-    });
-  console.log(chartData);
+          return {
+            t: time,
+            ...assetPrices,
+          };
+        })
+    : [];
+  
   const handleFilterChange = (filter: TimeFilter) => {
     setChartFilter(filter);
   };
 
   // Use colors from chartSeries or generate new ones
   const colors = chartSeries.map(s => s.color || "#000");
-
   return (
     <div className="-ml-ztg-25 flex flex-col">
       <div className="ml-auto">
@@ -422,7 +459,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     marketId: poolId,
     question: comboMarketData.question,
     description: comboMarketData.description,
-    status: MarketStatus.Active,
+    status: getCombinedMarketStatus(comboMarketData.sourceMarkets),
     oracle: comboMarketData.accountId, //TODO: fix to show all oracles or none
     categories: comboMarketData.outcomeCombinations.map((combo) => ({
       name: combo.name,
@@ -446,6 +483,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     img: null,
     marketType: { categorical: null, scalar: null },
     period: getCombinedMarketPeriod(comboMarketData.sourceMarkets),
+    deadlines: getCombinedMarketDeadlines(comboMarketData.sourceMarkets),
     resolvedOutcome: null,
     scalarType: null,
     tags: [],
@@ -470,7 +508,8 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
 
           <MarketHeader
             market={virtualMarket as any}
-            token={comboMarketData.baseAsset?.toString() || "ZTG"}
+            token="ZTG" // Combo markets use ZTG as base asset
+            poolId={poolId}
           />
 
           {/* Combinatorial Market Badge */}
@@ -484,9 +523,6 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
           <div className="mt-4">
             <Tab.Group defaultIndex={0}>
               <Tab.List className="flex gap-2 text-sm">
-                <Tab className="rounded-md border-1 border-gray-400 px-2 py-1 ui-selected:border-transparent ui-selected:bg-gray-300">
-                  Chart
-                </Tab>
               </Tab.List>
 
               <Tab.Panels className="mt-2">

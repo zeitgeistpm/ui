@@ -25,6 +25,7 @@ import {
   useMarketEventHistory,
 } from "lib/hooks/queries/useMarketEventHistory";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
+import { usePoolStats } from "lib/hooks/queries/usePoolStats";
 import { useMarketImage } from "lib/hooks/useMarketImage";
 import { MarketReport } from "lib/types";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
@@ -38,7 +39,7 @@ import { getMarketStatusDetails } from "lib/util/market-status-details";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { FC, PropsWithChildren, useState } from "react";
+import { FC, PropsWithChildren, useState, useMemo } from "react";
 import { X } from "react-feather";
 import { HiOutlineShieldCheck } from "react-icons/hi";
 import { MdModeEdit, MdOutlineHistory } from "react-icons/md";
@@ -340,6 +341,7 @@ const MarketHeader: FC<{
   marketStage?: MarketStage;
   rejectReason?: string;
   promotionData?: PromotedMarket | null;
+  poolId?: number; // Optional poolId for combo markets
 }> = ({
   market,
   report,
@@ -349,6 +351,7 @@ const MarketHeader: FC<{
   marketStage,
   rejectReason,
   promotionData,
+  poolId,
 }) => {
   const {
     categories,
@@ -356,14 +359,54 @@ const MarketHeader: FC<{
     question,
     period,
     marketType,
-    pool,
     scalarType,
-    neoPool,
   } = market;
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const starts = Number(period.start);
   const ends = Number(period.end);
-  const volume = new Decimal(market.volume).div(ZTG).toNumber();
+
+  // For combo pools without marketStage, use the same logic as regular markets would
+  // The virtualMarket already has the correct period.end (earliest market close) and status
+  const effectiveMarketStage = useMemo(() => {
+    // Use provided marketStage for regular markets, or if combo pool has one
+    if (marketStage) {
+      return marketStage;
+    }
+
+    // For combo pools, create a basic market stage following normal market lifecycle
+    const now = Date.now();
+    const timeUntilEnd = ends - now;
+    
+    let stageType: MarketStage["type"];
+    let remainingTime: number;
+    
+    if (status === "Active" && timeUntilEnd > 0) {
+      // Market is still active and trading
+      stageType = "Trading";
+      remainingTime = timeUntilEnd;
+    } else {
+      // Market has ended or is closed - calculate proper oracle reporting time
+      stageType = status === "Closed" ? "OracleReportingPeriod" : "Trading";
+      
+      if (status === "Closed") {
+        // Calculate time until end of oracle reporting period
+        const gracePeriodMS = Number(market.deadlines?.gracePeriod ?? 0) * BLOCK_TIME_SECONDS * 1000;
+        const oracleDurationMS = Number(market.deadlines?.oracleDuration ?? 0) * BLOCK_TIME_SECONDS * 1000;
+        const oracleDeadline = ends + gracePeriodMS + oracleDurationMS;
+        remainingTime = Math.max(0, oracleDeadline - now);
+      } else {
+        remainingTime = Math.max(0, timeUntilEnd);
+      }
+    }
+    
+    return {
+      type: stageType,
+      remainingTime,
+      totalTime: stageType === "OracleReportingPeriod" 
+        ? Number(market.deadlines?.oracleDuration ?? 0) * BLOCK_TIME_SECONDS * 1000  // Oracle period duration
+        : ends - starts,
+    } as MarketStage;
+  }, [marketStage, status, ends, starts]);
 
   const { outcome, by } = getMarketStatusDetails(
     marketType,
@@ -378,12 +421,25 @@ const MarketHeader: FC<{
     market.marketId.toString(),
   );
 
-  const { data: stats, isLoading: isStatsLoading } = useMarketsStats([
-    market.marketId,
-  ]);
+  // Use poolStats for combo markets, marketStats for regular markets
+  const { data: marketStats, isLoading: isMarketStatsLoading } = useMarketsStats(
+    poolId ? [] : [market.marketId], // Skip if we have poolId
+  );
+  
+  const { data: poolStats, isLoading: isPoolStatsLoading } = usePoolStats(
+    poolId ? [poolId] : [], // Only fetch if we have poolId
+  );
 
-  const liquidity = stats?.[0].liquidity;
-  const participants = stats?.[0].participants;
+  const isStatsLoading = poolId ? isPoolStatsLoading : isMarketStatsLoading;
+  const stats = poolId ? poolStats : marketStats;
+  
+  const liquidity = stats?.[0]?.liquidity;
+  const participants = poolId ? (poolStats?.[0] as any)?.traders : stats?.[0]?.participants;
+  
+  // Use volume from poolStats for combo markets, market.volume for regular markets
+  const volume = poolId && poolStats?.[0]?.volume 
+    ? new Decimal(poolStats[0].volume).div(ZTG).toNumber()
+    : new Decimal(market.volume).div(ZTG).toNumber();
 
   const oracleReported = marketHistory?.reported?.by === market.oracle;
 
@@ -446,7 +502,7 @@ const MarketHeader: FC<{
                 dateStyle: "medium",
               }).format(ends)}
             </HeaderStat>
-            {(market.status === "Active" || market.status === "Closed") && (
+            {(status === "Active" || status === "Closed") && (
               <HeaderStat label="Resolves">
                 {new Intl.DateTimeFormat("default", {
                   dateStyle: "medium",
@@ -642,8 +698,8 @@ const MarketHeader: FC<{
               <Skeleton height={22} className="w-full rounded-md" />
             )}
           </div>
-        ) : marketStage ? (
-          <MarketTimer stage={marketStage} />
+        ) : effectiveMarketStage ? (
+          <MarketTimer stage={effectiveMarketStage} />
         ) : (
           <MarketTimerSkeleton />
         )}
