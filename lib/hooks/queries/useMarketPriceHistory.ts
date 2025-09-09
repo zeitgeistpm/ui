@@ -60,8 +60,6 @@ export const useMarketPriceHistory = (
   startTime: string, //ISO timestamp
 ) => {
   const [sdk, id] = useSdkv2();
-  console.log(marketId, timeUnit, timeValue, startTime);
-
   const query = useQuery(
     [id, marketPriceHistoryKey, marketId, timeUnit, timeValue, startTime],
     async () => {
@@ -93,7 +91,7 @@ export const useComboMarketPriceHistory = (
   startTime: string, //ISO timestamp
 ) => {
   const [sdk, id] = useSdkv2();
-  
+
   const query = useQuery({
     queryKey: [id, poolPriceHistoryKey, poolId, timeUnit, timeValue, startTime],
     queryFn: async () => {

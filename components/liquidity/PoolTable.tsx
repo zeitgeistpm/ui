@@ -158,7 +158,7 @@ const PoolTable = ({
     const assetIds =
       activeMarket?.scoringRule === ScoringRule.Cpmm
         ? pool?.weights?.map((weight) => parseAssetIdString(weight?.assetId))
-        : amm2Pool?.assetIds;
+        : marketData?.neoPool?.assetIds || amm2Pool?.assetIds;
 
     let outcomeIndex = 0;
 
@@ -175,7 +175,9 @@ const PoolTable = ({
       const amount =
         activeMarket?.scoringRule === ScoringRule.Cpmm
           ? new Decimal(balances?.[assetIndex]?.free.toString() ?? 0)
-          : lookupAssetReserve(amm2Pool?.reserves, assetId);
+          : marketData?.neoPool?.reserves && typeof assetId === 'object' && 'CombinatorialToken' in assetId
+            ? new Decimal(marketData.neoPool.reserves[assetId.CombinatorialToken] || 0)
+            : lookupAssetReserve(amm2Pool?.reserves, assetId);
 
       const usdValue = amount
         ?.mul(spotPrices?.get(outcomeIndex) ?? 0)

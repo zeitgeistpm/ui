@@ -43,7 +43,7 @@ export const useComboMarket = (poolId: number) => {
   // Extract market IDs from the combinatorial pool
   const marketIds = useMemo(() => {
     if (!pool?.poolType?.combinatorial) {
-      return [1, 2]; // Fallback for development
+      return null; // Don't use fallback - wait for real data
     }
       
     const extractedMarketIds = pool.poolType.combinatorial;
@@ -51,19 +51,13 @@ export const useComboMarket = (poolId: number) => {
     return [extractedMarketIds[0], extractedMarketIds[1]] as [number, number];
   }, [pool?.poolType]);
 
-  const { data: market1 } = useMarket({ marketId: marketIds[0] });
-  const { data: market2 } = useMarket({ marketId: marketIds[1] });
+  const { data: market1 } = useMarket(marketIds ? { marketId: marketIds[0] } : undefined);
+  const { data: market2 } = useMarket(marketIds ? { marketId: marketIds[1] } : undefined);
 
   const query = useQuery(
     [id, comboMarketKey, poolId, market1?.marketId, market2?.marketId],
     (): ComboMarketData | null => {
-      if (!pool || !market1 || !market2) {
-        console.log('Missing data for combo market:', { 
-          hasPool: !!pool, 
-          hasMarket1: !!market1, 
-          hasMarket2: !!market2,
-          marketIds 
-        });
+      if (!pool || !market1 || !market2 || !marketIds) {
         return null;
       }
 
@@ -72,9 +66,6 @@ export const useComboMarket = (poolId: number) => {
         (asset): asset is { CombinatorialToken: `0x${string}` } => 
           typeof asset === 'object' && asset !== null && 'CombinatorialToken' in asset
       );
-
-      console.log('Pool assetIds:', pool.assetIds);
-      console.log('Filtered combinatorial assets:', combinatorialAssets);
 
       // Generate outcome combinations with actual asset IDs
       const combinations: OutcomeCombination[] = [];
@@ -85,7 +76,6 @@ export const useComboMarket = (poolId: number) => {
       market1.categories?.forEach((cat1, i) => {
         market2.categories?.forEach((cat2, j) => {
           const assetId = combinatorialAssets[assetIndex];
-          console.log(`Asset index ${assetIndex}:`, assetId);
           
           if (!assetId) {
             console.warn(`No asset found at index ${assetIndex}, using fallback`);
@@ -128,9 +118,9 @@ export const useComboMarket = (poolId: number) => {
       };
     },
     {
-      enabled: Boolean(pool && market1 && market2),
+      enabled: Boolean(pool && market1 && market2 && marketIds),
     }
   );
 
   return query;
-}; 
+};; 

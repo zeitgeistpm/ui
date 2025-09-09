@@ -26,6 +26,7 @@ export type Amm2Pool = {
   assetIds: (MarketOutcomeAssetId | CombinatorialToken)[];
   accounts: PoolAccount[];
   poolType: any; //TODO: get this from the poolType
+  createdAt?: Date; // Pool creation timestamp
 };
 
 type PoolAccount = {
@@ -36,7 +37,7 @@ type PoolAccount = {
 
 export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarket?: any) => {
   const [sdk, id] = useSdkv2();
-  console.log(marketId, poolId);
+
   const enabled = !!sdk && marketId != null && poolId != undefined && isRpcSdk(sdk);
   //TODO: improve this logic in the futre. right now we know legacy markets have the same poolId as marketId
   const legacy = marketId === poolId
@@ -101,7 +102,20 @@ export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarke
               fees: new Decimal(node.fees.toString()),
             };
           });
-
+        // Get pool creation timestamp from block hash
+        let createdAt: Date | undefined;
+        if (unwrappedRes.createdAtHash) {
+          try {
+            const blockHash = unwrappedRes.createdAtHash.toString();
+            const signedBlock = await sdk.api.rpc.chain.getBlock(blockHash);
+            const blockNumber = signedBlock.block.header.number.toNumber();
+            const blockTimestamp = await sdk.api.query.timestamp.now.at(blockHash);
+            createdAt = new Date(blockTimestamp.toNumber());
+          } catch (error) {
+            console.error('Failed to get pool creation timestamp:', error);
+          }
+        }
+        
         const pool: Amm2Pool = {
           poolId: poolIdToUse,
           accountId: unwrappedRes.accountId.toString(),
@@ -116,6 +130,7 @@ export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarke
             new Decimal(0),
           ),
           poolType: JSON.parse(unwrappedRes.poolType.toString()),
+          createdAt,
         };
         return pool;
       }

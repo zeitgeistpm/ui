@@ -28,14 +28,18 @@ const LiquidityModalAmm2 = ({
   open,
   onClose,
   marketId,
+  poolId,
+  virtualMarket,
 }: {
   open: boolean;
   onClose: () => void;
   marketId: number;
+  poolId?: number;
+  virtualMarket?: any;
 }) => {
   const wallet = useWallet();
 
-  const { data: pool } = useAmm2Pool(marketId, null);
+  const { data: pool } = useAmm2Pool(poolId ? 0 : marketId, poolId ?? null);
   const baseAsset = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unrightOr(undefined)
     : undefined;
@@ -62,6 +66,7 @@ const LiquidityModalAmm2 = ({
                   pool={pool}
                   baseAssetTicker={metadata?.symbol}
                   onSuccess={onClose}
+                  virtualMarket={virtualMarket}
                 />
               )}
             </Tab.Panel>
@@ -72,6 +77,7 @@ const LiquidityModalAmm2 = ({
                   pool={pool}
                   baseAssetTicker={metadata?.symbol}
                   onSuccess={onClose}
+                  virtualMarket={virtualMarket}
                 />
               )}
             </Tab.Panel>

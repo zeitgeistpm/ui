@@ -159,7 +159,6 @@ export const useLatestTrades = (
         });
 
         if (isComboMarket) {
-          console.log(market)
           // Handle combinatorial token trades
           const trades: TradeItem[] = historicalSwaps
             .map((swap) => {

@@ -21,11 +21,13 @@ const JoinPoolForm = ({
   pool,
   baseAssetTicker,
   onSuccess,
+  virtualMarket,
 }: {
   marketId: number;
   pool: Amm2Pool;
   baseAssetTicker?: string;
   onSuccess?: () => void;
+  virtualMarket?: any;
 }) => {
   const wallet = useWallet();
   const { register, watch, handleSubmit, setValue, getValues, formState } =
@@ -34,12 +36,13 @@ const JoinPoolForm = ({
   const notificationStore = useNotifications();
   const [poolSharesToReceive, setPoolSharesToReceive] = useState<Decimal>();
   const { data: market } = useMarket({ marketId });
+  const activeMarket = virtualMarket || market;
   const userAssetBalances = useBalances(pool.assetIds, wallet.realAddress)
     .map((res) => res.data)
     .filter(isPresent);
 
   const queryClient = useQueryClient();
-
+  console.log(marketId, pool)
   const { send: joinPool, isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && pool && poolSharesToReceive) {
@@ -168,9 +171,11 @@ const JoinPoolForm = ({
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="flex max-h-[250px] flex-col gap-y-6 overflow-y-auto py-5 md:max-h-[400px]">
-        {market &&
+        {activeMarket &&
           pool?.assetIds.map((assetId, index) => {
-            const assetName = lookupAssetMetadata(market, assetId)?.name;
+            const assetName = virtualMarket 
+              ? activeMarket.categories?.[index]?.name 
+              : lookupAssetMetadata(activeMarket, assetId)?.name;
             const userBalance = userAssetBalances[index]?.div(ZTG).toNumber();
 
             return (
@@ -221,7 +226,7 @@ const JoinPoolForm = ({
         type="range"
         {...register("percentage", { min: 0, value: "0" })}
       />
-      {market?.status !== "Active" && (
+      {activeMarket?.status !== "Active" && (
         <div className="rounded-md bg-provincial-pink p-4 text-sm">
           Liquidity cannot be provided to a closed market
         </div>

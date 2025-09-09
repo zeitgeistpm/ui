@@ -31,6 +31,7 @@ export const MarketLiquiditySection = ({
   comboMarket?: boolean;
 }) => {
   const marketHasPool = market.neoPool != null;
+
   return (
     <>
       {pool && !marketHasPool && (
@@ -46,7 +47,7 @@ export const MarketLiquiditySection = ({
       {marketHasPool && (
         <>
           <div className="mb-8">
-            <LiquidityHeader market={market} />
+            <LiquidityHeader market={market} comboMarket={comboMarket} />
           </div>
           <PoolTable
             poolId={market.pool?.poolId ?? market.neoPool?.poolId}
@@ -88,13 +89,14 @@ const LiquidityHeaderButtonItem: FC<
   );
 };
 
-const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
+const LiquidityHeader = ({ market, comboMarket }: { market: FullMarketFragment; comboMarket?: boolean }) => {
   const { pool, neoPool } = market;
 
   const { data: stats } = useMarketsStats([market.marketId]);
-
-  const neoPoolLiquidity = neoPool?.totalStake ?? neoPool?.liquidityParameter;
-  const liquidity = new Decimal(stats?.[0].liquidity ? neoPoolLiquidity : 0);
+  const neoPoolLiquidity = (neoPool as any)?.totalShares ?? 
+    neoPool?.liquiditySharesManager?.reduce((total: any, manager: any) => 
+      total + Number(manager.stake), 0) ?? neoPool?.liquidityParameter;
+  const liquidity = new Decimal(stats?.[0]?.liquidity ? neoPoolLiquidity : 0);
 
   const swapFee = new Decimal(Number(pool?.swapFee ?? neoPool?.swapFee ?? 0))
     .div(ZTG)
@@ -185,6 +187,8 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
       {neoPool && (
         <LiquidityModalAmm2
           marketId={neoPool.marketId}
+          poolId={comboMarket ? neoPool.poolId : undefined}
+          virtualMarket={comboMarket ? market : undefined}
           open={manageLiquidityOpen}
           onClose={() => setManageLiquidityOpen(false)}
         />

@@ -275,12 +275,32 @@ const Market: NextPage<MarketPageProps> = ({
     );
 
     if (hasCategorialOutcomes) {
-      // Regular market using combo pool - take first N combo tokens
+      // Regular market using combo pool - need to match combo tokens to market.outcomeAssets order
       const comboTokens = poolData.assetIds.filter(isCombinatorialToken);
-      return comboTokens.slice(0, outcomeAssets.length);
+      
+      // Sort combo tokens to match the order in market.outcomeAssets
+      const sortedTokens = [];
+      for (const marketAsset of marketAssetStrings) {
+        // Parse the market asset to get the token ID
+        const marketAssetObj = JSON.parse(marketAsset);
+        const tokenId = marketAssetObj?.combinatorialToken;
+        
+        if (tokenId) {
+          // Find the matching combo token
+          const matchingToken = comboTokens.find(token => 
+            token.CombinatorialToken === tokenId
+          );
+          if (matchingToken) {
+            sortedTokens.push(matchingToken);
+          }
+        }
+      }
+      
+      // If we didn't find all tokens, fall back to original order
+      return sortedTokens.length > 0 ? sortedTokens : comboTokens.slice(0, outcomeAssets.length);
     }
 
-    // True combo market - try to match tokens
+    // True combo market - try to match tokens and maintain market.outcomeAssets order
     const filtered = poolData.assetIds.filter((poolAsset) => {
       if (isCombinatorialToken(poolAsset)) {
         const hasMatch = marketAssetStrings.some((marketAssetString: string) =>
@@ -301,7 +321,26 @@ const Market: NextPage<MarketPageProps> = ({
       return poolData.assetIds.filter((asset) => !isCombinatorialToken(asset));
     }
 
-    return filtered;
+    // Sort filtered assets to match market.outcomeAssets order
+    const sortedFiltered = filtered.sort((a, b) => {
+      const aString = isCombinatorialToken(a) ? a.CombinatorialToken : JSON.stringify(a);
+      const bString = isCombinatorialToken(b) ? b.CombinatorialToken : JSON.stringify(b);
+      
+      const aIndex = marketAssetStrings.findIndex((marketAsset: string) => 
+        marketAsset.includes(aString)
+      );
+      const bIndex = marketAssetStrings.findIndex((marketAsset: string) => 
+        marketAsset.includes(bString)
+      );
+      
+      // If not found, put at end
+      const aPos = aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex;
+      const bPos = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
+      
+      return aPos - bPos;
+    });
+
+    return sortedFiltered;
   }, [poolData?.assetIds, outcomeAssets, marketData?.outcomeAssets]);
 
   // Set initial trade item when market loads
@@ -448,8 +487,10 @@ const Market: NextPage<MarketPageProps> = ({
 
     const colors = calcMarketColors(marketIdValue, relevantPoolAssets.length);
 
-    return relevantPoolAssets
-      .filter(isCombinatorialToken)
+    // Debug logging
+    const filteredAssets = relevantPoolAssets.filter(isCombinatorialToken);
+
+    return filteredAssets
       .map((asset, index) => {
         const categoryIndex = index < categories.length ? index : 0;
         return {

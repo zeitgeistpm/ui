@@ -12,9 +12,10 @@ import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
 import { TradeTabType } from "components/trade-form/TradeTab";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
-import TimeFilters, { TimeFilter } from "components/ui/TimeFilters";
+import TimeFilters, { TimeFilter, filters } from "components/ui/TimeFilters";
 import { useComboMarketPriceHistory } from "lib/hooks/queries/useMarketPriceHistory";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 import Skeleton from "components/ui/Skeleton";
 import { Transition } from "@headlessui/react";
 import Decimal from "decimal.js";
@@ -27,6 +28,7 @@ import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
+import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useTradeItem } from "lib/hooks/trade";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useWallet } from "lib/state/wallet";
@@ -240,10 +242,6 @@ const getCombinedMarketDeadlines = (
     Number(current.period?.end || 0) < Number(earliest.period?.end || 0) ? current : earliest
   );
 
-  // Debug: uncomment to see which market's deadlines are being used
-  // console.log('Using deadlines from market:', marketWithEarliestEnd.marketId, marketWithEarliestEnd.deadlines);
-
-  // Use the deadlines from the market that closed first
   return {
     gracePeriod: marketWithEarliestEnd.deadlines?.gracePeriod,
     oracleDuration: marketWithEarliestEnd.deadlines?.oracleDuration, 
@@ -251,36 +249,54 @@ const getCombinedMarketDeadlines = (
   };
 };
 
+// Helper function to set time to now (copied from MarketChart)
+const setTimeToNow = (date: Date) => {
+  const now = new Date();
+  date.setHours(now.getHours());
+  date.setMinutes(now.getMinutes());
+  date.setSeconds(0);
+  date.setMilliseconds(0);
+  return date;
+};
+
 // Chart component for combo markets
 const ComboChart = ({ 
   chartSeries,
   poolId,
   baseAsset,
+  poolData,
 }: { 
   chartSeries: ChartSeries[];
   poolId: number;
   baseAsset?: AssetId;
+  poolData?: any; // Pool data to get creation date
 }) => {
-  const [chartFilter, setChartFilter] = useState<TimeFilter>({
-    label: "All",
-    intervalUnit: "Day",
-    intervalValue: 1,
-  });
+  const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[1]);
   
   const baseAssetId = baseAsset;
   const { data: metadata } = useAssetMetadata(baseAssetId);
   
-  // For combo markets, we use the poolId as marketId for price history
-  // Use useMemo to prevent startDateString from changing on every render
-  const startDateString = useMemo(() => {
-    return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(); // Default to 30 days ago
-  }, []);
+  const startDateISOString = useMemo(() => {
+    if (poolData?.createdAt) {
+      // Use proper pool creation date with chart filter calculation
+      const startDate = calcPriceHistoryStartDate(
+        "Active" as any, // Combo pools are active when created
+        chartFilter,
+        poolData.createdAt,
+        new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // Default future resolution date
+      );
+      return setTimeToNow(startDate).toISOString();
+    }
+    
+    // Fallback to 30 days ago if no creation date
+    return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  }, [chartFilter.label, poolData?.createdAt]);
 
   const priceHistoryQuery = useComboMarketPriceHistory(
     poolId,
     chartFilter.intervalUnit,
     chartFilter.intervalValue,
-    startDateString,
+    startDateISOString,
   );
   
   const { data: prices, isLoading, isSuccess } = priceHistoryQuery;
@@ -303,7 +319,6 @@ const ComboChart = ({
           };
         })
     : [];
-  
   const handleFilterChange = (filter: TimeFilter) => {
     setChartFilter(filter);
   };
@@ -428,6 +443,10 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     makerAccountId_eq: realAddress,
   });
   const { data: poolData } = useAmm2Pool(0, poolId); // marketId=0 for combo pools
+  
+  // Get market stages for source markets to determine combo pool stage
+  const { data: market1Stage } = useMarketStage(comboMarketData?.sourceMarkets?.[0] as any);
+  const { data: market2Stage } = useMarketStage(comboMarketData?.sourceMarkets?.[1] as any);
 
   const [showLiquidityParam, setShowLiquidityParam, unsetShowLiquidityParam] =
     useQueryParamState("showLiquidity");
@@ -442,6 +461,22 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
       unsetShowLiquidityParam();
     }
   };
+  
+  // Collect both market stages to show complete status for each source market
+  const sourceMarketStages = useMemo(() => {
+    if (!comboMarketData) return undefined;
+    
+    return [
+      {
+        market: comboMarketData.sourceMarkets[0],
+        stage: market1Stage,
+      },
+      {
+        market: comboMarketData.sourceMarkets[1], 
+        stage: market2Stage,
+      }
+    ];
+  }, [market1Stage, market2Stage, comboMarketData]);
 
   if (isLoading) {
     return (
@@ -454,6 +489,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
   if (!comboMarketData) {
     return <NotFoundPage backText="Back To Markets" backLink="/markets" />;
   }
+  
   // Create a virtual market object for components that expect a FullMarketFragment
   const virtualMarket = {
     marketId: poolId,
@@ -466,12 +502,28 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
       color: combo.color,
     })),
     baseAsset: comboMarketData.baseAsset,
-    outcomeAssets: comboMarketData.outcomeCombinations.map(
-      (_, index) => `${poolId}-${index}`,
-    ),
+    outcomeAssets: poolData?.assetIds?.map((asset, index) => {
+      // For combo pools, use the actual combinatorial token IDs from the pool
+      if (typeof asset === 'object' && 'CombinatorialToken' in asset) {
+        return asset.CombinatorialToken;
+      }
+      return `${poolId}-${index}`;
+    }) || comboMarketData.outcomeCombinations.map((_, index) => `${poolId}-${index}`),
     pool: null,
     neoPool: {
       ...poolData,
+      // Map AMM2 pool liquidity to expected neoPool fields
+      totalStake: poolData?.liquidity?.toString(),
+      totalShares: poolData?.totalShares?.toString(),
+      liquidityParameter: poolData?.liquidity?.toString(),
+      // Convert Map to plain object for serialization
+      reserves: poolData?.reserves ? Object.fromEntries(poolData.reserves) : {},
+      // Add debug logging
+      _debug: {
+        assetIds: poolData?.assetIds,
+        reservesType: typeof poolData?.reserves,
+        reservesSize: poolData?.reserves?.size || 0,
+      }
     },
     slug: `combo-${poolId}`,
     __typename: "Market" as const,
@@ -499,7 +551,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
 
   const hasChart = Boolean(chartSeries && comboMarketData);
   const marketHasPool = true; // Combo markets always have pools
-  console.log(virtualMarket);
+
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -510,12 +562,13 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
             market={virtualMarket as any}
             token="ZTG" // Combo markets use ZTG as base asset
             poolId={poolId}
+            sourceMarketStages={sourceMarketStages}
           />
 
           {/* Combinatorial Market Badge */}
-          <div className="mb-4">
+          <div className="my-4">
             <span className="inline-block rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-800">
-              🔗 Combinatorial Market
+              Combinatorial Market
             </span>
           </div>
 
@@ -532,6 +585,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
                       chartSeries={chartSeries} 
                       poolId={poolId}
                       baseAsset={comboMarketData.baseAsset}
+                      poolData={poolData}
                     />
                   ) : (
                     <div className="flex h-[400px] items-center justify-center rounded-lg bg-gray-100">
@@ -611,12 +665,12 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
                 }
                 marketQuestion={comboMarketData?.question}
               />
-              <Link
+              {/* <Link
                 className="w-full text-center text-ztg-blue"
                 href={`/latest-trades?marketId=${poolId}`}
               >
                 View more
-              </Link>
+              </Link> */}
             </div>
           )}
 

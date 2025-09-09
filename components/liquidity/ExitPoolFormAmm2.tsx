@@ -19,11 +19,13 @@ const ExitPoolForm = ({
   pool,
   baseAssetTicker,
   onSuccess,
+  virtualMarket,
 }: {
   marketId: number;
   pool: Amm2Pool;
   baseAssetTicker?: string;
   onSuccess?: () => void;
+  virtualMarket?: any;
 }) => {
   const { data: constants } = useChainConstants();
   const {
@@ -47,6 +49,7 @@ const ExitPoolForm = ({
   const userOwnershipRatio = userPoolShares?.div(pool.totalShares) ?? 0;
 
   const { data: market } = useMarket({ marketId });
+  const activeMarket = virtualMarket || market;
   const queryClient = useQueryClient();
   const reserves = Array.from(pool.reserves).map((reserve) => reserve[1]);
 
@@ -181,9 +184,11 @@ const ExitPoolForm = ({
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex max-h-[200px] flex-col gap-y-6 overflow-y-auto py-5 md:max-h-[400px]">
-        {market &&
+        {activeMarket &&
           poolAssets?.map((assetId, index) => {
-            const assetName = lookupAssetMetadata(market, assetId)?.name;
+            const assetName = virtualMarket 
+              ? activeMarket.categories?.[index]?.name 
+              : lookupAssetMetadata(activeMarket, assetId)?.name;
 
             const poolAssetBalance =
               reserves?.[index]?.div(ZTG) ?? new Decimal(0);
@@ -224,7 +229,7 @@ const ExitPoolForm = ({
                       } else if (value <= 0) {
                         return "Value cannot be zero or less";
                       } else if (
-                        market?.status.toLowerCase() !== "resolved" &&
+                        activeMarket?.status.toLowerCase() !== "resolved" &&
                         poolAssetBalance.minus(value).lessThanOrEqualTo(0.01)
                       ) {
                         return "Pool cannot be emptied completely before the market resolves";

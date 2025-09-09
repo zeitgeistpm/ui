@@ -39,7 +39,7 @@ import { getMarketStatusDetails } from "lib/util/market-status-details";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { FC, PropsWithChildren, useState, useMemo } from "react";
+import { FC, PropsWithChildren, useState } from "react";
 import { X } from "react-feather";
 import { HiOutlineShieldCheck } from "react-icons/hi";
 import { MdModeEdit, MdOutlineHistory } from "react-icons/md";
@@ -342,6 +342,7 @@ const MarketHeader: FC<{
   rejectReason?: string;
   promotionData?: PromotedMarket | null;
   poolId?: number; // Optional poolId for combo markets
+  sourceMarketStages?: Array<{ market: any; stage: MarketStage | null | undefined }>; // Stages for source markets in combo pools
 }> = ({
   market,
   report,
@@ -352,6 +353,7 @@ const MarketHeader: FC<{
   rejectReason,
   promotionData,
   poolId,
+  sourceMarketStages,
 }) => {
   const {
     categories,
@@ -365,48 +367,6 @@ const MarketHeader: FC<{
   const starts = Number(period.start);
   const ends = Number(period.end);
 
-  // For combo pools without marketStage, use the same logic as regular markets would
-  // The virtualMarket already has the correct period.end (earliest market close) and status
-  const effectiveMarketStage = useMemo(() => {
-    // Use provided marketStage for regular markets, or if combo pool has one
-    if (marketStage) {
-      return marketStage;
-    }
-
-    // For combo pools, create a basic market stage following normal market lifecycle
-    const now = Date.now();
-    const timeUntilEnd = ends - now;
-    
-    let stageType: MarketStage["type"];
-    let remainingTime: number;
-    
-    if (status === "Active" && timeUntilEnd > 0) {
-      // Market is still active and trading
-      stageType = "Trading";
-      remainingTime = timeUntilEnd;
-    } else {
-      // Market has ended or is closed - calculate proper oracle reporting time
-      stageType = status === "Closed" ? "OracleReportingPeriod" : "Trading";
-      
-      if (status === "Closed") {
-        // Calculate time until end of oracle reporting period
-        const gracePeriodMS = Number(market.deadlines?.gracePeriod ?? 0) * BLOCK_TIME_SECONDS * 1000;
-        const oracleDurationMS = Number(market.deadlines?.oracleDuration ?? 0) * BLOCK_TIME_SECONDS * 1000;
-        const oracleDeadline = ends + gracePeriodMS + oracleDurationMS;
-        remainingTime = Math.max(0, oracleDeadline - now);
-      } else {
-        remainingTime = Math.max(0, timeUntilEnd);
-      }
-    }
-    
-    return {
-      type: stageType,
-      remainingTime,
-      totalTime: stageType === "OracleReportingPeriod" 
-        ? Number(market.deadlines?.oracleDuration ?? 0) * BLOCK_TIME_SECONDS * 1000  // Oracle period duration
-        : ends - starts,
-    } as MarketStage;
-  }, [marketStage, status, ends, starts]);
 
   const { outcome, by } = getMarketStatusDetails(
     marketType,
@@ -688,20 +648,45 @@ const MarketHeader: FC<{
         )}
       </div>
 
-      <div className="flex w-full">
-        {marketStage?.type === "Court" ? (
-          <div className="w-full">
-            <h3 className="mb-2 text-sm text-gray-700">Market is in court</h3>
-            {caseId != null ? (
-              <CourtStageTimer caseId={caseId} />
-            ) : (
-              <Skeleton height={22} className="w-full rounded-md" />
-            )}
-          </div>
-        ) : effectiveMarketStage ? (
-          <MarketTimer stage={effectiveMarketStage} />
+      <div className="flex w-full flex-col gap-2">
+        {/* Show source market statuses for combo pools */}
+        {poolId && sourceMarketStages ? (
+          <>
+            <div className="mb-2 text-sm font-semibold text-gray-700">Source Market Status:</div>
+            {sourceMarketStages.map((item, index) => (
+              <div key={index} className="rounded-lg border border-gray-200 p-3">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-xs font-medium text-gray-600">
+                    Market {index + 1} (ID: {item.market?.marketId})
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {item.market?.status}
+                  </span>
+                </div>
+                {item.stage ? (
+                  <MarketTimer stage={item.stage} />
+                ) : (
+                  <MarketTimerSkeleton />
+                )}
+              </div>
+            ))}
+          </>
         ) : (
-          <MarketTimerSkeleton />
+          // Regular market timer display
+          marketStage?.type === "Court" ? (
+            <div className="w-full">
+              <h3 className="mb-2 text-sm text-gray-700">Market is in court</h3>
+              {caseId != null ? (
+                <CourtStageTimer caseId={caseId} />
+              ) : (
+                <Skeleton height={22} className="w-full rounded-md" />
+              )}
+            </div>
+          ) : marketStage ? (
+            <MarketTimer stage={marketStage} />
+          ) : (
+            <MarketTimerSkeleton />
+          )
         )}
       </div>
 
