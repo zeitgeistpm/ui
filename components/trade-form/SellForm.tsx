@@ -108,11 +108,8 @@ const SellForm = ({
       return sortAssetsByMarketOrder(filteredAssets, market?.outcomeAssets);
     }
 
-    if (poolData?.outcomeCombinations) {
-      const assets = poolData.outcomeCombinations.map(
-        (combo: any) => combo.assetId,
-      );
-      return sortAssetsByMarketOrder(assets, market?.outcomeAssets);
+    if (poolData?.assetIds) {
+      return sortAssetsByMarketOrder(poolData.assetIds, market?.outcomeAssets);
     }
 
     if (pool?.assetIds) {
@@ -209,9 +206,7 @@ const SellForm = ({
       const amount = getValues("amount");
       const effectivePoolId = poolData?.poolId || pool?.poolId;
 
-      const categoryCount = poolData
-        ? poolData?.outcomeCombinations.length
-        : market?.categories?.length;
+      const categoryCount = poolData?.assetIds?.length || market?.categories?.length;
 
       if (
         !isRpcSdk(sdk) ||
@@ -221,7 +216,7 @@ const SellForm = ({
         categoryCount == null ||
         !selectedAsset ||
         (isCombinatorialToken(selectedAsset) &&
-          poolData?.outcomeCombinations.length <= 1) ||
+          (poolData?.assetIds?.length || 0) <= 1) ||
         !newSpotPrice ||
         !orders
       ) {
@@ -256,12 +251,11 @@ const SellForm = ({
       } else if (isCombinatorialToken(selectedAsset)) {
         // For combo markets, we need to provide all other assets as the sell parameter
         const allOtherAssets =
-          poolData?.outcomeCombinations
-            .map((combo: any) => combo.assetId)
-            .filter(
-              (assetId: any) =>
-                JSON.stringify(assetId) !== JSON.stringify(selectedAsset),
-            ) ||
+          poolData?.assetIds?.filter(
+            (assetId: any) =>
+              isCombinatorialToken(assetId) &&
+              JSON.stringify(assetId) !== JSON.stringify(selectedAsset),
+          ) ||
           pool?.assetIds.filter(
             (assetId) =>
               isCombinatorialToken(assetId) &&

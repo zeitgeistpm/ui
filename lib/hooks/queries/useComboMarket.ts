@@ -77,12 +77,8 @@ export const useComboMarket = (poolId: number) => {
         market2.categories?.forEach((cat2, j) => {
           const assetId = combinatorialAssets[assetIndex];
           
-          if (!assetId) {
-            console.warn(`No asset found at index ${assetIndex}, using fallback`);
-          }
-          
           combinations.push({
-            assetId: assetId,
+            assetId: assetId || { CombinatorialToken: `0x${"0".repeat(64)}` as `0x${string}` }, // Provide fallback
             name: `${cat1.name} & ${cat2.name}`,
             market1Outcome: cat1.name || `Outcome ${i}`,
             market2Outcome: cat2.name || `Outcome ${j}`,
@@ -123,4 +119,4 @@ export const useComboMarket = (poolId: number) => {
   );
 
   return query;
-};; 
+};;; 

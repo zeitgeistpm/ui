@@ -437,7 +437,7 @@ const ComboMarketEditor: React.FC = () => {
           }
 
           const poolId = eventData[2].toString();
-          router.push(`/combo/${poolId}`);
+          router.push(`/multi-market/${poolId}`);
         }
       },
       onError: () => {

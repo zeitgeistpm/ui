@@ -184,13 +184,13 @@ export const ScalarMarketChart = ({
     //hack to make data end on same time as now
     startDateISOString,
   );
-
+  
   const chartData = prices
     ?.filter((data) => data.prices.every((p) => p.price != null))
     .map((price) => {
       const time = new Date(price.timestamp).getTime();
-      const shortPrice = price.prices[1].price;
-      const longPrice = price.prices[0].price;
+      const shortPrice = price.prices[1]?.price;
+      const longPrice = price.prices[0]?.price;
       const prediction =
         (Number(upperBound) - Number(lowerBound)) *
           ((1 - shortPrice + longPrice) / 2) +

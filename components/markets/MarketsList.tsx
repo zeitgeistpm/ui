@@ -1,21 +1,13 @@
-import { ScalarRangeType } from "@zeitgeistpm/sdk";
 import React, { useEffect, useState, useRef } from "react";
-import Decimal from "decimal.js";
 import { useInView } from "react-intersection-observer";
 
 import Loader from "react-spinners/PulseLoader";
-import { X } from "react-feather";
-import { useRouter } from "next/router";
-import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
+import { useInfiniteMarketsWithCombos } from "lib/hooks/queries/useInfiniteMarketsWithCombos";
 import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
-import MarketCard from "./market-card/index";
+import MarketOrComboCard from "./market-card/MarketOrComboCard";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import { filterTypes } from "lib/constants/market-filter";
-import { ZTG } from "lib/constants";
-import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
-import { CmsTopicHeader } from "lib/cms/topics";
-import { Topics } from "components/front-page/Topics";
 
 export type MarketsListProps = {
   className?: string;
@@ -80,7 +72,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
     isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteMarkets(
+  } = useInfiniteMarketsWithCombos(
     queryState.ordering,
     queryState.liquidityOnly,
     queryState.filters,
@@ -92,11 +84,9 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
     }
   }, [isLoadMarkerInView, hasNextPage]);
 
-  const markets = marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
+  const marketItems = marketsPages?.pages.flatMap((page) => page.data) ?? [];
 
-  const count = markets?.length ?? 0;
-
-  const { data: stats } = useMarketsStats(markets.map((m) => m.marketId));
+  const count = marketItems?.length ?? 0;
 
   return (
     <div
@@ -111,15 +101,11 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
       />
 
       <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
-        {markets?.map((market) => {
-          const stat = stats?.find((s) => s.marketId === market.marketId);
-
+        {marketItems?.map((item) => {
           return (
-            <MarketCard
-              key={`market-${market.marketId}`}
-              market={market}
-              numParticipants={stat?.participants}
-              liquidity={stat?.liquidity}
+            <MarketOrComboCard
+              key={`${item.type}-${item.type === 'market' ? item.data.marketId : item.data.poolId}`}
+              item={item}
             />
           );
         })}
@@ -143,25 +129,5 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
   );
 };
 
-const MarketsSearchInfo = ({ searchText }: { searchText: string }) => {
-  const router = useRouter();
-
-  return (
-    <div className="my-ztg-30 flex h-ztg-34">
-      <h6 className="text-ztg-[24px]" id="marketsHead">
-        {`Search results for: "${searchText}"`}
-      </h6>
-      <div className="center ml-ztg-15 h-ztg-24 w-ztg-24 rounded-full bg-sky-400 dark:bg-black">
-        <X
-          size={24}
-          className="cursor-pointer text-sky-600"
-          onClick={() => {
-            router.push("/", "", { shallow: true });
-          }}
-        />
-      </div>
-    </div>
-  );
-};
 
 export default MarketsList;

@@ -279,7 +279,7 @@ const Market: NextPage<MarketPageProps> = ({
       const comboTokens = poolData.assetIds.filter(isCombinatorialToken);
       
       // Sort combo tokens to match the order in market.outcomeAssets
-      const sortedTokens = [];
+      const sortedTokens: CombinatorialToken[] = [];
       for (const marketAsset of marketAssetStrings) {
         // Parse the market asset to get the token ID
         const marketAssetObj = JSON.parse(marketAsset);
@@ -807,6 +807,7 @@ const Market: NextPage<MarketPageProps> = ({
                 <>
                   <Amm2TradeForm
                     marketId={marketId}
+                    poolData={poolData}
                     filteredAssets={relevantPoolAssets}
                     outcomeCombinations={outcomeCombinations}
                   />
@@ -843,6 +844,7 @@ const Market: NextPage<MarketPageProps> = ({
           market={market}
           relevantPoolAssets={relevantPoolAssets}
           marketData={marketData}
+          poolData={poolData}
         />
       )}
     </div>
@@ -853,10 +855,12 @@ const MobileContextButtons = ({
   market,
   relevantPoolAssets,
   marketData,
+  poolData,
 }: {
   market: FullMarketFragment | null | undefined;
   relevantPoolAssets?: (MarketOutcomeAssetId | CombinatorialToken)[];
   marketData?: any; // Allow any type for marketData since it comes from static props
+  poolData?: any;
 }) => {
   const wallet = useWallet();
 
@@ -931,6 +935,7 @@ const MobileContextButtons = ({
         marketData?.status === "Active" ? (
           <Amm2TradeForm
             marketId={market?.marketId || marketData?.marketId || 0}
+            poolData={poolData}
             showTabs={false}
             selectedTab={
               tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell

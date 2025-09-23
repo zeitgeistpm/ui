@@ -3872,6 +3872,7 @@ __metadata:
     "@getbrevo/brevo": ^2.0.0-beta.4
     "@headlessui/react": ^1.7.17
     "@headlessui/tailwindcss": ^0.1.2
+    "@multiformats/sha3": ^3.0.2
     "@next/bundle-analyzer": ^12.3.1
     "@notionhq/client": ^2.2.3
     "@plaiceholder/next": ^2.5.0
@@ -3934,11 +3935,12 @@ __metadata:
     jose: ^5.2.4
     jotai: ^2.0.4
     jotai-tanstack-query: ^0.7.0
+    js-sha3: ^0.9.3
     lodash.merge: ^4.6.2
     median-range: ^0.0.11
     moment: ^2.29.1
     moment-timezone: ^0.5.43
-    multiformats: ^13.0.1
+    multiformats: ^13.4.1
     next: ^13.4.19
     next-absolute-url: ^1.2.2
     next-qrcode: ^2.5.1
@@ -8443,7 +8445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-sha3@npm:^0.9.1":
+"js-sha3@npm:^0.9.1, js-sha3@npm:^0.9.3":
   version: 0.9.3
   resolution: "js-sha3@npm:0.9.3"
   checksum: cfab12cdb3aa9c0c8e8466761d89cb9770653880910b920682fa676dd102868a827709c857cb089bdc0d6120542137f92a7c1699ab428c0f4057c823aef24601
@@ -9384,10 +9386,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multiformats@npm:^13.0.0, multiformats@npm:^13.0.1, multiformats@npm:^13.1.0":
+"multiformats@npm:^13.0.0, multiformats@npm:^13.1.0":
   version: 13.4.0
   resolution: "multiformats@npm:13.4.0"
   checksum: bf2c3c25f86e52c23764340f2fa3922908e1df8e1cb6ccf1baefd81246b647725473b8b237f3d4fc3973fe2f5bc9f8e7dc9cc50d926840fb541b331488d26f57
+  languageName: node
+  linkType: hard
+
+"multiformats@npm:^13.4.1":
+  version: 13.4.1
+  resolution: "multiformats@npm:13.4.1"
+  checksum: feaab87d04646d1fea59567615135e4c60e461a2ec07568d6903c5b3f9ac8c3ef2e9b91789617689e8bb6a7def1e994ba84ea4c275eb2958d81adef1fe111147
   languageName: node
   linkType: hard
 

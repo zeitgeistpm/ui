@@ -93,16 +93,63 @@ const BuyForm = ({
   const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
   //TODO: fix this so it's consistent among: combo markets, legacy, and new markets
+  const firstAssetString = market?.outcomeAssets[0];
+  let parsedFirstAsset;
+  let isFirstCombi = false;
+  
+  try {
+    // Try to parse as JSON first (for combinatorial tokens)
+    parsedFirstAsset = JSON.parse(firstAssetString || '{}');
+    isFirstCombi = isCombinatorialToken(parsedFirstAsset);
+  } catch {
+    // Fall back to parseAssetIdString for regular assets
+    parsedFirstAsset = parseAssetIdString(firstAssetString);
+    isFirstCombi = isCombinatorialToken(parsedFirstAsset);
+  }
+  
+  console.log(`BuyForm DEBUG - poolId resolution:`, {
+    hasPoolData: !!poolData,
+    poolDataPoolId: poolData?.poolId,
+    firstAssetString,
+    parsedFirstAsset,
+    isFirstCombi,
+    marketNeoPoolId: market?.neoPool?.poolId,
+    marketPoolId: market?.pool?.poolId,
+  });
+
   const poolId =
     poolData?.poolId ||
-    (isCombinatorialToken(market?.outcomeAssets[0])
+    (isFirstCombi
       ? market?.neoPool?.poolId
       : undefined);
 
+  const useAmm2PoolMarketId = poolData?.poolId ? 0 : marketId;
+  const useAmm2PoolPoolId = poolId ?? null;
+  
+  console.log(`BuyForm DEBUG - useAmm2Pool call:`, {
+    marketId,
+    poolId,
+    poolData: poolData ? { poolId: poolData.poolId } : null,
+    useAmm2PoolMarketId,
+    useAmm2PoolPoolId,
+    hasPoolData: !!poolData
+  });
+
   const { data: pool } = useAmm2Pool(
-    poolData?.poolId ? 0 : marketId,
-    poolId ?? null,
+    useAmm2PoolMarketId,
+    useAmm2PoolPoolId,
   );
+  
+  console.log(`BuyForm DEBUG - Pool result:`, {
+    hasPool: !!pool,
+    poolData: pool ? {
+      poolId: pool.poolId,
+      assetCount: pool.assetIds?.length,
+      liquidity: pool.liquidity?.toString(),
+      swapFee: pool.swapFee?.toString()
+    } : null
+  });
+  
   const [sellAssets, setSellAssets] = useState<CombinatorialToken[]>([]);
 
   const { data: orders } = useOrders({
@@ -123,11 +170,8 @@ const BuyForm = ({
       return sortAssetsByMarketOrder(filteredAssets, market?.outcomeAssets);
     }
 
-    if (poolData?.outcomeCombinations) {
-      const assets = poolData.outcomeCombinations.map(
-        (combo: any) => combo.assetId,
-      );
-      return sortAssetsByMarketOrder(assets, market?.outcomeAssets);
+    if (poolData?.assetIds) {
+      return sortAssetsByMarketOrder(poolData.assetIds, market?.outcomeAssets);
     }
 
     if (pool?.assetIds) {
@@ -150,7 +194,7 @@ const BuyForm = ({
     if (isCombinatorialToken(selectedAsset)) {
       const getAllOtherAssets = (selectedAsset: CombinatorialToken) => {
         const allAssets =
-          poolData?.outcomeCombinations.map((combo: any) => combo.assetId) ||
+          poolData?.assetIds ||
           pool?.assetIds ||
           [];
         return allAssets.filter(
@@ -161,7 +205,7 @@ const BuyForm = ({
       };
       setSellAssets(getAllOtherAssets(selectedAsset));
     }
-  }, [selectedAsset, pool?.assetIds, poolData?.outcomeCombinations]);
+  }, [selectedAsset, pool?.assetIds, poolData?.assetIds]);
 
   useEffect(() => {
     if (!selectedAsset && outcomeAssets?.[0]) {
@@ -256,9 +300,20 @@ const BuyForm = ({
     () => {
       const amount = getValues("amount");
       const effectivePoolId = poolData?.poolId || pool?.poolId;
-      const assetCount = poolData
-        ? poolData?.outcomeCombinations.length
-        : pool?.assetIds.length;
+      const assetCount = poolData?.assetIds?.length || pool?.assetIds?.length;
+
+      console.log(`BuyForm useExtrinsic DEBUG - Conditions check:`, {
+        hasRpcSdk: isRpcSdk(sdk),
+        effectivePoolId,
+        amount,
+        assetCount,
+        hasSelectedAsset: !!selectedAsset,
+        hasNewSpotPrice: !!newSpotPrice,
+        hasOrders: !!orders,
+        isCombinatorialSelected: isCombinatorialToken(selectedAsset),
+        sellAssetsLength: sellAssets.length,
+        combiCondition: isCombinatorialToken(selectedAsset) && sellAssets.length === 0
+      });
 
       if (
         !isRpcSdk(sdk) ||
@@ -271,6 +326,7 @@ const BuyForm = ({
         !orders ||
         (isCombinatorialToken(selectedAsset) && sellAssets.length === 0)
       ) {
+        console.log(`BuyForm useExtrinsic DEBUG - Returning undefined due to failed conditions`);
         return;
       }
       const amountDecimal = new Decimal(amount).mul(ZTG); // base asset amount

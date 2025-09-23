@@ -19,32 +19,18 @@ export default async function handler(
 const MAX_METADATA_SIZE_KB = 10;
 
 const POST = async (req: NextApiRequest, res: NextApiResponse) => {
-  try {
-    // Check for required environment variables
-    if (!process.env.NEXT_PUBLIC_IPFS_NODE_URL) {
-      return res.status(500).json({
-        message: "IPFS node URL not configured",
-      });
-    }
+  const node = createIPFSClient({
+    url: process.env.NEXT_PUBLIC_IPFS_NODE_URL,
+    headers: {
+      Authorization: `Basic ${Buffer.from(
+        process.env.IPFS_NODE_BASIC_AUTH_USERNAME +
+          ":" +
+          process.env.IPFS_NODE_BASIC_AUTH_PASSWORD,
+      ).toString("base64")}`,
+    },
+  });
 
-    if (!process.env.IPFS_NODE_BASIC_AUTH_USERNAME || !process.env.IPFS_NODE_BASIC_AUTH_PASSWORD) {
-      return res.status(500).json({
-        message: "IPFS authentication credentials not configured",
-      });
-    }
-
-    const node = createIPFSClient({
-      url: process.env.NEXT_PUBLIC_IPFS_NODE_URL,
-      headers: {
-        Authorization: `Basic ${Buffer.from(
-          process.env.IPFS_NODE_BASIC_AUTH_USERNAME +
-            ":" +
-            process.env.IPFS_NODE_BASIC_AUTH_PASSWORD,
-        ).toString("base64")}`,
-      },
-    });
-
-    const [error, metadata] = IOMarketMetadata.validate(req.body);
+  const [error, metadata] = IOMarketMetadata.validate(req.body);
 
   const onlyHash = req.query["only-hash"] === "true" ? true : false;
 
@@ -83,30 +69,26 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
         }),
       );
   }
-    try {
-      const { cid } = await node.add(
-        { content },
-        {
-          hashAlg: "sha3-384",
-          pin: !onlyHash,
-          onlyHash,
-        },
-      );
+  try {
+    const { cid } = await node.add(
+      { content },
+      {
+        hashAlg: "sha3-384",
+        pin: !onlyHash,
+        onlyHash,
+      },
+    );
 
-      return res.status(200).json({
-        message: `Market metadata ${
-          onlyHash ? "hashed" : "pinned"
-        } successfully.`,
-        cid: cid.toString(),
-      });
-    } catch (error) {
-      return res.status(500).json({
-        message: error.message,
-      });
-    }
+    return res.status(200).json({
+      message: `Market metadata ${
+        onlyHash ? "hashed" : "pinned"
+      } successfully.`,
+      cid: cid.toString(),
+    });
   } catch (error) {
+    console.log(error)
     return res.status(500).json({
-      message: error.message || "Internal server error",
+      message: error.message,
     });
   }
 };
