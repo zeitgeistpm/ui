@@ -44,6 +44,8 @@ import {
 import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 import { isCombinatorialToken } from "lib/types/combinatorial";
 import { useCombinatorialTokenMarketIds } from "./useCombinatorialTokenMarketIds";
+import { useMultiMarketAssets } from "./useMultiMarketAssets";
+import { useVirtualMarket } from "../useVirtualMarket";
 
 export type UsePortfolioPositions = {
   /**
@@ -189,7 +191,31 @@ export const usePortfolioPositions = (
     .filter(isNotNull) ?? [];
 
   // Fetch market IDs for all combinatorial tokens
-  const { data: combinatorialMarketIds } = useCombinatorialTokenMarketIds(combinatorialTokens);
+  const { data: combinatorialMarketIds, isLoading: isLoadingCombinatorialMarketIds } = useCombinatorialTokenMarketIds(combinatorialTokens);
+
+  // Process multi-market tokens only after data is loaded
+  const multiMarketTokenIds = useMemo(() => {
+    if (!combinatorialMarketIds) return [];
+    return Object.entries(combinatorialMarketIds)
+      .filter(([key, value]) => value === null)
+      .map(([key]) => key);
+  }, [combinatorialMarketIds]);
+
+  // Format for GraphQL where clause
+  const multiMarketAssets = useMemo(() => {
+    return multiMarketTokenIds.map(id => `"combinatorialToken":"${id}"`);
+  }, [multiMarketTokenIds]);
+  // Query for multi-market assets
+  const {
+    data: multiMarketAssetsData,
+    isLoading: isLoadingMultiMarketAssets,
+    isError: isErrorMultiMarketAssets,
+    error: multiMarketAssetsError,
+    isFetching: isFetchingMultiMarketAssets,
+    status: multiMarketAssetsStatus
+  } = useMultiMarketAssets(multiMarketAssets);
+
+  console.log(multiMarketAssetsData);
 
   const filter = rawPositions.data
     ?.map((position) => {
@@ -216,9 +242,7 @@ export const usePortfolioPositions = (
         return null;
       }
       return null;
-    })
-    .filter(isNotNull);
-  
+    }).filter(isNotNull)    
 
   const pools = usePoolsByIds(filter);
   const markets = useMarketsByIds(filter);
@@ -232,7 +256,7 @@ export const usePortfolioPositions = (
     .map((m) => m.marketId);
 
   const { data: amm2SpotPrices } = useAmm2MarketSpotPrices(amm2MarketIds);
-  console.log("amm2SpotPrices", amm2SpotPrices);
+
   const { data: amm2SpotPrices24HoursAgo } = useAmm2MarketSpotPrices(
     amm2MarketIds,
     block24HoursAgo,

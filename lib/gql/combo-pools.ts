@@ -68,6 +68,20 @@ const marketsByIdsQuery = gql`
   }
 `;
 
+// Query for getting assets by combinatorial tokens that don't have markets
+export const assetsWithNullMarketsQuery = gql`
+  query AssetsWithNullMarkets($assetIds: [String!]!) {
+    assets(where: {
+      assetId_in: $assetIds,
+      market_isNull: true
+    }) {
+      marketIds
+      assetId
+      poolId
+    }
+  }
+`;
+
 export type ComboPoolData = {
   poolId: number;
   marketIds: number[];
@@ -116,6 +130,12 @@ export type MarketBasicData = {
   outcomeAssets: string[];
 };
 
+export type AssetWithNullMarket = {
+  marketIds: number[];
+  assetId: string;
+  poolId: number | null;
+};
+
 export const getComboPools = async (
   client: GraphQLClient,
   limit = 12,
@@ -160,7 +180,7 @@ export const getMarketsByIds = async (
   marketIds: number[],
 ): Promise<MarketBasicData[]> => {
   if (marketIds.length === 0) return [];
-  
+
   const response = await client.request<{
     markets: MarketBasicData[];
   }>(marketsByIdsQuery, {
@@ -168,4 +188,33 @@ export const getMarketsByIds = async (
   });
 
   return response.markets;
+};
+
+export const getMultiMarketAssets = async (
+  client: GraphQLClient,
+  multiMarketAssets: string[],
+): Promise<AssetWithNullMarket[]> => {
+  if (multiMarketAssets.length === 0) return [];
+
+  // Convert formatted strings to the JSON format expected by the query
+  // Input: ["combinatorialToken":"0x123"]
+  // Output: ["{\"combinatorialToken\":\"0x123\"}"]
+  const assetIds = multiMarketAssets.map(token => {
+    // Token comes as: "combinatorialToken":"0x123"
+    // We need: {"combinatorialToken":"0x123"}
+    return `{${token}}`;
+  });
+
+
+  try {
+    const response = await client.request<{
+      assets: AssetWithNullMarket[];
+    }>(assetsWithNullMarketsQuery, {
+      assetIds,
+    });
+
+    return response.assets || [];
+  } catch (error) {
+    throw error;
+  }
 };

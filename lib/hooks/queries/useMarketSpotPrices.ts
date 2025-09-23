@@ -51,26 +51,6 @@ export const useMarketSpotPrices = (
 
   const { data: amm2Pool } = useAmm2Pool(marketIdToUse, poolId ?? null);
 
-  console.log(`useMarketSpotPrices DEBUG - Called with:`, {
-    marketId,
-    blockNumber,
-    virtualMarket: virtualMarket ? {
-      marketId: virtualMarket.marketId,
-      question: virtualMarket.question,
-      categories: virtualMarket.categories?.length
-    } : null,
-    isCombiMarket,
-    marketIdToUse,
-    poolId,
-    hasMarketData: !!marketData,
-    hasAmm2Pool: !!amm2Pool,
-    amm2PoolData: amm2Pool ? {
-      poolId: amm2Pool.poolId,
-      assetCount: amm2Pool.assetIds?.length,
-      reserveCount: amm2Pool.reserves?.size
-    } : null
-  });
-
   const enabled = isRpcSdk(sdk) && marketId != null && (!!marketData || (isCombiMarket && !!amm2Pool));
   const query = useQuery(
     [

@@ -25,7 +25,6 @@ export const useCombinatorialTokenMarketIds = (combinatorialTokens: string[]) =>
               assetId_eq: assetIdString,
             },
           });
-
           return res.assets?.[0]?.market?.marketId ?? null;
         } catch (error) {
           console.error(`Error fetching market ID for token ${token}:`, error);

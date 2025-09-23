@@ -43,49 +43,19 @@ export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarke
   // const legacy = marketId === poolId
   const legacy = false
   
-  console.log(`useAmm2Pool DEBUG - Called with:`, {
-    marketId,
-    poolId,
-    enabled,
-    legacy,
-    hasActiveMarket: !!activeMarket,
-    queryKey: [id, amm2PoolKey, marketId, poolId]
-  });
-  
   const query = useQuery(
     [id, amm2PoolKey, marketId, poolId],
     async () => {
-      console.log(`useAmm2Pool DEBUG - Query function executing for:`, {
-        marketId,
-        poolId,
-        enabled,
-        legacy
-      });
       
       if (!enabled) {
-        console.log(`useAmm2Pool DEBUG - Query disabled for marketId=${marketId}, poolId=${poolId}`);
         return;
       }
 
       const poolIdToUse = legacy ? Number(await sdk.api.query.neoSwaps.marketIdToPoolId(marketId)) : poolId!;
       
-      console.log(`useAmm2Pool DEBUG - Pool resolution:`, {
-        marketId,
-        poolId,
-        legacy,
-        poolIdToUse
-      });
-      
       const res = await sdk.api.query.neoSwaps.pools(poolIdToUse);
       // Check if the result is Some before unwrapping
       const unwrappedRes = res && res.isSome ? res.unwrap() : null;
-      
-      console.log(`useAmm2Pool DEBUG - Pool query result:`, {
-        poolIdToUse,
-        hasResult: !!res,
-        isSome: res && res.isSome,
-        hasUnwrappedRes: !!unwrappedRes
-      });
 
       if (unwrappedRes) {
         const reserves: ReserveMap = new Map();
@@ -169,19 +139,10 @@ export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarke
           createdAt,
         };
         
-        console.log(`useAmm2Pool DEBUG - Successfully created pool:`, {
-          poolId: poolIdToUse,
-          assetCount: assetIds.length,
-          reserveCount: reserves.size,
-          liquidityParameter: pool.liquidity.toString(),
-          poolType: pool.poolType
-        });
-        
         return pool;
       }
       
       // Return null if pool doesn't exist
-      console.log(`useAmm2Pool DEBUG - Pool doesn't exist for poolId=${poolIdToUse}`);
       return null;
     },
     {

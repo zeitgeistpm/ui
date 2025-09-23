@@ -161,7 +161,7 @@ const RedeemButtonByValue = ({
 
 
   const isCombinatorialMarket = market.outcomeAssets.some(asset => asset.includes("combinatorialToken"));
-  console.log("market", market, isCombinatorialMarket, assetId, tokenIndex, value.toString());
+
 
   const { isLoading, isSuccess, send } = useExtrinsic(
     () => {
