@@ -11,6 +11,8 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { CombinatorialToken, CombinatorialTokenString, unwrapCombinatorialToken, getCombinatorialHash, isCombinatorialToken } from "lib/types/combinatorial";
 import { sortAssetsByMarketOrder } from "lib/util/sort-assets-by-market";
+import { getApiAtBlock } from "lib/util/get-api-at";
+import { getBlockNumberFromTimestamp } from "lib/util/block-timestamp";
 export const amm2PoolKey = "amm2-pool";
 
 type ReserveMap = Map<number | "Long" | "Short" | CombinatorialTokenString , Decimal>;
@@ -56,6 +58,9 @@ export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarke
       const res = await sdk.api.query.neoSwaps.pools(poolIdToUse);
       // Check if the result is Some before unwrapping
       const unwrappedRes = res && res.isSome ? res.unwrap() : null;
+      console.log("unwrappedRes", unwrappedRes);
+      const blockHash = unwrappedRes?.createdAtHash?.toJSON();
+      console.log("blockHash", blockHash);
 
       if (unwrappedRes) {
         const reserves: ReserveMap = new Map();
@@ -64,6 +69,9 @@ export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarke
         const tempReserves: Map<string | number | "Long" | "Short", Decimal> = new Map();
         
         unwrappedRes.reserves.forEach((reserve, asset) => {
+          console.log("reserve", reserve);
+
+          console.log("asset", asset);
           const assetId = parseAssetIdString(asset.toString());
           if (IOMarketOutcomeAssetId.is(assetId)) {
             const key = IOCategoricalAssetId.is(assetId)
@@ -74,11 +82,24 @@ export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarke
           } else {
             //Combinatorial markets
             const unwrappedToken = unwrapCombinatorialToken(asset.toString());
-            assetIds.push(unwrappedToken);
+            // assetIds.push(unwrappedToken);
             tempReserves.set(unwrappedToken.CombinatorialToken, new Decimal(reserve.toString()));
           }
         });
 
+        unwrappedRes.assets.forEach((asset) => {
+          console.log("asset", asset);
+          const assetId = parseAssetIdString(asset.toString());
+          if (!IOMarketOutcomeAssetId.is(assetId)) {
+            //Combinatorial markets
+            const unwrappedToken = unwrapCombinatorialToken(asset.toString());
+            assetIds.push(unwrappedToken);
+          }
+        });
+
+
+        console.log("tempReserves", tempReserves);
+        console.log("assetIds", assetIds);
         // Sort assets to match market.outcomeAssets order
         const sortedAssetIds = sortAssetsByMarketOrder(assetIds, activeMarket?.outcomeAssets);
         // Replace assetIds with sorted version if different

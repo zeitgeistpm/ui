@@ -1,10 +1,11 @@
 import { Dialog } from "@headlessui/react";
 import {
+  AssetId,
   getIndexOf,
   IndexerContext,
+  IOMarketOutcomeAssetId,
   isRpcSdk,
   Market,
-  MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk";
 import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
@@ -12,6 +13,7 @@ import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { isCombinatorialToken } from "lib/types/combinatorial";
 
 import { useMemo, useState } from "react";
 
@@ -20,7 +22,7 @@ const DisputeButton = ({
   assetId,
 }: {
   market: Market<IndexerContext>;
-  assetId?: MarketOutcomeAssetId;
+  assetId?: AssetId;
 }) => {
   const [sdk] = useSdkv2();
 
@@ -30,12 +32,29 @@ const DisputeButton = ({
 
   const disputeDisabled = useMemo(() => {
     if (!assetId) return true;
-    const assetIndex = getIndexOf(assetId);
+
+    let assetIndex: number | undefined;
+
+    if (IOMarketOutcomeAssetId.is(assetId)) {
+      assetIndex = getIndexOf(assetId);
+    } else if (isCombinatorialToken(assetId)) {
+      // For combinatorial tokens, find the index in the market's outcome assets
+      const tokenHash = assetId.CombinatorialToken;
+      const index = market.outcomeAssets?.findIndex((outcomeAsset) =>
+        outcomeAsset.includes(tokenHash)
+      );
+      if (index !== undefined && index >= 0) {
+        assetIndex = index;
+      }
+    }
+
+    if (assetIndex === undefined) return true;
+
     const isCategorical = market.marketType.categorical != null;
     const assetIsReported = market.report?.outcome?.categorical === assetIndex;
 
     return (sdk && !isRpcSdk(sdk)) || (isCategorical && assetIsReported);
-  }, [sdk, disputes?.length, market]);
+  }, [sdk, disputes?.length, market, assetId]);
 
   return (
     <>
@@ -53,7 +72,7 @@ const DisputeButton = ({
           ) : (
             <CategoricalDisputeBox
               market={market}
-              assetId={assetId!}
+              assetId={assetId}
               onSuccess={() => setOpen(false)}
             />
           )}

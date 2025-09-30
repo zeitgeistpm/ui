@@ -45,7 +45,11 @@ import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 import { isCombinatorialToken } from "lib/types/combinatorial";
 import { useCombinatorialTokenMarketIds } from "./useCombinatorialTokenMarketIds";
 import { useMultiMarketAssets } from "./useMultiMarketAssets";
-import { useVirtualMarket } from "../useVirtualMarket";
+import { AssetWithNullMarket } from "lib/gql/combo-pools";
+import { useMultipleAmm2Pools } from "./amm2/useMultipleAmm2Pools";
+
+// Synthetic market ID offset to avoid collisions with real market IDs
+const SYNTHETIC_MARKET_ID_OFFSET = 1000000;
 
 export type UsePortfolioPositions = {
   /**
@@ -120,6 +124,22 @@ export type Position<T extends AssetId = AssetId> = {
    * The change in the price of the position the last 24 hours.
    */
   changePercentage: number;
+  /**
+   * Indicates if this is a multi-market position that should link to multi-market/[poolid]
+   */
+  isMultiMarket?: boolean;
+  /**
+   * The pool ID for multi-market positions
+   */
+  poolId?: number;
+  /**
+   * The underlying market IDs for multi-market positions
+   */
+  underlyingMarketIds?: number[];
+  /**
+   * Indicates if tokens can be redeemed (for multi-market positions when markets are closed)
+   */
+  canRedeem?: boolean;
 };
 
 export type PorfolioBreakdown = {
@@ -192,7 +212,7 @@ export const usePortfolioPositions = (
 
   // Fetch market IDs for all combinatorial tokens
   const { data: combinatorialMarketIds, isLoading: isLoadingCombinatorialMarketIds } = useCombinatorialTokenMarketIds(combinatorialTokens);
-
+  console.log(combinatorialMarketIds);
   // Process multi-market tokens only after data is loaded
   const multiMarketTokenIds = useMemo(() => {
     if (!combinatorialMarketIds) return [];
@@ -214,8 +234,19 @@ export const usePortfolioPositions = (
     isFetching: isFetchingMultiMarketAssets,
     status: multiMarketAssetsStatus
   } = useMultiMarketAssets(multiMarketAssets);
-
   console.log(multiMarketAssetsData);
+  // Create a map for quick lookup of multi-market assets
+  const multiMarketAssetMap = useMemo(() => {
+    const map = new Map<string, AssetWithNullMarket>();
+    multiMarketAssetsData?.forEach(asset => {
+      // Extract token hash from the JSON string format
+      const match = asset.assetId.match(/"0x([a-f0-9]+)"/);
+      if (match) {
+        map.set(`0x${match[1]}`, asset);
+      }
+    });
+    return map;
+  }, [multiMarketAssetsData]);
 
   const filter = rawPositions.data
     ?.map((position) => {
@@ -223,29 +254,86 @@ export const usePortfolioPositions = (
 
       if (IOMarketOutcomeAssetId.is(assetId)) {
         return {
-          marketId: getMarketIdOf(assetId),
+          marketId: getMarketIdOf(assetId as any),
+          type: 'single-market' as const
         };
       }
       if (IOPoolShareAssetId.is(assetId)) {
         return {
           poolId: assetId.PoolShare,
+          type: 'pool-share' as const
         };
       }
       if (isCombinatorialToken(assetId)) {
-        // Look up the market ID from our fetched data
+        // First check if it's a single market combinatorial token
         const marketId = combinatorialMarketIds?.[assetId.CombinatorialToken];
         if (marketId != null) {
           return {
             marketId: marketId,
+            type: 'single-market-combo' as const
+          };
+        }
+
+        // Then check if it's a multi-market combinatorial token
+        const multiMarketAsset = multiMarketAssetMap.get(assetId.CombinatorialToken);
+        if (multiMarketAsset && multiMarketAsset.poolId != null) {
+          return {
+            poolId: multiMarketAsset.poolId,
+            marketIds: multiMarketAsset.marketIds,
+            type: 'multi-market-combo' as const,
+            assetInfo: multiMarketAsset
           };
         }
         return null;
       }
       return null;
-    }).filter(isNotNull)    
+    }).filter(isNotNull)
 
+  // Extract unique pool IDs from filter results for multi-market assets
+  const uniqueMultiMarketPoolIds = useMemo(() => {
+    const poolIds = new Set<number>();
+    filter?.forEach(f => {
+      if (f.type === 'multi-market-combo' && 'poolId' in f && f.poolId) {
+        poolIds.add(f.poolId);
+      }
+    });
+    return Array.from(poolIds);
+  }, [filter]);
+
+  // Use custom hook to get pool data for all multi-market pools
+  const multiMarketPoolsQuery = useMultipleAmm2Pools(uniqueMultiMarketPoolIds);
+  const multiMarketPoolDataMap = multiMarketPoolsQuery.data ?? new Map();
+  console.log(multiMarketPoolDataMap);
   const pools = usePoolsByIds(filter);
-  const markets = useMarketsByIds(filter);
+  // Collect all market IDs including those from multi-market pools
+  // Exclude synthetic market IDs (they don't exist in the database)
+  const allMarketIdsFilter = useMemo(() => {
+    const marketFilters: Array<{ marketId: number }> = [];
+    const seenMarketIds = new Set<number>();
+
+    filter?.forEach(f => {
+      if ('marketId' in f && f.marketId && !seenMarketIds.has(f.marketId)) {
+        // Skip synthetic market IDs - they don't exist in the database
+        if (f.marketId < SYNTHETIC_MARKET_ID_OFFSET) {
+          marketFilters.push({ marketId: f.marketId });
+          seenMarketIds.add(f.marketId);
+        }
+      }
+      // Add market IDs from multi-market pools (these are real market IDs)
+      if ('marketIds' in f && Array.isArray(f.marketIds)) {
+        f.marketIds.forEach(id => {
+          if (!seenMarketIds.has(id) && id < SYNTHETIC_MARKET_ID_OFFSET) {
+            marketFilters.push({ marketId: id });
+            seenMarketIds.add(id);
+          }
+        });
+      }
+    });
+
+    return marketFilters;
+  }, [filter]);
+
+  const markets = useMarketsByIds(allMarketIdsFilter);
 
   const amm2MarketIds = markets.data
     ?.filter(
@@ -272,6 +360,12 @@ export const usePortfolioPositions = (
     rawPositions.data
       ?.flatMap((position) => {
         const assetId = parseAssetIdStringWithCombinatorial(position.assetId);
+
+        // Skip combinatorial tokens for pool asset balance queries
+        if (isCombinatorialToken(assetId)) {
+          return null;
+        }
+
         const pool = pools.data?.find((pool) => {
           if (IOPoolShareAssetId.is(assetId)) {
             return pool.poolId === assetId.PoolShare;
@@ -288,7 +382,7 @@ export const usePortfolioPositions = (
           .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
 
         return assetIds.map((assetId) => ({
-          assetId,
+          assetId: assetId as any,
           account: poolAccountIds[pool.poolId],
         }));
       })
@@ -305,7 +399,7 @@ export const usePortfolioPositions = (
 
   const userAssetBalances = useAccountAssetBalances(
     rawPositions.data?.map((position) => ({
-      assetId: parseAssetIdStringWithCombinatorial(position.assetId),
+      assetId: parseAssetIdStringWithCombinatorial(position.assetId) as any,
       account: address,
     })) ?? [],
   );
@@ -346,17 +440,81 @@ export const usePortfolioPositions = (
       }
 
       if (IOMarketOutcomeAssetId.is(assetId)) {
-        marketId = getMarketIdOf(assetId);
+        marketId = getMarketIdOf(assetId as any);
         market = markets.data?.find((m) => m.marketId === marketId);
         pool = pools.data?.find((pool) => pool.marketId === marketId);
       }
 
       if (isCombinatorialToken(assetId)) {
-        // Look up the market ID from our fetched data
+        // First check for single market combinatorial token
         marketId = combinatorialMarketIds?.[assetId.CombinatorialToken];
         if (marketId != null) {
           market = markets.data?.find((m) => m.marketId === marketId);
           pool = pools.data?.find((pool) => pool.marketId === marketId);
+        } else {
+          // Check if it's a multi-market combinatorial token
+          const multiMarketAsset = multiMarketAssetMap.get(assetId.CombinatorialToken);
+          if (multiMarketAsset && multiMarketAsset.poolId != null) {
+            // Create a synthetic market from the component markets
+            const market1 = markets.data?.find((m) => m.marketId === multiMarketAsset.marketIds[0]);
+            const market2 = markets.data?.find((m) => m.marketId === multiMarketAsset.marketIds[1]);
+            // Get pool data for this specific multi-market pool
+            const poolData = multiMarketPoolDataMap.get(multiMarketAsset.poolId);
+
+            if (market1 && market2 && poolData) {
+
+              // Get properly ordered assets from useMultipleAmm2Pools
+              const orderedAssets = poolData.assetIds;
+
+              // Generate combined categories for outcome naming following the same logic as useVirtualMarket
+              const combinedCategories: Array<{ name: string; color: string }> = [];
+              const outcomeAssets: string[] = [];
+              const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
+
+              // The marketIds array order determines which market is "first" and "second"
+              // marketIds[0] is market1 (outer loop), marketIds[1] is market2 (inner loop)
+              // This matches the useVirtualMarket logic
+              let colorIndex = 0;
+              let assetIndex = 0;
+
+              market1.categories?.forEach((cat1, i) => {
+                market2.categories?.forEach((cat2, j) => {
+                  const assetFromPool = orderedAssets[assetIndex];
+
+                  combinedCategories.push({
+                    name: `${cat1.name} & ${cat2.name}`,
+                    color: colors[colorIndex % colors.length]
+                  });
+
+                  // Add the actual asset ID for matching - use the properly ordered asset
+                  if (assetFromPool) {
+                    // Convert the asset to JSON string format for consistent comparison
+                    outcomeAssets.push(JSON.stringify(assetFromPool));
+                  }
+
+                  colorIndex++;
+                  assetIndex++;
+                });
+              });
+
+              // Create synthetic market
+              // Use a large offset to avoid collision with real market IDs
+              // Real market IDs are sequential from 0, so using offset + poolId ensures uniqueness
+              const syntheticMarketId = SYNTHETIC_MARKET_ID_OFFSET + multiMarketAsset.poolId;
+              market = {
+                ...market1, // Use market1 as base structure
+                marketId: syntheticMarketId, // Use synthetic marketId to avoid collisions
+                question: `${market1.question} & ${market2.question}`,
+                description: `Combinatorial market: ${market1.question} and ${market2.question}`,
+                categories: combinedCategories,
+                outcomeAssets: outcomeAssets, // Now populated with actual asset IDs
+                status: market1.status === 'Active' && market2.status === 'Active' ? 'Active' : 'Closed',
+                pool: null // Multi-market pools are handled differently
+              } as FullMarketFragment;
+
+              pool = pools.data?.find((p) => p.poolId === multiMarketAsset.poolId);
+            }
+          }
         }
       }
 
@@ -365,7 +523,7 @@ export const usePortfolioPositions = (
       }
 
       const balance = address
-        ? userAssetBalances?.get(address, assetId)?.data?.balance
+        ? userAssetBalances?.get(address, assetId as any)?.data?.balance
         : undefined;
       const totalIssuanceForPoolQuery = pool && poolsTotalIssuance[pool.poolId];
       const totalIssuanceData = pool && poolsTotalIssuance[pool.poolId]?.data;
@@ -383,17 +541,17 @@ export const usePortfolioPositions = (
 
       if (IOMarketOutcomeAssetId.is(assetId)) {
         if (market.status === "Resolved") {
-          price = calcResolvedMarketPrices(market).get(getIndexOf(assetId));
+          price = calcResolvedMarketPrices(market).get(getIndexOf(assetId as any));
           price24HoursAgo = price;
         } else {
           if (
             market.scoringRule === ScoringRule.AmmCdaHybrid ||
             market.scoringRule === ScoringRule.Lmsr
           ) {
-            price = lookupAssetPrice(assetId, amm2SpotPrices);
+            price = lookupAssetPrice(assetId as any, amm2SpotPrices);
 
             price24HoursAgo = lookupAssetPrice(
-              assetId,
+              assetId as any,
               amm2SpotPrices24HoursAgo,
             );
           }
@@ -411,9 +569,9 @@ export const usePortfolioPositions = (
             market.scoringRule === ScoringRule.AmmCdaHybrid ||
             market.scoringRule === ScoringRule.Lmsr
           ) {
-            price = lookupAssetPrice(assetId, amm2SpotPrices);
+            price = lookupAssetPrice(assetId as any, amm2SpotPrices);
             price24HoursAgo = lookupAssetPrice(
-              assetId,
+              assetId as any,
               amm2SpotPrices24HoursAgo,
             );
           }
@@ -421,10 +579,10 @@ export const usePortfolioPositions = (
       }
 
       let outcome = IOCategoricalAssetId.is(assetId)
-        ? market.categories?.[getIndexOf(assetId)]?.name ??
+        ? market.categories?.[getIndexOf(assetId as any)]?.name ??
           JSON.stringify(assetId.CategoricalOutcome)
         : IOScalarAssetId.is(assetId)
-          ? getIndexOf(assetId) == 1
+          ? getIndexOf(assetId as any) == 1
             ? "Short"
             : "Long"
           : isCombinatorialToken(assetId)
@@ -451,9 +609,9 @@ export const usePortfolioPositions = (
           : "unknown";
 
       let color = IOCategoricalAssetId.is(assetId)
-        ? market.categories?.[getIndexOf(assetId)]?.color ?? "#ffffff"
+        ? market.categories?.[getIndexOf(assetId as any)]?.color ?? "#ffffff"
         : IOScalarAssetId.is(assetId)
-          ? getIndexOf(assetId) == 1
+          ? getIndexOf(assetId as any) == 1
             ? "rgb(255, 0, 0)"
             : "rgb(36, 255, 0)"
           : isCombinatorialToken(assetId)
@@ -481,9 +639,17 @@ export const usePortfolioPositions = (
         color = "#DF0076";
       }
 
+      // For multi-market positions, we need to check against the actual market IDs
+      const multiMarketAsset = isCombinatorialToken(assetId)
+        ? multiMarketAssetMap.get(assetId.CombinatorialToken)
+        : null;
+      const marketIdsToCheck = multiMarketAsset?.marketIds
+        ? multiMarketAsset.marketIds
+        : marketId ? [marketId] : [];
+
       const avgCost = tradeHistory
         ?.filter((transaction) => transaction !== undefined)
-        ?.filter((transaction) => transaction.marketId === marketId)
+        ?.filter((transaction) => marketIdsToCheck.includes(transaction.marketId))
         .reduce((acc, transaction) => {
           const assetIn = transaction.assetAmountOut.div(ZTG).toNumber();
           let totalAssets = 0;
@@ -508,7 +674,7 @@ export const usePortfolioPositions = (
         transactions
           .filter(
             (transaction) =>
-              transaction.marketId === marketId &&
+              marketIdsToCheck.includes(transaction.marketId) &&
               (transaction.assetIn === outcome ||
                 transaction.assetOut === outcome),
           )
@@ -562,7 +728,7 @@ export const usePortfolioPositions = (
       ) => {
         const filteredTransactions = transactions.filter(
           (transaction) =>
-            transaction.marketId === marketId &&
+            marketIdsToCheck.includes(transaction.marketId) &&
             (transaction.assetIn === outcome ||
               transaction.assetOut === outcome),
         );
@@ -600,8 +766,29 @@ export const usePortfolioPositions = (
         price24HoursAgo = new Decimal(0);
       }
 
+      // Determine if this is a multi-market position
+      let isMultiMarket = false;
+      let poolIdForRouting: number | undefined;
+      let canRedeem = false;
+
+      if (isCombinatorialToken(assetId)) {
+        const multiMarketAsset = multiMarketAssetMap.get(assetId.CombinatorialToken);
+        if (multiMarketAsset && multiMarketAsset.poolId != null) {
+          isMultiMarket = true;
+          poolIdForRouting = multiMarketAsset.poolId;
+
+          // Check if any of the underlying markets are closed for redemption eligibility
+          const underlyingMarkets = multiMarketAsset.marketIds
+            .map(id => markets.data?.find((m) => m.marketId === id))
+            .filter(isNotNull);
+
+          // Enable redemption if at least one market is not Active
+          canRedeem = underlyingMarkets.some(m => m.status !== 'Active');
+        }
+      }
+
       positionsData.push({
-        assetId,
+        assetId: assetId as AssetId,
         market,
         pool,
         price,
@@ -609,11 +796,17 @@ export const usePortfolioPositions = (
         upnl: calculateUnrealizedPnL(tradeHistory, avgCost, price.toNumber()),
         rpnl: calculateFifoPnl(tradeHistory),
         price24HoursAgo,
-        outcome,
+        outcome: outcome || "Unknown",
         color,
         userBalance,
         changePercentage: change,
         totalIssuance,
+        isMultiMarket,
+        poolId: poolIdForRouting,
+        underlyingMarketIds: isMultiMarket && isCombinatorialToken(assetId)
+          ? multiMarketAssetMap.get(assetId.CombinatorialToken)?.marketIds
+          : undefined,
+        canRedeem,
       });
     }
 

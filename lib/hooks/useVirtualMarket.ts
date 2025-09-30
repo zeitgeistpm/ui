@@ -130,6 +130,7 @@ export const useVirtualMarket = (
 
     const virtualMarket: FullMarketFragment = {
       marketId: poolId,
+      marketIds: marketIds,
       question,
       description,
       status: getCombinedMarketStatus(sourceMarkets),

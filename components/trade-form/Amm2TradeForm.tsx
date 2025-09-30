@@ -35,7 +35,7 @@ const Amm2TradeForm = ({
   marketId: number;
   poolData?: any;
   selectedTab?: TradeTabType;
-  initialAsset?: MarketOutcomeAssetId;
+  initialAsset?: MarketOutcomeAssetId | CombinatorialToken;
   showTabs?: boolean;
   filteredAssets?: (MarketOutcomeAssetId | CombinatorialToken)[];
   outcomeCombinations?: Array<{

@@ -82,6 +82,28 @@ export const assetsWithNullMarketsQuery = gql`
   }
 `;
 
+// Query for getting pool asset IDs for proper ordering
+// We query Assets by poolId to get the assets in order
+export const poolsAssetIdsQuery = gql`
+  query PoolsAssetIds($poolIds: [Int!]!) {
+    assets(where: {
+      poolId_in: $poolIds
+    }, orderBy: id_ASC) {
+      poolId
+      assetId
+    }
+  }
+`;
+
+// Query for getting neoPool parentCollectionIds by poolId
+export const neoPoolParentCollectionIdsQuery = gql`
+  query NeoPoolParentCollectionIds($poolId: Int!) {
+    neoPools(where: { poolId_eq: $poolId }, limit: 1) {
+      parentCollectionIds
+    }
+  }
+`;
+
 export type ComboPoolData = {
   poolId: number;
   marketIds: number[];
@@ -134,6 +156,15 @@ export type AssetWithNullMarket = {
   marketIds: number[];
   assetId: string;
   poolId: number | null;
+};
+
+export type PoolAssetId = {
+  poolId: number;
+  assetId: string; // JSON string containing the asset ID
+};
+
+export type NeoPoolParentCollectionIds = {
+  parentCollectionIds: string[];
 };
 
 export const getComboPools = async (
@@ -215,6 +246,60 @@ export const getMultiMarketAssets = async (
 
     return response.assets || [];
   } catch (error) {
+    throw error;
+  }
+};
+
+export const getPoolsAssetIds = async (
+  client: GraphQLClient,
+  poolIds: number[],
+): Promise<Map<number, any[]>> => {
+  if (poolIds.length === 0) return new Map();
+
+  try {
+    const response = await client.request<{
+      assets: PoolAssetId[];
+    }>(poolsAssetIdsQuery, {
+      poolIds,
+    });
+    console.log("response", response);
+    // Group assets by poolId and parse the assetId JSON strings
+    const poolAssetMap = new Map<number, any[]>();
+
+    response.assets?.forEach(asset => {
+      if (!poolAssetMap.has(asset.poolId)) {
+        poolAssetMap.set(asset.poolId, []);
+      }
+
+      // Parse the assetId JSON string to get the actual asset object
+      try {
+        const assetObj = JSON.parse(asset.assetId);
+        poolAssetMap.get(asset.poolId)?.push(assetObj);
+      } catch (e) {
+        console.error("Failed to parse assetId:", asset.assetId);
+      }
+    });
+
+    return poolAssetMap;
+  } catch (error) {
+    console.error("Error fetching pool asset IDs:", error);
+    throw error;
+  }
+};
+
+export const getNeoPoolParentCollectionIds = async (
+  client: GraphQLClient,
+  poolId: number,
+): Promise<string[] | null> => {
+  try {
+    const response = await client.request<{
+      neoPools: NeoPoolParentCollectionIds[];
+    }>(neoPoolParentCollectionIdsQuery, {
+      poolId,
+    });
+    return response.neoPools?.[0]?.parentCollectionIds ?? null;
+  } catch (error) {
+    console.error("Error fetching neoPool parentCollectionIds:", error);
     throw error;
   }
 };

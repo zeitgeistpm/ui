@@ -20,6 +20,7 @@ import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice"
 import { lookUpAssetPrice } from "lib/util/lookup-price";
 import { MIN_USD_DISPLAY_AMOUNT } from "lib/constants";
 import PoolShareButtons from "components/assets/AssetActionButtons/PoolShareButtons";
+import { isCombinatorialToken } from "lib/types/combinatorial";
 
 const COLUMNS: TableColumn[] = [
   {
@@ -177,6 +178,8 @@ export const MarketPositions = ({
         marketId={market.marketId}
         question={market.question ?? undefined}
         baseAsset={market.baseAsset}
+        isMultiMarket={positions[0]?.isMultiMarket}
+        poolId={positions[0]?.poolId}
       />
       <Table
         showHighlight={false}
@@ -194,6 +197,8 @@ export const MarketPositions = ({
               avgCost,
               rpnl,
               upnl,
+              isMultiMarket,
+              underlyingMarketIds,
             }) => {
               const baseAssetUsdPrice = lookUpAssetPrice(
                 market.baseAsset,
@@ -244,14 +249,14 @@ export const MarketPositions = ({
                         market={market}
                       />
                     ) : marketStage?.type === "Trading" &&
-                      IOMarketOutcomeAssetId.is(assetId) ? (
-                      <AssetTradingButtons assetId={assetId} />
+                      (IOMarketOutcomeAssetId.is(assetId) || isCombinatorialToken(assetId)) ? (
+                      <AssetTradingButtons assetId={assetId} marketIdOverride={market.marketId} />
                     ) : marketStage?.type === "Resolved" ? (
-                      <RedeemButton market={market} assetId={assetId} />
-                    ) : IOMarketOutcomeAssetId.is(assetId) &&
+                      <RedeemButton market={market} assetId={assetId} underlyingMarketIds={underlyingMarketIds} />
+                    ) : (IOMarketOutcomeAssetId.is(assetId) || (isCombinatorialToken(assetId) && !isMultiMarket)) &&
                       marketStage?.type === "Reported" ? (
                       <DisputeButton market={market} assetId={assetId} />
-                    ) : IOMarketOutcomeAssetId.is(assetId) &&
+                    ) : (IOMarketOutcomeAssetId.is(assetId) || (isCombinatorialToken(assetId) && !isMultiMarket)) &&
                       (marketStage?.type === "OpenReportingPeriod" ||
                         (marketStage?.type === "OracleReportingPeriod" &&
                           isOracle)) ? (

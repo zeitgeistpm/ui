@@ -29,6 +29,7 @@ import { useMemo } from "react";
 export type RedeemButtonProps = {
   market: Market<IndexerContext>;
   assetId: AssetId;
+  underlyingMarketIds?: number[];
 };
 
 export const RedeemButton = (props: RedeemButtonProps) => {
@@ -40,9 +41,11 @@ export default RedeemButton;
 export const RedeemButtonByAssetId = ({
   market,
   assetId,
+  underlyingMarketIds,
 }: {
   market: Market<IndexerContext>;
   assetId: AssetId;
+  underlyingMarketIds?: number[];
 }) => {
 
   const wallet = useWallet();
@@ -129,7 +132,7 @@ export const RedeemButtonByAssetId = ({
   }, [market, assetId, isLoadingAssetBalance, getAccountAssetBalance]);
 
   return (
-    <RedeemButtonByValue market={market} value={value ?? new Decimal(0)} assetId={assetId} />
+    <RedeemButtonByValue market={market} value={value ?? new Decimal(0)} assetId={assetId} underlyingMarketIds={underlyingMarketIds} />
   );
 };
 
@@ -137,10 +140,12 @@ const RedeemButtonByValue = ({
   market,
   value,
   assetId,
+  underlyingMarketIds,
 }: {
   market: Market<IndexerContext>;
   value: Decimal;
   assetId: AssetId | CombinatorialToken;
+  underlyingMarketIds?: number[];
 }) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
@@ -166,9 +171,15 @@ const RedeemButtonByValue = ({
   const { isLoading, isSuccess, send } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk) || !signer) return;
-      if(isCombinatorialMarket) 
+      if(isCombinatorialMarket)
       {
-        return sdk.api.tx.combinatorialTokens.redeemPosition(null, market.marketId.toString(), tokenIndex,{ total: 16, consumeAll: true });
+        // For multi-market positions, pass the underlying market IDs array. 
+        // Multi-markets use first marketId as parent and second marketId as child for splitting positions.
+        const marketIds = underlyingMarketIds && underlyingMarketIds.length > 0
+          ? underlyingMarketIds[1].toString()
+          : market.marketId.toString();
+
+        return sdk.api.tx.combinatorialTokens.redeemPosition(null, marketIds, tokenIndex, { total: 16, consumeAll: true });
       } else {
         return sdk.api.tx.predictionMarkets.redeemShares(market.marketId);
       }

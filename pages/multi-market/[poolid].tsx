@@ -1,6 +1,6 @@
 import { Tab } from "@headlessui/react";
-import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { MarketOutcomeAssetId, AssetId } from "@zeitgeistpm/sdk";
+import { FullMarketFragment, MarketStatus } from "@zeitgeistpm/indexer";
+import { MarketOutcomeAssetId, AssetId, ZTG } from "@zeitgeistpm/sdk";
 import LatestTrades from "components/front-page/LatestTrades";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import { MarketDescription } from "components/markets/MarketDescription";
@@ -9,6 +9,7 @@ import MarketMeta from "components/meta/MarketMeta";
 import OrdersTable from "components/orderbook/OrdersTable";
 import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
 import { TradeTabType } from "components/trade-form/TradeTab";
+import RedeemButton from "components/assets/AssetActionButtons/RedeemButton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
 import TimeFilters, { TimeFilter, filters } from "components/ui/TimeFilters";
@@ -23,6 +24,7 @@ import {
 } from "lib/hooks/queries/useComboMarket";
 import { OutcomeCombination } from "lib/hooks/useVirtualMarket";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
+import { useNeoPoolParentCollectionIds } from "lib/hooks/queries/useNeoPoolParentCollectionIds";
 import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
@@ -32,12 +34,15 @@ import { useTradeItem } from "lib/hooks/trade";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useWallet } from "lib/state/wallet";
 import { useVirtualMarket } from "lib/hooks/useVirtualMarket";
+import { useBalance } from "lib/hooks/queries/useBalance";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import NotFoundPage from "pages/404";
 import { useState, useMemo } from "react";
 import { AlertTriangle, ChevronDown, ExternalLink, X } from "react-feather";
+import { parseAssetId } from "@zeitgeistpm/sdk";
+import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 
 const SimilarMarketsSection = dynamic(
   () => import("../../components/markets/SimilarMarketsSection"),
@@ -153,46 +158,109 @@ const ComboAssetDetails = ({
   return <Table columns={columns} data={tableData} />;
 };
 
-// Source markets section styled like market description
+// Source markets section styled like market description with token balances
 const SourceMarketsSection = ({
   sourceMarkets,
 }: {
   sourceMarkets: [FullMarketFragment, FullMarketFragment];
 }) => {
+  const wallet = useWallet();
+
   return (
     <div className="mb-8">
       <h3 className="mb-4 text-lg font-semibold">Source Markets</h3>
       <div className="space-y-4">
         {sourceMarkets.map((market, index) => (
-          <div
-            key={market.marketId}
-            className="rounded-lg border bg-white p-4 shadow-sm"
-          >
-            <div className="mb-3 flex items-center justify-between">
-              <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">
-                Market {index + 1} (ID: {market.marketId})
-              </span>
-              <Link
-                href={`/markets/${market.marketId}`}
-                className="flex items-center text-sm text-blue-600 hover:text-blue-800"
-              >
-                View Market <ExternalLink size={14} className="ml-1" />
-              </Link>
-            </div>
-            <h4 className="mb-2 line-clamp-2 font-medium">{market.question}</h4>
-            <div className="text-sm text-gray-500">
-              <div className="mb-1">
-                <span className="font-medium">Outcomes:</span>{" "}
-                {market.categories?.map((cat) => cat.name).join(", ")}
-              </div>
-              <div>
-                <span className="font-medium">Base Asset:</span>{" "}
-                {market.baseAsset}
-              </div>
-            </div>
-          </div>
+          <SourceMarketCard key={market.marketId} market={market} index={index} walletAddress={wallet.realAddress} />
         ))}
       </div>
+    </div>
+  );
+};
+
+// Individual source market card with balance display
+const SourceMarketCard = ({
+  market,
+  index,
+  walletAddress,
+}: {
+  market: FullMarketFragment;
+  index: number;
+  walletAddress?: string;
+}) => {
+  return (
+    <div className="rounded-lg border bg-white p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between">
+        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">
+          Market {index + 1} (ID: {market.marketId})
+        </span>
+        <Link
+          href={`/markets/${market.marketId}`}
+          className="flex items-center text-sm text-blue-600 hover:text-blue-800"
+        >
+          View Market <ExternalLink size={14} className="ml-1" />
+        </Link>
+      </div>
+      <h4 className="mb-2 line-clamp-2 font-medium">{market.question}</h4>
+      <div className="text-sm text-gray-500">
+        <div className="mb-1">
+          <span className="font-medium">Base Asset:</span>{" "}
+          {market.baseAsset}
+        </div>
+      </div>
+
+      {/* Token balances section */}
+      {walletAddress && market.categories && (
+        <div className="mt-3 border-t pt-3">
+          <div className="mb-2 text-xs font-medium text-gray-600">Your Token Balances:</div>
+          <div className="space-y-2">
+            {market.outcomeAssets?.map((assetString, outcomeIndex) => {
+              const assetId = parseAssetIdStringWithCombinatorial(assetString);
+              return assetId ? (
+                <OutcomeBalance
+                  key={outcomeIndex}
+                  assetId={assetId}
+                  walletAddress={walletAddress}
+                  outcomeName={market.categories?.[outcomeIndex]?.name || `Outcome ${outcomeIndex}`}
+                  color={market.categories?.[outcomeIndex]?.color}
+                />
+              ) : null;
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Component to display individual outcome balance
+const OutcomeBalance = ({
+  assetId,
+  walletAddress,
+  outcomeName,
+  color,
+}: {
+  assetId: AssetId;
+  walletAddress: string;
+  outcomeName: string;
+  color?: string;
+}) => {
+
+  const { data: balance } = useBalance(walletAddress, assetId);
+  const balanceDisplay = balance?.div(ZTG).toFixed(2) || "0.00";
+
+  return (
+    <div className="flex items-center justify-between text-xs">
+      <div className="flex items-center gap-2">
+        {color && (
+          <div
+            className="h-2 w-2 rounded-full"
+            style={{ backgroundColor: color }}
+          />
+        )}
+        <span className="text-gray-700">{outcomeName}</span>
+      </div>
+      <span className="font-medium text-gray-900">{balanceDisplay}</span>
     </div>
   );
 };
@@ -293,6 +361,46 @@ const ComboChart = ({
 const MobileContextButtons = ({ poolId, comboMarketData }: { poolId: number; comboMarketData: any }) => {
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
   const [open, setOpen] = useState(false);
+  const [showPartialRedeem, setShowPartialRedeem] = useState(false);
+
+  // Check if combo market is active (both source markets must be Active)
+  const comboMarketIsActive = useMemo(() => {
+    if (!comboMarketData?.sourceMarkets) return false;
+    return comboMarketData.sourceMarkets.every(
+      (market: FullMarketFragment) => market.status === MarketStatus.Active
+    );
+  }, [comboMarketData?.sourceMarkets]);
+
+  // Check if combo market is resolved (both source markets must be Resolved)
+  const comboMarketIsResolved = useMemo(() => {
+    if (!comboMarketData?.sourceMarkets) return false;
+    return comboMarketData.sourceMarkets.every(
+      (market: FullMarketFragment) => market.status === MarketStatus.Resolved
+    );
+  }, [comboMarketData?.sourceMarkets]);
+
+  // Check if child market (last in marketIds) is resolved AND parent is still active
+  const childMarketResolved = useMemo(() => {
+    if (!comboMarketData?.sourceMarkets || !comboMarketData?.marketIds) return false;
+    const childMarketId = comboMarketData.marketIds[1];
+    const parentMarketId = comboMarketData.marketIds[0];
+    const childMarket = comboMarketData.sourceMarkets.find(
+      (m: FullMarketFragment) => m.marketId === childMarketId
+    );
+    const parentMarket = comboMarketData.sourceMarkets.find(
+      (m: FullMarketFragment) => m.marketId === parentMarketId
+    );
+    return childMarket?.status === MarketStatus.Resolved &&
+           parentMarket?.status === MarketStatus.Active;
+  }, [comboMarketData?.sourceMarkets, comboMarketData?.marketIds]);
+
+  // Get virtual market for redeem button
+  const marketIds = comboMarketData?.marketIds;
+  const virtualMarket = useVirtualMarket(poolId, marketIds);
+  console.log(virtualMarket);
+  if (!comboMarketIsActive && !comboMarketIsResolved && !childMarketResolved) {
+    return null; // Don't show mobile buttons if market is closed but not resolved
+  }
 
   return (
     <>
@@ -317,70 +425,167 @@ const MobileContextButtons = ({ poolId, comboMarketData }: { poolId: number; com
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        <Amm2TradeForm
-          marketId={0}
-          poolData={comboMarketData}
-          showTabs={false}
-          selectedTab={
-            tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell
-          }
-          outcomeCombinations={comboMarketData?.outcomeCombinations}
+        {comboMarketIsActive ? (
+          <Amm2TradeForm
+            marketId={0}
+            poolData={comboMarketData}
+            showTabs={false}
+            selectedTab={
+              tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell
+            }
+            outcomeCombinations={comboMarketData?.outcomeCombinations}
+          />
+        ) : comboMarketIsResolved && virtualMarket ? (
+          <div className="p-6">
+            <h3 className="mb-4 text-lg font-semibold">Redeem Your Tokens</h3>
+            <p className="mb-6 text-sm text-gray-600">
+              Both source markets have been resolved. Redeem your outcome tokens below.
+            </p>
+            <div className="space-y-4">
+              {comboMarketData?.outcomeCombinations?.map((combo, index) => (
+                <div key={index} className="flex items-center justify-between rounded-lg border p-4">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="h-3 w-3 rounded-full"
+                      style={{ backgroundColor: combo.color }}
+                    />
+                    <span className="font-medium">{combo.name}</span>
+                  </div>
+                  <RedeemButton
+                    market={virtualMarket}
+                    assetId={combo.assetId}
+                    underlyingMarketIds={comboMarketData.marketIds}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      {/* Partial Redeem Panel for Mobile */}
+      <Transition
+        show={showPartialRedeem}
+        enter="transition-opacity ease-in-out duration-100"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition-opacity ease-in-out duration-100"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+        className="fixed left-0 top-0 h-full w-full"
+      >
+        <div
+          onClick={() => setShowPartialRedeem(false)}
+          className="fixed left-0 top-0 z-40 h-full w-full bg-black/20 md:hidden"
         />
+      </Transition>
+
+      <div
+        className={`fixed bottom-20 left-0 z-50 w-full rounded-t-lg bg-white pb-12 transition-all duration-500 ease-in-out md:hidden ${
+          showPartialRedeem ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
+        {childMarketResolved && virtualMarket && (
+          <div className="p-6">
+            <h3 className="mb-2 text-lg font-semibold text-blue-900">Partial Redemption Available</h3>
+            <p className="mb-4 text-sm text-blue-700">
+              You can redeem tokens for the child market and use those tokens for trading
+            </p>
+            <div className="space-y-3">
+              {comboMarketData?.outcomeCombinations?.map((combo, index) => (
+                <div key={index} className="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-3">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="h-3 w-3 rounded-full"
+                      style={{ backgroundColor: combo.color }}
+                    />
+                    <span className="text-sm font-medium">{combo.name}</span>
+                  </div>
+                  <RedeemButton
+                    market={virtualMarket}
+                    assetId={combo.assetId}
+                    underlyingMarketIds={comboMarketData.marketIds}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-        <div className="flex h-20 cursor-pointer text-lg font-semibold">
-          <div
-            className={`center h-full flex-1  ${
-              tradeItem?.action === "buy"
-                ? "bg-fog-of-war text-gray-200"
-                : "bg-white text-black"
-            } `}
-            onClick={() => {
-              setTradeItem({
-                assetId: tradeItem?.assetId ?? ({} as MarketOutcomeAssetId),
-                action: "buy",
-              });
-              if (open && tradeItem?.action === "buy") {
-                setOpen(false);
-              } else {
-                setOpen(true);
-              }
-            }}
-          >
-            Buy{" "}
-            <X
-              className={`center h-full w-0 transition-all  ${
-                open && tradeItem?.action === "buy" && "w-6"
+        {comboMarketIsActive ? (
+          <div className="flex h-20 cursor-pointer text-lg font-semibold">
+            <div
+              className={`center h-full flex-1  ${
+                tradeItem?.action === "buy"
+                  ? "bg-fog-of-war text-gray-200"
+                  : "bg-white text-black"
+              } `}
+              onClick={() => {
+                setTradeItem({
+                  assetId: tradeItem?.assetId ?? ({} as MarketOutcomeAssetId),
+                  action: "buy",
+                });
+                if (open && tradeItem?.action === "buy") {
+                  setOpen(false);
+                } else {
+                  setOpen(true);
+                }
+              }}
+            >
+              Buy{" "}
+              <X
+                className={`center h-full w-0 transition-all  ${
+                  open && tradeItem?.action === "buy" && "w-6"
+                }`}
+              />
+            </div>
+            <div
+              className={`center h-full flex-1 ${
+                tradeItem?.action === "sell"
+                  ? "bg-fog-of-war text-gray-200"
+                  : "bg-white text-black"
               }`}
-            />
+              onClick={() => {
+                setTradeItem({
+                  assetId: tradeItem?.assetId ?? ({} as MarketOutcomeAssetId),
+                  action: "sell",
+                });
+                if (open && tradeItem?.action === "sell") {
+                  setOpen(false);
+                } else {
+                  setOpen(true);
+                }
+              }}
+            >
+              Sell
+              <X
+                className={`center h-full w-0 transition-all  ${
+                  open && tradeItem?.action === "sell" && "w-6"
+                }`}
+              />
+            </div>
           </div>
-          <div
-            className={`center h-full flex-1 ${
-              tradeItem?.action === "sell"
-                ? "bg-fog-of-war text-gray-200"
-                : "bg-white text-black"
-            }`}
-            onClick={() => {
-              setTradeItem({
-                assetId: tradeItem?.assetId ?? ({} as MarketOutcomeAssetId),
-                action: "sell",
-              });
-              if (open && tradeItem?.action === "sell") {
-                setOpen(false);
-              } else {
-                setOpen(true);
-              }
-            }}
-          >
-            Sell
-            <X
-              className={`center h-full w-0 transition-all  ${
-                open && tradeItem?.action === "sell" && "w-6"
-              }`}
-            />
+        ) : comboMarketIsResolved ? (
+          <div className="flex h-20 cursor-pointer text-lg font-semibold">
+            <div
+              className="center h-full w-full bg-ztg-blue text-white"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <X size={24} /> : "Redeem Tokens"}
+            </div>
           </div>
-        </div>
+        ) : childMarketResolved ? (
+          <div className="flex h-20 cursor-pointer text-lg font-semibold">
+            <div
+              className="center h-full w-full bg-blue-500 text-white"
+              onClick={() => setShowPartialRedeem(!showPartialRedeem)}
+            >
+              {showPartialRedeem ? <X size={24} /> : "Redeem Tokens (Partial)"}
+            </div>
+          </div>
+        ) : null}
       </div>
     </>
   );
@@ -394,7 +599,8 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
     makerAccountId_eq: realAddress,
   });
   const { data: poolData } = useAmm2Pool(0, poolId); // marketId=0 for combo pools
-
+  const { data: parentCollectionIds } = useNeoPoolParentCollectionIds(poolId);
+  console.log(parentCollectionIds);
   // Extract market IDs from combo market data
   const marketIds = comboMarketData?.marketIds;
 
@@ -422,18 +628,51 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
   // Collect both market stages to show complete status for each source market
   const sourceMarketStages = useMemo(() => {
     if (!comboMarketData) return undefined;
-    
+
     return [
       {
         market: comboMarketData.sourceMarkets[0],
         stage: market1Stage,
       },
       {
-        market: comboMarketData.sourceMarkets[1], 
+        market: comboMarketData.sourceMarkets[1],
         stage: market2Stage,
       }
     ];
   }, [market1Stage, market2Stage, comboMarketData]);
+
+  // Check if combo market should allow trading (both source markets must be Active)
+  const comboMarketIsActive = useMemo(() => {
+    if (!comboMarketData?.sourceMarkets) return false;
+    return comboMarketData.sourceMarkets.every(
+      (market: FullMarketFragment) => market.status === MarketStatus.Active
+    );
+  }, [comboMarketData?.sourceMarkets]);
+
+  // Check if combo market is resolved (both source markets must be Resolved)
+  const comboMarketIsResolved = useMemo(() => {
+    if (!comboMarketData?.sourceMarkets) return false;
+    return comboMarketData.sourceMarkets.every(
+      (market: FullMarketFragment) => market.status === MarketStatus.Resolved
+    );
+  }, [comboMarketData?.sourceMarkets]);
+
+  // Check if child market (last in marketIds) is resolved AND parent is still active
+  // This allows partial redemption when child resolves first, but parent market continues
+  const childMarketResolved = useMemo(() => {
+    if (!comboMarketData?.sourceMarkets || !comboMarketData?.marketIds) return false;
+    const childMarketId = comboMarketData.marketIds[1]; // Last market ID is the child
+    const parentMarketId = comboMarketData.marketIds[0]; // First market ID is the parent
+    const childMarket = comboMarketData.sourceMarkets.find(
+      (m: FullMarketFragment) => m.marketId === childMarketId
+    );
+    const parentMarket = comboMarketData.sourceMarkets.find(
+      (m: FullMarketFragment) => m.marketId === parentMarketId
+    );
+    // Only show partial redemption if child is resolved AND parent is still active
+    return childMarket?.status === MarketStatus.Resolved &&
+           parentMarket?.status === MarketStatus.Active;
+  }, [comboMarketData?.sourceMarkets, comboMarketData?.marketIds]);
 
   if (isLoading) {
     return (
@@ -614,19 +853,79 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
         {/* Sidebar */}
         <div className="hidden md:-mr-6 md:block md:w-[320px] lg:mr-auto lg:w-[460px]">
           <div className="sticky top-28">
-            <div
-              className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
-              }}
-            >
-              <Amm2TradeForm
-                marketId={0}
-                poolData={comboMarketData}
-                outcomeCombinations={comboMarketData?.outcomeCombinations}
-              />
-            </div>
+            {comboMarketIsActive ? (
+              <div
+                className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
+                }}
+              >
+                <Amm2TradeForm
+                  marketId={0}
+                  poolData={comboMarketData}
+                  outcomeCombinations={comboMarketData?.outcomeCombinations}
+                />
+              </div>
+            ) : comboMarketIsResolved ? (
+              <div className="mb-12 rounded-lg bg-white p-6 shadow-lg">
+                <h3 className="mb-4 text-lg font-semibold">Redeem Your Tokens</h3>
+                <p className="mb-6 text-sm text-gray-600">
+                  Both source markets have been resolved. Redeem your outcome tokens below.
+                </p>
+                <div className="space-y-4">
+                  {comboMarketData?.outcomeCombinations?.map((combo, index) => (
+                    <div key={index} className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-3 w-3 rounded-full"
+                          style={{ backgroundColor: combo.color }}
+                        />
+                        <span className="font-medium">{combo.name}</span>
+                      </div>
+                      <RedeemButton
+                        market={virtualMarket}
+                        assetId={combo.assetId}
+                        underlyingMarketIds={comboMarketData.marketIds}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : childMarketResolved ? (
+              <div className="mb-12 rounded-lg border-2 border-blue-200 bg-blue-50 p-6 shadow-lg">
+                <h3 className="mb-2 text-lg font-semibold text-blue-900">Partial Redemption Available</h3>
+                <p className="mb-4 text-sm text-blue-700">
+                  You can redeem tokens for the child market and use those tokens for trading
+                </p>
+                <div className="space-y-3">
+                  {comboMarketData?.outcomeCombinations?.map((combo, index) => (
+                    <div key={index} className="flex items-center justify-between rounded-lg border border-blue-200 bg-white p-3">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-3 w-3 rounded-full"
+                          style={{ backgroundColor: combo.color }}
+                        />
+                        <span className="text-sm font-medium">{combo.name}</span>
+                      </div>
+                      <RedeemButton
+                        market={virtualMarket}
+                        assetId={combo.assetId}
+                        underlyingMarketIds={comboMarketData.marketIds}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="mb-12 rounded-lg bg-gray-100 p-6 text-center shadow-lg">
+                <AlertTriangle className="mx-auto mb-3 text-orange-500" size={32} />
+                <h3 className="mb-2 text-lg font-semibold">Trading Closed</h3>
+                <p className="text-sm text-gray-600">
+                  This combinatorial market is closed because one or more source markets have ended.
+                </p>
+              </div>
+            )}
             <SimilarMarketsSection market={virtualMarket} />
           </div>
         </div>

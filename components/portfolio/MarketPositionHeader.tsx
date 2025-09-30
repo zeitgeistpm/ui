@@ -8,13 +8,22 @@ const MarketPositionHeader = ({
   marketId,
   question,
   baseAsset,
+  isMultiMarket,
+  poolId,
 }: {
   marketId: number;
   question?: string;
   baseAsset: string;
+  isMultiMarket?: boolean;
+  poolId?: number;
 }) => {
   const baseAssetId = parseAssetIdString(baseAsset);
   const imagePath = lookupAssetImagePath(baseAssetId);
+
+  // Use multi-market URL if this is a multi-market position
+  const href = isMultiMarket && poolId
+    ? `/multi-market/${poolId}`
+    : `/markets/${marketId}`;
 
   return (
     <h3 className="mb-5 flex items-center text-sm font-normal sm:text-base">
@@ -25,7 +34,7 @@ const MarketPositionHeader = ({
         alt="Currency token logo"
         className="mr-2 h-4 w-4 rounded-full"
       />
-      <Link href={`/markets/${marketId}`}>{question}</Link>
+      <Link href={href}>{question}</Link>
     </h3>
   );
 };

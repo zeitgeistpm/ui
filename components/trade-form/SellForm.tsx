@@ -52,7 +52,7 @@ const SellForm = ({
 }: {
   marketId: number;
   poolData?: any;
-  initialAsset?: MarketOutcomeAssetId;
+  initialAsset?: MarketOutcomeAssetId | CombinatorialToken;
   onSuccess: (
     data: ISubmittableResult,
     outcomeAsset: MarketOutcomeAssetId | CombinatorialToken,

@@ -1,35 +1,62 @@
 import { Dialog } from "@headlessui/react";
 import {
+  AssetId,
   CategoricalAssetId,
+  IOCategoricalAssetId,
+  IOMarketOutcomeAssetId,
+  IOScalarAssetId,
   ScalarAssetId,
   getMarketIdOf,
 } from "@zeitgeistpm/sdk";
-import TradeForm from "components/trade-form";
 import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
 import { TradeTabType } from "components/trade-form/TradeTab";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
-import { useMarket } from "lib/hooks/queries/useMarket";
 import { useTradeItem } from "lib/hooks/trade";
 import { useState } from "react";
-import { ScoringRule } from "@zeitgeistpm/indexer";
+import { isCombinatorialToken } from "lib/types/combinatorial";
+import { CombinatorialToken } from "lib/types/combinatorial";
 
 const AssetTradingButtons = ({
   assetId,
+  marketIdOverride,
 }: {
-  assetId: ScalarAssetId | CategoricalAssetId;
+  assetId: AssetId;
+  marketIdOverride?: number;
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
-  const marketId = getMarketIdOf(assetId);
-  const { data: market } = useMarket({ marketId });
+
+  // For combinatorial tokens, we need to use the marketIdOverride
+  // For regular market outcomes, use getMarketIdOf
+  const marketId = marketIdOverride ??
+    (IOMarketOutcomeAssetId.is(assetId) ? getMarketIdOf(assetId) : 0);
+
+  // Convert AssetId to the appropriate type for TradeItem
+  const getTradeAssetId = (): CategoricalAssetId | ScalarAssetId | CombinatorialToken | undefined => {
+    if (IOCategoricalAssetId.is(assetId)) {
+      return assetId;
+    } else if (IOScalarAssetId.is(assetId)) {
+      return assetId;
+    } else if (isCombinatorialToken(assetId)) {
+      return assetId;
+    }
+    return undefined;
+  };
+
+  const tradeAssetId = getTradeAssetId();
+
+  if (!tradeAssetId) {
+    return null; // Can't trade pool shares or other asset types
+  }
+
   return (
     <>
       <div className="flex justify-end gap-x-2">
         <SecondaryButton
           onClick={() => {
             setTradeItem({
-              assetId: assetId,
+              assetId: tradeAssetId,
               action: "buy",
             });
             setIsOpen(true);
@@ -40,7 +67,7 @@ const AssetTradingButtons = ({
         <SecondaryButton
           onClick={() => {
             setTradeItem({
-              assetId: assetId,
+              assetId: tradeAssetId,
               action: "sell",
             });
             setIsOpen(true);
@@ -54,7 +81,7 @@ const AssetTradingButtons = ({
           <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white">
             <Amm2TradeForm
               marketId={marketId}
-              initialAsset={assetId}
+              initialAsset={tradeAssetId}
               selectedTab={
                 tradeItem.action === "buy"
                   ? TradeTabType.Buy

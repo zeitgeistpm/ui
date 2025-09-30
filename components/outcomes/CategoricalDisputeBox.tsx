@@ -1,12 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  AssetId,
   CategoricalAssetId,
   getIndexOf,
   IndexerContext,
   IOCategoricalAssetId,
   isRpcSdk,
   Market,
-  MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk";
 import { CombinatorialToken, isCombinatorialToken } from "lib/types/combinatorial";
 import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
@@ -26,7 +26,7 @@ const CategoricalDisputeBox = ({
   onSuccess,
 }: {
   market: Market<IndexerContext>;
-  assetId?: MarketOutcomeAssetId;
+  assetId?: AssetId;
   onSuccess?: () => void;
 }) => {
   const [sdk, id] = useSdkv2();

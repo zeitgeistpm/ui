@@ -68,7 +68,7 @@ const Portfolio: NextPageWithLayout = () => {
     useQueryParamState<MarketsTabItem>("marketsTab");
 
   const { markets, breakdown } = usePortfolioPositions(address);
-  console.log("markets", markets);
+
   const { data: ztgPrice } = useZtgPrice();
 
   const marketPositionsByMarket = useMemo(

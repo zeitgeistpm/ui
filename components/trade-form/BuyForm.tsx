@@ -53,7 +53,7 @@ const BuyForm = ({
 }: {
   marketId: number;
   poolData?: any;
-  initialAsset?: MarketOutcomeAssetId;
+  initialAsset?: MarketOutcomeAssetId | CombinatorialToken;
   onSuccess: (
     data: ISubmittableResult,
     outcomeAsset: MarketOutcomeAssetId | CombinatorialToken,
@@ -106,16 +106,6 @@ const BuyForm = ({
     parsedFirstAsset = parseAssetIdString(firstAssetString);
     isFirstCombi = isCombinatorialToken(parsedFirstAsset);
   }
-  
-  console.log(`BuyForm DEBUG - poolId resolution:`, {
-    hasPoolData: !!poolData,
-    poolDataPoolId: poolData?.poolId,
-    firstAssetString,
-    parsedFirstAsset,
-    isFirstCombi,
-    marketNeoPoolId: market?.neoPool?.poolId,
-    marketPoolId: market?.pool?.poolId,
-  });
 
   const poolId =
     poolData?.poolId ||
@@ -125,30 +115,11 @@ const BuyForm = ({
 
   const useAmm2PoolMarketId = poolData?.poolId ? 0 : marketId;
   const useAmm2PoolPoolId = poolId ?? null;
-  
-  console.log(`BuyForm DEBUG - useAmm2Pool call:`, {
-    marketId,
-    poolId,
-    poolData: poolData ? { poolId: poolData.poolId } : null,
-    useAmm2PoolMarketId,
-    useAmm2PoolPoolId,
-    hasPoolData: !!poolData
-  });
 
   const { data: pool } = useAmm2Pool(
     useAmm2PoolMarketId,
     useAmm2PoolPoolId,
   );
-  
-  console.log(`BuyForm DEBUG - Pool result:`, {
-    hasPool: !!pool,
-    poolData: pool ? {
-      poolId: pool.poolId,
-      assetCount: pool.assetIds?.length,
-      liquidity: pool.liquidity?.toString(),
-      swapFee: pool.swapFee?.toString()
-    } : null
-  });
   
   const [sellAssets, setSellAssets] = useState<CombinatorialToken[]>([]);
 
@@ -302,19 +273,6 @@ const BuyForm = ({
       const effectivePoolId = poolData?.poolId || pool?.poolId;
       const assetCount = poolData?.assetIds?.length || pool?.assetIds?.length;
 
-      console.log(`BuyForm useExtrinsic DEBUG - Conditions check:`, {
-        hasRpcSdk: isRpcSdk(sdk),
-        effectivePoolId,
-        amount,
-        assetCount,
-        hasSelectedAsset: !!selectedAsset,
-        hasNewSpotPrice: !!newSpotPrice,
-        hasOrders: !!orders,
-        isCombinatorialSelected: isCombinatorialToken(selectedAsset),
-        sellAssetsLength: sellAssets.length,
-        combiCondition: isCombinatorialToken(selectedAsset) && sellAssets.length === 0
-      });
-
       if (
         !isRpcSdk(sdk) ||
         !effectivePoolId ||
@@ -326,7 +284,6 @@ const BuyForm = ({
         !orders ||
         (isCombinatorialToken(selectedAsset) && sellAssets.length === 0)
       ) {
-        console.log(`BuyForm useExtrinsic DEBUG - Returning undefined due to failed conditions`);
         return;
       }
       const amountDecimal = new Decimal(amount).mul(ZTG); // base asset amount

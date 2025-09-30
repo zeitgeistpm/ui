@@ -141,13 +141,18 @@ export const getForeignAssetPriceServerSide = async (
   return new Decimal(json[coinGeckoId]?.usd ?? 0);
 };
 export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
-  const coinGeckoId =
-    FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
+  try {
+    const coinGeckoId =
+      FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
 
-  const response = await fetch(`/api/usd-price?asset=${coinGeckoId}`);
-  const json = await response.json();
+    const response = await fetch(`/api/usd-price?asset=${coinGeckoId}`);
+    const json = await response.json();
 
-  return new Decimal(json.body.price);
+    const price = json?.body?.price;
+    return new Decimal(price ?? 0);
+  } catch (err) {
+    return new Decimal(0);
+  }
 };
 
 const getZTGPrice = async (): Promise<Decimal> => {
