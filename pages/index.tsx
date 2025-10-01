@@ -122,7 +122,7 @@ export async function getStaticProps() {
   for (const market of [...featuredMarkets, ...trendingMarkets]) {
     const cmsData = marketsCmsData.find((m) => m.marketId === market.marketId);
     if (cmsData?.question) market.question = cmsData.question;
-    if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
+  if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
   }
 
   return {
