@@ -255,7 +255,7 @@ const IndexPage: NextPage<{
           </div>
         )}
 
-        <div className="mb-12 flex w-full flex-col gap-8 md:flex-row">
+        {/* <div className="mb-12 flex w-full flex-col gap-8 md:flex-row">
           <div className="flex w-full flex-col gap-y-6">
             <div className="flex items-center">
               <div className="text-xl font-bold">Trending Markets</div>
@@ -281,7 +281,7 @@ const IndexPage: NextPage<{
             </div>
             <LatestTradesCompact />
           </div>
-        </div>
+        </div> */}
 
         {/* <div className="mb-12">
           <PopularCategories imagePlaceholders={categoryPlaceholders} />

@@ -241,6 +241,7 @@ const Market: NextPage<MarketPageProps> = ({
   const { data: poolData } = useAmm2Pool(
     marketId || 0,
     market?.neoPool?.poolId ?? marketData?.neoPool?.poolId ?? null,
+    market || marketData,
   );
 
   const { data: orders, isLoading: isOrdersLoading } = useOrders({

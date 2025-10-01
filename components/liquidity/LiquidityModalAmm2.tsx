@@ -39,7 +39,25 @@ const LiquidityModalAmm2 = ({
 }) => {
   const wallet = useWallet();
 
-  const { data: pool } = useAmm2Pool(poolId ? 0 : marketId, poolId ?? null);
+  console.log("[LiquidityModalAmm2] Props:", {
+    marketId,
+    poolId,
+    hasVirtualMarket: !!virtualMarket,
+    virtualMarketId: virtualMarket?.marketId,
+    virtualMarketCategories: virtualMarket?.categories?.length
+  });
+
+  const { data: pool } = useAmm2Pool(poolId ? 0 : marketId, poolId ?? null, virtualMarket);
+
+  console.log("[LiquidityModalAmm2] Pool data:", {
+    hasPool: !!pool,
+    poolId: pool?.poolId,
+    assetIdsCount: pool?.assetIds?.length,
+    assetIds: pool?.assetIds,
+    reservesSize: pool?.reserves?.size,
+    reserves: pool?.reserves ? Array.from(pool.reserves.entries()) : null
+  });
+
   const baseAsset = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unrightOr(undefined)
     : undefined;

@@ -185,13 +185,27 @@ const LiquidityHeader = ({ market, comboMarket }: { market: FullMarketFragment; 
         )}
       </div>
       {neoPool && (
-        <LiquidityModalAmm2
-          marketId={neoPool.marketId}
-          poolId={comboMarket ? neoPool.poolId : undefined}
-          virtualMarket={comboMarket ? market : undefined}
-          open={manageLiquidityOpen}
-          onClose={() => setManageLiquidityOpen(false)}
-        />
+        <>
+          {(() => {
+            console.log("[MarketLiquiditySection] Opening LiquidityModalAmm2:", {
+              isComboMarket: comboMarket,
+              marketId: neoPool.marketId,
+              poolId: comboMarket ? neoPool.poolId : undefined,
+              hasMarket: !!market,
+              marketCategories: market?.categories?.length,
+              marketOutcomeAssets: market?.outcomeAssets?.length,
+              modalOpen: manageLiquidityOpen
+            });
+            return null;
+          })()}
+          <LiquidityModalAmm2
+            marketId={comboMarket ? 0 : neoPool.marketId}
+            poolId={neoPool.poolId}
+            virtualMarket={market}
+            open={manageLiquidityOpen}
+            onClose={() => setManageLiquidityOpen(false)}
+          />
+        </>
       )}
     </div>
   );
