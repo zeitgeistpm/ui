@@ -270,7 +270,7 @@ const TopBar = () => {
         </div>
         <MarketSearch />
         <div className="center relative ml-auto gap-3">
-          <GetTokensButton />
+          {/* <GetTokensButton /> */}
           <AccountButton />
           <Alerts />
         </div>

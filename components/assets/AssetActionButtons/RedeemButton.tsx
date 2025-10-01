@@ -309,7 +309,7 @@ const RedeemButtonByValue = ({
     {
       onSuccess: () => {
         notificationStore.pushNotification(
-          `Redeemed ${value.toFixed(2)} ${baseAssetMetadata?.symbol}`,
+          `Redeemed ${value.toFixed(2)} ${parentCollectionIds?.length && parentCollectionIds.length > 0 ? "parent market outcome tokens" :  baseAssetMetadata?.symbol}`,
           {
             type: "Success",
           },

@@ -493,6 +493,16 @@ const MobileContextButtons = ({
                   />
                 </div>
               ))}
+              <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                <h4 className="mb-2 text-sm font-semibold text-gray-800">To Get Your Collateral Back:</h4>
+                <ol className="mb-3 ml-4 list-decimal space-y-1 text-sm text-gray-700">
+                  <li><strong>Redeem tokens on this page</strong> → receive parent market tokens</li>
+                  <li><strong>Redeem parent tokens</strong> on the parent market page → receive your collateral</li>
+                </ol>
+                <p className="text-xs text-gray-600">
+                  💡 <strong>Tip:</strong> Redeeming here is only the first step. Visit the parent market to complete your redemption and recover your collateral.
+                </p>
+              </div>
             </div>
           </div>
         ) : null}
@@ -959,6 +969,16 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) =
                       />
                     </div>
                   ))}
+                  <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                    <h4 className="mb-2 text-sm font-semibold text-gray-800">To Get Your Collateral Back:</h4>
+                    <ol className="mb-3 ml-4 list-decimal space-y-1 text-sm text-gray-700">
+                      <li><strong>Redeem Tokens</strong> → receive parent market (i.e. Market 1) tokens</li>
+                      <li><strong>Redeem parent tokens</strong> on the parent market page → receive your collateral</li>
+                    </ol>
+                    <p className="text-xs text-gray-600">
+                    💡 <strong>Tip:</strong> Redeeming here is only the first step. Visit the parent market to complete your redemption and recover your collateral.
+                    </p>
+                  </div>
                 </div>
               </div>
             ) : childMarketResolved ? (
