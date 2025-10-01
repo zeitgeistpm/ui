@@ -14,7 +14,6 @@ export const useMultiMarketAssets = (
 
   const isEnabled = Boolean(sdk && isIndexedSdk(sdk) && multiMarketAssets.length > 0);
 
-  console.log(multiMarketAssets);
   return useQuery({
     queryKey: [multiMarketAssetsRootQuery, ...multiMarketAssets],
     queryFn: async () => {
@@ -36,7 +35,6 @@ export const useMultiMarketAssets = (
           sdk.indexer.client as unknown as GraphQLClient,
           multiMarketAssets
         );
-        console.log(assets);
         return assets || [];
       } catch (error) {
         return [];

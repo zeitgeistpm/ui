@@ -177,15 +177,15 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
         );
 
         // Step 2: Deploy combinatorial pool if liquidity is enabled
-        const poolParams = prepareCombinatorialPoolParams(editor.form);
+        const poolParams = prepareCombinatorialPoolParams(editor.form as any);
         if (poolParams && isRpcSdk(sdk)) {
           try {
             // For combinatorial pools, we need to specify this is a single market
             // The asset count is the number of outcomes
             const outcomeCount =
-              editor.form.answers.type === "scalar"
+              editor.form.answers?.type === "scalar"
                 ? 2
-                : editor.form.answers.answers.length;
+                : (editor.form.answers?.answers as any)?.length || 0;
 
             // Deploy the combinatorial pool
             const deployPoolTx = sdk.api.tx.neoSwaps.deployCombinatorialPool(
@@ -205,7 +205,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
             if (!signer) throw new Error("No active signer");
 
             // Use the utility function which handles signer types correctly
-            await signAndSend(deployPoolTx, signer);
+            await signAndSend(deployPoolTx, signer as any);
 
             notifications.pushNotification(
               "Combinatorial pool deployed successfully!",
@@ -222,7 +222,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
               "Market created but pool deployment failed. You can deploy the pool later.",
               {
                 autoRemove: true,
-                type: "Warning",
+                type: "warning" as any,
                 lifetime: 15,
               },
             );

@@ -21,6 +21,8 @@ import { lookUpAssetPrice } from "lib/util/lookup-price";
 import { MIN_USD_DISPLAY_AMOUNT } from "lib/constants";
 import PoolShareButtons from "components/assets/AssetActionButtons/PoolShareButtons";
 import { isCombinatorialToken } from "lib/types/combinatorial";
+import Link from "next/link";
+import SecondaryButton from "components/ui/SecondaryButton";
 
 const COLUMNS: TableColumn[] = [
   {
@@ -72,13 +74,13 @@ const COLUMNS: TableColumn[] = [
   //   infobox:
   //     "This is the actual profit or loss you've made from selling assets in your portfolio. It's the difference between the price you sold your assets at and the average cost of those assets, multiplied by the quantity of the asset that you sold.",
   // },
-  {
-    header: "24 Hrs",
-    accessor: "change",
-    type: "change",
-    infobox:
-      "This shows how much the price of each asset in your portfolio has changed in the last 24 hours. It's a quick way to track the recent performance of your assets and gauge short-term market trends.",
-  },
+  // {
+  //   header: "24 Hrs",
+  //   accessor: "change",
+  //   type: "change",
+  //   infobox:
+  //     "This shows how much the price of each asset in your portfolio has changed in the last 24 hours. It's a quick way to track the recent performance of your assets and gauge short-term market trends.",
+  // },
   {
     header: "",
     accessor: "actions",
@@ -116,13 +118,13 @@ const COLUMNS_LIQUIDITY: TableColumn[] = [
     infobox:
       "This is the current worth of your holdings for a specific asset. It's calculated by multiplying the amount of the asset you own (your balance) by the asset's current market price.",
   },
-  {
-    header: "24 Hrs",
-    accessor: "change",
-    type: "change",
-    infobox:
-      "This shows how much the price of each asset in your portfolio has changed in the last 24 hours. It's a quick way to track the recent performance of your assets and gauge short-term market trends.",
-  },
+  // {
+  //   header: "24 Hrs",
+  //   accessor: "change",
+  //   type: "change",
+  //   infobox:
+  //     "This shows how much the price of each asset in your portfolio has changed in the last 24 hours. It's a quick way to track the recent performance of your assets and gauge short-term market trends.",
+  // },
   {
     header: "",
     accessor: "actions",
@@ -199,6 +201,9 @@ export const MarketPositions = ({
               upnl,
               isMultiMarket,
               underlyingMarketIds,
+              canRedeem,
+              poolId,
+              isWinningPosition,
             }) => {
               const baseAssetUsdPrice = lookUpAssetPrice(
                 market.baseAsset,
@@ -238,9 +243,9 @@ export const MarketPositions = ({
                     .div(ZTG)
                     .toNumber(),
                 },
-                change: isNaN(changePercentage)
-                  ? 0
-                  : changePercentage.toFixed(1),
+                // change: isNaN(changePercentage)
+                //   ? 0
+                //   : changePercentage.toFixed(1),
                 actions: (
                   <div className="text-right">
                     {IOPoolShareAssetId.is(assetId) ? (
@@ -248,13 +253,18 @@ export const MarketPositions = ({
                         poolId={assetId.PoolShare}
                         market={market}
                       />
+                    ) : isMultiMarket && canRedeem && poolId && isWinningPosition ? (
+                      <Link href={`/multi-market/${poolId}`}>
+                        <SecondaryButton onClick={() => {}}>Redeem Tokens</SecondaryButton>
+                      </Link>
                     ) : marketStage?.type === "Trading" &&
                       (IOMarketOutcomeAssetId.is(assetId) || isCombinatorialToken(assetId)) ? (
-                      <AssetTradingButtons assetId={assetId} marketIdOverride={market.marketId} />
-                    ) : marketStage?.type === "Resolved" ? (
+                      <Link href={isMultiMarket ? `/multi-market/${market.marketId}` : `/market/${market.marketId}`}>
+                        <SecondaryButton onClick={() => {}}>Trade Tokens</SecondaryButton>
+                      </Link>                    ) : marketStage?.type === "Resolved" ? (
                       <RedeemButton market={market} assetId={assetId} underlyingMarketIds={underlyingMarketIds} />
                     ) : (IOMarketOutcomeAssetId.is(assetId) || (isCombinatorialToken(assetId) && !isMultiMarket)) &&
-                      marketStage?.type === "Reported" ? (
+                      marketStage?.type === "Disputed" ? (
                       <DisputeButton market={market} assetId={assetId} />
                     ) : (IOMarketOutcomeAssetId.is(assetId) || (isCombinatorialToken(assetId) && !isMultiMarket)) &&
                       (marketStage?.type === "OpenReportingPeriod" ||

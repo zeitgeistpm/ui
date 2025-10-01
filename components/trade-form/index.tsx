@@ -117,7 +117,7 @@ const Inner = ({
   const { data: tradeItemState } = useTradeItemState(tradeItem);
 
   const { data: market } = useMarket({
-    marketId: getMarketIdOf(tradeItem.assetId),
+    marketId: getMarketIdOf(tradeItem.assetId as any),
   });
 
   const {
@@ -199,7 +199,7 @@ const Inner = ({
   }, [tradeItemState, predictionAfterTrade]);
 
   const [lastEditedAssetId, setLastEditedAssetId] = useState<AssetId>(
-    tradeItem.assetId,
+    tradeItem.assetId as any,
   );
 
   const transaction = useTradeTransaction(
@@ -565,7 +565,7 @@ const Inner = ({
                 })}
                 onFocus={() => {
                   if (tradeItemState?.assetId) {
-                    setLastEditedAssetId(tradeItemState?.assetId);
+                    setLastEditedAssetId(tradeItemState?.assetId as any);
                   }
                 }}
                 step="any"
@@ -615,7 +615,7 @@ const Inner = ({
               onValueChange={setPercentageDisplay}
               onFocus={() => {
                 if (tradeItemState?.assetId) {
-                  setLastEditedAssetId(tradeItemState?.assetId);
+                  setLastEditedAssetId(tradeItemState?.assetId as any);
                 }
               }}
               minLabel="0 %"

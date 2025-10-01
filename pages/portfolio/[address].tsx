@@ -29,26 +29,25 @@ import NotFoundPage from "pages/404";
 import { useMemo } from "react";
 
 // type MainTabItem = "Predictions" | "Balances" | "Markets" | "History" | "Court";
-type MainTabItem = "Predictions" | "Balances" | "Markets" | "History";
-
+type MainTabItem = "Predictions" | "Balances" | "Markets"
 
 const mainTabItems: MainTabItem[] = [
   "Predictions",
   ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true" ? ["Balances"] : []),
   "Markets",
-  "History",
+  // "History",
   // "Court",
 ] as MainTabItem[];
 
 type MarketsTabItem =
   | "Created Markets"
   | "Liquidity"
-  | "Creator Fee Payouts"
+  // | "Creator Fee Payouts"
   // | "Orders";
 const marketsTabItems: MarketsTabItem[] = [
   "Created Markets",
   "Liquidity",
-  "Creator Fee Payouts",
+  // "Creator Fee Payouts",
   // "Orders",
 ];
 
@@ -111,7 +110,7 @@ const Portfolio: NextPageWithLayout = () => {
                   ? ["Balances"]
                   : []),
                 "Markets",
-                "History",
+                // "History",
                 // "Court",
               ].map((title, index) => (
                 <Tab className="text-sm sm:text-xl" key={index}>
@@ -145,6 +144,108 @@ const Portfolio: NextPageWithLayout = () => {
                     // marketPositions = marketPositions.filter((position) =>
                     //   position.userBalance.gt(0),
                     // );
+
+                    // For multi-market positions ready for redemption, check if winning outcome balance is 0
+                    // If winning tokens are redeemed, hide all positions (including losing ones that can't be redeemed)
+                    const isMultiMarket = marketPositions[0]?.isMultiMarket;
+                    const canRedeem = marketPositions[0]?.canRedeem;
+
+                    if (isMultiMarket && canRedeem) {
+                      const underlyingMarketIds = marketPositions[0]?.underlyingMarketIds || [];
+
+                      console.log('Multi-market check:', {
+                        marketId: market.marketId,
+                        question: market.question,
+                        resolvedOutcome: market.resolvedOutcome,
+                        status: market.status,
+                        isParentScalar: (market.neoPool as any)?._debug?.isParentScalar,
+                        isChildScalar: (market.neoPool as any)?._debug?.isChildScalar,
+                        outcomeAssets: market.outcomeAssets,
+                        underlyingMarketIds,
+                        positions: marketPositions.map(p => ({
+                          outcome: p.outcome,
+                          balance: p.userBalance.toString(),
+                          assetId: p.assetId,
+                        }))
+                      });
+
+                      // Check if all underlying markets are resolved
+                      const allMarketsResolved = market.status === 'Resolved';
+
+                      if (market.resolvedOutcome !== null && allMarketsResolved) {
+                        const isParentScalar = (market.neoPool as any)?._debug?.isParentScalar;
+                        const isChildScalar = (market.neoPool as any)?._debug?.isChildScalar;
+
+                        // Find positions with winning outcomes (resolvedOutcome matches)
+                        const winningPositions = marketPositions.filter(
+                          (position) => {
+                            if (isCombinatorialToken(position.assetId)) {
+                              const tokenIndex = market.outcomeAssets?.findIndex(
+                                asset => asset.includes((position.assetId as any).CombinatorialToken)
+                              );
+
+                              if (tokenIndex === -1) return false;
+
+                              // For parent categorical + child scalar:
+                              // resolvedOutcome is the parent index
+                              // We need to match all positions for that parent (both Short and Long)
+                              if (!isParentScalar && isChildScalar) {
+                                // Calculate which parent this position belongs to
+                                // tokenIndex = (parentOutcome * numChildOutcomes) + childOutcome
+                                // numChildOutcomes = 2 for scalar (Short, Long)
+                                const parentIndex = Math.floor(tokenIndex / 2);
+                                const matches = parentIndex === Number(market.resolvedOutcome);
+
+                                console.log('Checking position (parent cat, child scalar):', {
+                                  outcome: position.outcome,
+                                  tokenIndex,
+                                  parentIndex,
+                                  resolvedOutcome: market.resolvedOutcome,
+                                  matches,
+                                  balance: position.userBalance.toString(),
+                                });
+
+                                return matches;
+                              }
+
+                              // For both categorical: standard index match
+                              const matches = tokenIndex === Number(market.resolvedOutcome);
+
+                              console.log('Checking position:', {
+                                outcome: position.outcome,
+                                tokenIndex,
+                                resolvedOutcome: market.resolvedOutcome,
+                                matches,
+                                balance: position.userBalance.toString(),
+                              });
+
+                              return matches;
+                            }
+                            return false;
+                          }
+                        );
+
+                        console.log('Winning positions:', winningPositions.length);
+                        console.log('Total positions:', marketPositions.length);
+
+                        // If all markets resolved and winning positions all have 0 balance,
+                        // hide all positions (including losing ones)
+                        const allWinningBalancesZero = winningPositions.length > 0 &&
+                          winningPositions.every(pos => pos.userBalance.eq(0));
+
+                        // Also check if no winning positions exist (filtered out due to 0 balance)
+                        const noWinningPositions = winningPositions.length === 0 && marketPositions.length > 0;
+
+                        console.log('All winning balances zero:', allWinningBalancesZero);
+                        console.log('No winning positions (filtered out):', noWinningPositions);
+                        console.log('All markets resolved:', allMarketsResolved);
+
+                        // Hide everything if all markets resolved and all winning balances are 0
+                        if (allMarketsResolved && (allWinningBalancesZero || noWinningPositions)) {
+                          return <></>;
+                        }
+                      }
+                    }
 
                     if (
                       market.status === "Resolved" &&

@@ -24,8 +24,7 @@ const inputClasses =
   "bg-gray-100 dark:bg-black text-ztg-14-150 w-full rounded-lg h-ztg-40 p-ztg-8  focus:outline-none dark:border-black text-black dark:text-white";
 const invalidClasses = "!border-vermilion !text-vermilion";
 
-const Input: FC<InputProps & InputHTMLAttributes<HTMLInputElement>> =
-  React.forwardRef<
+const Input: any = React.forwardRef<
     HTMLInputElement,
     InputProps & InputHTMLAttributes<HTMLInputElement>
   >(

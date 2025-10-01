@@ -19,7 +19,7 @@ export const createVirtualComboMarket = (
     : `Pool ${poolId}`;
 
   // Combine categories from associated markets to create outcome combinations
-  const outcomeCombinations = [];
+  const outcomeCombinations: any[] = [];
   if (associatedMarkets.length >= 2) {
     const market1 = associatedMarkets[0];
     const market2 = associatedMarkets[1];

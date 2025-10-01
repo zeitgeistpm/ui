@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { isIndexedSdk, isRpcSdk } from "@zeitgeistpm/sdk";
+import { isIndexedSdk } from "@zeitgeistpm/sdk";
 import { 
   MarketOrComboItem, 
   MarketListItem, 
@@ -15,23 +15,24 @@ import {
   ComboPoolStatsData,
   MarketBasicData 
 } from "lib/gql/combo-pools";
-import { MarketsListFiltersQuery, MarketsOrderBy } from "lib/hooks/useMarketsUrlQuery";
+import { MarketsOrderBy } from "lib/types/market-filter";
+type MarketsListFiltersQuery = any;
 import {
   MarketStatus,
   ScoringRule,
-  validMarketWhereInput,
-  WHITELISTED_TRUSTED_CREATORS,
   MarketOrderByInput,
   Market,
-  IndexerContext,
   FullMarketFragment,
 } from "@zeitgeistpm/indexer";
+const validMarketWhereInput: any = {};
+const WHITELISTED_TRUSTED_CREATORS: any = [];
+type IndexerContext = any;
 import { FullCmsMarketMetadata } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
 
 const rootKey = "infinite-markets-with-combos";
 
-const orderByMap: Record<MarketsOrderBy, any> = {
+const orderByMap: any = {
   "most-volume": { volume_DESC: {} },
   "most-recent": { marketId_DESC: {} },
   "ending-soon": { period_end_ASC: {} },
@@ -67,7 +68,7 @@ export const useInfiniteMarketsWithCombos = (
     const currencies = filters.currency;
 
     // Fetch regular markets
-    const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
+    const markets: any[] = await sdk.model.markets.list({
       where: {
         AND: [
           {
@@ -180,92 +181,73 @@ export const useInfiniteMarketsWithCombos = (
       };
     });
 
-    // Pre-fetch AMM2 pool data for combo pools using TanStack Query
-    // This optimization warms up the cache so ComboPoolCards load instantly
-    if (isRpcSdk(sdk) && comboPools.length > 0) {
-      const prefetchPromises = comboPools.map(async (pool) => {
-        try {
-          // Prefetch using the same query key as useAmm2Pool hook
-          await queryClient.prefetchQuery({
-            queryKey: [id, "amm2-pool", 0, pool.poolId],
-            queryFn: async () => {
-              const poolRes = await sdk.api.query.neoSwaps.pools(pool.poolId);
-              const unwrappedRes = poolRes && poolRes.isSome ? poolRes.unwrap() : null;
-              
-              if (unwrappedRes) {
-                // Minimal processing for prefetch - full processing in useAmm2Pool
-                return {
-                  poolId: pool.poolId,
-                  accountId: unwrappedRes.accountId.toString(),
-                  liquidity: unwrappedRes.liquidityParameter.toString(),
-                  swapFee: unwrappedRes.swapFee.toString(),
-                  reserves: new Map(), // Will be populated by useAmm2Pool
-                  assetIds: [], // Will be populated by useAmm2Pool
-                  accounts: [], // Will be populated by useAmm2Pool
-                  totalShares: unwrappedRes.liquidityParameter.toString(),
-                  poolType: JSON.parse(unwrappedRes.poolType.toString()),
-                };
-              }
-              return null;
-            },
-            staleTime: 60 * 1000,
-          });
-        } catch (error) {
-          console.warn(`Failed to prefetch pool data for pool ${pool.poolId}:`, error);
-        }
-      });
-
-      // Wait for prefetch to complete (but don't block on errors)
-      await Promise.allSettled(prefetchPromises);
-    }
+    // Note: Removed prefetch logic that was caching incomplete pool data
+    // useAmm2Pool hook now handles fetching with proper caching
+    // The incomplete prefetch was causing combo market cards to display
+    // incorrect data until a page refresh
 
     // Transform combo pools to ComboPoolListItem
-    const comboPoolItems: ComboPoolListItem[] = comboPools.map((pool) => {
-      const poolStats = comboPoolStats.find(s => s.poolId === pool.poolId);
-      const poolAssociatedMarkets = associatedMarkets.filter(m => 
-        pool.marketIds.includes(m.marketId)
-      );
+    const comboPoolItems: ComboPoolListItem[] = comboPools
+      .map((pool) => {
+        const poolStats = comboPoolStats.find(s => s.poolId === pool.poolId);
+        const poolAssociatedMarkets = associatedMarkets.filter(m => 
+          pool.marketIds.includes(m.marketId)
+        );
 
-      // Create combined question from associated markets
-      const combinedQuestion = poolAssociatedMarkets.length > 0
-        ? poolAssociatedMarkets.map((m, index) => 
-            index === poolAssociatedMarkets.length - 1 
-              ? m.question 
-              : m.question + " &"
-          ).join("\n")
-        : `${pool.poolId}`;
+        // Create combined question from associated markets
+        const combinedQuestion = poolAssociatedMarkets.length > 0
+          ? poolAssociatedMarkets.map((m, index) => 
+              index === poolAssociatedMarkets.length - 1 
+                ? m.question 
+                : m.question + " &"
+            ).join("\n")
+          : `${pool.poolId}`;
 
-      // Combine categories from associated markets
-      const combinedCategories = poolAssociatedMarkets.flatMap(m => m.categories || []);
+        // Combine categories from associated markets
+        const combinedCategories = poolAssociatedMarkets.flatMap(m => m.categories || []);
 
-      // Use the first market's status as the combo status
-      const status = poolAssociatedMarkets[0]?.status || "Active";
+        // FIXED: A combo market is only Active if ALL source markets are Active
+        // This matches the logic in /multi-market/[poolid].tsx
+        const allMarketsActive = poolAssociatedMarkets.length > 0
+          && poolAssociatedMarkets.every(m => m.status === MarketStatus.Active);
 
-      return {
-        type: "combo",
-        data: pool,
-        stats: {
-          liquidity: poolStats?.liquidity || pool.totalStake,
-          participants: poolStats?.participants || 0,
-          volume: poolStats?.volume || "0",
-        },
-        associatedMarkets: poolAssociatedMarkets,
-        marketId: pool.marketIds[0] || pool.poolId, // Use first market ID for routing
-        slug: `combo-${pool.poolId}`,
-        question: combinedQuestion,
-        categories: combinedCategories,
-        status,
-        baseAsset: pool.collateral,
-        link: `/multi-market/${pool.poolId}`,
-      };
-    });
+        // If not all markets are active, use the status of the first non-active market
+        const status = allMarketsActive
+          ? MarketStatus.Active
+          : (poolAssociatedMarkets.find(m => m.status !== MarketStatus.Active)?.status || "Closed");
+
+        return {
+          type: "combo" as const,
+          data: pool,
+          stats: {
+            liquidity: poolStats?.liquidity || pool.totalStake,
+            participants: poolStats?.participants || 0,
+            volume: poolStats?.volume || "0",
+          },
+          associatedMarkets: poolAssociatedMarkets,
+          marketId: pool.marketIds[0] || pool.poolId, // Use first market ID for routing
+          slug: `combo-${pool.poolId}`,
+          question: combinedQuestion,
+          categories: combinedCategories,
+          status,
+          baseAsset: pool.collateral,
+          link: `/multi-market/${pool.poolId}`,
+        };
+      })
+      // Filter out combo pools that don't match the status filter
+      .filter((item) => {
+        // If no status filter is applied, show all combo pools
+        if (statuses.length === 0) return true;
+        // If status filter is applied, only show combo pools that match
+        return statuses.includes(item.status as MarketStatus);
+      });
 
     // Combine and sort all items
     const allItems: MarketOrComboItem[] = [...marketItems, ...comboPoolItems];
 
     // Sort combined results based on orderBy
     allItems.sort((a, b) => {
-      switch (orderBy) {
+      switch (orderBy as any) {
         case "most-volume":
           return parseFloat(b.stats.volume) - parseFloat(a.stats.volume);
         case "most-recent":

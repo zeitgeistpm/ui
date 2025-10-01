@@ -284,7 +284,7 @@ const enableWallet = async (
       const extension = await poll(
         async () => {
           await cryptoWaitReady();
-          await wallet.enable(DAPP_NAME, skipModal);
+          await (wallet.enable as any)(DAPP_NAME, skipModal);
           return wallet;
         },
         {

@@ -283,26 +283,26 @@ export const DesktopOnboardingModal = (props: {
       headerText="Create an Account"
       bodyText="Use one of the following options to create a wallet and start trading."
     />,
-    <TextSection
-      children={<ButtonList setStep={setStep} buttonList={exchangeList} />}
-      headerText="Wallet Successfully Installed"
-      bodyText="It's time to get ZTG so that you can start trading!"
-      leftButton={{
-        text: "Back",
-        onClick: () => setStep(0),
-      }}
-      rightButton={{
-        text: "Continue",
-        onClick: () => setStep(2),
-      }}
-    />,
+    // <TextSection
+    //   children={<ButtonList setStep={setStep} buttonList={exchangeList} />}
+    //   headerText="Wallet Successfully Installed"
+    //   bodyText="It's time to get ZTG so that you can start trading!"
+    //   leftButton={{
+    //     text: "Back",
+    //     onClick: () => setStep(0),
+    //   }}
+    //   rightButton={{
+    //     text: "Continue",
+    //     onClick: () => setStep(2),
+    //   }}
+    // />,
     <TextSection
       children={<ResourceList setStep={setStep} buttonList={resourceList} />}
       headerText="You're All Set!"
       bodyText="If you have any questions, feel free to check out our community channels."
       leftButton={{
         text: "Back",
-        onClick: () => setStep(1),
+        onClick: () => setStep(0),
       }}
     />,
   ];

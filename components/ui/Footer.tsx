@@ -88,7 +88,7 @@ const Footer = () => {
     <div className="mt-auto flex w-full flex-col bg-[#1C1C1C] pb-24 pt-12">
       <div className="container-fluid">
         <div className="mb-8 flex flex-wrap justify-between gap-12 md:mb-16 md:flex-nowrap lg:gap-36">
-          <div className="flex w-full justify-between gap-7">
+          <div className="flex w-full justify-between gap-7 max-w-lg">
             <FooterMenu
               title="General"
               links={[
@@ -110,12 +110,12 @@ const Footer = () => {
               title="Community"
               links={[
                 { text: "Discord", href: "https://discord.gg/xv8HuA4s8v" },
-                { text: "Telegram", href: "https://t.me/zeitgeist_official" },
+                // { text: "Telegram", href: "https://t.me/zeitgeist_official" },
                 { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
               ]}
             />
           </div>
-          <FooterNewsletterSub title="Subscribe to Newsletter" />
+          {/* <FooterNewsletterSub title="Subscribe to Newsletter" /> */}
         </div>
         <div className="flex flex-col gap-5 md:flex-row">
           <span className="whitespace-nowrap text-center text-ztg-12-150 text-white md:text-start">

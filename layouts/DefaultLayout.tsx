@@ -97,7 +97,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
       </TradeItemContext.Provider>
       <Account />
       <Onboarding />
-      {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" && <GrillChat />}
+      {/* {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" && <GrillChat />} */}
     </div>
   );
 };

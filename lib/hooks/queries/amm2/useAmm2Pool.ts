@@ -12,7 +12,6 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { CombinatorialToken, CombinatorialTokenString, unwrapCombinatorialToken, getCombinatorialHash, isCombinatorialToken } from "lib/types/combinatorial";
 import { sortAssetsByMarketOrder } from "lib/util/sort-assets-by-market";
 import { getApiAtBlock } from "lib/util/get-api-at";
-import { getBlockNumberFromTimestamp } from "lib/util/block-timestamp";
 export const amm2PoolKey = "amm2-pool";
 
 type ReserveMap = Map<number | "Long" | "Short" | CombinatorialTokenString , Decimal>;

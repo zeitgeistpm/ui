@@ -287,7 +287,7 @@ const IndexPage: NextPage<{
           <PopularCategories imagePlaceholders={categoryPlaceholders} />
         </div> */}
 
-        <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} />
+        {/* <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} /> */}
 
         <div className="mb-12">
           <WatchHow />

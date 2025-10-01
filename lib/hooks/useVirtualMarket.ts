@@ -128,6 +128,51 @@ export const useVirtualMarket = (
     const sourceMarkets: [FullMarketFragment, FullMarketFragment] = [market1, market2];
     const baseAssetId = parseAssetIdString('ZTG');
 
+    // Calculate resolved outcome for combo market if both source markets are resolved
+    // Multi-markets structure: market1 is parent, market2 is child
+    // Outcomes are organized as: [Parent0-Child0, Parent0-Child1, ..., Parent1-Child0, Parent1-Child1, ...]
+    // Formula: tokenIndex = (parentOutcome * numChildOutcomes) + childOutcome
+    let resolvedOutcome: string | null = null;
+    const isParentScalar = market1.marketType?.scalar !== null;
+    const isChildScalar = market2.marketType?.scalar !== null;
+
+    if (market1.resolvedOutcome !== null && market2.resolvedOutcome !== null) {
+      console.log(market1.resolvedOutcome, market2.resolvedOutcome);
+
+      // For categorical markets, resolvedOutcome is an index (0, 1, 2, etc.)
+      // For scalar markets, resolvedOutcome is the numeric value (e.g., "800000000000")
+      // Scalar markets have 2 outcomes: Short (index 0) and Long (index 1)
+
+      let parentResolvedIndex: number;
+      let childResolvedIndex: number;
+
+      if (isParentScalar) {
+        // Parent is scalar - we can't determine a single index, need to handle differently
+        // Store as null to indicate special handling needed
+        resolvedOutcome = null;
+      } else {
+        parentResolvedIndex = typeof market1.resolvedOutcome === 'string'
+          ? parseInt(market1.resolvedOutcome)
+          : market1.resolvedOutcome ?? 0;
+
+        if (isChildScalar) {
+          // Parent categorical, child scalar - resolvedOutcome represents parent only
+          // Both Short and Long positions for this parent outcome are redeemable
+          // Store parent index as resolved outcome (UI will show both scalar positions)
+          resolvedOutcome = parentResolvedIndex.toString();
+        } else {
+          // Both categorical - standard combo index calculation
+          childResolvedIndex = typeof market2.resolvedOutcome === 'string'
+            ? parseInt(market2.resolvedOutcome)
+            : market2.resolvedOutcome ?? 0;
+          const numChildOutcomes = market2.categories?.length || 0;
+
+          const comboIndex = (parentResolvedIndex * numChildOutcomes) + childResolvedIndex;
+          resolvedOutcome = comboIndex.toString();
+        }
+      }
+    }
+
     const virtualMarket: FullMarketFragment = {
       marketId: poolId,
       marketIds: marketIds,
@@ -162,6 +207,8 @@ export const useVirtualMarket = (
               assetIds: poolData.assetIds,
               reservesType: typeof poolData.reserves,
               reservesSize: poolData.reserves?.size || 0,
+              isParentScalar,
+              isChildScalar,
             },
           }
         : null,
@@ -173,10 +220,10 @@ export const useVirtualMarket = (
       disputeMechanism: "Authorized" as const,
       hasValidMetaCategories: true,
       img: null,
-      marketType: { categorical: null, scalar: null },
+      marketType: { categorical: "Combinatorial", scalar: null },
       period: getCombinedMarketPeriod(sourceMarkets),
       deadlines: getCombinedMarketDeadlines(sourceMarkets),
-      resolvedOutcome: null,
+      resolvedOutcome: resolvedOutcome,
       scalarType: null,
       tags: [],
       volume: "0",

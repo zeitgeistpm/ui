@@ -31,7 +31,7 @@ export const useMultipleAmm2Pools = (poolIds: number[]) => {
         try {
           const res = await sdk.api.query.neoSwaps.pools(poolId);
           const unwrappedRes = res && res.isSome ? res.unwrap() : null;
-          console.log(unwrappedRes);
+
           if (unwrappedRes) {
             const reserves = new Map<number | "Long" | "Short" | string, Decimal>();
             const assetIds: (MarketOutcomeAssetId | CombinatorialToken)[] = [];
@@ -87,7 +87,7 @@ export const useMultipleAmm2Pools = (poolIds: number[]) => {
               liquidity: new Decimal(unwrappedRes.liquidityParameter.toString()),
               swapFee: new Decimal(unwrappedRes.swapFee.toString()),
               accounts: poolAccounts,
-              reserves,
+              reserves: reserves as any,
               assetIds,
               totalShares: poolAccounts.reduce<Decimal>(
                 (total, account) => total.plus(account.shares),

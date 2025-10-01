@@ -11,9 +11,9 @@ const GettingStartedSection = () => {
           <div className="flex-1">
             <CreateAccountActionableCard animationVariant="right" />
           </div>
-          <div className="flex-1">
+          {/* <div className="flex-1">
             <DepositActionableCard animationVariant="center" />
-          </div>
+          </div> */}
           <div className="flex-1">
             <StartTradingActionableCard animationVariant="left" />
           </div>

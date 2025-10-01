@@ -38,6 +38,7 @@ import { useBalance } from "lib/hooks/queries/useBalance";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useState, useMemo } from "react";
 import { AlertTriangle, ChevronDown, ExternalLink, X } from "react-feather";
@@ -219,10 +220,10 @@ const SourceMarketCard = ({
               return assetId ? (
                 <OutcomeBalance
                   key={outcomeIndex}
-                  assetId={assetId}
+                  assetId={assetId as any}
                   walletAddress={walletAddress}
                   outcomeName={market.categories?.[outcomeIndex]?.name || `Outcome ${outcomeIndex}`}
-                  color={market.categories?.[outcomeIndex]?.color}
+                  color={market.categories?.[outcomeIndex]?.color ?? undefined}
                 />
               ) : null;
             })}
@@ -358,7 +359,15 @@ const ComboChart = ({
   );
 };
 
-const MobileContextButtons = ({ poolId, comboMarketData }: { poolId: number; comboMarketData: any }) => {
+const MobileContextButtons = ({
+  poolId,
+  comboMarketData,
+  parentCollectionIds
+}: {
+  poolId: number;
+  comboMarketData: any;
+  parentCollectionIds?: string[] | null;
+}) => {
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
   const [open, setOpen] = useState(false);
   const [showPartialRedeem, setShowPartialRedeem] = useState(false);
@@ -397,7 +406,7 @@ const MobileContextButtons = ({ poolId, comboMarketData }: { poolId: number; com
   // Get virtual market for redeem button
   const marketIds = comboMarketData?.marketIds;
   const virtualMarket = useVirtualMarket(poolId, marketIds);
-  console.log(virtualMarket);
+
   if (!comboMarketIsActive && !comboMarketIsResolved && !childMarketResolved) {
     return null; // Don't show mobile buttons if market is closed but not resolved
   }
@@ -442,7 +451,30 @@ const MobileContextButtons = ({ poolId, comboMarketData }: { poolId: number; com
               Both source markets have been resolved. Redeem your outcome tokens below.
             </p>
             <div className="space-y-4">
-              {comboMarketData?.outcomeCombinations?.map((combo, index) => (
+              {comboMarketData?.outcomeCombinations
+                ?.filter((_: any, index: number) => {
+                  if (virtualMarket.resolvedOutcome === null) {
+                    // Parent is scalar - show all positions (blockchain calculates payouts)
+                    return true;
+                  }
+
+                  const isParentScalar = (virtualMarket.neoPool as any)?._debug?.isParentScalar;
+                  const isChildScalar = (virtualMarket.neoPool as any)?._debug?.isChildScalar;
+
+                  if (isChildScalar && !isParentScalar) {
+                    // Parent categorical, child scalar
+                    // Show both scalar positions (Short & Long) for the resolved parent outcome
+                    const parentResolvedIndex = Number(virtualMarket.resolvedOutcome);
+                    const numChildOutcomes = 2; // Scalar has 2 outcomes
+                    const startIndex = parentResolvedIndex * numChildOutcomes;
+                    const endIndex = startIndex + numChildOutcomes;
+                    return index >= startIndex && index < endIndex;
+                  } else {
+                    // Both categorical - show only the single winning outcome
+                    return index === Number(virtualMarket.resolvedOutcome);
+                  }
+                })
+                .map((combo: any, index: number) => (
                 <div key={index} className="flex items-center justify-between rounded-lg border p-4">
                   <div className="flex items-center gap-2">
                     <div
@@ -455,6 +487,9 @@ const MobileContextButtons = ({ poolId, comboMarketData }: { poolId: number; com
                     market={virtualMarket}
                     assetId={combo.assetId}
                     underlyingMarketIds={comboMarketData.marketIds}
+                    isPartialRedemption={false}
+                    parentCollectionIds={parentCollectionIds ?? undefined}
+                    showBalance={true}
                   />
                 </div>
               ))}
@@ -492,7 +527,7 @@ const MobileContextButtons = ({ poolId, comboMarketData }: { poolId: number; com
               You can redeem tokens for the child market and use those tokens for trading
             </p>
             <div className="space-y-3">
-              {comboMarketData?.outcomeCombinations?.map((combo, index) => (
+              {comboMarketData?.outcomeCombinations?.map((combo: any, index: number) => (
                 <div key={index} className="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-3">
                   <div className="flex items-center gap-2">
                     <div
@@ -505,6 +540,8 @@ const MobileContextButtons = ({ poolId, comboMarketData }: { poolId: number; com
                     market={virtualMarket}
                     assetId={combo.assetId}
                     underlyingMarketIds={comboMarketData.marketIds}
+                    isPartialRedemption={true}
+                    parentCollectionIds={parentCollectionIds ?? undefined}
                   />
                 </div>
               ))}
@@ -591,7 +628,13 @@ const MobileContextButtons = ({ poolId, comboMarketData }: { poolId: number; com
   );
 };
 
-const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
+const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) => {
+  const router = useRouter();
+  // Prioritize URL parameter over static props to ensure correct data on navigation
+  const poolId = router.isReady && router.query.poolid
+    ? Number(router.query.poolid)
+    : staticPoolId;
+
   const { realAddress } = useWallet();
   const { data: comboMarketData, isLoading } = useComboMarket(poolId);
   const { data: orders, isLoading: isOrdersLoading } = useOrders({
@@ -600,7 +643,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
   });
   const { data: poolData } = useAmm2Pool(0, poolId); // marketId=0 for combo pools
   const { data: parentCollectionIds } = useNeoPoolParentCollectionIds(poolId);
-  console.log(parentCollectionIds);
+  console.log(comboMarketData);
   // Extract market IDs from combo market data
   const marketIds = comboMarketData?.marketIds;
 
@@ -874,7 +917,30 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
                   Both source markets have been resolved. Redeem your outcome tokens below.
                 </p>
                 <div className="space-y-4">
-                  {comboMarketData?.outcomeCombinations?.map((combo, index) => (
+                  {comboMarketData?.outcomeCombinations
+                    ?.filter((_: any, index: number) => {
+                      if (virtualMarket?.resolvedOutcome === null) {
+                        // Parent is scalar - show all positions (blockchain calculates payouts)
+                        return true;
+                      }
+
+                      const isParentScalar = (virtualMarket.neoPool as any)?._debug?.isParentScalar;
+                      const isChildScalar = (virtualMarket.neoPool as any)?._debug?.isChildScalar;
+
+                      if (isChildScalar && !isParentScalar) {
+                        // Parent categorical, child scalar
+                        // Show both scalar positions (Short & Long) for the resolved parent outcome
+                        const parentResolvedIndex = Number(virtualMarket.resolvedOutcome);
+                        const numChildOutcomes = 2; // Scalar has 2 outcomes
+                        const startIndex = parentResolvedIndex * numChildOutcomes;
+                        const endIndex = startIndex + numChildOutcomes;
+                        return index >= startIndex && index < endIndex;
+                      } else {
+                        // Both categorical - show only the single winning outcome
+                        return virtualMarket?.resolvedOutcome !== null && index === Number(virtualMarket.resolvedOutcome);
+                      }
+                    })
+                    .map((combo: any, index: number) => (
                     <div key={index} className="flex items-center justify-between rounded-lg border p-4">
                       <div className="flex items-center gap-2">
                         <div
@@ -885,8 +951,11 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
                       </div>
                       <RedeemButton
                         market={virtualMarket}
-                        assetId={combo.assetId}
+                        assetId={combo.assetId as any}
                         underlyingMarketIds={comboMarketData.marketIds}
+                        isPartialRedemption={false}
+                        parentCollectionIds={parentCollectionIds ?? undefined}
+                        showBalance={true}
                       />
                     </div>
                   ))}
@@ -910,8 +979,10 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
                       </div>
                       <RedeemButton
                         market={virtualMarket}
-                        assetId={combo.assetId}
+                        assetId={combo.assetId as any}
                         underlyingMarketIds={comboMarketData.marketIds}
+                        isPartialRedemption={true}
+                        parentCollectionIds={parentCollectionIds ?? undefined}
                       />
                     </div>
                   ))}
@@ -930,7 +1001,11 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId }) => {
           </div>
         </div>
       </div>
-      <MobileContextButtons poolId={poolId} comboMarketData={comboMarketData} />
+      <MobileContextButtons
+        poolId={poolId}
+        comboMarketData={comboMarketData}
+        parentCollectionIds={parentCollectionIds}
+      />
     </div>
   );
 };

@@ -220,14 +220,27 @@ const Market: NextPage<MarketPageProps> = ({
   const router = useRouter();
   const { marketid } = router.query;
 
-  const marketId =
-    indexedMarket?.marketId ?? (router.isReady ? Number(marketid) : undefined);
+  // Prioritize URL parameter over static props to ensure correct data on navigation
+  const marketId = router.isReady && marketid
+    ? Number(marketid)
+    : indexedMarket?.marketId;
   const { realAddress } = useWallet();
   const marketData = indexedMarket;
 
+  const [poolDeployed, setPoolDeployed] = useState(false);
+
+  // Fetch fresh market data when navigating between markets
+  const {
+    data: market,
+    isLoading: marketIsLoading,
+    refetch: refetchMarket,
+  } = useMarket(marketId ? { marketId } : undefined, {
+    refetchInterval: poolDeployed ? 1000 : false,
+  });
+
   const { data: poolData } = useAmm2Pool(
     marketId || 0,
-    marketData?.neoPool?.poolId ?? null,
+    market?.neoPool?.poolId ?? marketData?.neoPool?.poolId ?? null,
   );
 
   const { data: orders, isLoading: isOrdersLoading } = useOrders({
@@ -357,16 +370,6 @@ const Market: NextPage<MarketPageProps> = ({
     useQueryParamState("showLiquidity");
 
   const showLiquidity = showLiquidityParam != null;
-
-  const [poolDeployed, setPoolDeployed] = useState(false);
-
-  const {
-    data: market,
-    isLoading: marketIsLoading,
-    refetch: refetchMarket,
-  } = useMarket(marketId ? { marketId } : undefined, {
-    refetchInterval: poolDeployed ? 1000 : false,
-  });
 
   const { data: disputes } = useMarketDisputes(marketId || 0);
 

@@ -30,6 +30,9 @@ export type RedeemButtonProps = {
   market: Market<IndexerContext>;
   assetId: AssetId;
   underlyingMarketIds?: number[];
+  isPartialRedemption?: boolean; // True when only child market is resolved
+  parentCollectionIds?: string[]; // Array of parent collection IDs for multi-markets
+  showBalance?: boolean; // Whether to display the token balance
 };
 
 export const RedeemButton = (props: RedeemButtonProps) => {
@@ -42,10 +45,16 @@ export const RedeemButtonByAssetId = ({
   market,
   assetId,
   underlyingMarketIds,
+  isPartialRedemption = false,
+  parentCollectionIds,
+  showBalance = false,
 }: {
   market: Market<IndexerContext>;
   assetId: AssetId;
   underlyingMarketIds?: number[];
+  isPartialRedemption?: boolean;
+  parentCollectionIds?: string[];
+  showBalance?: boolean;
 }) => {
 
   const wallet = useWallet();
@@ -92,18 +101,65 @@ export const RedeemButtonByAssetId = ({
         ?.balance;
       return balance?.div(ZTG);
     } else if (isCombinatorialToken(assetId)) {
-      // Get the index of this combo token in market.outcomeAssets
+      // For multi-markets: parent is marketIds[0], child is marketIds[1]
+      // Outcomes are organized as: [Parent0-Child0, Parent0-Child1, ..., Parent1-Child0, Parent1-Child1, ...]
+
       const tokenIndex = market.outcomeAssets.findIndex(
         asset => asset.includes(assetId.CombinatorialToken)
       );
-  
-      // Check if this token represents the winning outcome
-      if (tokenIndex === Number(market.resolvedOutcome)) {
-        // Get balance of the combinatorial token
+
+      if (tokenIndex === -1) return zero;
+
+      // Get the number of child outcomes (from the second market)
+      const numChildOutcomes = underlyingMarketIds && underlyingMarketIds.length >= 2
+        ? market.categories?.length || 0
+        : 0;
+
+      if (isPartialRedemption) {
+        // Partial redemption: child market resolved, parent market still active
+        // Can redeem if the child outcome matches the resolved child outcome
+        // tokenIndex = (parentOutcome * numChildOutcomes) + childOutcome
+        // So: childOutcome = tokenIndex % numChildOutcomes
+
+        // For partial redemption, allow redemption of all positions
+        // The blockchain will handle filtering based on the resolved child market
         const balance = getAccountAssetBalance(realAddress, assetId)?.data?.balance;
         return balance?.div(ZTG) || zero;
       }
-  
+
+      // For full redemption (both markets resolved)
+      // Handle scalar markets: multiple positions may have value
+      const isParentScalar = (market.neoPool as any)?._debug?.isParentScalar;
+      const isChildScalar = (market.neoPool as any)?._debug?.isChildScalar;
+
+      if (market.resolvedOutcome === null && isParentScalar) {
+        // Parent is scalar - all positions may have value (blockchain calculates payouts)
+        const balance = getAccountAssetBalance(realAddress, assetId)?.data?.balance;
+        return balance?.div(ZTG) || zero;
+      }
+
+      if (isChildScalar && !isParentScalar) {
+        // Parent categorical, child scalar
+        // Check if this position's parent outcome matches the resolved parent
+        const parentResolvedIndex = Number(market.resolvedOutcome);
+        const numChildOutcomes = 2; // Scalar has 2 outcomes
+        const parentIndex = Math.floor(tokenIndex / numChildOutcomes);
+
+        if (parentIndex === parentResolvedIndex) {
+          // This position belongs to the resolved parent outcome
+          // Blockchain will calculate correct payout based on scalar resolution
+          const balance = getAccountAssetBalance(realAddress, assetId)?.data?.balance;
+          return balance?.div(ZTG) || zero;
+        }
+        return zero;
+      }
+
+      // Both categorical - only winning outcome has value
+      if (tokenIndex === Number(market.resolvedOutcome)) {
+        const balance = getAccountAssetBalance(realAddress, assetId)?.data?.balance;
+        return balance?.div(ZTG) || zero;
+      }
+
       return zero;
     } else {
       const shortBalance = getAccountAssetBalance(realAddress, {
@@ -129,11 +185,30 @@ export const RedeemButtonByAssetId = ({
         longBalance.div(ZTG),
       );
     }
-  }, [market, assetId, isLoadingAssetBalance, getAccountAssetBalance]);
+  }, [market, assetId, isLoadingAssetBalance, getAccountAssetBalance, isPartialRedemption]);
 
-  return (
-    <RedeemButtonByValue market={market} value={value ?? new Decimal(0)} assetId={assetId} underlyingMarketIds={underlyingMarketIds} />
+  const button = (
+    <RedeemButtonByValue
+      market={market}
+      value={value ?? new Decimal(0)}
+      assetId={assetId}
+      underlyingMarketIds={underlyingMarketIds}
+      parentCollectionIds={parentCollectionIds}
+    />
   );
+
+  if (showBalance) {
+    return (
+      <div className="flex items-center gap-3">
+        <span className="text-sm font-medium text-gray-700">
+          {isLoadingAssetBalance ? "..." : value?.toFixed(2) || "0.00"}
+        </span>
+        {button}
+      </div>
+    );
+  }
+
+  return button;
 };
 
 const RedeemButtonByValue = ({
@@ -141,11 +216,13 @@ const RedeemButtonByValue = ({
   value,
   assetId,
   underlyingMarketIds,
+  parentCollectionIds,
 }: {
   market: Market<IndexerContext>;
   value: Decimal;
   assetId: AssetId | CombinatorialToken;
   underlyingMarketIds?: number[];
+  parentCollectionIds?: string[];
 }) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
@@ -154,32 +231,77 @@ const RedeemButtonByValue = ({
   const baseAsset = parseAssetIdString(market.baseAsset);
   const { data: baseAssetMetadata } = useAssetMetadata(baseAsset);
 
-  const tokenIndex = useMemo(() => {
+  const tokenIndexData = useMemo(() => {
     if(isCombinatorialToken(assetId)) {
-      const index = market.outcomeAssets.findIndex(asset => asset.includes(assetId.CombinatorialToken));
+      const absoluteIndex = market.outcomeAssets.findIndex(asset => asset.includes(assetId.CombinatorialToken));
+
+      // For multi-markets with parentCollectionIds, the index is relative to the parent collection
+      // Each parentCollectionId represents one parent outcome combined with all child outcomes
+      // tokenIndex = (parentOutcome * numChildOutcomes) + childOutcome
+      // We need to create an index array of size [numChildOutcomes], not [totalCombinations]
+      if (parentCollectionIds && parentCollectionIds.length > 0) {
+        const numParentOutcomes = parentCollectionIds.length;
+        const totalCombinations = market.outcomeAssets.length;
+        const numChildOutcomes = totalCombinations / numParentOutcomes;
+
+        // Calculate which child outcome this token represents within its parent collection
+        const childOutcomeIndex = absoluteIndex % numChildOutcomes;
+
+        // Create index array of size [numChildOutcomes]
+        const indexSet = Array(numChildOutcomes).fill(false);
+        indexSet[childOutcomeIndex] = true;
+        return { indexSet, absoluteIndex };
+      }
+
+      // For single-market combinatorial, use the full index array
       const indexSet = Array(market.outcomeAssets.length).fill(false);
-      indexSet[index] = true;
-      return indexSet;
+      indexSet[absoluteIndex] = true;
+      return { indexSet, absoluteIndex };
     }
-    return [];
-  }, [assetId, market.outcomeAssets]);
+    return { indexSet: [], absoluteIndex: -1 };
+  }, [assetId, market.outcomeAssets, parentCollectionIds]);
+
+  const tokenIndex = tokenIndexData.indexSet;
 
 
-  const isCombinatorialMarket = market.outcomeAssets.some(asset => asset.includes("combinatorialToken"));
+  // Check if this is a combinatorial market (single-market or multi-market)
+  // For single-market: outcomeAssets contain the string "combinatorialToken"
+  // For multi-market: outcomeAssets are hex strings (0x...), or marketType is "Combinatorial"
+  const isCombinatorialMarket =
+    market.outcomeAssets.some(asset => asset.includes("combinatorialToken")) || // Single-market
+    market.marketType.categorical === "Combinatorial" || // Multi-market
+    (underlyingMarketIds && underlyingMarketIds.length > 0); // Multi-market with underlying IDs
 
-
-  const { isLoading, isSuccess, send } = useExtrinsic(
+    const { isLoading, isSuccess, send } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk) || !signer) return;
       if(isCombinatorialMarket)
       {
-        // For multi-market positions, pass the underlying market IDs array. 
+        // For multi-market positions, pass the underlying market IDs array.
         // Multi-markets use first marketId as parent and second marketId as child for splitting positions.
         const marketIds = underlyingMarketIds && underlyingMarketIds.length > 0
           ? underlyingMarketIds[1].toString()
           : market.marketId.toString();
 
-        return sdk.api.tx.combinatorialTokens.redeemPosition(null, marketIds, tokenIndex, { total: 16, consumeAll: true });
+        // Calculate which parentCollectionId to use based on absolute token index
+        // tokenIndex = (parentOutcome * numChildOutcomes) + childOutcome
+        // So parentOutcome = Math.floor(absoluteIndex / numChildOutcomes)
+        // where numChildOutcomes = totalCombinations / numParentOutcomes
+        let parentCollectionId: string | null = null;
+        if (parentCollectionIds && parentCollectionIds.length > 0 && tokenIndexData.absoluteIndex !== -1) {
+          const numParentOutcomes = parentCollectionIds.length;
+          const totalCombinations = market.outcomeAssets.length;
+          const numChildOutcomes = totalCombinations / numParentOutcomes;
+          const parentOutcomeIndex = Math.floor(tokenIndexData.absoluteIndex / numChildOutcomes);
+          parentCollectionId = parentCollectionIds[parentOutcomeIndex];
+        }
+
+        return sdk.api.tx.combinatorialTokens.redeemPosition(
+          parentCollectionId,
+          marketIds,
+          tokenIndex,
+          { total: 16, consumeAll: true }
+        );
       } else {
         return sdk.api.tx.predictionMarkets.redeemShares(market.marketId);
       }

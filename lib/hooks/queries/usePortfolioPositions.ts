@@ -140,6 +140,10 @@ export type Position<T extends AssetId = AssetId> = {
    * Indicates if tokens can be redeemed (for multi-market positions when markets are closed)
    */
   canRedeem?: boolean;
+  /**
+   * Indicates if this specific position is a winning/redeemable position
+   */
+  isWinningPosition?: boolean;
 };
 
 export type PorfolioBreakdown = {
@@ -202,7 +206,7 @@ export const usePortfolioPositions = (
   // Extract all combinatorial tokens
   const combinatorialTokens = rawPositions.data
     ?.map((position) => {
-      const assetId = parseAssetIdStringWithCombinatorial(position.assetId);
+      const assetId = (parseAssetIdStringWithCombinatorial as any)(position.assetId);
       if (isCombinatorialToken(assetId)) {
         return assetId.CombinatorialToken;
       }
@@ -212,7 +216,7 @@ export const usePortfolioPositions = (
 
   // Fetch market IDs for all combinatorial tokens
   const { data: combinatorialMarketIds, isLoading: isLoadingCombinatorialMarketIds } = useCombinatorialTokenMarketIds(combinatorialTokens);
-  console.log(combinatorialMarketIds);
+
   // Process multi-market tokens only after data is loaded
   const multiMarketTokenIds = useMemo(() => {
     if (!combinatorialMarketIds) return [];
@@ -234,7 +238,7 @@ export const usePortfolioPositions = (
     isFetching: isFetchingMultiMarketAssets,
     status: multiMarketAssetsStatus
   } = useMultiMarketAssets(multiMarketAssets);
-  console.log(multiMarketAssetsData);
+
   // Create a map for quick lookup of multi-market assets
   const multiMarketAssetMap = useMemo(() => {
     const map = new Map<string, AssetWithNullMarket>();
@@ -250,7 +254,7 @@ export const usePortfolioPositions = (
 
   const filter = rawPositions.data
     ?.map((position) => {
-      const assetId = parseAssetIdStringWithCombinatorial(position.assetId);
+      const assetId = (parseAssetIdStringWithCombinatorial as any)(position.assetId);
 
       if (IOMarketOutcomeAssetId.is(assetId)) {
         return {
@@ -303,7 +307,7 @@ export const usePortfolioPositions = (
   // Use custom hook to get pool data for all multi-market pools
   const multiMarketPoolsQuery = useMultipleAmm2Pools(uniqueMultiMarketPoolIds);
   const multiMarketPoolDataMap = multiMarketPoolsQuery.data ?? new Map();
-  console.log(multiMarketPoolDataMap);
+
   const pools = usePoolsByIds(filter);
   // Collect all market IDs including those from multi-market pools
   // Exclude synthetic market IDs (they don't exist in the database)
@@ -359,7 +363,7 @@ export const usePortfolioPositions = (
   const poolAssetBalancesFilter =
     rawPositions.data
       ?.flatMap((position) => {
-        const assetId = parseAssetIdStringWithCombinatorial(position.assetId);
+        const assetId = (parseAssetIdStringWithCombinatorial as any)(position.assetId);
 
         // Skip combinatorial tokens for pool asset balance queries
         if (isCombinatorialToken(assetId)) {
@@ -371,7 +375,7 @@ export const usePortfolioPositions = (
             return pool.poolId === assetId.PoolShare;
           }
           if (IOMarketOutcomeAssetId.is(assetId)) {
-            return pool.marketId === getMarketIdOf(assetId);
+            return pool.marketId === getMarketIdOf(assetId as any);
           }
         });
 
@@ -399,7 +403,7 @@ export const usePortfolioPositions = (
 
   const userAssetBalances = useAccountAssetBalances(
     rawPositions.data?.map((position) => ({
-      assetId: parseAssetIdStringWithCombinatorial(position.assetId) as any,
+      assetId: (parseAssetIdStringWithCombinatorial as any)(position.assetId),
       account: address,
     })) ?? [],
   );
@@ -414,7 +418,11 @@ export const usePortfolioPositions = (
       !poolsTotalIssuance ||
       userAssetBalances.isLoading ||
       poolAssetBalances24HoursAgo.isLoading ||
-      isTradeHistoryLoading;
+      isTradeHistoryLoading ||
+      isLoadingCombinatorialMarketIds ||
+      isLoadingMultiMarketAssets ||
+      multiMarketPoolsQuery.isLoading ||
+      multiMarketPoolsQuery.isFetching;
 
     if (stillLoading) {
       return null;
@@ -423,7 +431,7 @@ export const usePortfolioPositions = (
     let positionsData: Position[] = [];
 
     for (const position of rawPositions?.data ?? []) {
-      const assetId = parseAssetIdStringWithCombinatorial(position.assetId);
+      const assetId = (parseAssetIdStringWithCombinatorial as any)(position.assetId);
 
       let pool: IndexedPool<Context> | undefined;
       let marketId: number | undefined;
@@ -501,6 +509,51 @@ export const usePortfolioPositions = (
               // Use a large offset to avoid collision with real market IDs
               // Real market IDs are sequential from 0, so using offset + poolId ensures uniqueness
               const syntheticMarketId = SYNTHETIC_MARKET_ID_OFFSET + multiMarketAsset.poolId;
+
+              // Calculate combined resolved outcome if both markets are resolved
+              // Multi-markets structure: market1 is parent, market2 is child
+              // Outcomes are organized as: [Parent0-Child0, Parent0-Child1, ..., Parent1-Child0, Parent1-Child1, ...]
+              // Formula: tokenIndex = (parentOutcome * numChildOutcomes) + childOutcome
+              let combinedResolvedOutcome: string | null = null;
+              let syntheticStatus = market1.status === 'Active' && market2.status === 'Active' ? 'Active' : 'Closed';
+
+              const isParentScalar = market1.marketType?.scalar !== null;
+              const isChildScalar = market2.marketType?.scalar !== null;
+
+              if (market1.resolvedOutcome !== null && market2.resolvedOutcome !== null) {
+                // For categorical markets, resolvedOutcome is an index (0, 1, 2, etc.)
+                // For scalar markets, resolvedOutcome is the numeric value (e.g., "800000000000")
+                // Scalar markets have 2 outcomes: Short (index 0) and Long (index 1)
+
+                let parentResolvedIndex: number;
+                let childResolvedIndex: number;
+
+                if (isParentScalar) {
+                  // Parent is scalar - we can't determine a single index, need special handling
+                  combinedResolvedOutcome = null;
+                } else {
+                  parentResolvedIndex = typeof market1.resolvedOutcome === 'string'
+                    ? parseInt(market1.resolvedOutcome)
+                    : market1.resolvedOutcome ?? 0;
+
+                  if (isChildScalar) {
+                    // Parent categorical, child scalar - resolvedOutcome represents parent only
+                    // Both Short and Long positions for this parent outcome are redeemable
+                    combinedResolvedOutcome = parentResolvedIndex.toString();
+                  } else {
+                    // Both categorical - standard combo index calculation
+                    childResolvedIndex = typeof market2.resolvedOutcome === 'string'
+                      ? parseInt(market2.resolvedOutcome)
+                      : market2.resolvedOutcome ?? 0;
+                    const numChildOutcomes = market2.categories?.length || 0;
+
+                    const comboIndex = (parentResolvedIndex * numChildOutcomes) + childResolvedIndex;
+                    combinedResolvedOutcome = comboIndex.toString();
+                  }
+                }
+                syntheticStatus = 'Resolved';
+              }
+
               market = {
                 ...market1, // Use market1 as base structure
                 marketId: syntheticMarketId, // Use synthetic marketId to avoid collisions
@@ -508,8 +561,18 @@ export const usePortfolioPositions = (
                 description: `Combinatorial market: ${market1.question} and ${market2.question}`,
                 categories: combinedCategories,
                 outcomeAssets: outcomeAssets, // Now populated with actual asset IDs
-                status: market1.status === 'Active' && market2.status === 'Active' ? 'Active' : 'Closed',
-                pool: null // Multi-market pools are handled differently
+                status: syntheticStatus,
+                resolvedOutcome: combinedResolvedOutcome,
+                pool: null, // Multi-market pools are handled differently
+                neoPool: poolData
+                  ? {
+                      ...poolData,
+                      _debug: {
+                        isParentScalar,
+                        isChildScalar,
+                      },
+                    }
+                  : null,
               } as FullMarketFragment;
 
               pool = pools.data?.find((p) => p.poolId === multiMarketAsset.poolId);
@@ -770,6 +833,7 @@ export const usePortfolioPositions = (
       let isMultiMarket = false;
       let poolIdForRouting: number | undefined;
       let canRedeem = false;
+      let isWinningPosition = false;
 
       if (isCombinatorialToken(assetId)) {
         const multiMarketAsset = multiMarketAssetMap.get(assetId.CombinatorialToken);
@@ -784,6 +848,30 @@ export const usePortfolioPositions = (
 
           // Enable redemption if at least one market is not Active
           canRedeem = underlyingMarkets.some(m => m.status !== 'Active');
+
+          // Determine if this position is a winning/redeemable position
+          if (market.status === 'Resolved' && market.resolvedOutcome !== null) {
+            const tokenIndex = market.outcomeAssets?.findIndex(
+              asset => asset.includes(assetId.CombinatorialToken)
+            );
+
+            if (tokenIndex !== -1 && tokenIndex !== undefined) {
+              const isParentScalar = (market as any).neoPool?._debug?.isParentScalar;
+              const isChildScalar = (market as any).neoPool?._debug?.isChildScalar;
+
+              if (!isParentScalar && isChildScalar) {
+                // Parent categorical, child scalar: check if parent matches
+                const parentIndex = Math.floor(tokenIndex / 2);
+                isWinningPosition = parentIndex === Number(market.resolvedOutcome);
+              } else if (!isParentScalar && !isChildScalar) {
+                // Both categorical: exact match
+                isWinningPosition = tokenIndex === Number(market.resolvedOutcome);
+              } else if (isParentScalar) {
+                // Parent scalar: all positions may have value
+                isWinningPosition = true;
+              }
+            }
+          }
         }
       }
 
@@ -807,6 +895,7 @@ export const usePortfolioPositions = (
           ? multiMarketAssetMap.get(assetId.CombinatorialToken)?.marketIds
           : undefined,
         canRedeem,
+        isWinningPosition,
       });
     }
 
