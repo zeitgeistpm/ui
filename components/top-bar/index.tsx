@@ -149,7 +149,7 @@ const TopBar = () => {
                         )}
                       </Menu.Item>
 
-                      <div className="block md:hidden">
+                      {/* <div className="block md:hidden">
                         <Menu.Item>
                           {({ active }) => (
                             <Link href="/leaderboard/year" onClick={close}>
@@ -166,7 +166,7 @@ const TopBar = () => {
                             </Link>
                           )}
                         </Menu.Item>
-                      </div>
+                      </div> */}
 
                       <CategoriesMenuItem onSelect={close} />
 
@@ -258,7 +258,7 @@ const TopBar = () => {
             }}
           </Menu>
 
-          <Link
+          {/* <Link
             className="md:center relative hidden gap-2 font-light text-white md:flex"
             href="/leaderboard/year"
           >
@@ -266,7 +266,7 @@ const TopBar = () => {
               <FiAward size="20px" />
               <div className="hidden text-xs md:block">Leaderboard</div>
             </div>
-          </Link>
+          </Link> */}
         </div>
         <MarketSearch />
         <div className="center relative ml-auto gap-3">
