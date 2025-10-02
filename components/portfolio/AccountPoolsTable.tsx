@@ -40,10 +40,15 @@ const AccountPoolsTable = ({ address }: { address: string }) => {
   const { data: pools, isLoading } = useAccountAmm2Pool(address);
 
   const tableData: TableData[] | undefined = pools?.map((pool) => {
+    const isMultiMarket = pool.isMultiMarket && pool.marketIds && pool.marketIds.length > 1;
+    const href = isMultiMarket
+      ? `/multi-market/${pool.poolId}`
+      : `/markets/${pool.marketId}`;
+
     return {
       question: (
         <Link
-          href={`/markets/${pool.marketId}`}
+          href={href}
           className="line-clamp-1 text-[14px]"
         >
           {pool.question}
@@ -54,7 +59,7 @@ const AccountPoolsTable = ({ address }: { address: string }) => {
         usdValue: pool.addressUsdValue?.toNumber(),
       },
       fees: new Decimal(pool.account?.fees ?? 0).div(ZTG).toFixed(3),
-      buttons: <PoolButtons marketId={pool.marketId} />,
+      buttons: <PoolButtons poolId={pool.poolId} marketId={pool.marketId} isMultiMarket={isMultiMarket} />,
     };
   });
 
@@ -74,10 +79,23 @@ const AccountPoolsTable = ({ address }: { address: string }) => {
   );
 };
 
-const PoolButtons = ({ marketId }: { marketId: number }) => {
+const PoolButtons = ({
+  poolId,
+  marketId,
+  isMultiMarket
+}: {
+  poolId: number;
+  marketId: number | null;
+  isMultiMarket: boolean;
+}) => {
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
-  const [showLiqudityModal, setShowLiqudityModal] = useState(false);
+
+  // For multi-market pools, use poolId; for single market pools, use marketId
+  const withdrawFeesId = isMultiMarket ? poolId : marketId;
+  const href = isMultiMarket
+    ? `/multi-market/${poolId}`
+    : `/markets/${marketId}`;
 
   const {
     isLoading: isCollectingFees,
@@ -85,8 +103,8 @@ const PoolButtons = ({ marketId }: { marketId: number }) => {
     send: withdrawFees,
   } = useExtrinsic(
     () => {
-      if (!isRpcSdk(sdk)) return;
-      return sdk.api.tx.neoSwaps.withdrawFees(marketId);
+      if (!isRpcSdk(sdk) || withdrawFeesId === null) return;
+      return sdk.api.tx.neoSwaps.withdrawFees(withdrawFeesId);
     },
     {
       onSuccess: () => {
@@ -98,19 +116,14 @@ const PoolButtons = ({ marketId }: { marketId: number }) => {
   );
   return (
     <div className="flex justify-end gap-2">
-      <LiquidityModalAmm2
-        marketId={marketId}
-        open={showLiqudityModal}
-        onClose={() => setShowLiqudityModal(false)}
-      />
-      <SecondaryButton
-        className="w-full max-w-[150px]"
-        onClick={() => {
-          setShowLiqudityModal(true);
-        }}
-      >
-        Manage Liquidity
-      </SecondaryButton>
+      <Link href={href}>
+        <SecondaryButton
+          className="w-full max-w-[150px]"
+          onClick={() => {}}
+        >
+          Manage
+        </SecondaryButton>
+      </Link>
       <SecondaryButton
         className="w-full max-w-[150px]"
         disabled={isCollectingFees || isSuccess}

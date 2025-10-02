@@ -44,34 +44,20 @@ export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarke
   // const legacy = marketId === poolId
   const legacy = false
 
-  console.log("[useAmm2Pool] Hook called:", {
-    marketId,
-    poolId,
-    hasActiveMarket: !!activeMarket,
-    activeMarketId: activeMarket?.marketId,
-    activeMarketOutcomeAssets: activeMarket?.outcomeAssets?.length,
-    enabled
-  });
-
   const query = useQuery(
     [id, amm2PoolKey, marketId, poolId],
     async () => {
 
       if (!enabled) {
-        console.log("[useAmm2Pool] Query disabled, returning early");
         return;
       }
 
       const poolIdToUse = legacy ? Number(await sdk.api.query.neoSwaps.marketIdToPoolId(marketId)) : poolId!;
 
-      console.log("[useAmm2Pool] Fetching pool:", { poolIdToUse, legacy });
-
       const res = await sdk.api.query.neoSwaps.pools(poolIdToUse);
       // Check if the result is Some before unwrapping
       const unwrappedRes = res && res.isSome ? res.unwrap() : null;
-      console.log("[useAmm2Pool] unwrappedRes:", unwrappedRes);
       const blockHash = unwrappedRes?.createdAtHash?.toJSON();
-      console.log("[useAmm2Pool] blockHash:", blockHash);
 
       if (unwrappedRes) {
         const reserves: ReserveMap = new Map();
@@ -80,9 +66,6 @@ export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarke
         const tempReserves: Map<string | number | "Long" | "Short", Decimal> = new Map();
         
         unwrappedRes.reserves.forEach((reserve, asset) => {
-          console.log("reserve", reserve);
-
-          console.log("asset", asset);
           const assetId = parseAssetIdString(asset.toString());
           if (IOMarketOutcomeAssetId.is(assetId)) {
             const key = IOCategoricalAssetId.is(assetId)
@@ -99,7 +82,6 @@ export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarke
         });
 
         unwrappedRes.assets.forEach((asset) => {
-          console.log("asset", asset);
           const assetId = parseAssetIdString(asset.toString());
           if (!IOMarketOutcomeAssetId.is(assetId)) {
             //Combinatorial markets
@@ -108,15 +90,8 @@ export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarke
           }
         });
 
-
-        console.log("[useAmm2Pool] tempReserves:", tempReserves);
-        console.log("[useAmm2Pool] assetIds before sorting:", assetIds);
-        console.log("[useAmm2Pool] activeMarket outcomeAssets:", activeMarket?.outcomeAssets);
-
         // Sort assets to match market.outcomeAssets order
         const sortedAssetIds = sortAssetsByMarketOrder(assetIds, activeMarket?.outcomeAssets);
-        console.log("[useAmm2Pool] assetIds after sorting:", sortedAssetIds);
-        console.log("[useAmm2Pool] sorting changed order:", sortedAssetIds !== assetIds);
 
         // Replace assetIds with sorted version if different
         if (sortedAssetIds !== assetIds) {
@@ -133,19 +108,10 @@ export const useAmm2Pool = (marketId: number, poolId: number | null, activeMarke
             : asset.CombinatorialToken;
           const value = tempReserves.get(key);
 
-          console.log(`[useAmm2Pool] Building reserves map - Asset ${index}:`, {
-            asset,
-            key,
-            hasValue: !!value,
-            valueAmount: value?.toString()
-          });
-
           if (value) {
             reserves.set(key, value);
           }
         });
-
-        console.log("[useAmm2Pool] Final reserves map:", Array.from(reserves.entries()));
 
         const poolAccounts: PoolAccount[] =
           unwrappedRes.liquiditySharesManager.nodes.map((node) => {

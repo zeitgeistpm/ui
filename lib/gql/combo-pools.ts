@@ -104,6 +104,148 @@ export const neoPoolParentCollectionIdsQuery = gql`
   }
 `;
 
+// Query for getting liquidity shares managers by account
+export const liquiditySharesManagersQuery = gql`
+  query LiquiditySharesManagers($account: String!) {
+    liquiditySharesManagers(where: { account_eq: $account }) {
+      stake
+      id
+      fees
+      account
+      neoPool {
+        volume
+        totalStake
+        swapFee
+        poolId
+        parentCollectionIds
+        marketIds
+        marketId
+        liquidityParameter
+        isMultiMarket
+        id
+        createdAt
+        collateral
+        account {
+          accountId
+          balances {
+            assetId
+            balance
+          }
+        }
+      }
+    }
+  }
+`;
+
+export interface LiquiditySharesManagerData {
+  stake: string;
+  id: string;
+  fees: string;
+  account: string;
+  neoPool: {
+    volume: string;
+    totalStake: string;
+    swapFee: string;
+    poolId: number;
+    parentCollectionIds: string[] | null;
+    marketIds: number[];
+    marketId: number | null;
+    liquidityParameter: string;
+    isMultiMarket: boolean;
+    id: string;
+    createdAt: string;
+    collateral: string;
+    account: {
+      accountId: string;
+      balances: Array<{
+        assetId: string;
+        balance: string;
+      }>;
+    };
+  };
+}
+
+export const getLiquiditySharesManagers = async (
+  client: GraphQLClient,
+  account: string
+): Promise<LiquiditySharesManagerData[]> => {
+  try {
+    const response = await client.request<{
+      liquiditySharesManagers: LiquiditySharesManagerData[];
+    }>(liquiditySharesManagersQuery, {
+      account,
+    });
+
+    return response.liquiditySharesManagers || [];
+  } catch (error) {
+    console.error("Error fetching liquidity shares managers:", error);
+    throw error;
+  }
+};
+
+// Query for getting multi-market pools created by a specific account
+export const createdMultiMarketPoolsQuery = gql`
+  query CreatedMultiMarketPools($accountId: String!) {
+    neoPools(
+      where: { 
+        account: { accountId_eq: $accountId }
+        isMultiMarket_eq: true
+      }
+      orderBy: createdAt_DESC
+    ) {
+      poolId
+      marketIds
+      marketId
+      totalStake
+      swapFee
+      liquidityParameter
+      collateral
+      createdAt
+      isMultiMarket
+      volume
+      id
+      account {
+        accountId
+      }
+    }
+  }
+`;
+
+export interface CreatedMultiMarketPool {
+  poolId: number;
+  marketIds: number[];
+  marketId: number | null;
+  totalStake: string;
+  swapFee: string;
+  liquidityParameter: string;
+  collateral: string;
+  createdAt: string;
+  isMultiMarket: boolean;
+  volume: string;
+  id: string;
+  account: {
+    accountId: string;
+  };
+}
+
+export const getCreatedMultiMarketPools = async (
+  client: GraphQLClient,
+  accountId: string
+): Promise<CreatedMultiMarketPool[]> => {
+  try {
+    const response = await client.request<{
+      neoPools: CreatedMultiMarketPool[];
+    }>(createdMultiMarketPoolsQuery, {
+      accountId,
+    });
+
+    return response.neoPools || [];
+  } catch (error) {
+    console.error("Error fetching created multi-market pools:", error);
+    throw error;
+  }
+};
+
 export type ComboPoolData = {
   poolId: number;
   marketIds: number[];
@@ -262,7 +404,6 @@ export const getPoolsAssetIds = async (
     }>(poolsAssetIdsQuery, {
       poolIds,
     });
-    console.log("response", response);
     // Group assets by poolId and parse the assetId JSON strings
     const poolAssetMap = new Map<number, any[]>();
 

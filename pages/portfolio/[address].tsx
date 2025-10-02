@@ -41,12 +41,12 @@ const mainTabItems: MainTabItem[] = [
 
 type MarketsTabItem =
   | "Created Markets"
-  | "Liquidity"
+  | "Manage"
   // | "Creator Fee Payouts"
   // | "Orders";
 const marketsTabItems: MarketsTabItem[] = [
-  "Created Markets",
-  "Liquidity",
+  // "Created Markets",
+  "Manage",
   // "Creator Fee Payouts",
   // "Orders",
 ];
@@ -153,22 +153,6 @@ const Portfolio: NextPageWithLayout = () => {
                     if (isMultiMarket && canRedeem) {
                       const underlyingMarketIds = marketPositions[0]?.underlyingMarketIds || [];
 
-                      console.log('Multi-market check:', {
-                        marketId: market.marketId,
-                        question: market.question,
-                        resolvedOutcome: market.resolvedOutcome,
-                        status: market.status,
-                        isParentScalar: (market.neoPool as any)?._debug?.isParentScalar,
-                        isChildScalar: (market.neoPool as any)?._debug?.isChildScalar,
-                        outcomeAssets: market.outcomeAssets,
-                        underlyingMarketIds,
-                        positions: marketPositions.map(p => ({
-                          outcome: p.outcome,
-                          balance: p.userBalance.toString(),
-                          assetId: p.assetId,
-                        }))
-                      });
-
                       // Check if all underlying markets are resolved
                       const allMarketsResolved = market.status === 'Resolved';
 
@@ -196,37 +180,17 @@ const Portfolio: NextPageWithLayout = () => {
                                 const parentIndex = Math.floor(tokenIndex / 2);
                                 const matches = parentIndex === Number(market.resolvedOutcome);
 
-                                console.log('Checking position (parent cat, child scalar):', {
-                                  outcome: position.outcome,
-                                  tokenIndex,
-                                  parentIndex,
-                                  resolvedOutcome: market.resolvedOutcome,
-                                  matches,
-                                  balance: position.userBalance.toString(),
-                                });
-
                                 return matches;
                               }
 
                               // For both categorical: standard index match
                               const matches = tokenIndex === Number(market.resolvedOutcome);
 
-                              console.log('Checking position:', {
-                                outcome: position.outcome,
-                                tokenIndex,
-                                resolvedOutcome: market.resolvedOutcome,
-                                matches,
-                                balance: position.userBalance.toString(),
-                              });
-
                               return matches;
                             }
                             return false;
                           }
                         );
-
-                        console.log('Winning positions:', winningPositions.length);
-                        console.log('Total positions:', marketPositions.length);
 
                         // If all markets resolved and winning positions all have 0 balance,
                         // hide all positions (including losing ones)
@@ -235,11 +199,6 @@ const Portfolio: NextPageWithLayout = () => {
 
                         // Also check if no winning positions exist (filtered out due to 0 balance)
                         const noWinningPositions = winningPositions.length === 0 && marketPositions.length > 0;
-
-                        console.log('All winning balances zero:', allWinningBalancesZero);
-                        console.log('No winning positions (filtered out):', noWinningPositions);
-                        console.log('All markets resolved:', allMarketsResolved);
-
                         // Hide everything if all markets resolved and all winning balances are 0
                         if (allMarketsResolved && (allWinningBalancesZero || noWinningPositions)) {
                           return <></>;
@@ -310,13 +269,13 @@ const Portfolio: NextPageWithLayout = () => {
                   <SubTabsList titles={marketsTabItems} />
                 </div>
                 <Tab.Panels>
-                  <Tab.Panel>
+                  {/* <Tab.Panel>
                     {address && <BondsTable address={address} />}
-                  </Tab.Panel>
+                  </Tab.Panel> */}
                   <Tab.Panel>
                     <AccountPoolsTable address={address} />
                   </Tab.Panel>
-                  <Tab.Panel>
+                  {/* <Tab.Panel>
                     {address && <CreatorFeePayouts address={address} />}
                   </Tab.Panel>
                   <Tab.Panel>
@@ -327,7 +286,7 @@ const Portfolio: NextPageWithLayout = () => {
                         }}
                       />
                     )}
-                  </Tab.Panel>
+                  </Tab.Panel> */}
                 </Tab.Panels>
               </Tab.Group>
             </Tab.Panel>

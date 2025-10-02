@@ -137,7 +137,6 @@ export const useVirtualMarket = (
     const isChildScalar = market2.marketType?.scalar !== null;
 
     if (market1.resolvedOutcome !== null && market2.resolvedOutcome !== null) {
-      console.log(market1.resolvedOutcome, market2.resolvedOutcome);
 
       // For categorical markets, resolvedOutcome is an index (0, 1, 2, etc.)
       // For scalar markets, resolvedOutcome is the numeric value (e.g., "800000000000")

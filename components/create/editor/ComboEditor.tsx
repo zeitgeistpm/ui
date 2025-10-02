@@ -429,7 +429,6 @@ const ComboMarketEditor: React.FC = () => {
 
         if (poolDeployedEvent) {
           const eventData = poolDeployedEvent.event.data;
-          console.log("Pool deployed event data:", eventData);
 
           if (!eventData || eventData.length < 3) {
             console.error("Invalid pool deployment event data structure");

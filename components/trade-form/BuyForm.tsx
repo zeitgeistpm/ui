@@ -302,7 +302,6 @@ const BuyForm = ({
           })),
         approxOutcomeAmount.abs().mul(ZTG),
       );
-      console.log("asset", selectedAsset);
 
       if (!isCombinatorialToken(selectedAsset)) {
         return sdk.api.tx.neoSwaps.buy(

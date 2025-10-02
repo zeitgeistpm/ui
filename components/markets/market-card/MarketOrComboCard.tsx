@@ -67,7 +67,6 @@ const ComboPoolCard = ({
   disableLink?: boolean;
 }) => {
   const { data: pool, stats, associatedMarkets, question, baseAsset } = item;
-  console.log(question)
   // Get the earliest end date from associated markets
   const earliestEndDate = associatedMarkets.reduce((earliest, market) => {
     // Parse the timestamp string to number
@@ -220,24 +219,6 @@ const ComboPoolPredictionBar = ({
   // Get spot prices for the combo pool
   const { data: spotPrices } = useMarketSpotPrices(poolId, 0, virtualMarket);
   
-  console.log(`Combo Pool Debug for Pool ${poolId}:`, {
-    poolId,
-    poolData: poolData ? { 
-      poolId: poolData.poolId, 
-      assetIds: poolData.assetIds?.length,
-      liquidity: poolData.liquidity?.toString()
-    } : null,
-    spotPrices: spotPrices ? Array.from(spotPrices.entries()) : null,
-    virtualMarketId: virtualMarket?.marketId,
-    virtualMarketQuestion: virtualMarket?.question,
-    virtualMarketCategories: virtualMarket?.categories?.map(c => c.name),
-    associatedMarkets: associatedMarkets.map(m => ({ 
-      marketId: m.marketId,
-      question: m.question, 
-      categories: m.categories?.map(c => c.name) 
-    }))
-  });
-  
   if (!spotPrices || spotPrices.size === 0) {
     return (
       <>
@@ -276,19 +257,6 @@ const ComboPoolPredictionBar = ({
 
   // Create a name for the leading outcome using actual combination names
   const leadingOutcomeName = virtualMarket?.categories?.[highestIndex]?.name || `Combination ${highestIndex + 1}`;
-  
-  console.log('Prediction calculation:', {
-    highestIndex,
-    highestPrice: highestPrice.toString(),
-    totalAssetPrice: totalAssetPrice.toString(),
-    highestPercentage,
-    leadingOutcomeName,
-    allPrices: Array.from(spotPrices.entries()).map(([index, price]) => ({
-      index, 
-      price: price.toString(),
-      percentage: totalAssetPrice.gt(0) ? Math.round((price.div(totalAssetPrice).toNumber()) * 100) : 0
-    }))
-  });
 
   return (
     <div className={`relative h-[30px] w-full bg-gray-200 transition-all`}>

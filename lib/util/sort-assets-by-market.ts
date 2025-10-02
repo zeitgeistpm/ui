@@ -9,24 +9,15 @@ export const sortAssetsByMarketOrder = (
   assets: (MarketOutcomeAssetId | CombinatorialToken)[],
   marketOutcomeAssets?: any[]
 ): (MarketOutcomeAssetId | CombinatorialToken)[] => {
-  console.log("[sortAssetsByMarketOrder] Input:", {
-    assetsCount: assets.length,
-    assets,
-    marketOutcomeAssetsCount: marketOutcomeAssets?.length,
-    marketOutcomeAssets
-  });
 
   if (!marketOutcomeAssets || assets.length === 0) {
-    console.log("[sortAssetsByMarketOrder] Returning early - no market assets or empty assets array");
     return assets;
   }
 
   // Check if we need to sort (only if there are combinatorial tokens)
   const hasCombinatorialTokens = assets.some(asset => !IOMarketOutcomeAssetId.is(asset));
-  console.log("[sortAssetsByMarketOrder] Has combinatorial tokens:", hasCombinatorialTokens);
 
   if (!hasCombinatorialTokens) {
-    console.log("[sortAssetsByMarketOrder] No combinatorial tokens, returning assets as-is");
     return assets;
   }
 
@@ -39,23 +30,14 @@ export const sortAssetsByMarketOrder = (
     const aIndex = findAssetIndex(a, marketOutcomeAssets);
     const bIndex = findAssetIndex(b, marketOutcomeAssets);
 
-    console.log("[sortAssetsByMarketOrder] Comparing assets:", {
-      a,
-      b,
-      aIndex,
-      bIndex
-    });
-
     // If not found, maintain original order
     if (aIndex === -1 || bIndex === -1) {
-      console.log("[sortAssetsByMarketOrder] Asset not found in market, maintaining order");
       return 0;
     }
 
     return aIndex - bIndex;
   });
 
-  console.log("[sortAssetsByMarketOrder] Sorted result:", sorted);
   return sorted;
 };
 

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { AssetId } from "@zeitgeistpm/sdk";
+import { AssetId, isIndexedSdk } from "@zeitgeistpm/sdk";
 import { useAmm2Pool } from "./amm2/useAmm2Pool";
 import { useMarket } from "./useMarket";
 
@@ -9,6 +9,7 @@ import { calcMarketColors } from "lib/util/color-calc";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useMemo } from "react";
+import { gql } from "graphql-request";
 
 import Decimal from "decimal.js";
 
@@ -32,22 +33,49 @@ export interface ComboMarketData {
   marketIds: [number, number];
   liquidity: number;
   reserves: any;
+  createdAt?: string; // ISO timestamp of pool creation
 }
 
 export const comboMarketKey = "combo-market";
 
+const neoPoolQuery = gql`
+  query NeoPool($poolId: Int!) {
+    neoPools(where: { poolId_eq: $poolId }, limit: 1) {
+      poolId
+      createdAt
+    }
+  }
+`;
+
 export const useComboMarket = (poolId: number) => {
   const [sdk, id] = useSdkv2();
   const { data: pool } = useAmm2Pool(0, poolId); // marketId=0 for combo pools, poolId is the actual pool
+
+  // Fetch pool creation date from GraphQL
+  const { data: neoPoolData } = useQuery(
+    [id, "neoPool-createdAt", poolId],
+    async () => {
+      if (!isIndexedSdk(sdk)) return null;
+
+      const response = await sdk.indexer.client.request<{
+        neoPools: Array<{ poolId: number; createdAt: string }>;
+      }>(neoPoolQuery, { poolId });
+
+      return response.neoPools[0];
+    },
+    {
+      enabled: Boolean(sdk && poolId != null && isIndexedSdk(sdk)),
+    }
+  );
 
   // Extract market IDs from the combinatorial pool
   const marketIds = useMemo(() => {
     if (!pool?.poolType?.combinatorial) {
       return null; // Don't use fallback - wait for real data
     }
-      
+
     const extractedMarketIds = pool.poolType.combinatorial;
-    
+
     return [extractedMarketIds[0], extractedMarketIds[1]] as [number, number];
   }, [pool?.poolType]);
 
@@ -111,6 +139,7 @@ export const useComboMarket = (poolId: number) => {
         liquidity: new Decimal(pool.liquidity).toNumber(),
         reserves: pool.reserves,
         marketIds: [market1.marketId, market2.marketId],
+        createdAt: neoPoolData?.createdAt,
       };
     },
     {

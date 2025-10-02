@@ -43,26 +43,6 @@ const JoinPoolForm = ({
 
   const queryClient = useQueryClient();
 
-  console.log("[JoinPoolFormAmm2] Initialization:", {
-    marketId,
-    poolId: pool.poolId,
-    hasVirtualMarket: !!virtualMarket,
-    hasMarket: !!market,
-    activeMarketCategories: activeMarket?.categories?.length,
-    poolAssetIds: pool.assetIds?.length,
-    userAssetBalancesCount: userAssetBalances?.length
-  });
-
-  console.log("[JoinPoolFormAmm2] Pool details:", {
-    assetIds: pool.assetIds,
-    reserves: pool.reserves ? Array.from(pool.reserves.entries()) : null,
-    totalShares: pool.totalShares?.toString()
-  });
-
-  console.log("[JoinPoolFormAmm2] Active market:", {
-    categories: activeMarket?.categories,
-    outcomeAssets: activeMarket?.outcomeAssets
-  });
   const { send: joinPool, isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && pool && poolSharesToReceive) {
@@ -197,14 +177,6 @@ const JoinPoolForm = ({
               ? activeMarket.categories?.[index]?.name
               : lookupAssetMetadata(activeMarket, assetId)?.name;
             const userBalance = userAssetBalances[index]?.div(ZTG).toNumber();
-
-            console.log(`[JoinPoolFormAmm2] Asset ${index}:`, {
-              assetId,
-              assetName,
-              userBalance,
-              categoryName: activeMarket.categories?.[index]?.name,
-              usingVirtualMarket: !!virtualMarket
-            });
 
             return (
               <div

@@ -32,7 +32,10 @@ export const useMarket = (
         (("marketId" in filter && filter.marketId != null) ||
           ("poolId" in filter && filter.poolId != null))
       ) {
-        return batcher(sdk).fetch(filter);
+        const result = await batcher(sdk).fetch(filter);
+        // Return null instead of undefined when no market is found
+        // TanStack Query v5 requires query functions to never return undefined
+        return result ?? null;
       }
       return null;
     },

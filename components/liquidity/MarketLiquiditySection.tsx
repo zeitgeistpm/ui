@@ -96,7 +96,8 @@ const LiquidityHeader = ({ market, comboMarket }: { market: FullMarketFragment; 
   const neoPoolLiquidity = (neoPool as any)?.totalShares ?? 
     neoPool?.liquiditySharesManager?.reduce((total: any, manager: any) => 
       total + Number(manager.stake), 0) ?? neoPool?.liquidityParameter;
-  const liquidity = new Decimal(stats?.[0]?.liquidity ? neoPoolLiquidity : 0);
+
+    const liquidity = new Decimal(stats?.[0]?.liquidity ?? neoPoolLiquidity);
 
   const swapFee = new Decimal(Number(pool?.swapFee ?? neoPool?.swapFee ?? 0))
     .div(ZTG)
@@ -187,15 +188,6 @@ const LiquidityHeader = ({ market, comboMarket }: { market: FullMarketFragment; 
       {neoPool && (
         <>
           {(() => {
-            console.log("[MarketLiquiditySection] Opening LiquidityModalAmm2:", {
-              isComboMarket: comboMarket,
-              marketId: neoPool.marketId,
-              poolId: comboMarket ? neoPool.poolId : undefined,
-              hasMarket: !!market,
-              marketCategories: market?.categories?.length,
-              marketOutcomeAssets: market?.outcomeAssets?.length,
-              modalOpen: manageLiquidityOpen
-            });
             return null;
           })()}
           <LiquidityModalAmm2

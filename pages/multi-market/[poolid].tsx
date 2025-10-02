@@ -282,33 +282,42 @@ const ComboChart = ({
   chartSeries,
   poolId,
   baseAsset,
-  poolData,
+  comboMarketData,
 }: {
   chartSeries: ChartSeries[];
   poolId: number;
   baseAsset?: AssetId;
-  poolData?: any; // Pool data to get creation date
+  comboMarketData?: any; // Combo market data with createdAt and sourceMarkets
 }) => {
   const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[1]);
-  
+
   const baseAssetId = baseAsset;
   const { data: metadata } = useAssetMetadata(baseAssetId);
-  
+
   const startDateISOString = useMemo(() => {
-    if (poolData?.createdAt) {
-      // Use proper pool creation date with chart filter calculation
-      const startDate = calcPriceHistoryStartDate(
-        "Active" as any, // Combo pools are active when created
-        chartFilter,
-        poolData.createdAt,
-        new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // Default future resolution date
+    // Use pool creation date from comboMarketData (from GraphQL)
+    const poolCreationDate = comboMarketData?.createdAt
+      ? new Date(comboMarketData.createdAt)
+      : new Date();
+
+    // Get the earliest resolution date from source markets' period.end timestamps
+    let resolutionDate = new Date();
+    if (comboMarketData?.sourceMarkets && comboMarketData.sourceMarkets.length > 0) {
+      const earliestEndTimestamp = Math.min(
+        ...comboMarketData.sourceMarkets.map((m: any) => Number(m.period.end))
       );
-      return setTimeToNow(startDate).toISOString();
+      resolutionDate = new Date(earliestEndTimestamp);
     }
-    
-    // Fallback to 30 days ago if no creation date
-    return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-  }, [chartFilter.label, poolData?.createdAt]);
+
+    const startDate = calcPriceHistoryStartDate(
+      "Active" as any,
+      chartFilter,
+      poolCreationDate,
+      resolutionDate,
+    );
+
+    return setTimeToNow(startDate).toISOString();
+  }, [chartFilter.label, comboMarketData?.createdAt, comboMarketData?.sourceMarkets]);
 
   const priceHistoryQuery = useComboMarketPriceHistory(
     poolId,
@@ -318,13 +327,13 @@ const ComboChart = ({
   );
   
   const { data: prices, isLoading, isSuccess } = priceHistoryQuery;
-  
+
   const chartData = isSuccess && prices
     ? prices
         .filter((data) => data.prices.every((p) => p.price != null))
         .map((price) => {
           const time = new Date(price.timestamp).getTime();
-          
+
           // Map prices to chart data format
           const assetPrices = price.prices.reduce((obj, val, index) => {
             // Ensure prices don't exceed 1
@@ -337,6 +346,7 @@ const ComboChart = ({
           };
         })
     : [];
+
   const handleFilterChange = (filter: TimeFilter) => {
     setChartFilter(filter);
   };
@@ -653,7 +663,6 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) =
   });
   const { data: poolData } = useAmm2Pool(0, poolId); // marketId=0 for combo pools
   const { data: parentCollectionIds } = useNeoPoolParentCollectionIds(poolId);
-  console.log(comboMarketData);
   // Extract market IDs from combo market data
   const marketIds = comboMarketData?.marketIds;
 
@@ -774,11 +783,11 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) =
               <Tab.Panels className="mt-2">
                 <Tab.Panel>
                   {hasChart ? (
-                    <ComboChart 
-                      chartSeries={chartSeries} 
+                    <ComboChart
+                      chartSeries={chartSeries}
                       poolId={poolId}
                       baseAsset={comboMarketData.baseAsset}
-                      poolData={poolData}
+                      comboMarketData={comboMarketData}
                     />
                   ) : (
                     <div className="flex h-[400px] items-center justify-center rounded-lg bg-gray-100">

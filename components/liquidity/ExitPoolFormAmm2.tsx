@@ -55,28 +55,6 @@ const ExitPoolForm = ({
 
   const poolAssets = pool?.assetIds;
 
-  console.log("[ExitPoolFormAmm2] Initialization:", {
-    marketId,
-    poolId: pool.poolId,
-    hasVirtualMarket: !!virtualMarket,
-    hasMarket: !!market,
-    activeMarketCategories: activeMarket?.categories?.length,
-    poolAssetIds: poolAssets?.length,
-    userPoolShares: userPoolShares?.toString(),
-    userOwnershipRatio: userOwnershipRatio?.toString(),
-    reservesCount: reserves?.length
-  });
-
-  console.log("[ExitPoolFormAmm2] Pool details:", {
-    assetIds: poolAssets,
-    reserves: pool.reserves ? Array.from(pool.reserves.entries()) : null
-  });
-
-  console.log("[ExitPoolFormAmm2] Active market:", {
-    categories: activeMarket?.categories,
-    outcomeAssets: activeMarket?.outcomeAssets
-  });
-
   const { send: exitPool, isLoading } = useExtrinsic(
     () => {
       if (
@@ -217,15 +195,6 @@ const ExitPoolForm = ({
             const userBalanceInPool = poolAssetBalance
               .mul(userOwnershipRatio)
               .toNumber();
-
-            console.log(`[ExitPoolFormAmm2] Asset ${index}:`, {
-              assetId,
-              assetName,
-              poolAssetBalance: poolAssetBalance.toString(),
-              userBalanceInPool,
-              categoryName: activeMarket.categories?.[index]?.name,
-              usingVirtualMarket: !!virtualMarket
-            });
 
             return (
               <div
