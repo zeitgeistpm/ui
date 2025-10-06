@@ -24,19 +24,26 @@ type ReferendumSignalResponse = {
 const ReferendumSignalWidget = () => {
   const router = useRouter();
   const { refId } = router.query;
-  const referendumId = Array.isArray(refId) ? refId[0] : refId;
+  const referendumIdRaw = Array.isArray(refId) ? refId[0] : refId;
+
+  // Validate referendum ID is a positive integer to prevent SSRF attacks
+  const referendumId = referendumIdRaw && /^\d+$/.test(referendumIdRaw)
+    ? parseInt(referendumIdRaw, 10)
+    : null;
+
   const [showAllOutcomes, setShowAllOutcomes] = useState(false);
   const [showRelatedMarkets, setShowRelatedMarkets] = useState(false);
 
   const { data, isLoading } = useQuery(
     ["referendum-signal-widget", referendumId],
     async () => {
+      if (!referendumId || referendumId < 0) return null;
       const res = await fetch(`/api/referendum/${referendumId}/signal`);
       if (!res.ok) return null;
       return res.json() as Promise<ReferendumSignalResponse>;
     },
     {
-      enabled: !!referendumId,
+      enabled: !!referendumId && referendumId > 0,
       staleTime: 60_000,
       retry: false,
     }
