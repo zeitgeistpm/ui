@@ -34,7 +34,7 @@ type MainTabItem = "Predictions" | "Balances" | "Markets"
 const mainTabItems: MainTabItem[] = [
   "Predictions",
   ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true" ? ["Balances"] : []),
-  "Markets",
+  "Created Markets",
   // "History",
   // "Court",
 ] as MainTabItem[];
@@ -109,7 +109,7 @@ const Portfolio: NextPageWithLayout = () => {
                 ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true"
                   ? ["Balances"]
                   : []),
-                "Markets",
+                "Created Markets",
                 // "History",
                 // "Court",
               ].map((title, index) => (
