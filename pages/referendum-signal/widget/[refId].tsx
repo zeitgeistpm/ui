@@ -16,7 +16,7 @@ type ReferendumSignalResponse = {
     pool_url: string;
   };
   futarchy_signal?: {
-    recommendation: "approve" | "reject" | "uncertain";
+    recommendation: string; // Highest probability outcome
     reasoning: string;
   };
 };
@@ -65,41 +65,15 @@ const ReferendumSignalWidget = () => {
   // Determine which outcomes to display
   const outcomesToDisplay = showAllOutcomes ? sortedOutcomes : topOutcome;
 
-  const getRecommendationColor = () => {
-    switch (futarchy_signal.recommendation) {
-      case "approve":
-        return "text-green-600";
-      case "reject":
-        return "text-red-600";
-      default:
-        return "text-gray-600";
-    }
-  };
-
-  const getRecommendationText = () => {
-    switch (futarchy_signal.recommendation) {
-      case "approve":
-        return "Markets Suggest: Approve";
-      case "reject":
-        return "Markets Suggest: Reject";
-      default:
-        return "Markets Suggest: Uncertain";
-    }
-  };
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
 
-      {/* Recommendation */}
-      <div className="mb-2">
-        <div className={`text-lg font-bold ${getRecommendationColor()}`}>
-          {getRecommendationText()}
+      {/* Combined Market Question */}
+      <div className="mb-4">
+        <div className="text-base font-medium text-gray-900">
+          {combinatorial_market.market_1.question} & {combinatorial_market.market_2.question}
         </div>
-      </div>
-
-      {/* Reasoning */}
-      <div className="mb-4 text-xs text-gray-600">
-        {futarchy_signal.reasoning}
       </div>
 
       {/* Outcomes */}

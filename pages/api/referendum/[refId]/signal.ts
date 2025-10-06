@@ -137,7 +137,7 @@ export type ReferendumSignalResponse = {
   };
   futarchy_signal?: {
     welfare_metric: string;
-    recommendation: "approve" | "reject" | "uncertain";
+    recommendation: string; // Highest probability outcome (e.g., "No & No")
     confidence: number;
     reasoning: string;
   };
@@ -306,36 +306,16 @@ export default async function handler(
           pool_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://app.zeitgeist.pm'}/multi-market/${pool.poolId}`,
         };
 
-        // Generate futarchy signal
-        //
-        // Futarchy Logic:
-        // - market1 (marketIds[0]) = Proposal market (Pass/Reject)
-        // - market2 (marketIds[1]) = Welfare metric market (Good/Bad)
-        //
-        // We compare:
-        // - P(Pass AND Good) vs P(Reject AND Good)
-        //
-        // If passing is more likely to achieve the good outcome than rejecting,
-        // we recommend approval. The ratio determines confidence.
-        //
-        // Recommendation thresholds:
-        // - ratio > 1.5x → approve (passing is 1.5x+ better)
-        // - ratio < 0.67x → reject (rejecting is better)
-        // - otherwise → uncertain
-
-        const passAndGood = outcomes.find(o => o.combination.includes(cat1[0].name) && o.combination.includes(cat2[0].name));
-        const rejectAndGood = outcomes.find(o => o.combination.includes(cat1[1]?.name) && o.combination.includes(cat2[0].name));
-
-        const passGoodProb = passAndGood?.probability || 0.25;
-        const rejectGoodProb = rejectAndGood?.probability || 0.25;
-
-        const ratio = passGoodProb / (rejectGoodProb || 0.01);
-        const recommendation = ratio > 1.5 ? "approve" : ratio < 0.67 ? "reject" : "uncertain";
+        // Find highest probability outcome for market prediction
+        const highestOutcome = outcomes.reduce((max, outcome) =>
+          outcome.probability > max.probability ? outcome : max
+        , outcomes[0]);
 
         futarchySignal = {
           welfare_metric: market2.question,
-          recommendation,
-          reasoning: `Market predicts ${Math.round(passGoodProb * 100)}% chance of positive outcome if approved vs ${Math.round(rejectGoodProb * 100)}% if rejected (${ratio.toFixed(1)}x ratio)`
+          recommendation: highestOutcome.combination,
+          confidence: Math.min(Math.round(poolLiquidity.toNumber() / 100), 100),
+          reasoning: ""
         };
       }
     }
