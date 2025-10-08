@@ -27,9 +27,10 @@ const ReferendumSignalWidget = () => {
   const referendumIdRaw = Array.isArray(refId) ? refId[0] : refId;
 
   // Validate referendum ID is a positive integer to prevent SSRF attacks
-  const referendumId = referendumIdRaw && /^\d+$/.test(referendumIdRaw)
-    ? parseInt(referendumIdRaw, 10)
-    : null;
+  const referendumId =
+    referendumIdRaw && /^\d+$/.test(referendumIdRaw)
+      ? parseInt(referendumIdRaw, 10)
+      : null;
 
   const [showAllOutcomes, setShowAllOutcomes] = useState(false);
   const [showRelatedMarkets, setShowRelatedMarkets] = useState(false);
@@ -46,7 +47,7 @@ const ReferendumSignalWidget = () => {
       enabled: !!referendumId && referendumId > 0,
       staleTime: 60_000,
       retry: false,
-    }
+    },
   );
 
   // Don't render anything if no data or loading
@@ -56,8 +57,9 @@ const ReferendumSignalWidget = () => {
 
   const { combinatorial_market, futarchy_signal } = data;
   // Sort all outcomes by probability
-  const sortedOutcomes = [...combinatorial_market.outcomes]
-    .sort((a, b) => b.probability - a.probability);
+  const sortedOutcomes = [...combinatorial_market.outcomes].sort(
+    (a, b) => b.probability - a.probability,
+  );
 
   // Get top outcome by default
   const topOutcome = sortedOutcomes.slice(0, 1);
@@ -65,16 +67,43 @@ const ReferendumSignalWidget = () => {
   // Determine which outcomes to display
   const outcomesToDisplay = showAllOutcomes ? sortedOutcomes : topOutcome;
 
-
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
 
-      {/* Combined Market Question */}
-      <div className="mb-4">
-        <div className="text-base font-medium text-gray-900">
-          {combinatorial_market.market_1.question} & {combinatorial_market.market_2.question}
-        </div>
-      </div>
+      {showRelatedMarkets && (
+          <div className="space-y-2 pb-3">
+            <div className="rounded border border-blue-200 bg-blue-50 p-2">
+              <div className="mb-1 inline-block rounded bg-blue-100 px-1.5 py-0.5 text-xxs font-semibold text-blue-800">
+                Assumming
+              </div>
+              <div className="text-xs text-gray-700">
+                <a
+                  href={`${process.env.NEXT_PUBLIC_SITE_URL || "https://app.zeitgeist.pm"}/markets/${combinatorial_market.market_1.marketId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-blue-600 hover:underline"
+                >
+                  {combinatorial_market.market_1.question}
+                </a>
+              </div>
+            </div>
+            <div className="rounded border border-green-200 bg-green-50 p-2">
+              <div className="mb-1 inline-block rounded bg-green-100 px-1.5 py-0.5 text-xxs font-semibold text-green-800">
+                Then
+              </div>
+              <div className="text-xs text-gray-700">
+                <a
+                  href={`${process.env.NEXT_PUBLIC_SITE_URL || "https://app.zeitgeist.pm"}/markets/${combinatorial_market.market_2.marketId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-green-600 hover:underline"
+                >
+                  {combinatorial_market.market_2.question}
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
 
       {/* Outcomes */}
       <div className="space-y-3">
@@ -91,7 +120,11 @@ const ReferendumSignalWidget = () => {
             <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
               <div
                 className={`h-full transition-all ${
-                  idx === 0 ? "bg-blue-500" : idx === 1 ? "bg-blue-300" : "bg-blue-200"
+                  idx === 0
+                    ? "bg-blue-500"
+                    : idx === 1
+                      ? "bg-blue-300"
+                      : "bg-blue-200"
                 }`}
                 style={{ width: `${outcome.probability * 100}%` }}
               />
@@ -104,7 +137,7 @@ const ReferendumSignalWidget = () => {
       {sortedOutcomes.length > 1 && (
         <button
           onClick={() => setShowAllOutcomes(!showAllOutcomes)}
-          className="mt-2 flex w-full items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-900"
+          className="my-2 flex w-full items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-900"
         >
           {showAllOutcomes ? (
             <>
@@ -117,50 +150,6 @@ const ReferendumSignalWidget = () => {
           )}
         </button>
       )}
-
-      {/* Related Markets Section */}
-      <div className="border-t mt-3">
-        <button
-          onClick={() => setShowRelatedMarkets(!showRelatedMarkets)}
-          className="flex w-full items-center py-3 gap-1 text-xs font-medium text-gray-600 hover:text-gray-900"
-        >
-          {showRelatedMarkets ? (
-            <>
-              Hide Related Markets <ChevronUp size={16} />
-            </>
-          ) : (
-            <>
-              Show Related Markets <ChevronDown size={16} />
-            </>
-          )}
-        </button>
-
-        {showRelatedMarkets && (
-          <ol className="list-decimal list-inside space-y-2 pb-3">
-            <li className="text-xs text-gray-500">
-              <a
-                href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://app.zeitgeist.pm'}/markets/${combinatorial_market.market_1.marketId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-blue-600 hover:underline"
-              >
-                {combinatorial_market.market_1.question}
-              </a>
-            </li>
-            <li className="text-xs text-gray-500">
-              <a
-                href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://app.zeitgeist.pm'}/markets/${combinatorial_market.market_2.marketId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-blue-600 hover:underline"
-              >
-                {combinatorial_market.market_2.question}
-              </a>
-            </li>
-          </ol>
-        )}
-      </div>
-
 
       {/* Footer Link */}
       <div className="border-t pt-2">
