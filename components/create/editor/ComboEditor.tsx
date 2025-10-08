@@ -472,6 +472,17 @@ const ComboMarketEditor: React.FC = () => {
           Combine two existing markets to create complex multi-outcome
           combinations.
         </p>
+        <div className="mx-auto mt-6 max-w-2xl rounded-lg border border-purple-200 bg-purple-50 p-4">
+          <div className="flex items-start gap-2">
+            <div className="mt-0.5 text-purple-600">ℹ️</div>
+            <div className="text-sm text-purple-900">
+              <strong>How it works:</strong> Market 1 is the{" "}
+              <strong>"Assume"</strong> market (the condition), and Market 2 is
+              the <strong>"Then What"</strong> market (the outcome). For
+              example: "Assume Yes (or No) for Market 1 (the condition), THEN what happens to Market 2 (the outcome)?"
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Market Selection */}
@@ -483,32 +494,49 @@ const ComboMarketEditor: React.FC = () => {
               Selected Markets ({form.selectedMarkets.length})
             </h2>
             <div className="space-y-3">
-              {form.selectedMarkets.map((market, index) => (
-                <div
-                  key={market.marketId}
-                  className="flex items-center justify-between rounded-lg border bg-white p-4 shadow-sm"
-                >
-                  <div className="flex-1">
-                    <div className="mb-2 flex items-center">
-                      <span className="mr-3 rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
-                        Market {index + 1}
-                      </span>
-                      <h4 className="font-medium">{market.question}</h4>
-                    </div>
-                    <p className="text-sm text-gray-500">
-                      {market.categories?.length} Outcomes:{" "}
-                      {market.categories?.map((cat) => cat.name).join(" • ")}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => removeMarket(market.marketId)}
-                    className="rounded p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700"
-                    title="Remove market"
+              {form.selectedMarkets.map((market, index) => {
+                const marketRole = index === 0 ? "Assume" : "Then What";
+                const roleColor =
+                  index === 0
+                    ? "bg-blue-100 text-blue-800"
+                    : "bg-green-100 text-green-800";
+                const roleDescription =
+                  index === 0
+                    ? "The condition/assumption market"
+                    : "The outcome/consequence market";
+
+                return (
+                  <div
+                    key={market.marketId}
+                    className="flex items-center justify-between rounded-lg border bg-white p-4 shadow-sm"
                   >
-                    <AiOutlineClose size={18} />
-                  </button>
-                </div>
-              ))}
+                    <div className="flex-1">
+                      <div className="mb-2 flex items-center">
+                        <span
+                          className={`mr-3 rounded px-2 py-1 text-xs font-semibold ${roleColor}`}
+                        >
+                          Market {index + 1}: "{marketRole}" Market
+                        </span>
+                        <h4 className="font-medium">{market.question}</h4>
+                      </div>
+                      <div className="mb-1 text-xs italic text-gray-600">
+                        {roleDescription}
+                      </div>
+                      <p className="text-sm text-gray-500">
+                        {market.categories?.length} Outcomes:{" "}
+                        {market.categories?.map((cat) => cat.name).join(" • ")}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => removeMarket(market.marketId)}
+                      className="rounded p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700"
+                      title="Remove market"
+                    >
+                      <AiOutlineClose size={18} />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -583,7 +611,13 @@ const ComboMarketEditor: React.FC = () => {
                     <div className="flex-1">
                       <span className="font-medium">{combination.name}</span>
                       <div className="mt-1 text-sm text-gray-500">
-                        Market 1: {combination.market1Outcome} • Market 2:{" "}
+                        <span className="font-semibold text-blue-700">
+                          Assume:
+                        </span>{" "}
+                        {combination.market1Outcome} •{" "}
+                        <span className="font-semibold text-green-700">
+                          Then:
+                        </span>{" "}
                         {combination.market2Outcome}
                       </div>
                     </div>

@@ -19,9 +19,7 @@ import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 import Skeleton from "components/ui/Skeleton";
 import { Transition } from "@headlessui/react";
 import Decimal from "decimal.js";
-import {
-  useComboMarket,
-} from "lib/hooks/queries/useComboMarket";
+import { useComboMarket } from "lib/hooks/queries/useComboMarket";
 import { OutcomeCombination } from "lib/hooks/useVirtualMarket";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 import { useNeoPoolParentCollectionIds } from "lib/hooks/queries/useNeoPoolParentCollectionIds";
@@ -83,17 +81,12 @@ const ComboAssetDetails = ({
   baseAsset: AssetId;
   virtualMarket: FullMarketFragment;
 }) => {
-
   // Fetch prices with the virtualMarket
-  const { data: spotPrices } = useMarketSpotPrices(
-    poolId,
-    0,
-    virtualMarket
-  );
+  const { data: spotPrices } = useMarketSpotPrices(poolId, 0, virtualMarket);
 
   const { data: priceChanges } = useMarket24hrPriceChanges(
     poolId,
-    virtualMarket
+    virtualMarket,
   );
 
   const { data: usdPrice } = useAssetUsdPrice(baseAsset);
@@ -170,9 +163,25 @@ const SourceMarketsSection = ({
   return (
     <div className="mb-8">
       <h3 className="mb-4 text-lg font-semibold">Source Markets</h3>
+      <div className="mb-4 rounded-lg border border-purple-200 bg-purple-50 p-4">
+        <div className="flex items-start gap-2">
+          <div className="mt-0.5 text-purple-600">ℹ️</div>
+          <div className="text-sm text-purple-900">
+            <strong>How Combinatorial Markets Work:</strong> Market 1 is the{" "}
+            <strong>"Assume"</strong> market (the condition), and Market 2 is
+            the <strong>"Then What"</strong> market (the outcome). This creates
+            combinations like "Assume Yes (or No) for Market 1 (the condition), THEN what happens to Market 2 (the outcome)?"
+          </div>
+        </div>
+      </div>
       <div className="space-y-4">
         {sourceMarkets.map((market, index) => (
-          <SourceMarketCard key={market.marketId} market={market} index={index} walletAddress={wallet.realAddress} />
+          <SourceMarketCard
+            key={market.marketId}
+            market={market}
+            index={index}
+            walletAddress={wallet.realAddress}
+          />
         ))}
       </div>
     </div>
@@ -189,12 +198,26 @@ const SourceMarketCard = ({
   index: number;
   walletAddress?: string;
 }) => {
+  // Determine market role based on index
+  const marketRole = index === 0 ? "Assume" : "Then What";
+  const roleColor =
+    index === 0 ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800";
+  const roleDescription =
+    index === 0
+      ? "The condition/assumption market"
+      : "The outcome/consequence market";
+
   return (
     <div className="rounded-lg border bg-white p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between">
-        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">
-          Market {index + 1} (ID: {market.marketId})
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`rounded px-2 py-1 text-xs font-semibold ${roleColor}`}
+          >
+            Market {index + 1}: "{marketRole}" Market
+          </span>
+          <span className="text-xs text-gray-500">(ID: {market.marketId})</span>
+        </div>
         <Link
           href={`/markets/${market.marketId}`}
           className="flex items-center text-sm text-blue-600 hover:text-blue-800"
@@ -202,18 +225,20 @@ const SourceMarketCard = ({
           View Market <ExternalLink size={14} className="ml-1" />
         </Link>
       </div>
+      <div className="mb-2 text-xs italic text-gray-600">{roleDescription}</div>
       <h4 className="mb-2 line-clamp-2 font-medium">{market.question}</h4>
       <div className="text-sm text-gray-500">
         <div className="mb-1">
-          <span className="font-medium">Base Asset:</span>{" "}
-          {market.baseAsset}
+          <span className="font-medium">Base Asset:</span> {market.baseAsset}
         </div>
       </div>
 
       {/* Token balances section */}
       {walletAddress && market.categories && (
         <div className="mt-3 border-t pt-3">
-          <div className="mb-2 text-xs font-medium text-gray-600">Your Token Balances:</div>
+          <div className="mb-2 text-xs font-medium text-gray-600">
+            Your Token Balances:
+          </div>
           <div className="space-y-2">
             {market.outcomeAssets?.map((assetString, outcomeIndex) => {
               const assetId = parseAssetIdStringWithCombinatorial(assetString);
@@ -222,7 +247,10 @@ const SourceMarketCard = ({
                   key={outcomeIndex}
                   assetId={assetId as any}
                   walletAddress={walletAddress}
-                  outcomeName={market.categories?.[outcomeIndex]?.name || `Outcome ${outcomeIndex}`}
+                  outcomeName={
+                    market.categories?.[outcomeIndex]?.name ||
+                    `Outcome ${outcomeIndex}`
+                  }
                   color={market.categories?.[outcomeIndex]?.color ?? undefined}
                 />
               ) : null;
@@ -246,7 +274,6 @@ const OutcomeBalance = ({
   outcomeName: string;
   color?: string;
 }) => {
-
   const { data: balance } = useBalance(walletAddress, assetId);
   const balanceDisplay = balance?.div(ZTG).toFixed(2) || "0.00";
 
@@ -265,7 +292,6 @@ const OutcomeBalance = ({
     </div>
   );
 };
-
 
 // Helper function to set time to now (copied from MarketChart)
 const setTimeToNow = (date: Date) => {
@@ -302,9 +328,12 @@ const ComboChart = ({
 
     // Get the earliest resolution date from source markets' period.end timestamps
     let resolutionDate = new Date();
-    if (comboMarketData?.sourceMarkets && comboMarketData.sourceMarkets.length > 0) {
+    if (
+      comboMarketData?.sourceMarkets &&
+      comboMarketData.sourceMarkets.length > 0
+    ) {
       const earliestEndTimestamp = Math.min(
-        ...comboMarketData.sourceMarkets.map((m: any) => Number(m.period.end))
+        ...comboMarketData.sourceMarkets.map((m: any) => Number(m.period.end)),
       );
       resolutionDate = new Date(earliestEndTimestamp);
     }
@@ -317,7 +346,11 @@ const ComboChart = ({
     );
 
     return setTimeToNow(startDate).toISOString();
-  }, [chartFilter.label, comboMarketData?.createdAt, comboMarketData?.sourceMarkets]);
+  }, [
+    chartFilter.label,
+    comboMarketData?.createdAt,
+    comboMarketData?.sourceMarkets,
+  ]);
 
   const priceHistoryQuery = useComboMarketPriceHistory(
     poolId,
@@ -325,34 +358,35 @@ const ComboChart = ({
     chartFilter.intervalValue,
     startDateISOString,
   );
-  
+
   const { data: prices, isLoading, isSuccess } = priceHistoryQuery;
 
-  const chartData = isSuccess && prices
-    ? prices
-        .filter((data) => data.prices.every((p) => p.price != null))
-        .map((price) => {
-          const time = new Date(price.timestamp).getTime();
+  const chartData =
+    isSuccess && prices
+      ? prices
+          .filter((data) => data.prices.every((p) => p.price != null))
+          .map((price) => {
+            const time = new Date(price.timestamp).getTime();
 
-          // Map prices to chart data format
-          const assetPrices = price.prices.reduce((obj, val, index) => {
-            // Ensure prices don't exceed 1
-            return { ...obj, ["v" + index]: val.price > 1 ? 1 : val.price };
-          }, {});
+            // Map prices to chart data format
+            const assetPrices = price.prices.reduce((obj, val, index) => {
+              // Ensure prices don't exceed 1
+              return { ...obj, ["v" + index]: val.price > 1 ? 1 : val.price };
+            }, {});
 
-          return {
-            t: time,
-            ...assetPrices,
-          };
-        })
-    : [];
+            return {
+              t: time,
+              ...assetPrices,
+            };
+          })
+      : [];
 
   const handleFilterChange = (filter: TimeFilter) => {
     setChartFilter(filter);
   };
 
   // Use colors from chartSeries or generate new ones
-  const colors = chartSeries.map(s => s.color || "#000");
+  const colors = chartSeries.map((s) => s.color || "#000");
   return (
     <div className="-ml-ztg-25 flex flex-col">
       <div className="ml-auto">
@@ -372,7 +406,7 @@ const ComboChart = ({
 const MobileContextButtons = ({
   poolId,
   comboMarketData,
-  parentCollectionIds
+  parentCollectionIds,
 }: {
   poolId: number;
   comboMarketData: any;
@@ -386,7 +420,7 @@ const MobileContextButtons = ({
   const comboMarketIsActive = useMemo(() => {
     if (!comboMarketData?.sourceMarkets) return false;
     return comboMarketData.sourceMarkets.every(
-      (market: FullMarketFragment) => market.status === MarketStatus.Active
+      (market: FullMarketFragment) => market.status === MarketStatus.Active,
     );
   }, [comboMarketData?.sourceMarkets]);
 
@@ -394,23 +428,26 @@ const MobileContextButtons = ({
   const comboMarketIsResolved = useMemo(() => {
     if (!comboMarketData?.sourceMarkets) return false;
     return comboMarketData.sourceMarkets.every(
-      (market: FullMarketFragment) => market.status === MarketStatus.Resolved
+      (market: FullMarketFragment) => market.status === MarketStatus.Resolved,
     );
   }, [comboMarketData?.sourceMarkets]);
 
   // Check if child market (last in marketIds) is resolved AND parent is still active
   const childMarketResolved = useMemo(() => {
-    if (!comboMarketData?.sourceMarkets || !comboMarketData?.marketIds) return false;
+    if (!comboMarketData?.sourceMarkets || !comboMarketData?.marketIds)
+      return false;
     const childMarketId = comboMarketData.marketIds[1];
     const parentMarketId = comboMarketData.marketIds[0];
     const childMarket = comboMarketData.sourceMarkets.find(
-      (m: FullMarketFragment) => m.marketId === childMarketId
+      (m: FullMarketFragment) => m.marketId === childMarketId,
     );
     const parentMarket = comboMarketData.sourceMarkets.find(
-      (m: FullMarketFragment) => m.marketId === parentMarketId
+      (m: FullMarketFragment) => m.marketId === parentMarketId,
     );
-    return childMarket?.status === MarketStatus.Resolved &&
-           parentMarket?.status === MarketStatus.Active;
+    return (
+      childMarket?.status === MarketStatus.Resolved &&
+      parentMarket?.status === MarketStatus.Active
+    );
   }, [comboMarketData?.sourceMarkets, comboMarketData?.marketIds]);
 
   // Get virtual market for redeem button
@@ -458,7 +495,8 @@ const MobileContextButtons = ({
           <div className="p-6">
             <h3 className="mb-4 text-lg font-semibold">Redeem Your Tokens</h3>
             <p className="mb-6 text-sm text-gray-600">
-              Both source markets have been resolved. Redeem your outcome tokens below.
+              Both source markets have been resolved. Redeem your outcome tokens
+              below.
             </p>
             <div className="space-y-4">
               {comboMarketData?.outcomeCombinations
@@ -468,13 +506,17 @@ const MobileContextButtons = ({
                     return true;
                   }
 
-                  const isParentScalar = (virtualMarket.neoPool as any)?._debug?.isParentScalar;
-                  const isChildScalar = (virtualMarket.neoPool as any)?._debug?.isChildScalar;
+                  const isParentScalar = (virtualMarket.neoPool as any)?._debug
+                    ?.isParentScalar;
+                  const isChildScalar = (virtualMarket.neoPool as any)?._debug
+                    ?.isChildScalar;
 
                   if (isChildScalar && !isParentScalar) {
                     // Parent categorical, child scalar
                     // Show both scalar positions (Short & Long) for the resolved parent outcome
-                    const parentResolvedIndex = Number(virtualMarket.resolvedOutcome);
+                    const parentResolvedIndex = Number(
+                      virtualMarket.resolvedOutcome,
+                    );
                     const numChildOutcomes = 2; // Scalar has 2 outcomes
                     const startIndex = parentResolvedIndex * numChildOutcomes;
                     const endIndex = startIndex + numChildOutcomes;
@@ -485,32 +527,45 @@ const MobileContextButtons = ({
                   }
                 })
                 .map((combo: any, index: number) => (
-                <div key={index} className="flex items-center justify-between rounded-lg border p-4">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: combo.color }}
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg border p-4"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="h-3 w-3 rounded-full"
+                        style={{ backgroundColor: combo.color }}
+                      />
+                      <span className="font-medium">{combo.name}</span>
+                    </div>
+                    <RedeemButton
+                      market={virtualMarket}
+                      assetId={combo.assetId}
+                      underlyingMarketIds={comboMarketData.marketIds}
+                      isPartialRedemption={false}
+                      parentCollectionIds={parentCollectionIds ?? undefined}
+                      showBalance={true}
                     />
-                    <span className="font-medium">{combo.name}</span>
                   </div>
-                  <RedeemButton
-                    market={virtualMarket}
-                    assetId={combo.assetId}
-                    underlyingMarketIds={comboMarketData.marketIds}
-                    isPartialRedemption={false}
-                    parentCollectionIds={parentCollectionIds ?? undefined}
-                    showBalance={true}
-                  />
-                </div>
-              ))}
+                ))}
               <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
-                <h4 className="mb-2 text-sm font-semibold text-gray-800">To Get Your Collateral Back:</h4>
+                <h4 className="mb-2 text-sm font-semibold text-gray-800">
+                  To Get Your Collateral Back:
+                </h4>
                 <ol className="mb-3 ml-4 list-decimal space-y-1 text-sm text-gray-700">
-                  <li><strong>Redeem tokens on this page</strong> → receive parent market tokens</li>
-                  <li><strong>Redeem parent tokens</strong> on the parent market page → receive your collateral</li>
+                  <li>
+                    <strong>Redeem tokens on this page</strong> → receive Market
+                    1 ("Assume" market) tokens
+                  </li>
+                  <li>
+                    <strong>Redeem Market 1 tokens</strong> on the Market 1 page
+                    → receive your collateral
+                  </li>
                 </ol>
                 <p className="text-xs text-gray-600">
-                  💡 <strong>Tip:</strong> Redeeming here is only the first step. Visit the parent market to complete your redemption and recover your collateral.
+                  💡 <strong>Tip:</strong> Redeeming here is only the first
+                  step. Visit Market 1 (the "Assume" market) to complete your
+                  redemption and recover your collateral.
                 </p>
               </div>
             </div>
@@ -542,29 +597,37 @@ const MobileContextButtons = ({
       >
         {childMarketResolved && virtualMarket && (
           <div className="p-6">
-            <h3 className="mb-2 text-lg font-semibold text-blue-900">Partial Redemption Available</h3>
+            <h3 className="mb-2 text-lg font-semibold text-blue-900">
+              Partial Redemption Available
+            </h3>
             <p className="mb-4 text-sm text-blue-700">
-              You can redeem tokens for the child market and use those tokens for trading
+              Market 2 ("Then What" market) has resolved. You can redeem tokens
+              for Market 1 ("Assume" market) tokens and use those for trading.
             </p>
             <div className="space-y-3">
-              {comboMarketData?.outcomeCombinations?.map((combo: any, index: number) => (
-                <div key={index} className="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-3">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: combo.color }}
+              {comboMarketData?.outcomeCombinations?.map(
+                (combo: any, index: number) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-3"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="h-3 w-3 rounded-full"
+                        style={{ backgroundColor: combo.color }}
+                      />
+                      <span className="text-sm font-medium">{combo.name}</span>
+                    </div>
+                    <RedeemButton
+                      market={virtualMarket}
+                      assetId={combo.assetId}
+                      underlyingMarketIds={comboMarketData.marketIds}
+                      isPartialRedemption={true}
+                      parentCollectionIds={parentCollectionIds ?? undefined}
                     />
-                    <span className="text-sm font-medium">{combo.name}</span>
                   </div>
-                  <RedeemButton
-                    market={virtualMarket}
-                    assetId={combo.assetId}
-                    underlyingMarketIds={comboMarketData.marketIds}
-                    isPartialRedemption={true}
-                    parentCollectionIds={parentCollectionIds ?? undefined}
-                  />
-                </div>
-              ))}
+                ),
+              )}
             </div>
           </div>
         )}
@@ -648,12 +711,15 @@ const MobileContextButtons = ({
   );
 };
 
-const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) => {
+const ComboMarket: NextPage<ComboMarketPageProps> = ({
+  poolId: staticPoolId,
+}) => {
   const router = useRouter();
   // Prioritize URL parameter over static props to ensure correct data on navigation
-  const poolId = router.isReady && router.query.poolid
-    ? Number(router.query.poolid)
-    : staticPoolId;
+  const poolId =
+    router.isReady && router.query.poolid
+      ? Number(router.query.poolid)
+      : staticPoolId;
 
   const { realAddress } = useWallet();
   const { data: comboMarketData, isLoading } = useComboMarket(poolId);
@@ -670,8 +736,12 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) =
   const virtualMarket = useVirtualMarket(poolId, marketIds);
 
   // Get market stages for source markets to determine combo pool stage
-  const { data: market1Stage } = useMarketStage(comboMarketData?.sourceMarkets?.[0] as any);
-  const { data: market2Stage } = useMarketStage(comboMarketData?.sourceMarkets?.[1] as any);
+  const { data: market1Stage } = useMarketStage(
+    comboMarketData?.sourceMarkets?.[0] as any,
+  );
+  const { data: market2Stage } = useMarketStage(
+    comboMarketData?.sourceMarkets?.[1] as any,
+  );
 
   const [showLiquidityParam, setShowLiquidityParam, unsetShowLiquidityParam] =
     useQueryParamState("showLiquidity");
@@ -686,7 +756,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) =
       unsetShowLiquidityParam();
     }
   };
-  
+
   // Collect both market stages to show complete status for each source market
   const sourceMarketStages = useMemo(() => {
     if (!comboMarketData) return undefined;
@@ -699,7 +769,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) =
       {
         market: comboMarketData.sourceMarkets[1],
         stage: market2Stage,
-      }
+      },
     ];
   }, [market1Stage, market2Stage, comboMarketData]);
 
@@ -707,7 +777,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) =
   const comboMarketIsActive = useMemo(() => {
     if (!comboMarketData?.sourceMarkets) return false;
     return comboMarketData.sourceMarkets.every(
-      (market: FullMarketFragment) => market.status === MarketStatus.Active
+      (market: FullMarketFragment) => market.status === MarketStatus.Active,
     );
   }, [comboMarketData?.sourceMarkets]);
 
@@ -715,25 +785,28 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) =
   const comboMarketIsResolved = useMemo(() => {
     if (!comboMarketData?.sourceMarkets) return false;
     return comboMarketData.sourceMarkets.every(
-      (market: FullMarketFragment) => market.status === MarketStatus.Resolved
+      (market: FullMarketFragment) => market.status === MarketStatus.Resolved,
     );
   }, [comboMarketData?.sourceMarkets]);
 
   // Check if child market (last in marketIds) is resolved AND parent is still active
   // This allows partial redemption when child resolves first, but parent market continues
   const childMarketResolved = useMemo(() => {
-    if (!comboMarketData?.sourceMarkets || !comboMarketData?.marketIds) return false;
+    if (!comboMarketData?.sourceMarkets || !comboMarketData?.marketIds)
+      return false;
     const childMarketId = comboMarketData.marketIds[1]; // Last market ID is the child
     const parentMarketId = comboMarketData.marketIds[0]; // First market ID is the parent
     const childMarket = comboMarketData.sourceMarkets.find(
-      (m: FullMarketFragment) => m.marketId === childMarketId
+      (m: FullMarketFragment) => m.marketId === childMarketId,
     );
     const parentMarket = comboMarketData.sourceMarkets.find(
-      (m: FullMarketFragment) => m.marketId === parentMarketId
+      (m: FullMarketFragment) => m.marketId === parentMarketId,
     );
     // Only show partial redemption if child is resolved AND parent is still active
-    return childMarket?.status === MarketStatus.Resolved &&
-           parentMarket?.status === MarketStatus.Active;
+    return (
+      childMarket?.status === MarketStatus.Resolved &&
+      parentMarket?.status === MarketStatus.Active
+    );
   }, [comboMarketData?.sourceMarkets, comboMarketData?.marketIds]);
 
   if (isLoading) {
@@ -777,8 +850,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) =
           {/* Chart Section */}
           <div className="mt-4">
             <Tab.Group defaultIndex={0}>
-              <Tab.List className="flex gap-2 text-sm">
-              </Tab.List>
+              <Tab.List className="flex gap-2 text-sm"></Tab.List>
 
               <Tab.Panels className="mt-2">
                 <Tab.Panel>
@@ -931,9 +1003,12 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) =
               </div>
             ) : comboMarketIsResolved ? (
               <div className="mb-12 rounded-lg bg-white p-6 shadow-lg">
-                <h3 className="mb-4 text-lg font-semibold">Redeem Your Tokens</h3>
+                <h3 className="mb-4 text-lg font-semibold">
+                  Redeem Your Tokens
+                </h3>
                 <p className="mb-6 text-sm text-gray-600">
-                  Both source markets have been resolved. Redeem your outcome tokens below.
+                  Both source markets have been resolved. Redeem your outcome
+                  tokens below.
                 </p>
                 <div className="space-y-4">
                   {comboMarketData?.outcomeCombinations
@@ -943,68 +1018,98 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) =
                         return true;
                       }
 
-                      const isParentScalar = (virtualMarket.neoPool as any)?._debug?.isParentScalar;
-                      const isChildScalar = (virtualMarket.neoPool as any)?._debug?.isChildScalar;
+                      const isParentScalar = (virtualMarket.neoPool as any)
+                        ?._debug?.isParentScalar;
+                      const isChildScalar = (virtualMarket.neoPool as any)
+                        ?._debug?.isChildScalar;
 
                       if (isChildScalar && !isParentScalar) {
                         // Parent categorical, child scalar
                         // Show both scalar positions (Short & Long) for the resolved parent outcome
-                        const parentResolvedIndex = Number(virtualMarket.resolvedOutcome);
+                        const parentResolvedIndex = Number(
+                          virtualMarket.resolvedOutcome,
+                        );
                         const numChildOutcomes = 2; // Scalar has 2 outcomes
-                        const startIndex = parentResolvedIndex * numChildOutcomes;
+                        const startIndex =
+                          parentResolvedIndex * numChildOutcomes;
                         const endIndex = startIndex + numChildOutcomes;
                         return index >= startIndex && index < endIndex;
                       } else {
                         // Both categorical - show only the single winning outcome
-                        return virtualMarket?.resolvedOutcome !== null && index === Number(virtualMarket.resolvedOutcome);
+                        return (
+                          virtualMarket?.resolvedOutcome !== null &&
+                          index === Number(virtualMarket.resolvedOutcome)
+                        );
                       }
                     })
                     .map((combo: any, index: number) => (
-                    <div key={index} className="flex items-center justify-between rounded-lg border p-4">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="h-3 w-3 rounded-full"
-                          style={{ backgroundColor: combo.color }}
+                      <div
+                        key={index}
+                        className="flex items-center justify-between rounded-lg border p-4"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="h-3 w-3 rounded-full"
+                            style={{ backgroundColor: combo.color }}
+                          />
+                          <span className="font-medium">{combo.name}</span>
+                        </div>
+                        <RedeemButton
+                          market={virtualMarket}
+                          assetId={combo.assetId as any}
+                          underlyingMarketIds={comboMarketData.marketIds}
+                          isPartialRedemption={false}
+                          parentCollectionIds={parentCollectionIds ?? undefined}
+                          showBalance={true}
                         />
-                        <span className="font-medium">{combo.name}</span>
                       </div>
-                      <RedeemButton
-                        market={virtualMarket}
-                        assetId={combo.assetId as any}
-                        underlyingMarketIds={comboMarketData.marketIds}
-                        isPartialRedemption={false}
-                        parentCollectionIds={parentCollectionIds ?? undefined}
-                        showBalance={true}
-                      />
-                    </div>
-                  ))}
+                    ))}
                   <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
-                    <h4 className="mb-2 text-sm font-semibold text-gray-800">To Get Your Collateral Back:</h4>
+                    <h4 className="mb-2 text-sm font-semibold text-gray-800">
+                      To Get Your Collateral Back:
+                    </h4>
                     <ol className="mb-3 ml-4 list-decimal space-y-1 text-sm text-gray-700">
-                      <li><strong>Redeem Tokens</strong> → receive parent market (i.e. Market 1) tokens</li>
-                      <li><strong>Redeem parent tokens</strong> on the parent market page → receive your collateral</li>
+                      <li>
+                        <strong>Redeem tokens on this page</strong> → receive
+                        Market 1 ("Assume" market) tokens
+                      </li>
+                      <li>
+                        <strong>Redeem Market 1 tokens</strong> on the Market 1
+                        page → receive your collateral
+                      </li>
                     </ol>
                     <p className="text-xs text-gray-600">
-                    💡 <strong>Tip:</strong> Redeeming here is only the first step. Visit the parent market to complete your redemption and recover your collateral.
+                      💡 <strong>Tip:</strong> Redeeming here is only the first
+                      step. Visit Market 1 (the "Assume" market) to complete
+                      your redemption and recover your collateral.
                     </p>
                   </div>
                 </div>
               </div>
             ) : childMarketResolved ? (
               <div className="mb-12 rounded-lg border-2 border-blue-200 bg-blue-50 p-6 shadow-lg">
-                <h3 className="mb-2 text-lg font-semibold text-blue-900">Partial Redemption Available</h3>
+                <h3 className="mb-2 text-lg font-semibold text-blue-900">
+                  Partial Redemption Available
+                </h3>
                 <p className="mb-4 text-sm text-blue-700">
-                  You can redeem tokens for the child market and use those tokens for trading
+                  Market 2 ("Then What" market) has resolved. You can redeem
+                  tokens for Market 1 ("Assume" market) tokens and use those for
+                  trading.
                 </p>
                 <div className="space-y-3">
                   {comboMarketData?.outcomeCombinations?.map((combo, index) => (
-                    <div key={index} className="flex items-center justify-between rounded-lg border border-blue-200 bg-white p-3">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between rounded-lg border border-blue-200 bg-white p-3"
+                    >
                       <div className="flex items-center gap-2">
                         <div
                           className="h-3 w-3 rounded-full"
                           style={{ backgroundColor: combo.color }}
                         />
-                        <span className="text-sm font-medium">{combo.name}</span>
+                        <span className="text-sm font-medium">
+                          {combo.name}
+                        </span>
                       </div>
                       <RedeemButton
                         market={virtualMarket}
@@ -1019,10 +1124,14 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({ poolId: staticPoolId }) =
               </div>
             ) : (
               <div className="mb-12 rounded-lg bg-gray-100 p-6 text-center shadow-lg">
-                <AlertTriangle className="mx-auto mb-3 text-orange-500" size={32} />
+                <AlertTriangle
+                  className="mx-auto mb-3 text-orange-500"
+                  size={32}
+                />
                 <h3 className="mb-2 text-lg font-semibold">Trading Closed</h3>
                 <p className="text-sm text-gray-600">
-                  This combinatorial market is closed because one or more source markets have ended.
+                  This combinatorial market is closed because one or more source
+                  markets have ended.
                 </p>
               </div>
             )}

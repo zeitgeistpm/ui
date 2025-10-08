@@ -1,4 +1,8 @@
-import { MarketOrComboItem, isMarketItem, isComboPoolItem } from "lib/types/market-or-combo";
+import {
+  MarketOrComboItem,
+  isMarketItem,
+  isComboPoolItem,
+} from "lib/types/market-or-combo";
 import { MarketCard } from "./index";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
@@ -68,15 +72,18 @@ const ComboPoolCard = ({
 }) => {
   const { data: pool, stats, associatedMarkets, question, baseAsset } = item;
   // Get the earliest end date from associated markets
-  const earliestEndDate = associatedMarkets.reduce((earliest, market) => {
-    // Parse the timestamp string to number
-    const endTime = Number(market.period.end);
-    
-    return earliest === null || endTime < earliest ? endTime : earliest;
-  }, null as number | null);
+  const earliestEndDate = associatedMarkets.reduce(
+    (earliest, market) => {
+      // Parse the timestamp string to number
+      const endTime = Number(market.period.end);
+
+      return earliest === null || endTime < earliest ? endTime : earliest;
+    },
+    null as number | null,
+  );
 
   const hasEnded = earliestEndDate ? hasDatePassed(earliestEndDate) : false;
-  
+
   const isEnding = () => {
     if (!earliestEndDate) return false;
     const currentTime = new Date();
@@ -89,8 +96,9 @@ const ComboPoolCard = ({
   const imagePath = lookupAssetImagePath(assetId);
 
   // Create a truncated question for display
-  const displayQuestion = question.length > 100 ? `${question.substring(0, 100)}...` : question;
-  
+  const displayQuestion =
+    question.length > 100 ? `${question.substring(0, 100)}...` : question;
+
   // Calculate total outcomes from all associated markets
   const totalOutcomes = associatedMarkets.reduce((total, market) => {
     return total + (market.categories?.length || 0);
@@ -114,29 +122,38 @@ const ComboPoolCard = ({
           disableLink && "cursor-default"
         }`}
       >
-        <div className="flex h-[54px] w-full gap-4 whitespace-normal">
-          <div className="absolute right-4 top-4">
-            <MarketFavoriteToggle marketId={pool.poolId} />
-          </div>
-          
-          {/* Combo pool indicator with overlapping market icons */}
-          <div className="relative min-h-[54px] min-w-[54px] rounded-lg bg-gradient-to-br from-purple-400 to-blue-500">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xs font-bold text-white">MULTI</span>
-            </div>
-            {/* Small indicator showing number of markets */}
-            <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white">
-              {associatedMarkets.length}
-            </div>
-          </div>
-          
-          <h5 className="line-clamp-3 h-fit w-full pr-4 text-sm font-semibold duration-200 whitespace-pre-line">
-            {displayQuestion}
-          </h5>
+        {/* Market roles section */}
+        <div className="flex gap-2 text-xs">
+          {associatedMarkets.map((market, index) => {
+            const roleLabel = index === 0 ? "Assume" : "Then";
+            const roleColor =
+              index === 0
+                ? "bg-blue-100 text-blue-700"
+                : "bg-green-100 text-green-700";
+            const marketQuestion =
+              market.question.length > 40
+                ? `${market.question.substring(0, 40)}...`
+                : market.question;
+
+            return (
+              <div
+                key={market.marketId}
+                className="flex-1 rounded border border-gray-200 bg-gray-50 p-2"
+              >
+                <span className="line-clamp-3 text-xs text-gray-700">
+                <span
+                  className={`mb-1 rounded mr-1 px-1.5 py-0.5 text-xxs font-semibold ${roleColor}`}
+                >
+                  {roleLabel}
+                </span> {market.question}
+                </span>
+              </div>
+            );
+          })}
         </div>
 
         <div className="w-full">
-          <ComboPoolPredictionBar 
+          <ComboPoolPredictionBar
             poolId={pool.poolId}
             associatedMarkets={associatedMarkets}
           />
@@ -148,7 +165,9 @@ const ComboPoolCard = ({
               <div>
                 <span>
                   {earliestEndDate &&
-                    `${hasEnded ? "Ended" : "Ends"} ${new Date(earliestEndDate).toLocaleString("en-US", {
+                    `${hasEnded ? "Ended" : "Ends"} ${new Date(
+                      earliestEndDate,
+                    ).toLocaleString("en-US", {
                       month: "short",
                       day: "numeric",
                     })}`}
@@ -170,7 +189,10 @@ const ComboPoolCard = ({
                 <div className="flex items-center gap-1">
                   <BarChart2 size={12} />
                   <span>
-                    {formatNumberCompact(new Decimal(stats.volume).div(ZTG).toNumber(), 2)}
+                    {formatNumberCompact(
+                      new Decimal(stats.volume).div(ZTG).toNumber(),
+                      2,
+                    )}
                   </span>
                 </div>
                 {stats.liquidity != undefined && baseAsset ? (
@@ -210,15 +232,16 @@ const ComboPoolPredictionBar = ({
 }) => {
   // Get pool data to create virtual market
   const { data: poolData } = useAmm2Pool(0, poolId);
-  
+
   // Create virtual market for spot price queries
-  const virtualMarket = poolData && associatedMarkets.length > 0 
-    ? createVirtualComboMarket(poolId, poolData, associatedMarkets)
-    : undefined;
+  const virtualMarket =
+    poolData && associatedMarkets.length > 0
+      ? createVirtualComboMarket(poolId, poolData, associatedMarkets)
+      : undefined;
 
   // Get spot prices for the combo pool
   const { data: spotPrices } = useMarketSpotPrices(poolId, 0, virtualMarket);
-  
+
   if (!spotPrices || spotPrices.size === 0) {
     return (
       <>
@@ -251,12 +274,14 @@ const ComboPoolPredictionBar = ({
 
   if (totalAssetPrice.gt(0)) {
     highestPercentage = Math.round(
-      (highestPrice.div(totalAssetPrice).toNumber()) * 100
+      highestPrice.div(totalAssetPrice).toNumber() * 100,
     );
   }
 
   // Create a name for the leading outcome using actual combination names
-  const leadingOutcomeName = virtualMarket?.categories?.[highestIndex]?.name || `Combination ${highestIndex + 1}`;
+  const leadingOutcomeName =
+    virtualMarket?.categories?.[highestIndex]?.name ||
+    `Combination ${highestIndex + 1}`;
 
   return (
     <div className={`relative h-[30px] w-full bg-gray-200 transition-all`}>
