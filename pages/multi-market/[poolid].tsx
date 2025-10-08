@@ -169,8 +169,8 @@ const SourceMarketsSection = ({
           <div className="text-sm text-purple-900">
             <strong>How Combinatorial Markets Work:</strong> Market 1 is the{" "}
             <strong>"Assume"</strong> market (the condition), and Market 2 is
-            the <strong>"Then What"</strong> market (the outcome). This creates
-            combinations like "Assume Yes (or No) for Market 1 (the condition), THEN what happens to Market 2 (the outcome)?"
+            the <strong>"Then"</strong> market (the outcome). This creates
+            combinations like "Assuming outcome (Yes or No) for Market 1 (the condition), THEN what happens to Market 2 (the outcome)?"
           </div>
         </div>
       </div>
@@ -199,7 +199,7 @@ const SourceMarketCard = ({
   walletAddress?: string;
 }) => {
   // Determine market role based on index
-  const marketRole = index === 0 ? "Assume" : "Then What";
+  const marketRole = index === 0 ? "Assume" : "Then";
   const roleColor =
     index === 0 ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800";
   const roleDescription =
@@ -601,7 +601,7 @@ const MobileContextButtons = ({
               Partial Redemption Available
             </h3>
             <p className="mb-4 text-sm text-blue-700">
-              Market 2 ("Then What" market) has resolved. You can redeem tokens
+              Market 2 ("Then" market) has resolved. You can redeem tokens
               for Market 1 ("Assume" market) tokens and use those for trading.
             </p>
             <div className="space-y-3">
@@ -1092,7 +1092,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                   Partial Redemption Available
                 </h3>
                 <p className="mb-4 text-sm text-blue-700">
-                  Market 2 ("Then What" market) has resolved. You can redeem
+                  Market 2 ("Then" market) has resolved. You can redeem
                   tokens for Market 1 ("Assume" market) tokens and use those for
                   trading.
                 </p>

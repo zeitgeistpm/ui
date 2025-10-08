@@ -314,8 +314,6 @@ export default async function handler(
         futarchySignal = {
           welfare_metric: market2.question,
           recommendation: highestOutcome.combination,
-          confidence: Math.min(Math.round(poolLiquidity.toNumber() / 100), 100),
-          reasoning: ""
         };
       }
     }

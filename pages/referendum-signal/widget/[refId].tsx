@@ -33,7 +33,6 @@ const ReferendumSignalWidget = () => {
       : null;
 
   const [showAllOutcomes, setShowAllOutcomes] = useState(false);
-  const [showRelatedMarkets, setShowRelatedMarkets] = useState(false);
 
   const { data, isLoading } = useQuery(
     ["referendum-signal-widget", referendumId],
@@ -70,40 +69,38 @@ const ReferendumSignalWidget = () => {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
 
-      {showRelatedMarkets && (
-          <div className="space-y-2 pb-3">
-            <div className="rounded border border-blue-200 bg-blue-50 p-2">
-              <div className="mb-1 inline-block rounded bg-blue-100 px-1.5 py-0.5 text-xxs font-semibold text-blue-800">
-                Assumming
-              </div>
-              <div className="text-xs text-gray-700">
-                <a
-                  href={`${process.env.NEXT_PUBLIC_SITE_URL || "https://app.zeitgeist.pm"}/markets/${combinatorial_market.market_1.marketId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-blue-600 hover:underline"
-                >
-                  {combinatorial_market.market_1.question}
-                </a>
-              </div>
-            </div>
-            <div className="rounded border border-green-200 bg-green-50 p-2">
-              <div className="mb-1 inline-block rounded bg-green-100 px-1.5 py-0.5 text-xxs font-semibold text-green-800">
-                Then
-              </div>
-              <div className="text-xs text-gray-700">
-                <a
-                  href={`${process.env.NEXT_PUBLIC_SITE_URL || "https://app.zeitgeist.pm"}/markets/${combinatorial_market.market_2.marketId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-green-600 hover:underline"
-                >
-                  {combinatorial_market.market_2.question}
-                </a>
-              </div>
-            </div>
+      <div className="flex flex-col sm:flex-row gap-2 items-top justify-center mb-3">
+        <div className="flex-1 rounded border border-blue-200 bg-blue-50 p-2">
+          <div className="mb-1 inline-block rounded bg-blue-100 px-1.5 py-0.5 text-xxs font-semibold text-blue-800">
+            Assume
           </div>
-        )}
+          <div className="text-xs text-gray-700 line-clamp-2">
+            <a
+              href={`${process.env.NEXT_PUBLIC_SITE_URL || "https://app.zeitgeist.pm"}/markets/${combinatorial_market.market_1.marketId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-600 hover:underline"
+            >
+              {combinatorial_market.market_1.question}
+            </a>
+          </div>
+        </div>
+        <div className="flex-1 rounded border border-green-200 bg-green-50 p-2">
+          <div className="mb-1 inline-block rounded bg-green-100 px-1.5 py-0.5 text-xxs font-semibold text-green-800">
+            Then
+          </div>
+          <div className="text-xs text-gray-700 line-clamp-2">
+            <a
+              href={`${process.env.NEXT_PUBLIC_SITE_URL || "https://app.zeitgeist.pm"}/markets/${combinatorial_market.market_2.marketId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-green-600 hover:underline"
+            >
+              {combinatorial_market.market_2.question}
+            </a>
+          </div>
+        </div>
+      </div>
 
       {/* Outcomes */}
       <div className="space-y-3">

@@ -478,8 +478,8 @@ const ComboMarketEditor: React.FC = () => {
             <div className="text-sm text-purple-900">
               <strong>How it works:</strong> Market 1 is the{" "}
               <strong>"Assume"</strong> market (the condition), and Market 2 is
-              the <strong>"Then What"</strong> market (the outcome). For
-              example: "Assume Yes (or No) for Market 1 (the condition), THEN what happens to Market 2 (the outcome)?"
+              the <strong>"Then"</strong> market (the outcome). For
+              example: "Assuming outcome (Yes or No) for Market 1 (the condition), THEN what happens to Market 2 (the outcome)?"
             </div>
           </div>
         </div>
@@ -495,7 +495,7 @@ const ComboMarketEditor: React.FC = () => {
             </h2>
             <div className="space-y-3">
               {form.selectedMarkets.map((market, index) => {
-                const marketRole = index === 0 ? "Assume" : "Then What";
+                const marketRole = index === 0 ? "Assume" : "Then";
                 const roleColor =
                   index === 0
                     ? "bg-blue-100 text-blue-800"
