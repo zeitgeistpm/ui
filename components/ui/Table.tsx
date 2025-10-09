@@ -395,7 +395,7 @@ const Table = ({
       ) : (
         <>
           <table
-            className="w-full border-separate rounded-lg shadow-xl shadow-gray-100 "
+            className="w-full border-separate rounded-lg overflow-hidden"
             ref={tableRef}
             style={
               isOverflowing === true
@@ -408,13 +408,13 @@ const Table = ({
             }
           >
             <thead>
-              <tr className="h-12 bg-light-gray">
+              <tr className="h-12 bg-gradient-to-r from-purple-50 to-blue-50">
                 {renderColumns.map((column, index) => (
                   <th
                     key={index}
-                    className={`${getHeaderClass(column)} border-b-2 ${
-                      index == 0 ? "rounded-tl-xl" : ""
-                    } ${index == columns.length - 1 ? "rounded-tr-xl" : ""}
+                    className={`${getHeaderClass(column)} border-b border-purple-200/50 ${
+                      index == 0 ? "rounded-tl-lg" : ""
+                    } ${index == columns.length - 1 ? "rounded-tr-lg" : ""}
                     ${column.hideMobile ? "hidden sm:table-cell" : ""}
                     `}
                     style={column.width ? { width: column.width } : {}}
@@ -472,16 +472,16 @@ const Table = ({
                     key={row.id}
                     className={`
                       group
-                      border-t-1 border-gray-200
+                      border-t-1 border-purple-100
                       transition-colors duration-100 ease-in-out
                       ${
                         showHighlight === true
-                          ? " hover:border-blue-300 hover:bg-blue-lighter "
+                          ? " hover:border-purple-300 hover:bg-purple-50/30 "
                           : ""
                       }
                     ${rowColorClass}
                     ${onRowClick ? "cursor-pointer" : ""} mx-1
-                    
+
                     `}
                     onClick={() => handleRowClick(row)}
                   >
@@ -533,7 +533,7 @@ const Table = ({
           {onLoadMore && !hideLoadMore && (
             <div className="mb-5 mt-4 flex justify-center">
               <div
-                className="text-xs font-bold uppercase text-sky-600"
+                className="cursor-pointer rounded-full bg-purple-500 px-4 py-2 text-xs font-bold uppercase text-white transition-colors hover:bg-purple-600"
                 role="button"
                 onClick={handleLoadMore}
               >

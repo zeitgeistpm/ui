@@ -189,11 +189,11 @@ const ComboMarketStats = ({
     : 0;
 
   return (
-    <div className="mb-6 rounded-lg border border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50 p-3 shadow-sm">
+    <div className="mb-6 rounded-lg bg-gradient-to-br from-purple-50 to-blue-50 p-3 shadow-lg">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         {/* Combinatorial Badge */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-full bg-purple-500 px-3 py-1 text-sm font-semibold text-white shadow-sm">
+          <div className="flex items-center gap-1.5 rounded-full bg-purple-500 px-3 py-1 text-sm font-semibold text-white shadow-md">
             <span>Combinatorial</span>
             <div className="group relative">
               <Info size={14} className="cursor-help" />
@@ -860,7 +860,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           )}
 
           {/* Chart Section */}
-          <div className="mt-4 rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-sm">
+          <div className="mt-4 rounded-lg bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-lg">
             <Tab.Group defaultIndex={0}>
               <Tab.List className="flex gap-2 text-sm"></Tab.List>
 
@@ -890,7 +890,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           {realAddress &&
             isOrdersLoading === false &&
             (orders?.length ?? 0) > 0 && (
-              <div className="mt-4 rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-sm">
+              <div className="mt-4 rounded-lg bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-lg">
                 <h3 className="mb-4 text-lg font-semibold text-gray-900">My Orders</h3>
                 <div className="rounded-lg bg-white/60 backdrop-blur-sm overflow-hidden">
                   <OrdersTable
@@ -905,7 +905,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
 
           {/* No Pool Warning */}
           {!marketHasPool && (
-            <div className="mt-4 flex items-center gap-3 rounded-lg border border-orange-200 bg-gradient-to-br from-orange-50 to-red-50 p-4 shadow-sm">
+            <div className="mt-4 flex items-center gap-3 rounded-lg bg-gradient-to-br from-orange-50 to-red-50 p-4 shadow-lg">
               <AlertTriangle size={24} className="flex-shrink-0 text-orange-500" />
               <div className="text-sm text-orange-900">
                 This combinatorial market doesn't have a liquidity pool and
@@ -915,7 +915,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           )}
 
           {/* Asset Details Table */}
-          <div className="my-8 rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-sm">
+          <div className="my-8 rounded-lg bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-lg">
             <h3 className="mb-4 text-lg font-semibold text-gray-900">Outcome Combinations</h3>
             <div className="rounded-lg bg-white/60 backdrop-blur-sm overflow-hidden">
               <ComboAssetDetails
@@ -935,7 +935,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
 
           {/* Latest Trades */}
           {marketHasPool && (
-            <div className="mt-10 rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-sm">
+            <div className="mt-10 rounded-lg bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-lg">
               <h3 className="mb-4 text-lg font-semibold text-gray-900">Latest Trades</h3>
               <div className="rounded-lg bg-white/60 backdrop-blur-sm overflow-hidden">
                 <LatestTrades
@@ -968,7 +968,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           {marketHasPool && (
             <div className="my-12">
               <div
-                className="mb-4 flex cursor-pointer items-center rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-blue-50/30 px-4 py-3 font-semibold text-purple-700 shadow-sm transition-colors hover:bg-purple-100/50"
+                className="mb-4 flex cursor-pointer items-center rounded-lg bg-gradient-to-br from-purple-50/30 to-blue-50/30 px-4 py-3 font-semibold text-purple-700 shadow-lg transition-all hover:shadow-xl"
                 onClick={() => toggleLiquiditySection()}
               >
                 <div>Show Liquidity</div>
@@ -989,7 +989,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                 leaveTo="transform opacity-0 "
                 show={showLiquidity && Boolean(marketHasPool)}
               >
-                <div className="rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-sm">
+                <div className="rounded-lg bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-lg">
                   <div className="rounded-lg bg-white/60 backdrop-blur-sm overflow-hidden">
                     <MarketLiquiditySection
                       pool={true}

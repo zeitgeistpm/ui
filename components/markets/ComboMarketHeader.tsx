@@ -31,17 +31,17 @@ const OutcomeBalance = ({
   const balanceDisplay = balance?.div(ZTG).toFixed(2) || "0.00";
 
   return (
-    <div className="flex items-center justify-between text-xs">
+    <div className="flex items-center justify-between rounded-md bg-white/50 px-2 py-1.5 text-xs">
       <div className="flex items-center gap-2">
         {color && (
           <div
-            className="h-2 w-2 rounded-full"
+            className="h-2.5 w-2.5 rounded-full shadow-sm"
             style={{ backgroundColor: color }}
           />
         )}
-        <span className="text-gray-700">{outcomeName}</span>
+        <span className="font-medium text-gray-700">{outcomeName}</span>
       </div>
-      <span className="font-medium text-gray-900">{balanceDisplay}</span>
+      <span className="font-bold text-gray-900">{balanceDisplay}</span>
     </div>
   );
 };
@@ -72,12 +72,16 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
         return (
           <div
             key={item.market?.marketId}
-            className={`flex-1 rounded-lg border border-gray-200 p-4 ${roleColor}`}
+            className={`flex-1 rounded-lg shadow-lg ${
+              index === 0
+                ? "bg-gradient-to-br from-blue-50 to-blue-100/50"
+                : "bg-gradient-to-br from-green-50 to-green-100/50"
+            } p-4`}
           >
             {/* Header with pill, tooltip, and Trade Market button */}
             <div className={`mb-3 flex items-center gap-2 `}>
               <div
-                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${pillColor}`}
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${pillColor}`}
               >
               <span>{roleLabel}</span>
                 <div className="group relative">
@@ -90,19 +94,23 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
                 </div>
               </div>
               </div>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs font-medium text-gray-600">
                 {item.market?.status}
               </span>
               <Link
                 href={`/markets/${item.market?.marketId}`}
-                className="flex items-center ml-auto rounded bg-blue-500 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-blue-600"
+                className={`flex items-center ml-auto rounded-lg px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:shadow-md ${
+                  index === 0
+                    ? "bg-blue-500 hover:bg-blue-600"
+                    : "bg-green-500 hover:bg-green-600"
+                }`}
               >
                 Trade Market <ExternalLink size={12} className="ml-1" />
               </Link>
             </div>
 
             {/* Question */}
-            <h3 className="mb-3 text-base leading-snug line-clamp-2">
+            <h3 className="mb-3 text-base font-semibold leading-snug text-gray-900 line-clamp-2">
               {item.market?.question}
             </h3>
 
@@ -115,21 +123,21 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
 
             {/* Token balances section */}
             {walletAddress && item.market?.categories && (
-              <div className="mt-3 rounded-md border border-gray-200 bg-white">
+              <div className="mt-3 rounded-lg bg-white/60 backdrop-blur-sm shadow-md">
                 <button
                   onClick={() => setShowBalances(!showBalances)}
-                  className="flex w-full items-center justify-between px-2 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex w-full items-center justify-between px-3 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-white/80"
                 >
                   <span>Outcome Balances</span>
                   {showBalances ? (
-                    <ChevronUp size={16} />
+                    <ChevronUp size={14} />
                   ) : (
-                    <ChevronDown size={16} />
+                    <ChevronDown size={14} />
                   )}
                 </button>
                 {showBalances && (
-                  <div className="border-t border-gray-200 p-2">
-                    <div className="space-y-1">
+                  <div className="border-t border-gray-200/50 p-3">
+                    <div className="space-y-2">
                       {item.market.outcomeAssets?.map((assetString, outcomeIndex) => {
                         const assetId = parseAssetIdStringWithCombinatorial(assetString);
                         return assetId ? (

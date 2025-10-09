@@ -93,7 +93,11 @@ const LatestTrades = ({
       //   </Link>
       // ),
       outcome: trade.outcomeName,
-      trade: trade.type === "buy" ? "Buy" : "Sell",
+      trade: trade.type === "buy" ? (
+        <span className="font-semibold text-green-600">Buy</span>
+      ) : (
+        <span className="font-semibold text-red-600">Sell</span>
+      ),
       cost: `${formatNumberLocalized(trade.cost.div(ZTG).toNumber())} ${trade.costSymbol}`,
       price: formatNumberLocalized(trade.outcomePrice.toNumber()),
       time: `${moment.duration(now.diff(trade.time)).humanize()} ago`,
@@ -101,7 +105,7 @@ const LatestTrades = ({
   }, [trades, isLoading]);
 
   return (
-    <div className="rounded-xl shadow-lg">
+    <div>
       <Table
         columns={columns}
         data={tableData}

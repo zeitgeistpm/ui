@@ -46,35 +46,34 @@ const ChartToolTip = (props) => {
       {props.label !== undefined &&
       props.label !== -Infinity &&
       props.label !== Infinity ? (
-        <div
-          className="rounded-ztg-10 bg-white px-ztg-9 py-ztg-12  dark:bg-black"
-          style={{ boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)" }}
-        >
-          <div className="text-ztg-12-150">
-            <span>
-              {new Intl.DateTimeFormat("default", {
-                dateStyle: "short",
-              }).format(new Date(props.label))}
-            </span>
-            <span className="ml-ztg-34">
-              {new Intl.DateTimeFormat("default", {
-                hour: "numeric",
-                minute: "numeric",
-              }).format(new Date(props.label))}
-            </span>
-            <div className="mt-ztg-13">
+        <div className="rounded-lg bg-gradient-to-br from-purple-50 to-blue-50 px-3 py-3 shadow-xl backdrop-blur-sm">
+          <div className="text-xs">
+            <div className="mb-2 flex items-center gap-2 border-b border-purple-200/50 pb-2">
+              <span className="font-semibold text-gray-700">
+                {new Intl.DateTimeFormat("default", {
+                  dateStyle: "short",
+                }).format(new Date(props.label))}
+              </span>
+              <span className="text-gray-500">
+                {new Intl.DateTimeFormat("default", {
+                  hour: "numeric",
+                  minute: "numeric",
+                }).format(new Date(props.label))}
+              </span>
+            </div>
+            <div className="space-y-2">
               {items?.map((item, index) => (
-                <div key={index} className="mt-1 flex flex-col">
-                  <div className="flex items-center">
+                <div key={index} className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2">
                     <div
-                      className="h-[8px] w-[8px] rounded-full bg-black"
+                      className="h-2 w-2 rounded-full"
                       style={{ backgroundColor: item.color }}
                     ></div>
-                    <div className="ml-[6px] font-semibold capitalize">
+                    <div className="font-semibold capitalize text-gray-700">
                       {item.label}
                     </div>
                   </div>
-                  <div>{`${item.value.toFixed(3)} ${props.yUnits}`}</div>
+                  <div className="font-bold text-gray-900">{`${item.value.toFixed(3)} ${props.yUnits}`}</div>
                 </div>
               ))}
             </div>
@@ -136,7 +135,7 @@ const TimeSeriesChart = ({
             <CartesianGrid
               strokeDasharray="3 3"
               strokeWidth={1}
-              stroke="#E8EAED"
+              stroke="#E9D5FF"
               vertical={false}
             />
             <XAxis
@@ -145,13 +144,13 @@ const TimeSeriesChart = ({
               tickCount={5}
               tick={{
                 fontSize: "10px",
-                stroke: "black",
+                stroke: "#6B7280",
                 strokeWidth: 1,
                 fontWeight: 100,
               }}
               tickMargin={10}
               type="number"
-              stroke="#E8EAED"
+              stroke="#E9D5FF"
               tickLine={true}
               strokeWidth={2}
               tickFormatter={(unixTime) => {
@@ -173,7 +172,7 @@ const TimeSeriesChart = ({
             <YAxis
               tick={{
                 fontSize: "10px",
-                stroke: "black",
+                stroke: "#6B7280",
                 strokeWidth: 1,
                 fontWeight: 100,
               }}
@@ -192,13 +191,13 @@ const TimeSeriesChart = ({
                   },
                 ]
               }
-              stroke="#E8EAED"
+              stroke="#E9D5FF"
               strokeWidth={2}
               tickFormatter={(val) => `${+val.toFixed(2)}`}
             >
               <Label
                 fontSize={10}
-                stroke="black"
+                stroke="#6B7280"
                 value={yUnits}
                 offset={15}
                 position="insideLeft"
