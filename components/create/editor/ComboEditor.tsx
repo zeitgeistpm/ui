@@ -468,18 +468,39 @@ const ComboMarketEditor: React.FC = () => {
         <h1 className="mb-4 text-center text-3xl font-bold">
           Create Combinatorial Market
         </h1>
-        <p className="text-center text-gray-600">
-          Combine two existing markets to create complex multi-outcome
-          combinations.
-        </p>
-        <div className="mx-auto mt-6 max-w-2xl rounded-lg border border-purple-200 bg-purple-50 p-4">
-          <div className="flex items-start gap-2">
-            <div className="mt-0.5 text-purple-600">ℹ️</div>
-            <div className="text-sm text-purple-900">
-              <strong>How it works:</strong> Market 1 is the{" "}
-              <strong>"Assume"</strong> market (the condition), and Market 2 is
-              the <strong>"Then"</strong> market (the outcome). For
-              example: "Assuming outcome (Yes or No) for Market 1 (the condition), THEN what happens to Market 2 (the outcome)?"
+
+        {/* Concise Instructions */}
+        <div className="mx-auto mt-6">
+          <div className="rounded-lg border border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50 p-6">
+            <h3 className="mb-4 text-lg font-bold text-gray-900">
+              How Combinatorial Markets Work
+            </h3>
+
+            <div className="space-y-4 text-sm">
+              {/* Core Concept */}
+              <p className="text-gray-800">
+                Trade on <strong>conditional outcomes</strong> — what happens in one market given an outcome in another.
+                <strong className="text-blue-700"> Market 1 ("Assume")</strong> is the condition, and
+                <strong className="text-green-700"> Market 2 ("Then")</strong> is the consequence or welfare metric.
+              </p>
+
+              {/* Examples */}
+              <div className="grid gap-3 md:grid-cols-2">
+                <div className="rounded-md bg-white p-3 shadow-sm">
+                  <div className="mb-1 text-xs font-semibold text-gray-600">Example 1:</div>
+                  <p className="text-xs leading-relaxed text-gray-800">
+                    <strong className="text-blue-700">Assume:</strong> "Referendum #1764 passes", <strong className="text-blue-700">No</strong> <br />
+                    <strong className="text-green-700">THEN:</strong> "Ecosystem gains 100k new users",<strong className="text-green-700"> Short</strong>
+                  </p>
+                </div>
+                <div className="rounded-md bg-white p-3 shadow-sm">
+                  <div className="mb-1 text-xs font-semibold text-gray-600">Example 2:</div>
+                  <p className="text-xs leading-relaxed text-gray-800">
+                    <strong className="text-blue-700">Assume:</strong> "Lakers win championship", <strong className="text-blue-700">Yes</strong> <br />
+                    <strong className="text-green-700">THEN:</strong> "Bitcoin reaches $100k", <strong className="text-green-700">Long</strong>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -502,8 +523,8 @@ const ComboMarketEditor: React.FC = () => {
                     : "bg-green-100 text-green-800";
                 const roleDescription =
                   index === 0
-                    ? "The condition/assumption market"
-                    : "The outcome/consequence market";
+                    ? "The condition/assumption market (i.e. event market)"
+                    : "The outcome/consequence market (i.e. welfare metric market)";
 
                 return (
                   <div
@@ -515,9 +536,9 @@ const ComboMarketEditor: React.FC = () => {
                         <span
                           className={`mr-3 rounded px-2 py-1 text-xs font-semibold ${roleColor}`}
                         >
-                          Market {index + 1}: "{marketRole}" Market
+                          "{marketRole}" Market
                         </span>
-                        <h4 className="font-medium">{market.question}</h4>
+                        <h3 className="font-medium text-base">{market.question}</h3>
                       </div>
                       <div className="mb-1 text-xs italic text-gray-600">
                         {roleDescription}
@@ -583,16 +604,21 @@ const ComboMarketEditor: React.FC = () => {
         </div>
       )} */}
 
-      {/* Spot Prices */}
-      {outcomeCombinations.length > 0 && (
-        <div className="mb-4">
+      {/* Outcome Combinations with Pricing */}
+      {outcomeCombinations.length > 0 && form.selectedMarkets.length === 2 && (
+        <div className="mb-8">
           <h2 className="mb-4 text-xl font-semibold">
-            Outcome Combinations ({outcomeCombinations.length})
+            Outcome Combinations & Pricing ({outcomeCombinations.length} Outcomes)
           </h2>
+          {/* Helpful tip */}
+          <div className="my-3 rounded-md bg-blue-50 p-3 text-xs text-blue-800">
+            💡 <strong>Tip:</strong> These combinations show how traders will interpret
+            your market. Make sure the logic flows naturally from the "Assume" condition
+            to the "Then" outcome.
+          </div>
           <div className="space-y-4">
             {outcomeCombinations.map((combination, index) => {
               const rawPrice = form.spotPrices[index] || "0";
-              // Safely parse the percentage, handling temporary invalid states
               const percentage = isNaN(parseFloat(rawPrice))
                 ? 0
                 : parseFloat(rawPrice);
@@ -601,50 +627,60 @@ const ComboMarketEditor: React.FC = () => {
               return (
                 <div
                   key={combination.id}
-                  className="flex items-center justify-between rounded-lg border bg-white p-4 shadow-sm"
+                  className="rounded-lg border-l-4 border bg-white p-5 shadow-sm"
+                  style={{ borderLeftColor: combination.color }}
                 >
-                  <div className="flex flex-1 items-center">
-                    <div
-                      className="mr-3 h-4 w-4 rounded-full"
-                      style={{ backgroundColor: combination.color }}
-                    />
-                    <div className="flex-1">
-                      <span className="font-medium">{combination.name}</span>
-                      <div className="mt-1 text-sm text-gray-500">
-                        <span className="font-semibold text-blue-700">
-                          Assume:
-                        </span>{" "}
-                        {combination.market1Outcome} •{" "}
-                        <span className="font-semibold text-green-700">
-                          Then:
-                        </span>{" "}
-                        {combination.market2Outcome}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    {/* Prominent Spot Price Display */}
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-blue-600">
-                        ${spotPrice}
-                      </div>
-                      <div className="text-xxs text-gray-500">
-                        initial spot price
-                      </div>
-                    </div>
-                    {/* Percentage Input */}
-                    <div className="flex items-center">
-                      <Input
-                        type="number"
-                        value={form.spotPrices[index] || ""}
-                        onChange={(e) => updateSpotPrice(index, e.target.value)}
-                        className="text-right"
-                        step="0.1"
-                        min="0"
-                        max="95"
-                        onKeyDown={handleKeyDown}
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    {/* Left side: Outcome details */}
+                    <div className="flex flex-1 items-start gap-3">
+                      <div
+                        className="mt-1 h-4 w-4 flex-shrink-0 rounded-full"
+                        style={{ backgroundColor: combination.color }}
                       />
-                      <span className="ml-2 text-gray-500">%</span>
+                      <div className="flex-1">
+                        <div className="mb-2 font-bold text-gray-800">
+                          {combination.name}
+                        </div>
+                        <div className="text-xs leading-relaxed text-gray-700">
+                          <div className="mb-1">
+                            <span className="font-semibold text-blue-700">Assume:</span>{" "}
+                            <span className="italic text-gray-600">{form.selectedMarkets[0].question}, </span>
+                            <span className="font-semibold text-blue-700 uppercase">{combination.market1Outcome}</span>
+                          </div>
+                          <div>
+                            <span className="font-semibold text-green-700">THEN:</span>{" "}
+                            <span className="italic text-gray-600">{form.selectedMarkets[1].question}, </span>
+                            <span className="font-semibold text-green-700 uppercase">{combination.market2Outcome}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right side: Pricing */}
+                    <div className="flex items-center gap-4 lg:flex-shrink-0">
+                      {/* Spot Price Display */}
+                      <div className="text-right">
+                        <div className="text-xl font-bold text-blue-600">
+                          ${spotPrice}
+                        </div>
+                        <div className="text-xxs text-gray-500">
+                          initial price
+                        </div>
+                      </div>
+                      {/* Percentage Input */}
+                      <div className="flex items-center">
+                        <Input
+                          type="number"
+                          value={form.spotPrices[index] || ""}
+                          onChange={(e) => updateSpotPrice(index, e.target.value)}
+                          className="w-30 text-right"
+                          step="0.1"
+                          min="0"
+                          max="95"
+                          onKeyDown={handleKeyDown}
+                        />
+                        <span className="ml-2 text-gray-500">%</span>
+                      </div>
                     </div>
                   </div>
                 </div>

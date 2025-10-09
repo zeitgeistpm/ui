@@ -160,7 +160,7 @@ const BuyForm = ({
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | CombinatorialToken | undefined
   >(initialAsset);
-
+  console.log("selectedAsset", selectedAsset);
   useEffect(() => {
     if (isCombinatorialToken(selectedAsset)) {
       const getAllOtherAssets = (selectedAsset: CombinatorialToken) => {

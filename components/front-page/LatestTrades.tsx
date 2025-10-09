@@ -14,11 +14,11 @@ const columns: TableColumn[] = [
     accessor: "trader",
     type: "component",
   },
-  {
-    header: "Market",
-    accessor: "question",
-    type: "component",
-  },
+  // {
+  //   header: "Market",
+  //   accessor: "question",
+  //   type: "component",
+  // },
   {
     header: "Outcome",
     accessor: "outcome",
@@ -52,12 +52,14 @@ const LatestTrades = ({
   outcomeAssets,
   outcomeNames,
   marketQuestion,
+  isMultiMarket = false,
 }: {
   limit?: number;
   marketId?: number;
   outcomeAssets?: CombinatorialToken[];
   outcomeNames?: string[];
   marketQuestion?: string;
+  isMultiMarket?: boolean;
 }) => {
   const { data: trades, isLoading } = useLatestTrades({
     limit,
@@ -81,11 +83,15 @@ const LatestTrades = ({
           <Avatar address={trade.traderAddress} />
         </Link>
       ),
-      question: (
-        <Link href={`/markets/${trade.marketId}`} className="text-[14px]">
-          {trade.question}
-        </Link>
-      ),
+      // question: isMultiMarket ? (
+      //   <Link href={`/multi-market/${trade.marketId}`} className="text-[14px]">
+      //     {trade.question}
+      //   </Link>
+      // ) : (
+      //   <Link href={`/markets/${trade.marketId}`} className="text-[14px]">
+      //     {trade.question}
+      //   </Link>
+      // ),
       outcome: trade.outcomeName,
       trade: trade.type === "buy" ? "Buy" : "Sell",
       cost: `${formatNumberLocalized(trade.cost.div(ZTG).toNumber())} ${trade.costSymbol}`,

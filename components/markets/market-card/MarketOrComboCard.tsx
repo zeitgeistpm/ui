@@ -71,8 +71,16 @@ const ComboPoolCard = ({
   disableLink?: boolean;
 }) => {
   const { data: pool, stats, associatedMarkets, question, baseAsset } = item;
+
+  // Sort associatedMarkets to match the order in data.marketIds
+  const sortedMarkets = [...associatedMarkets].sort((a, b) => {
+    const indexA = pool.marketIds.indexOf(a.marketId);
+    const indexB = pool.marketIds.indexOf(b.marketId);
+    return indexA - indexB;
+  });
+
   // Get the earliest end date from associated markets
-  const earliestEndDate = associatedMarkets.reduce(
+  const earliestEndDate = sortedMarkets.reduce(
     (earliest, market) => {
       // Parse the timestamp string to number
       const endTime = Number(market.period.end);
@@ -100,7 +108,7 @@ const ComboPoolCard = ({
     question.length > 100 ? `${question.substring(0, 100)}...` : question;
 
   // Calculate total outcomes from all associated markets
-  const totalOutcomes = associatedMarkets.reduce((total, market) => {
+  const totalOutcomes = sortedMarkets.reduce((total, market) => {
     return total + (market.categories?.length || 0);
   }, 0);
 
@@ -124,17 +132,12 @@ const ComboPoolCard = ({
       >
         {/* Market roles section */}
         <div className="flex gap-2 text-xs">
-          {associatedMarkets.map((market, index) => {
+          {sortedMarkets.map((market, index) => {
             const roleLabel = index === 0 ? "Assume" : "Then";
             const roleColor =
               index === 0
                 ? "bg-blue-100 text-blue-700"
                 : "bg-green-100 text-green-700";
-            const marketQuestion =
-              market.question.length > 40
-                ? `${market.question.substring(0, 40)}...`
-                : market.question;
-
             return (
               <div
                 key={market.marketId}
@@ -155,7 +158,7 @@ const ComboPoolCard = ({
         <div className="w-full">
           <ComboPoolPredictionBar
             poolId={pool.poolId}
-            associatedMarkets={associatedMarkets}
+            associatedMarkets={sortedMarkets}
           />
         </div>
 
@@ -174,7 +177,7 @@ const ComboPoolCard = ({
                 </span>
                 {isEnding() && <span className="ml-1 text-red">Ends Soon</span>}
                 <span className="ml-1 border-l-1 border-l-black pl-1 font-semibold ">
-                  {totalOutcomes} outcomes • {associatedMarkets.length} markets
+                  {totalOutcomes} outcomes • {sortedMarkets.length} markets
                 </span>
               </div>
               <div className="ml-auto flex items-center justify-center gap-1.5">

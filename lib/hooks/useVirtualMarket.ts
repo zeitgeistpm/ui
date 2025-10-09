@@ -124,7 +124,7 @@ export const useVirtualMarket = (
     }));
 
     const question = `${market1.question} & ${market2.question}`;
-    const description = `Combinatorial market combining: ASSUMMING the outcome of "${market1.question}", THEN "${market2.question}".`;
+    const description = `Combinatorial market combining: ASSUMING the outcome of "${market1.question}", THEN "${market2.question}".`;
     const sourceMarkets: [FullMarketFragment, FullMarketFragment] = [market1, market2];
     const baseAssetId = parseAssetIdString('ZTG');
 

@@ -51,7 +51,7 @@ const combinatorialPoolsQuery = gql`
     neoPools(
       where: {
         isMultiMarket_eq: true
-        marketIds_containsAny: $marketIds
+        marketIds_containsAll: $marketIds
       }
     ) {
       poolId
@@ -311,9 +311,17 @@ export default async function handler(
           outcome.probability > max.probability ? outcome : max
         , outcomes[0]);
 
+        // Calculate confidence as the probability of the highest outcome
+        const confidence = highestOutcome.probability;
+
+        // Generate reasoning based on the outcome probabilities
+        const reasoning = `Based on current market predictions, "${highestOutcome.combination}" has the highest probability at ${Math.round(confidence * 100)}%. This suggests the market believes this is the most likely outcome if the proposal passes.`;
+
         futarchySignal = {
           welfare_metric: market2.question,
           recommendation: highestOutcome.combination,
+          confidence,
+          reasoning,
         };
       }
     }

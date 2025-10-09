@@ -116,7 +116,7 @@ const TimeSeriesChart = ({
   return (
     <div
       className="relative"
-      style={{ width: "100%", height: 350 }}
+      style={{ width: "100%", height: 300 }}
       onMouseMove={(e) => {
         e.preventDefault();
         e.stopPropagation();

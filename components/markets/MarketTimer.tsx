@@ -20,31 +20,50 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
 
   return (
     <div className="inline-block w-full">
-      <div className="mb-1 flex items-center">
-        <div className="mr-4 font-semibold text-black">
-          {copy[stage.type].title}
-        </div>
-        <div className="text-sm text-sky-600">
-          {copy[stage.type].description}
-        </div>
-        {!isInfinite(stage) && (
-          <div className="ml-auto text-right text-black">
-            {timeUntilStageEnds.humanize()} left
+      {!isInfinity(stage.remainingTime) ? (
+        <div className="relative h-6 w-full rounded-lg bg-slate-400 overflow-hidden">
+          <div
+            className={`h-full rounded-lg transition-all ${
+              copy[stage.type].color
+            }`}
+            style={{ width: `${percentage}%` }}
+          />
+          <div className="absolute inset-0 flex items-center justify-between px-3">
+            <div className="flex items-center gap-2 text-xs">
+              <span className="font-semibold text-white drop-shadow-md">
+                {copy[stage.type].title}:
+              </span>
+              <span className="text-white/90 lowercase drop-shadow-md">
+                {copy[stage.type].description}
+              </span>
+              {!isInfinite(stage) && (
+                <span className="text-white/90 whitespace-nowrap drop-shadow-md">
+                 - {timeUntilStageEnds.humanize()} left
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-3 text-xs">
+              <span className="text-white font-semibold drop-shadow-md">
+                {percentage.toFixed(0)}%
+              </span>
+            </div>
           </div>
-        )}
-      </div>
-      {!isInfinity(stage.remainingTime) && (
-        <div className="w-full">
-          <div className="text-right text-xs text-sky-600">
-            {percentage.toFixed(0)}%
-          </div>
-          <div className="h-1.5 w-full rounded-lg bg-gray-100">
-            <div
-              className={`h-full rounded-lg transition-all ${
-                copy[stage.type].color
-              }`}
-              style={{ width: `${percentage}%` }}
-            />
+        </div>
+      ) : (
+        <div className="relative h-8 w-full rounded-lg bg-gray-100 overflow-hidden">
+          <div
+            className={`h-full rounded-lg ${copy[stage.type].color}`}
+            style={{ width: "100%" }}
+          />
+          <div className="absolute inset-0 flex items-center justify-between px-3">
+            <div className="flex items-center gap-2 text-xs">
+              <span className="font-semibold text-white drop-shadow-md">
+                {copy[stage.type].title}:
+              </span>
+              <span className="text-white/90 lowercase drop-shadow-md">
+                {copy[stage.type].description}
+              </span>
+            </div>
           </div>
         </div>
       )}
@@ -55,25 +74,17 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
 export const MarketTimerSkeleton = () => {
   return (
     <div className="inline-block w-full">
-      <div className="mb-1 flex items-center">
-        <div className="mr-4">
-          <Skeleton width={150} className="inline-block" />
-        </div>
-        <div className="hidden sm:block">
-          <Skeleton width={260} className="inline-block" />
-        </div>
-
-        <div className="ml-auto">
-          <Skeleton width={40} className="inline-block" />
-        </div>
-      </div>
-      <div className="w-full">
-        <div className="flex h-4 justify-end text-right text-sm text-gray-500"></div>
-        <div className="h-2 w-full rounded-lg bg-gray-100">
-          <div
-            className={`h-full rounded-lg bg-gray-400 transition-all`}
-            style={{ width: `10%` }}
-          />
+      <div className="relative h-8 w-full rounded-lg bg-gray-100 overflow-hidden">
+        <div
+          className="h-full rounded-lg bg-gray-300 transition-all"
+          style={{ width: "15%" }}
+        />
+        <div className="absolute inset-0 flex items-center justify-between px-3">
+          <div className="flex items-center gap-2">
+            <Skeleton width={120} height={12} />
+            <Skeleton width={100} height={12} />
+          </div>
+          <Skeleton width={30} height={12} />
         </div>
       </div>
     </div>
@@ -87,56 +98,56 @@ const copy: Record<
   Proposed: {
     title: "Market is Proposed",
     description: "Awaiting approval",
-    color: "bg-yellow-400",
+    color: "bg-yellow-500",
   },
   Trading: {
     title: "Market is Live",
-    description: "Market is open for trading",
-    color: "bg-green-400",
+    description: "Open for trading",
+    color: "bg-emerald-500",
   },
   GracePeriod: {
     title: "Market Grace Period",
-    description: "Market is cooling down before opening to reports",
-    color: "bg-green-400",
+    description: "Cooling down before reporting",
+    color: "bg-emerald-500",
   },
   OracleReportingPeriod: {
     title: "Market ended",
-    description: "Waiting for Oracle report",
-    color: "bg-purple-600",
+    description: "Awaiting Oracle to report",
+    color: "bg-purple-500",
   },
   OpenReportingPeriod: {
     title: "Oracle has failed to report",
     description: "Reporting open to all",
-    color: "bg-purple-600",
+    color: "bg-purple-500",
   },
   Disputed: {
     title: "Market outcome Disputed",
-    description: "Waiting for authority to report",
-    color: "bg-orange-400",
+    description: "Awaiting authority to report",
+    color: "bg-orange-500",
   },
   Reported: {
     title: "Outcome Reported",
-    description: "Disputes are open to all",
-    color: "bg-green-400",
+    description: "Disputes open to all",
+    color: "bg-emerald-500",
   },
   AuthorizedReport: {
     title: "Outcome Reported by Authority",
-    description: "Waiting for correction period to end",
-    color: "bg-green-400",
+    description: "Awaiting correction period to end",
+    color: "bg-emerald-500",
   },
   Resolved: {
     title: "Market Resolved",
-    description: "Consensus reached on the outcome",
-    color: "bg-green-400",
+    description: "Consensus reached on outcome",
+    color: "bg-emerald-500",
   },
   Destroyed: {
     title: "Market Destroyed",
-    description: "Market has been removed",
-    color: "bg-black",
+    description: "Market removed",
+    color: "bg-gray-800",
   },
   Court: {
     title: "Disputed in Court",
-    description: "Market is awaiting a ruling",
-    color: "bg-orange-400",
+    description: "Awaiting ruling",
+    color: "bg-orange-500",
   },
 };

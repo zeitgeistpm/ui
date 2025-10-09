@@ -342,7 +342,6 @@ const MarketHeader: FC<{
   rejectReason?: string;
   promotionData?: PromotedMarket | null;
   poolId?: number; // Optional poolId for combo markets
-  sourceMarketStages?: Array<{ market: any; stage: MarketStage | null | undefined }>; // Stages for source markets in combo pools
 }> = ({
   market,
   report,
@@ -353,7 +352,6 @@ const MarketHeader: FC<{
   rejectReason,
   promotionData,
   poolId,
-  sourceMarketStages,
 }) => {
   const {
     categories,
@@ -649,44 +647,19 @@ const MarketHeader: FC<{
       </div>
 
       <div className="flex w-full flex-col gap-2">
-        {/* Show source market statuses for combo pools */}
-        {poolId && sourceMarketStages ? (
-          <>
-            <div className="mb-2 text-sm font-semibold text-gray-700">Source Market Status:</div>
-            {sourceMarketStages.map((item, index) => (
-              <div key={index} className="rounded-lg border border-gray-200 p-3">
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs font-medium text-gray-600">
-                    Market {index + 1} (ID: {item.market?.marketId})
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {item.market?.status}
-                  </span>
-                </div>
-                {item.stage ? (
-                  <MarketTimer stage={item.stage} />
-                ) : (
-                  <MarketTimerSkeleton />
-                )}
-              </div>
-            ))}
-          </>
+        {marketStage?.type === "Court" ? (
+          <div className="w-full">
+            <h3 className="mb-2 text-sm text-gray-700">Market is in court</h3>
+            {caseId != null ? (
+              <CourtStageTimer caseId={caseId} />
+            ) : (
+              <Skeleton height={22} className="w-full rounded-md" />
+            )}
+          </div>
+        ) : marketStage ? (
+          <MarketTimer stage={marketStage} />
         ) : (
-          // Regular market timer display
-          marketStage?.type === "Court" ? (
-            <div className="w-full">
-              <h3 className="mb-2 text-sm text-gray-700">Market is in court</h3>
-              {caseId != null ? (
-                <CourtStageTimer caseId={caseId} />
-              ) : (
-                <Skeleton height={22} className="w-full rounded-md" />
-              )}
-            </div>
-          ) : marketStage ? (
-            <MarketTimer stage={marketStage} />
-          ) : (
-            <MarketTimerSkeleton />
-          )
+          <MarketTimerSkeleton />
         )}
       </div>
 

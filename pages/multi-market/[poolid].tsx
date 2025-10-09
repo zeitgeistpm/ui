@@ -3,8 +3,7 @@ import { FullMarketFragment, MarketStatus } from "@zeitgeistpm/indexer";
 import { MarketOutcomeAssetId, AssetId, ZTG } from "@zeitgeistpm/sdk";
 import LatestTrades from "components/front-page/LatestTrades";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
-import { MarketDescription } from "components/markets/MarketDescription";
-import MarketHeader from "components/markets/MarketHeader";
+import ComboMarketHeader from "components/markets/ComboMarketHeader";
 import MarketMeta from "components/meta/MarketMeta";
 import OrdersTable from "components/orderbook/OrdersTable";
 import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
@@ -33,15 +32,18 @@ import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useWallet } from "lib/state/wallet";
 import { useVirtualMarket } from "lib/hooks/useVirtualMarket";
 import { useBalance } from "lib/hooks/queries/useBalance";
+import { usePoolStats } from "lib/hooks/queries/usePoolStats";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useState, useMemo } from "react";
-import { AlertTriangle, ChevronDown, ExternalLink, X } from "react-feather";
+import { AlertTriangle, ChevronDown, ExternalLink, X, Info } from "react-feather";
 import { parseAssetId } from "@zeitgeistpm/sdk";
 import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { hasDatePassed } from "lib/util/hasDatePassed";
 
 const SimilarMarketsSection = dynamic(
   () => import("../../components/markets/SimilarMarketsSection"),
@@ -75,11 +77,13 @@ const ComboAssetDetails = ({
   poolId,
   baseAsset,
   virtualMarket,
+  sourceMarkets,
 }: {
   combinations: OutcomeCombination[];
   poolId: number;
   baseAsset: AssetId;
   virtualMarket: FullMarketFragment;
+  sourceMarkets: [FullMarketFragment, FullMarketFragment];
 }) => {
   // Fetch prices with the virtualMarket
   const { data: spotPrices } = useMarketSpotPrices(poolId, 0, virtualMarket);
@@ -107,13 +111,13 @@ const ComboAssetDetails = ({
       collapseOrder: 1,
     },
     { header: "Price", accessor: "totalValue", type: "currency" },
-    {
-      header: "24Hr Change",
-      accessor: "change",
-      type: "change",
-      width: "120px",
-      collapseOrder: 2,
-    },
+    // {
+    //   header: "24Hr Change",
+    //   accessor: "change",
+    //   type: "change",
+    //   width: "120px",
+    //   collapseOrder: 2,
+    // },
   ];
 
   // Build table data from combinations
@@ -122,16 +126,25 @@ const ComboAssetDetails = ({
       const currentPrice = spotPrices?.get(index)?.toNumber();
       const priceChange = priceChanges?.get(index);
 
+      // Extract outcomes from combination name
+      const [market1Outcome, market2Outcome] = combination.name.split(" & ");
+
       return {
         assetId: index,
         id: index,
         outcome: (
-          <div className="flex items-center gap-2">
+          <div className="flex items-start gap-2 py-2">
             <div
-              className="h-3 w-3 rounded-full"
+              className="mt-1.5 h-3 w-3 flex-shrink-0 rounded-full"
               style={{ backgroundColor: combination.color }}
             />
-            <span className="font-medium">{combination.name}</span>
+            <div className="flex flex-col gap-1">
+              <span className="font-semibold">{combination.name}</span>
+              <div className="text-xxs text-gray-600 leading-relaxed">
+                <div>Assume: <span className="font-bold">{market1Outcome}</span>, {sourceMarkets[0].question}</div>
+                <div>Then: <span className="font-bold">{market2Outcome}</span>, {sourceMarkets[1].question}</div>
+              </div>
+            </div>
           </div>
         ),
         totalValue: {
@@ -144,7 +157,7 @@ const ComboAssetDetails = ({
           currentPrice != null && totalAssetPrice.toNumber() > 0
             ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
             : null,
-        change: priceChange,
+        // change: priceChange,
       };
     },
   );
@@ -152,146 +165,120 @@ const ComboAssetDetails = ({
   return <Table columns={columns} data={tableData} />;
 };
 
-// Source markets section styled like market description with token balances
-const SourceMarketsSection = ({
+// Market stats section for combo markets
+const ComboMarketStats = ({
+  poolId,
   sourceMarkets,
 }: {
+  poolId: number;
   sourceMarkets: [FullMarketFragment, FullMarketFragment];
 }) => {
-  const wallet = useWallet();
+  const { data: poolStats, isLoading: isStatsLoading } = usePoolStats([poolId]);
 
-  return (
-    <div className="mb-8">
-      <h3 className="mb-4 text-lg font-semibold">Source Markets</h3>
-      <div className="mb-4 rounded-lg border border-purple-200 bg-purple-50 p-4">
-        <div className="flex items-start gap-2">
-          <div className="mt-0.5 text-purple-600">ℹ️</div>
-          <div className="text-sm text-purple-900">
-            <strong>How Combinatorial Markets Work:</strong> Market 1 is the{" "}
-            <strong>"Assume"</strong> market (the condition), and Market 2 is
-            the <strong>"Then"</strong> market (the outcome). This creates
-            combinations like "Assuming outcome (Yes or No) for Market 1 (the condition), THEN what happens to Market 2 (the outcome)?"
-          </div>
-        </div>
-      </div>
-      <div className="space-y-4">
-        {sourceMarkets.map((market, index) => (
-          <SourceMarketCard
-            key={market.marketId}
-            market={market}
-            index={index}
-            walletAddress={wallet.realAddress}
-          />
-        ))}
-      </div>
-    </div>
+  // Get earliest start date and latest end date from source markets
+  const starts = Math.min(
+    ...sourceMarkets.map((m) => Number(m.period.start)),
   );
-};
+  const ends = Math.max(
+    ...sourceMarkets.map((m) => Number(m.period.end)),
+  );
 
-// Individual source market card with balance display
-const SourceMarketCard = ({
-  market,
-  index,
-  walletAddress,
-}: {
-  market: FullMarketFragment;
-  index: number;
-  walletAddress?: string;
-}) => {
-  // Determine market role based on index
-  const marketRole = index === 0 ? "Assume" : "Then";
-  const roleColor =
-    index === 0 ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800";
-  const roleDescription =
-    index === 0
-      ? "The condition/assumption market"
-      : "The outcome/consequence market";
+  const liquidity = poolStats?.[0]?.liquidity;
+  const volume = poolStats?.[0]?.volume
+    ? new Decimal(poolStats[0].volume).div(ZTG).toNumber()
+    : 0;
 
   return (
-    <div className="rounded-lg border bg-white p-4 shadow-sm">
-      <div className="mb-3 flex items-center justify-between">
+    <div className="mb-6 rounded-lg border border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50 p-3 shadow-sm">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        {/* Combinatorial Badge */}
         <div className="flex items-center gap-2">
-          <span
-            className={`rounded px-2 py-1 text-xs font-semibold ${roleColor}`}
-          >
-            Market {index + 1}: "{marketRole}" Market
-          </span>
-          <span className="text-xs text-gray-500">(ID: {market.marketId})</span>
+          <div className="flex items-center gap-1.5 rounded-full bg-purple-500 px-3 py-1 text-sm font-semibold text-white shadow-sm">
+            <span>Combinatorial</span>
+            <div className="group relative">
+              <Info size={14} className="cursor-help" />
+              <div className="pointer-events-none absolute left-0 top-full z-20 mt-2 w-80 rounded-lg bg-gray-900 px-4 py-3 text-xs text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
+                <div className="space-y-2">
+                  <p className="font-semibold">How Combinatorial Markets Work:</p>
+                  <p>
+                    The <strong>Assume</strong> market is the condition, and the <strong>Then</strong> market is the outcome.
+                    This creates combinations like: "Assuming outcome X happens in Market 1, THEN what happens in Market 2?"
+                  </p>
+                  <p className="text-purple-300">
+                    Example: Assume "Trump wins" → Then "Bitcoin reaches $100k"
+                  </p>
+                </div>
+                <div className="absolute left-4 top-0 -translate-y-1/2">
+                  <div className="h-2 w-2 rotate-45 bg-gray-900"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <Link
-          href={`/markets/${market.marketId}`}
-          className="flex items-center text-sm text-blue-600 hover:text-blue-800"
-        >
-          View Market <ExternalLink size={14} className="ml-1" />
-        </Link>
-      </div>
-      <div className="mb-2 text-xs italic text-gray-600">{roleDescription}</div>
-      <h4 className="mb-2 line-clamp-2 font-medium">{market.question}</h4>
-      <div className="text-sm text-gray-500">
-        <div className="mb-1">
-          <span className="font-medium">Base Asset:</span> {market.baseAsset}
-        </div>
-      </div>
 
-      {/* Token balances section */}
-      {walletAddress && market.categories && (
-        <div className="mt-3 border-t pt-3">
-          <div className="mb-2 text-xs font-medium text-gray-600">
-            Your Token Balances:
+        {/* Stats - Inline on larger screens */}
+        <div className="grid grid-cols-2 gap-2 lg:flex lg:gap-4">
+          {/* Start Date */}
+          <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+            <div className="text-xxs font-medium text-gray-600">
+              {hasDatePassed(starts) ? "Started" : "Starts"}
+            </div>
+            <div className="text-xs font-bold text-gray-900">
+              {new Intl.DateTimeFormat("default", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }).format(starts)}
+            </div>
           </div>
-          <div className="space-y-2">
-            {market.outcomeAssets?.map((assetString, outcomeIndex) => {
-              const assetId = parseAssetIdStringWithCombinatorial(assetString);
-              return assetId ? (
-                <OutcomeBalance
-                  key={outcomeIndex}
-                  assetId={assetId as any}
-                  walletAddress={walletAddress}
-                  outcomeName={
-                    market.categories?.[outcomeIndex]?.name ||
-                    `Outcome ${outcomeIndex}`
-                  }
-                  color={market.categories?.[outcomeIndex]?.color ?? undefined}
-                />
-              ) : null;
-            })}
+
+          {/* End Date */}
+          <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+            <div className="text-xxs font-medium text-gray-600">
+              {hasDatePassed(ends) ? "Ended" : "Ends"}
+            </div>
+            <div className="text-xs font-bold text-gray-900">
+              {new Intl.DateTimeFormat("default", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }).format(ends)}
+            </div>
           </div>
+
+          {/* Volume */}
+          {isStatsLoading === false ? (
+            <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+              <div className="text-xxs font-medium text-gray-600">Volume</div>
+              <div className="text-xs font-bold text-gray-900">
+                {formatNumberCompact(volume)} ZTG
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+              <Skeleton width="60px" height="24px" />
+            </div>
+          )}
+
+          {/* Liquidity */}
+          {isStatsLoading === false ? (
+            <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+              <div className="text-xxs font-medium text-gray-600">Liquidity</div>
+              <div className="text-xs font-bold text-gray-900">
+                {formatNumberCompact(new Decimal(liquidity ?? 0).div(ZTG).toNumber())} ZTG
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+              <Skeleton width="60px" height="24px" />
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
-// Component to display individual outcome balance
-const OutcomeBalance = ({
-  assetId,
-  walletAddress,
-  outcomeName,
-  color,
-}: {
-  assetId: AssetId;
-  walletAddress: string;
-  outcomeName: string;
-  color?: string;
-}) => {
-  const { data: balance } = useBalance(walletAddress, assetId);
-  const balanceDisplay = balance?.div(ZTG).toFixed(2) || "0.00";
-
-  return (
-    <div className="flex items-center justify-between text-xs">
-      <div className="flex items-center gap-2">
-        {color && (
-          <div
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: color }}
-          />
-        )}
-        <span className="text-gray-700">{outcomeName}</span>
-      </div>
-      <span className="font-medium text-gray-900">{balanceDisplay}</span>
-    </div>
-  );
-};
 
 // Helper function to set time to now (copied from MarketChart)
 const setTimeToNow = (date: Date) => {
@@ -358,7 +345,6 @@ const ComboChart = ({
     chartFilter.intervalValue,
     startDateISOString,
   );
-
   const { data: prices, isLoading, isSuccess } = priceHistoryQuery;
 
   const chartData =
@@ -368,10 +354,34 @@ const ComboChart = ({
           .map((price) => {
             const time = new Date(price.timestamp).getTime();
 
-            // Map prices to chart data format
-            const assetPrices = price.prices.reduce((obj, val, index) => {
-              // Ensure prices don't exceed 1
-              return { ...obj, ["v" + index]: val.price > 1 ? 1 : val.price };
+            // Map prices to chart data format by matching asset IDs
+            const assetPrices = price.prices.reduce((obj, priceData) => {
+              // Find the matching combination by comparing asset IDs
+              const matchingIndex = comboMarketData.outcomeCombinations.findIndex(
+                (combo) => {
+                  try {
+                    // Parse the assetId string from the API
+                    const apiAssetId = JSON.parse(priceData.assetId);
+                    // Compare the combinatorial token hex values (case-insensitive)
+                    return (
+                      apiAssetId.combinatorialToken?.toLowerCase() ===
+                      combo.assetId.CombinatorialToken.toLowerCase()
+                    );
+                  } catch (e) {
+                    return false;
+                  }
+                }
+              );
+
+              // Only add if we found a matching combination
+              if (matchingIndex !== -1) {
+                // Ensure prices don't exceed 1
+                return {
+                  ...obj,
+                  [`v${matchingIndex}`]: priceData.price > 1 ? 1 : priceData.price,
+                };
+              }
+              return obj;
             }, {});
 
             return {
@@ -415,6 +425,9 @@ const MobileContextButtons = ({
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
   const [open, setOpen] = useState(false);
   const [showPartialRedeem, setShowPartialRedeem] = useState(false);
+
+  // Default to "buy" action if not set
+  const currentAction = tradeItem?.action ?? "buy";
 
   // Check if combo market is active (both source markets must be Active)
   const comboMarketIsActive = useMemo(() => {
@@ -487,7 +500,7 @@ const MobileContextButtons = ({
             poolData={comboMarketData}
             showTabs={false}
             selectedTab={
-              tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell
+              currentAction === "buy" ? TradeTabType.Buy : TradeTabType.Sell
             }
             outcomeCombinations={comboMarketData?.outcomeCombinations}
           />
@@ -638,8 +651,8 @@ const MobileContextButtons = ({
           <div className="flex h-20 cursor-pointer text-lg font-semibold">
             <div
               className={`center h-full flex-1  ${
-                tradeItem?.action === "buy"
-                  ? "bg-fog-of-war text-gray-200"
+                currentAction === "buy"
+                  ? "bg-fog-of-war text-white"
                   : "bg-white text-black"
               } `}
               onClick={() => {
@@ -647,7 +660,7 @@ const MobileContextButtons = ({
                   assetId: tradeItem?.assetId ?? ({} as MarketOutcomeAssetId),
                   action: "buy",
                 });
-                if (open && tradeItem?.action === "buy") {
+                if (open && currentAction === "buy") {
                   setOpen(false);
                 } else {
                   setOpen(true);
@@ -657,14 +670,14 @@ const MobileContextButtons = ({
               Buy{" "}
               <X
                 className={`center h-full w-0 transition-all  ${
-                  open && tradeItem?.action === "buy" && "w-6"
+                  open && currentAction === "buy" && "w-6"
                 }`}
               />
             </div>
             <div
               className={`center h-full flex-1 ${
-                tradeItem?.action === "sell"
-                  ? "bg-fog-of-war text-gray-200"
+                currentAction === "sell"
+                  ? "bg-fog-of-war text-white"
                   : "bg-white text-black"
               }`}
               onClick={() => {
@@ -672,7 +685,7 @@ const MobileContextButtons = ({
                   assetId: tradeItem?.assetId ?? ({} as MarketOutcomeAssetId),
                   action: "sell",
                 });
-                if (open && tradeItem?.action === "sell") {
+                if (open && currentAction === "sell") {
                   setOpen(false);
                 } else {
                   setOpen(true);
@@ -682,7 +695,7 @@ const MobileContextButtons = ({
               Sell
               <X
                 className={`center h-full w-0 transition-all  ${
-                  open && tradeItem?.action === "sell" && "w-6"
+                  open && currentAction === "sell" && "w-6"
                 }`}
               />
             </div>
@@ -727,7 +740,6 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
     marketId_eq: poolId,
     makerAccountId_eq: realAddress,
   });
-  const { data: poolData } = useAmm2Pool(0, poolId); // marketId=0 for combo pools
   const { data: parentCollectionIds } = useNeoPoolParentCollectionIds(poolId);
   // Extract market IDs from combo market data
   const marketIds = comboMarketData?.marketIds;
@@ -831,24 +843,24 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
         <div className="flex-1 overflow-hidden">
+
+          {/* Market Stats Section */}
+          <ComboMarketStats
+            poolId={poolId}
+            sourceMarkets={comboMarketData.sourceMarkets}
+          />
           <MarketMeta market={virtualMarket} />
 
-          <MarketHeader
-            market={virtualMarket as any}
-            token="ZTG" // Combo markets use ZTG as base asset
-            poolId={poolId}
-            sourceMarketStages={sourceMarketStages}
-          />
-
-          {/* Combinatorial Market Badge */}
-          <div className="my-4">
-            <span className="inline-block rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-800">
-              Combinatorial Market
-            </span>
-          </div>
+          {/* Combo Market Header with Assume/Then cards */}
+          {sourceMarketStages && (
+            <ComboMarketHeader
+              sourceMarketStages={sourceMarketStages}
+              walletAddress={realAddress}
+            />
+          )}
 
           {/* Chart Section */}
-          <div className="mt-4">
+          <div className="mt-4 rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-sm">
             <Tab.Group defaultIndex={0}>
               <Tab.List className="flex gap-2 text-sm"></Tab.List>
 
@@ -862,7 +874,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                       comboMarketData={comboMarketData}
                     />
                   ) : (
-                    <div className="flex h-[400px] items-center justify-center rounded-lg bg-gray-100">
+                    <div className="flex h-[400px] items-center justify-center rounded-lg bg-white/60 backdrop-blur-sm">
                       <div className="text-center text-gray-500">
                         <AlertTriangle size={48} className="mx-auto mb-2" />
                         <p>Chart data not available</p>
@@ -878,24 +890,24 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           {realAddress &&
             isOrdersLoading === false &&
             (orders?.length ?? 0) > 0 && (
-              <div className="mt-3 flex flex-col gap-y-3">
-                <div>My Orders</div>
-                <OrdersTable
-                  where={{
-                    marketId_eq: poolId,
-                    makerAccountId_eq: realAddress,
-                  }}
-                />
+              <div className="mt-4 rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-sm">
+                <h3 className="mb-4 text-lg font-semibold text-gray-900">My Orders</h3>
+                <div className="rounded-lg bg-white/60 backdrop-blur-sm overflow-hidden">
+                  <OrdersTable
+                    where={{
+                      marketId_eq: poolId,
+                      makerAccountId_eq: realAddress,
+                    }}
+                  />
+                </div>
               </div>
             )}
 
           {/* No Pool Warning */}
           {!marketHasPool && (
-            <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
-              <div className="h-ztg-20 w-ztg-20">
-                <AlertTriangle size={20} />
-              </div>
-              <div className="ml-ztg-10 text-ztg-12-120">
+            <div className="mt-4 flex items-center gap-3 rounded-lg border border-orange-200 bg-gradient-to-br from-orange-50 to-red-50 p-4 shadow-sm">
+              <AlertTriangle size={24} className="flex-shrink-0 text-orange-500" />
+              <div className="text-sm text-orange-900">
                 This combinatorial market doesn't have a liquidity pool and
                 therefore cannot be traded
               </div>
@@ -903,42 +915,46 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           )}
 
           {/* Asset Details Table */}
-          <div className="my-8">
-            <ComboAssetDetails
-              combinations={comboMarketData.outcomeCombinations}
-              poolId={poolId}
-              baseAsset={comboMarketData.baseAsset}
-              virtualMarket={virtualMarket}
-            />
+          <div className="my-8 rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-sm">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">Outcome Combinations</h3>
+            <div className="rounded-lg bg-white/60 backdrop-blur-sm overflow-hidden">
+              <ComboAssetDetails
+                combinations={comboMarketData.outcomeCombinations}
+                poolId={poolId}
+                baseAsset={comboMarketData.baseAsset}
+                virtualMarket={virtualMarket}
+                sourceMarkets={comboMarketData.sourceMarkets}
+              />
+            </div>
           </div>
 
           {/* Market Description */}
-          <div className="mb-12 max-w-[90vw]">
+          {/* <div className="mb-12 max-w-[90vw]">
             <MarketDescription market={virtualMarket} />
-          </div>
-
-          {/* Source Markets Section */}
-          <SourceMarketsSection sourceMarkets={comboMarketData.sourceMarkets} />
+          </div> */}
 
           {/* Latest Trades */}
           {marketHasPool && (
-            <div className="mt-10 flex flex-col gap-4">
-              <h3 className="mb-5 text-2xl">Latest Trades</h3>
-              <LatestTrades
-                limit={3}
-                marketId={undefined}
-                outcomeAssets={
-                  comboMarketData?.outcomeCombinations?.map(
-                    (combo) => combo.assetId,
-                  ) || []
-                }
-                outcomeNames={
-                  comboMarketData?.outcomeCombinations?.map(
-                    (combo) => combo.name,
-                  ) || []
-                }
-                marketQuestion={comboMarketData?.question}
-              />
+            <div className="mt-10 rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-sm">
+              <h3 className="mb-4 text-lg font-semibold text-gray-900">Latest Trades</h3>
+              <div className="rounded-lg bg-white/60 backdrop-blur-sm overflow-hidden">
+                <LatestTrades
+                  limit={3}
+                  marketId={poolId}
+                  outcomeAssets={
+                    comboMarketData?.outcomeCombinations?.map(
+                      (combo) => combo.assetId,
+                    ) || []
+                  }
+                  outcomeNames={
+                    comboMarketData?.outcomeCombinations?.map(
+                      (combo) => combo.name,
+                    ) || []
+                  }
+                  marketQuestion={comboMarketData?.question}
+                  isMultiMarket={true}
+                />
+              </div>
               {/* <Link
                 className="w-full text-center text-ztg-blue"
                 href={`/latest-trades?marketId=${poolId}`}
@@ -952,14 +968,13 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           {marketHasPool && (
             <div className="my-12">
               <div
-                className="mb-8 flex cursor-pointer items-center text-mariner"
+                className="mb-4 flex cursor-pointer items-center rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-blue-50/30 px-4 py-3 font-semibold text-purple-700 shadow-sm transition-colors hover:bg-purple-100/50"
                 onClick={() => toggleLiquiditySection()}
               >
                 <div>Show Liquidity</div>
                 <ChevronDown
-                  size={12}
-                  viewBox="6 6 12 12"
-                  className={`box-content px-2 ${
+                  size={16}
+                  className={`ml-2 transition-transform ${
                     showLiquidity && "rotate-180"
                   }`}
                 />
@@ -974,11 +989,15 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                 leaveTo="transform opacity-0 "
                 show={showLiquidity && Boolean(marketHasPool)}
               >
-                <MarketLiquiditySection
-                  pool={true}
-                  market={virtualMarket}
-                  comboMarket={true}
-                />
+                <div className="rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-sm">
+                  <div className="rounded-lg bg-white/60 backdrop-blur-sm overflow-hidden">
+                    <MarketLiquiditySection
+                      pool={true}
+                      market={virtualMarket}
+                      comboMarket={true}
+                    />
+                  </div>
+                </div>
               </Transition>
             </div>
           )}
@@ -986,7 +1005,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
 
         {/* Sidebar */}
         <div className="hidden md:-mr-6 md:block md:w-[320px] lg:mr-auto lg:w-[460px]">
-          <div className="sticky top-28">
+          <div className="sticky top-20">
             {comboMarketIsActive ? (
               <div
                 className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg"
