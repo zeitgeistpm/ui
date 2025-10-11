@@ -118,53 +118,51 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
 
   return (
     <div
-      className={`items-center justify-center gap-3 transition-opacity md:flex ${
+      className={`flex flex-wrap items-center justify-start gap-2 transition-opacity ${
         disabled && "pointer-events-none !cursor-default opacity-60"
       }`}
     >
-      <div className="mb-4 flex justify-center gap-3 md:mb-0">
-        {durationPresets.map((option, index) => (
-          <button
-            key={index}
-            type="button"
-            className={`center flex rounded-full bg-gray-100 px-6 py-3 transition-all active:scale-95 ${
-              value?.type === "duration" &&
-              value?.preset === option.preset &&
-              "bg-nyanza-base"
-            }`}
-            onClick={() => handleOnClickOption(option)}
-          >
-            {option.preset}
-          </button>
-        ))}
-      </div>
+      {durationPresets.map((option, index) => (
+        <button
+          key={index}
+          type="button"
+          className={`rounded-md border px-3 py-1.5 text-xs font-medium backdrop-blur-md transition-all active:scale-95 ${
+            value?.type === "duration" && value?.preset === option.preset
+              ? "border-sky-600/50 bg-sky-600/90 text-white shadow-sm"
+              : "border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
+          }`}
+          onClick={() => handleOnClickOption(option)}
+        >
+          {option.preset}
+        </button>
+      ))}
 
-      <div className="flex justify-center gap-3">
-        {hasCustomDurationOption && value?.type === "duration" && (
-          <DurationInput
-            className="overflow-hidden rounded-full md:w-72"
-            value={value}
-            onChange={handleDurationChange}
-            onBlur={handleDurationBlur}
-            isSelected={isValid && value?.type === "duration" && !value?.preset}
-          />
-        )}
+      {hasCustomDurationOption && value?.type === "duration" && (
+        <DurationInput
+          className="min-w-[200px] flex-1"
+          value={value}
+          onChange={handleDurationChange}
+          onBlur={handleDurationBlur}
+          isSelected={isValid && value?.type === "duration" && !value?.preset}
+        />
+      )}
 
-        {hasCustomDateOption && (
-          <DateTimePicker
-            timezone={timezone}
-            name={name}
-            className={`min-w-[300px] ${
-              value?.type === "date" && "bg-nyanza-base"
-            }`}
-            placeholder="Set Custom Date"
-            isValid={value?.type === "date" && isValid}
-            value={chainTime && value?.type === "date" ? value.date : undefined}
-            onChange={handleDateChange}
-            onBlur={handleDateBlur}
-          />
-        )}
-      </div>
+      {hasCustomDateOption && (
+        <DateTimePicker
+          timezone={timezone}
+          name={name}
+          className={`${
+            value?.type === "date"
+              ? "border-sky-600/50 !bg-sky-600/90 !text-white shadow-sm"
+              : ""
+          }`}
+          placeholder="Custom Date"
+          isValid={value?.type === "date" && isValid}
+          value={chainTime && value?.type === "date" ? value.date : undefined}
+          onChange={handleDateChange}
+          onBlur={handleDateBlur}
+        />
+      )}
     </div>
   );
 };
@@ -232,34 +230,40 @@ const DurationInput = ({
   return (
     <div className={`flex ${className}`}>
       <div
-        className={`relative flex flex-1 flex-shrink rounded-md transition-all duration-200 ${
-          isSelected ? "bg-nyanza-base" : "bg-gray-100"
+        className={`relative flex flex-1 overflow-hidden rounded-md border backdrop-blur-md transition-all ${
+          isSelected
+            ? "border-sky-600/50 bg-sky-600/90 shadow-sm"
+            : "border-sky-200/30 bg-white/80"
         }`}
       >
         <Input
           type="number"
-          className={`flex-2 w-full rounded-l-md bg-transparent px-6 py-3 text-right outline-none`}
+          className={`w-full border-0 bg-transparent px-3 py-1.5 text-right text-xs outline-none ${
+            isSelected
+              ? "text-white placeholder:text-white/60"
+              : "text-sky-900 placeholder:text-sky-400"
+          }`}
           value={value?.value}
           onChange={handleValueChange}
           onBlur={handleValueBlur}
         />
 
         <div
-          className={`flex flex-1 items-center justify-center gap-2 rounded-full rounded-r-md px-6 py-3 transition-all duration-200
-          ${
+          className={`flex items-center justify-center gap-1 border-l px-3 transition-all ${
             isSelected
-              ? "bg-gray-100 bg-opacity-50"
-              : "bg-black bg-opacity-[3%]"
-          }
-        `}
+              ? "border-white/20 bg-white/10"
+              : "border-sky-200/30 bg-sky-50/50"
+          }`}
         >
           <select
-            className="min-w-[70px] bg-transparent text-center outline-none"
+            className={`min-w-[60px] bg-transparent text-xs outline-none ${
+              isSelected ? "text-white" : "text-sky-900"
+            }`}
             onChange={handleUnitChange}
             value={value?.unit}
           >
             {["days", "hours"].map((unit) => (
-              <option key={unit} className="px-4 py-2" value={unit}>
+              <option key={unit} className="bg-white text-sky-900" value={unit}>
                 {value && value?.value <= 1 ? unit.replace("s", "") : unit}
               </option>
             ))}

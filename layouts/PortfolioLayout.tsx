@@ -1,7 +1,7 @@
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
 import { useWallet } from "lib/state/wallet";
 import { getQueryParams } from "lib/util/get-query-params";
-import Loader from "react-spinners/PulseLoader";
+import Skeleton from "components/ui/Skeleton";
 import { useRouter } from "next/router";
 import React, { PropsWithChildren, useEffect, useState, useMemo } from "react";
 
@@ -80,7 +80,7 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
   if (isLoading) {
     return (
       <div className="flex min-h-[50vh] w-full items-center justify-center">
-        <Loader />
+        <Skeleton className="w-32" variant="dots" />
       </div>
     );
   }

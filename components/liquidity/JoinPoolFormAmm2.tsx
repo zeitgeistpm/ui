@@ -13,6 +13,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { isPresent } from "lib/types";
 import { calculateRestrictivePoolAsset } from "lib/util/calculate-restrictive-pool-asset";
+import { getPoolIdForTransaction } from "lib/util/get-pool-id";
 import { useEffect, useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -37,9 +38,15 @@ const JoinPoolForm = ({
   const [poolSharesToReceive, setPoolSharesToReceive] = useState<Decimal>();
   const { data: market } = useMarket({ marketId });
   const activeMarket = virtualMarket || market;
-  const userAssetBalances = useBalances(pool.assetIds, wallet.realAddress)
-    .map((res) => res.data)
-    .filter(isPresent);
+
+  const userAssetBalancesQueries = useBalances(
+    pool.assetIds,
+    wallet.realAddress,
+  );
+  const userAssetBalances = userAssetBalancesQueries.map((res) => res.data);
+  const allBalancesLoaded = userAssetBalances.every((balance) =>
+    isPresent(balance),
+  );
 
   const queryClient = useQueryClient();
 
@@ -53,16 +60,19 @@ const JoinPoolForm = ({
             ? "0"
             : new Decimal(assetAmount).mul(ZTG).toFixed(0);
         });
+
+        const poolIdForTx = getPoolIdForTransaction(pool, marketId);
+
         try {
           return sdk.api.tx.neoSwaps.join(
-            marketId,
+            poolIdForTx,
             poolSharesToReceive
               .mul((100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100)
               .toFixed(0),
             maxAmountsIn,
           );
         } catch (error) {
-          console.error(error);
+          console.error("JoinPool - Error creating transaction:", error);
         }
       }
     },
@@ -71,25 +81,37 @@ const JoinPoolForm = ({
         notificationStore.pushNotification("Joined pool", {
           type: "Success",
         });
+        // Invalidate pool query
         queryClient.invalidateQueries([id, amm2PoolKey, marketId]);
+        // Invalidate balance queries for all pool assets
+        queryClient.invalidateQueries({ queryKey: [id, "balance"] });
         onSuccess?.();
+      },
+      onError: (error) => {
+        notificationStore.pushNotification(
+          `Failed to join pool: ${error?.message || "Unknown error"}`,
+          { type: "Error" },
+        );
       },
     },
   );
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
-      if (!name) return;
+      if (!name || !allBalancesLoaded) return;
       const changedByUser = type != null;
       const changedAsset = name;
       const userInput = value[changedAsset];
       const reserves = Array.from(pool.reserves).map((reserve) => reserve[1]);
+
+      // Filter to get valid balances for calculation
+      const validBalances = userAssetBalances.filter(isPresent);
       const restrictiveIndex = calculateRestrictivePoolAsset(
         reserves,
-        userAssetBalances,
+        validBalances,
       );
 
-      const maxInForRestrictiveAsset = userAssetBalances[restrictiveIndex!];
+      const maxInForRestrictiveAsset = validBalances[restrictiveIndex!];
 
       if (name === "percentage" && changedByUser) {
         const percentage = Number(value["percentage"]);
@@ -165,6 +187,11 @@ const JoinPoolForm = ({
       .mul(100);
   }, [pool.totalShares, poolSharesToReceive]);
 
+  const hasInsufficientBalance = useMemo(() => {
+    if (!allBalancesLoaded) return true;
+    return userAssetBalances.some((balance) => !balance || balance.isZero());
+  }, [userAssetBalances, allBalancesLoaded]);
+
   return (
     <form
       className="flex flex-col gap-y-4 md:gap-y-6"
@@ -181,17 +208,17 @@ const JoinPoolForm = ({
             return (
               <div
                 key={index}
-                className="relative h-[56px] w-full text-ztg-18-150 font-medium "
+                className="relative h-[62px] w-full text-base font-semibold"
               >
-                <div className="absolute left-[15px] top-[14px] h-full w-[40%] truncate capitalize">
+                <div className="absolute left-4 top-[18px] z-10 w-[40%] truncate capitalize text-sky-900">
                   {assetName}
                 </div>
                 <Input
-                  className={`h-[56px] w-full rounded-[5px] bg-anti-flash-white px-[15px] text-right outline-none
+                  className={`h-[56px] w-full rounded-lg border px-4 text-right font-medium shadow-sm backdrop-blur-sm transition-all focus:shadow-md focus:outline-none
                             ${
                               formState.errors[index.toString()]?.message
-                                ? "border-2 border-vermilion text-vermilion"
-                                : ""
+                                ? "border-red-300 bg-red-50/80 text-red-600 focus:border-red-400"
+                                : "border-sky-200/30 bg-white/60 text-sky-900 hover:bg-white/80 focus:border-sky-400"
                             }
               `}
                   key={index}
@@ -214,7 +241,7 @@ const JoinPoolForm = ({
                     },
                   })}
                 />
-                <div className="mt-[4px] text-ztg-12-120 text-vermilion">
+                <div className="mt-1 text-xs text-red-600">
                   <>{formState.errors[index.toString()]?.message}</>
                 </div>
               </div>
@@ -222,20 +249,35 @@ const JoinPoolForm = ({
           })}
       </div>
       <input
-        className="my-[20px] px-0"
+        className="my-5 w-full cursor-pointer accent-sky-600 disabled:cursor-not-allowed disabled:opacity-50"
         type="range"
-        {...register("percentage", { min: 0, value: "0" })}
+        disabled={!allBalancesLoaded}
+        {...register("percentage", { min: 0, max: 100, value: "0" })}
       />
       {activeMarket?.status !== "Active" && (
-        <div className="rounded-md bg-provincial-pink p-4 text-sm">
+        <div className="rounded-lg border border-orange-200/30 bg-orange-50/80 p-4 text-sm text-orange-900 shadow-sm backdrop-blur-sm">
           Liquidity cannot be provided to a closed market
         </div>
       )}
-      <div className="center mb-2 flex gap-2 text-sm">
-        <label className="block flex-1 font-bold">
+      {hasInsufficientBalance && activeMarket?.status === "Active" && (
+        <div className="rounded-lg border border-orange-200/30 bg-orange-50/80 p-4 shadow-sm backdrop-blur-sm">
+          <div className="mb-2 font-semibold text-orange-900">
+            Missing Required Assets
+          </div>
+          <div className="text-sm text-orange-800">
+            You must hold a balance in <strong>all</strong> pool assets to
+            provide liquidity. Please acquire the missing tokens before joining
+            the pool.
+          </div>
+        </div>
+      )}
+      <div className="flex items-center justify-between rounded-lg border border-sky-200/30 bg-sky-50/50 p-4 shadow-sm backdrop-blur-sm">
+        <label className="text-sm font-semibold text-sky-900">
           Expected Pool Ownership
         </label>
-        {prctSharesToReceive.toFixed(1)} %
+        <span className="text-base font-bold text-sky-900">
+          {prctSharesToReceive?.toFixed(1) ?? "0.0"}%
+        </span>
       </div>
 
       <FormTransactionButton
@@ -243,7 +285,8 @@ const JoinPoolForm = ({
         disabled={
           formState.isValid === false ||
           isLoading ||
-          market?.status !== "Active"
+          market?.status !== "Active" ||
+          hasInsufficientBalance
         }
       >
         Join Pool

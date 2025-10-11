@@ -81,13 +81,13 @@ export const OracleInput = forwardRef(
         <Input
           value={value}
           spellCheck={false}
-          className={`mb-2 h-12 w-full rounded-md px-4 py-8 text-center transition-all duration-300
+          className={`mb-1.5 h-8 w-full rounded-md border px-2.5 text-center text-xs backdrop-blur-md transition-all
                   ${
                     !fieldState.isTouched || !fieldState.isValid
-                      ? "bg-gray-100"
-                      : "!bg-nyanza-base "
+                      ? "border-sky-200/30 bg-sky-50/50"
+                      : "border-sky-200/30 bg-white/80"
                   }`}
-          placeholder="0x78e0e162...D3FFd434F7"
+          placeholder="0x..."
           onChange={handleChange}
           onBlur={handleBlur}
         />
@@ -97,47 +97,48 @@ export const OracleInput = forwardRef(
               <button
                 type="button"
                 onClick={handleUseConnectedAccount}
-                className={`
-            
-            relative flex items-center justify-center rounded-full border-2 border-gray-300 border-transparent bg-gray-100 text-sm transition-all 
-            duration-200 ease-in-out
-            ${!isSelectedAccount && " border-orange-300"}
-          `}
+                className={`relative flex items-center justify-center rounded-full border text-xs backdrop-blur-md transition-all duration-200 ease-in-out active:scale-95 ${
+                  !isSelectedAccount
+                    ? "border-orange-300/50 bg-orange-50/50 hover:bg-orange-100/50"
+                    : "border-sky-200/30 bg-white/80"
+                }`}
               >
                 <div
-                  className={`relative h-full flex-1 px-3 py-2 transition-all duration-300 ease-[cubic-bezier(.57,.42,.25,1.57)] ${
-                    isSelectedAccount ? "w-[120px]" : "w-[200px]"
+                  className={`relative h-full flex-1 px-3 py-1.5 transition-all duration-300 ease-[cubic-bezier(.57,.42,.25,1.57)] ${
+                    isSelectedAccount ? "w-[100px]" : "w-[160px]"
                   }`}
                 >
                   <div
-                    className={`absolute left-0 top-[50%] translate-y-[-50%] ${
+                    className={`absolute left-0 top-[50%] translate-y-[-50%] font-medium ${
                       !isSelectedAccount
-                        ? "min-w-[200px]  text-orange-300"
-                        : "min-w-[120px]"
+                        ? "min-w-[160px] text-orange-500"
+                        : "min-w-[100px] text-sky-900"
                     }`}
                   >
-                    {!isSelectedAccount ? "Use connected wallet" : "Connected"}
+                    {!isSelectedAccount ? "Use connected" : "Connected"}
                   </div>
                 </div>
 
                 <div
-                  className={`center gap-2 rounded-full bg-gray-200 px-3 py-2 ${
-                    isSelectedAccount ? "bg-nyanza-base" : "bg-gray-200"
+                  className={`center gap-1.5 rounded-full px-2.5 py-1.5 ${
+                    isSelectedAccount
+                      ? "bg-sky-600/90 text-white"
+                      : "bg-orange-500/90 text-white"
                   }`}
                 >
                   {wallet.realAddress && (
                     <>
                       <div className="pointer-events-none">
-                        <Avatar address={wallet.realAddress} size={18} />
+                        <Avatar address={wallet.realAddress} size={16} />
                       </div>
-                      <span className="center gap-4 font-semibold">
+                      <span className="center gap-2 text-xs font-semibold">
                         {accountname ? (
                           <>
                             {accountname}{" "}
-                            {shortenAddress(wallet.realAddress, 0, 6)}
+                            {shortenAddress(wallet.realAddress, 0, 5)}
                           </>
                         ) : (
-                          <>{shortenAddress(wallet.realAddress, 6, 6)}</>
+                          <>{shortenAddress(wallet.realAddress, 5, 5)}</>
                         )}
                       </span>
                     </>
@@ -151,14 +152,12 @@ export const OracleInput = forwardRef(
             <button
               type="button"
               onClick={() => accountModals.openWalletSelect()}
-              className="flex rounded-full border-gray-300 bg-gray-100 text-sm transition-all active:scale-95"
+              className="flex rounded-full border border-sky-200/30 bg-white/80 text-xs backdrop-blur-md transition-all hover:bg-sky-100/80 active:scale-95"
             >
-              <div className="px-4 py-2 text-gray-600">
+              <div className="px-3 py-1.5 font-medium text-sky-900">
                 Connect to use wallet account
               </div>
-              <div
-                className={`rounded-full bg-orange-400 px-4 py-2 text-white`}
-              >
+              <div className="rounded-full bg-orange-500 px-3 py-1.5 font-semibold text-white">
                 Connect
               </div>
             </button>

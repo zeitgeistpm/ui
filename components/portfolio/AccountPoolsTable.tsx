@@ -1,15 +1,12 @@
 import { isRpcSdk } from "@zeitgeistpm/sdk";
-import LiquidityModalAmm2 from "components/liquidity/LiquidityModalAmm2";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import { useAccountAmm2Pool } from "lib/hooks/queries/useAccountAmm2Pools";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import Link from "next/link";
-import { useState } from "react";
 import EmptyPortfolio from "./EmptyPortfolio";
 
 const columns: TableColumn[] = [
@@ -36,9 +33,12 @@ const columns: TableColumn[] = [
   },
 ];
 
-const AccountPoolsTable = ({ address }: { address: string }) => {
-  const { data: pools, isLoading } = useAccountAmm2Pool(address);
+type AccountPoolsTableProps = {
+  pools: any[] | null | undefined;
+  isLoading: boolean;
+};
 
+const AccountPoolsTable = ({ pools, isLoading }: AccountPoolsTableProps) => {
   const tableData: TableData[] | undefined = pools?.map((pool) => {
     const isMultiMarket =
       pool.isMultiMarket && pool.marketIds && pool.marketIds.length > 1;
@@ -48,7 +48,10 @@ const AccountPoolsTable = ({ address }: { address: string }) => {
 
     return {
       question: (
-        <Link href={href} className="line-clamp-1 text-[14px]">
+        <Link
+          href={href}
+          className="line-clamp-1 text-sm font-medium text-sky-900 transition-colors hover:text-sky-700"
+        >
           {pool.question}
         </Link>
       ),
@@ -77,7 +80,14 @@ const AccountPoolsTable = ({ address }: { address: string }) => {
           buttonLink="/liquidity"
         />
       ) : (
-        <Table columns={columns} data={tableData} showHighlight={false} />
+        <div className="rounded-lg border border-sky-200/30 bg-white/80 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg">
+          <h2 className="mb-4 border-b border-sky-200/30 pb-3 text-base font-semibold text-sky-900">
+            Liquidity Positions
+          </h2>
+          <div className="overflow-hidden rounded-md bg-sky-50/30 backdrop-blur-sm">
+            <Table columns={columns} data={tableData} showHighlight={false} />
+          </div>
+        </div>
       )}
     </div>
   );

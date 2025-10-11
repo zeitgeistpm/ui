@@ -28,57 +28,48 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Dialog.Panel className="w-full max-w-[564px] rounded-md bg-white p-8">
-        <h3 className="mb-5 text-center text-2xl">Settings</h3>
+      <Dialog.Panel className="w-full max-w-[600px] rounded-lg border border-sky-200/30 bg-white/95 p-6 shadow-xl backdrop-blur-md">
+        <h3 className="mb-6 text-center text-2xl font-bold text-sky-900">
+          Settings
+        </h3>
         <Tab.Group
           onChange={(index) => setTabSelection(index)}
           defaultIndex={tabSelection}
         >
-          <Tab.List as={Fragment}>
-            <div className="mb-5 flex justify-center border-b-1 border-b-sky-200 pb-3 text-sky-600">
-              <div className="center flex-grow">
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <span
-                      className={
-                        "cursor-pointer text-sm " +
-                        (selected ? "font-semibold text-black" : "")
-                      }
-                    >
-                      Account
-                    </span>
-                  )}
-                </Tab>
-              </div>
-              <div className="center flex-grow">
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <span
-                      className={
-                        "cursor-pointer text-sm " +
-                        (selected ? "font-semibold text-black" : "")
-                      }
-                    >
-                      Proxy
-                    </span>
-                  )}
-                </Tab>
-              </div>
-              <div className="center flex-grow">
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <span
-                      className={
-                        "cursor-pointer text-sm " +
-                        (selected ? "font-semibold text-black" : "")
-                      }
-                    >
-                      Fee Paying Asset
-                    </span>
-                  )}
-                </Tab>
-              </div>
-            </div>
+          <Tab.List className="mb-6 flex gap-2 rounded-lg bg-sky-50/50 p-1 backdrop-blur-sm">
+            <Tab
+              className={({ selected }) =>
+                `flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all focus:outline-none ${
+                  selected
+                    ? "bg-white text-sky-900 shadow-sm"
+                    : "text-sky-700 hover:bg-white/60 hover:text-sky-900"
+                }`
+              }
+            >
+              Account
+            </Tab>
+            <Tab
+              className={({ selected }) =>
+                `flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all focus:outline-none ${
+                  selected
+                    ? "bg-white text-sky-900 shadow-sm"
+                    : "text-sky-700 hover:bg-white/60 hover:text-sky-900"
+                }`
+              }
+            >
+              Proxy
+            </Tab>
+            <Tab
+              className={({ selected }) =>
+                `flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all focus:outline-none ${
+                  selected
+                    ? "bg-white text-sky-900 shadow-sm"
+                    : "text-sky-700 hover:bg-white/60 hover:text-sky-900"
+                }`
+              }
+            >
+              Fee Asset
+            </Tab>
           </Tab.List>
         </Tab.Group>
         {

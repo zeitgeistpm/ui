@@ -1,22 +1,51 @@
 import { isString } from "lodash-es";
+import { BeatLoader } from "react-spinners";
 
 export type LoaderProps = {
   className?: string;
   loading?: boolean;
   variant?: LoaderVariant | [string, string];
   lineThrough?: boolean;
+  type?: "circle" | "dots";
 };
 
 export type LoaderVariant = "Success" | "Info" | "Error" | "Dark";
 
 export const Loader = ({
   className,
-  loading,
+  loading = true,
   variant,
   lineThrough,
+  type = "circle",
 }: LoaderProps) => {
   const gradient = isString(variant) ? getGradient(variant) : variant;
 
+  // Dotted line loader
+  if (type === "dots") {
+    const color = variant === "Success"
+      ? "#31C48D"
+      : variant === "Error"
+      ? "#C43131"
+      : variant === "Info"
+      ? "#31A1C4"
+      : "#0ea5e9"; // Default sky-600
+
+    return (
+      <div
+        className={`flex items-center justify-center rounded-lg border border-sky-200/30 bg-white/80 p-3 shadow-sm backdrop-blur-md ${className}`}
+      >
+        <BeatLoader
+          loading={loading}
+          color={color}
+          size={8}
+          margin={4}
+          speedMultiplier={0.8}
+        />
+      </div>
+    );
+  }
+
+  // Original circle loader
   return (
     <div className={`relative rounded-full bg-inherit ${className}`}>
       <div

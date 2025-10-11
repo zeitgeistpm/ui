@@ -39,12 +39,15 @@ export const AnswersInput = ({
   };
 
   return (
-    <>
-      <div className="mb-8 flex items-center justify-center gap-2">
+    <div className="flex flex-wrap items-center gap-3">
+      {/* Type Selector - Horizontal Row */}
+      <div className="flex flex-shrink-0 items-center gap-2">
         <button
           type="button"
-          className={`rounded-full px-6 py-3 text-sm transition-all active:scale-95 md:px-8 md:py-4  ${
-            value?.type === "yes/no" ? "bg-nyanza-base" : "bg-gray-100"
+          className={`rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur-md transition-all active:scale-95 ${
+            value?.type === "yes/no"
+              ? "border-2 border-sky-600/50 bg-sky-600/90 text-white shadow-md"
+              : "border-2 border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
           }`}
           onClick={handleSelectType("yes/no")}
         >
@@ -53,14 +56,10 @@ export const AnswersInput = ({
 
         <button
           type="button"
-          className={`rounded-full px-6 py-3 text-sm transition-all active:scale-95 md:px-8 md:py-4 ${
+          className={`rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur-md transition-all active:scale-95 ${
             value?.type === "categorical"
-              ? `${
-                  fieldState.isTouched && fieldState.isValid
-                    ? "bg-nyanza-base"
-                    : "bg-fog-of-war text-white"
-                }`
-              : "bg-gray-100"
+              ? "border-2 border-sky-600/50 bg-sky-600/90 text-white shadow-md"
+              : "border-2 border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
           }`}
           onClick={handleSelectType("categorical")}
         >
@@ -69,14 +68,10 @@ export const AnswersInput = ({
 
         <button
           type="button"
-          className={`rounded-full px-6 py-3 text-sm transition-all active:scale-95 md:px-8 md:py-4 ${
+          className={`rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur-md transition-all active:scale-95 ${
             value?.type === "scalar"
-              ? `${
-                  fieldState.isTouched && fieldState.isValid
-                    ? "bg-nyanza-base"
-                    : "bg-fog-of-war text-white"
-                }`
-              : "bg-gray-100"
+              ? "border-2 border-sky-600/50 bg-sky-600/90 text-white shadow-md"
+              : "border-2 border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
           }`}
           onClick={handleSelectType("scalar")}
         >
@@ -84,7 +79,11 @@ export const AnswersInput = ({
         </button>
       </div>
 
-      <div>
+      {/* Vertical Divider */}
+      <div className="h-8 w-px flex-shrink-0 bg-gradient-to-b from-transparent via-sky-200/50 to-transparent" />
+
+      {/* Answer Inputs - Inline on same row */}
+      <div className="min-w-0 flex-1">
         {value?.type === "categorical" && (
           <CategoricalAnswersInput
             name="categorical-answers"
@@ -94,14 +93,12 @@ export const AnswersInput = ({
           />
         )}
         {value?.type === "scalar" && (
-          <div className="mb-3">
-            <ScalarAnswersInput
-              name="scalar-answers"
-              value={value}
-              onBlur={handleBlur}
-              onChange={handleChange}
-            />
-          </div>
+          <ScalarAnswersInput
+            name="scalar-answers"
+            value={value}
+            onBlur={handleBlur}
+            onChange={handleChange}
+          />
         )}
         {value?.type === "yes/no" && (
           <CategoricalAnswersInput
@@ -111,6 +108,6 @@ export const AnswersInput = ({
           />
         )}
       </div>
-    </>
+    </div>
   );
 };

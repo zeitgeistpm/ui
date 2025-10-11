@@ -175,132 +175,138 @@ export const MarketPositions = ({
 
   // if (positions.some(displayBalance)) {
   return (
-    <div className={`${className}`}>
-      <MarketPositionHeader
-        marketId={market.marketId}
-        question={market.question ?? undefined}
-        baseAsset={market.baseAsset}
-        isMultiMarket={positions[0]?.isMultiMarket}
-        poolId={positions[0]?.poolId}
-      />
-      <Table
-        showHighlight={false}
-        columns={isLiquidityMarket ? COLUMNS_LIQUIDITY : COLUMNS}
-        data={positions
-          // .filter((pos) => displayBalance(pos))
-          .map<TableData>(
-            ({
-              assetId,
-              price,
-              userBalance,
-              outcome,
-              changePercentage,
-              market,
-              avgCost,
-              rpnl,
-              upnl,
-              isMultiMarket,
-              underlyingMarketIds,
-              canRedeem,
-              poolId,
-              isWinningPosition,
-            }) => {
-              const baseAssetUsdPrice = lookUpAssetPrice(
-                market.baseAsset,
-                foreignAssetPrices,
-                usdZtgPrice,
-              );
-              return {
-                outcome: outcome,
-                userBalance: userBalance.div(ZTG).toNumber(),
-                price: {
-                  value: price.toNumber(),
-                  usdValue: price.mul(baseAssetUsdPrice ?? 0).toNumber(),
-                },
-                cost: {
-                  value: avgCost,
-                  usdValue: new Decimal(avgCost)
-                    .mul(baseAssetUsdPrice ?? 0)
-                    .toNumber(),
-                },
-                // upnl: {
-                //   value: upnl,
-                //   usdValue: new Decimal(upnl)
-                //     .mul(baseAssetUsdPrice ?? 0)
-                //     .toNumber(),
-                // },
-                // rpnl: {
-                //   value: rpnl,
-                //   usdValue: new Decimal(rpnl)
-                //     .mul(baseAssetUsdPrice ?? 0)
-                //     .toNumber(),
-                // },
-                value: {
-                  value: userBalance.mul(price).div(ZTG).toNumber(),
-                  usdValue: userBalance
-                    .mul(price)
-                    .mul(baseAssetUsdPrice ?? 0)
-                    .div(ZTG)
-                    .toNumber(),
-                },
-                // change: isNaN(changePercentage)
-                //   ? 0
-                //   : changePercentage.toFixed(1),
-                actions: (
-                  <div className="text-right">
-                    {IOPoolShareAssetId.is(assetId) ? (
-                      <PoolShareButtons
-                        poolId={assetId.PoolShare}
-                        market={market}
-                      />
-                    ) : isMultiMarket &&
-                      canRedeem &&
-                      poolId &&
-                      isWinningPosition ? (
-                      <Link href={`/multi-market/${poolId}`}>
-                        <SecondaryButton onClick={() => {}}>
-                          Redeem Tokens
-                        </SecondaryButton>
-                      </Link>
-                    ) : marketStage?.type === "Trading" &&
-                      (IOMarketOutcomeAssetId.is(assetId) ||
-                        isCombinatorialToken(assetId)) ? (
-                      <Link
-                        href={
-                          isMultiMarket
-                            ? `/multi-market/${market.marketId}`
-                            : `/market/${market.marketId}`
-                        }
-                      >
-                        <SecondaryButton onClick={() => {}}>
-                          Trade Tokens
-                        </SecondaryButton>
-                      </Link>
-                    ) : marketStage?.type === "Resolved" ? (
-                      <RedeemButton
-                        market={market}
-                        assetId={assetId}
-                        underlyingMarketIds={underlyingMarketIds}
-                      />
-                    ) : (IOMarketOutcomeAssetId.is(assetId) ||
-                        (isCombinatorialToken(assetId) && !isMultiMarket)) &&
-                      marketStage?.type === "Disputed" ? (
-                      <DisputeButton market={market} assetId={assetId} />
-                    ) : (IOMarketOutcomeAssetId.is(assetId) ||
-                        (isCombinatorialToken(assetId) && !isMultiMarket)) &&
-                      (marketStage?.type === "OpenReportingPeriod" ||
-                        (marketStage?.type === "OracleReportingPeriod" &&
-                          isOracle)) ? (
-                      <ReportButton market={market} assetId={assetId} />
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                ),
-              };
-            },
-          )}
-      />
+    <div
+      className={`${className} rounded-lg border border-sky-200/30 bg-white/80 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg`}
+    >
+      <div className="mb-4">
+        <MarketPositionHeader
+          marketId={market.marketId}
+          question={market.question ?? undefined}
+          baseAsset={market.baseAsset}
+          isMultiMarket={positions[0]?.isMultiMarket}
+          poolId={positions[0]?.poolId}
+        />
+      </div>
+      <div className="overflow-hidden rounded-md bg-sky-50/30 backdrop-blur-sm">
+        <Table
+          showHighlight={false}
+          columns={isLiquidityMarket ? COLUMNS_LIQUIDITY : COLUMNS}
+          data={positions
+            // .filter((pos) => displayBalance(pos))
+            .map<TableData>(
+              ({
+                assetId,
+                price,
+                userBalance,
+                outcome,
+                changePercentage,
+                market,
+                avgCost,
+                rpnl,
+                upnl,
+                isMultiMarket,
+                underlyingMarketIds,
+                canRedeem,
+                poolId,
+                isWinningPosition,
+              }) => {
+                const baseAssetUsdPrice = lookUpAssetPrice(
+                  market.baseAsset,
+                  foreignAssetPrices,
+                  usdZtgPrice,
+                );
+                return {
+                  outcome: outcome,
+                  userBalance: userBalance.div(ZTG).toNumber(),
+                  price: {
+                    value: price.toNumber(),
+                    usdValue: price.mul(baseAssetUsdPrice ?? 0).toNumber(),
+                  },
+                  cost: {
+                    value: avgCost,
+                    usdValue: new Decimal(avgCost)
+                      .mul(baseAssetUsdPrice ?? 0)
+                      .toNumber(),
+                  },
+                  // upnl: {
+                  //   value: upnl,
+                  //   usdValue: new Decimal(upnl)
+                  //     .mul(baseAssetUsdPrice ?? 0)
+                  //     .toNumber(),
+                  // },
+                  // rpnl: {
+                  //   value: rpnl,
+                  //   usdValue: new Decimal(rpnl)
+                  //     .mul(baseAssetUsdPrice ?? 0)
+                  //     .toNumber(),
+                  // },
+                  value: {
+                    value: userBalance.mul(price).div(ZTG).toNumber(),
+                    usdValue: userBalance
+                      .mul(price)
+                      .mul(baseAssetUsdPrice ?? 0)
+                      .div(ZTG)
+                      .toNumber(),
+                  },
+                  // change: isNaN(changePercentage)
+                  //   ? 0
+                  //   : changePercentage.toFixed(1),
+                  actions: (
+                    <div className="text-right">
+                      {IOPoolShareAssetId.is(assetId) ? (
+                        <PoolShareButtons
+                          poolId={assetId.PoolShare}
+                          market={market}
+                        />
+                      ) : isMultiMarket &&
+                        canRedeem &&
+                        poolId &&
+                        isWinningPosition ? (
+                        <Link href={`/multi-market/${poolId}`}>
+                          <SecondaryButton onClick={() => {}}>
+                            Redeem Tokens
+                          </SecondaryButton>
+                        </Link>
+                      ) : marketStage?.type === "Trading" &&
+                        (IOMarketOutcomeAssetId.is(assetId) ||
+                          isCombinatorialToken(assetId)) ? (
+                        <Link
+                          href={
+                            isMultiMarket
+                              ? `/multi-market/${market.marketId}`
+                              : `/market/${market.marketId}`
+                          }
+                        >
+                          <SecondaryButton onClick={() => {}}>
+                            Trade Tokens
+                          </SecondaryButton>
+                        </Link>
+                      ) : marketStage?.type === "Resolved" ? (
+                        <RedeemButton
+                          market={market}
+                          assetId={assetId}
+                          underlyingMarketIds={underlyingMarketIds}
+                        />
+                      ) : (IOMarketOutcomeAssetId.is(assetId) ||
+                          (isCombinatorialToken(assetId) && !isMultiMarket)) &&
+                        marketStage?.type === "Disputed" ? (
+                        <DisputeButton market={market} assetId={assetId} />
+                      ) : (IOMarketOutcomeAssetId.is(assetId) ||
+                          (isCombinatorialToken(assetId) && !isMultiMarket)) &&
+                        (marketStage?.type === "OpenReportingPeriod" ||
+                          (marketStage?.type === "OracleReportingPeriod" &&
+                            isOracle)) ? (
+                        <ReportButton market={market} assetId={assetId} />
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  ),
+                };
+              },
+            )}
+        />
+      </div>
     </div>
   );
   // }
@@ -314,11 +320,15 @@ export const MarketPositionsSkeleton = ({
   className?: string;
 }) => {
   return (
-    <div className={`${className}`}>
-      <Skeleton className="mb-6" height={20} width="70%" />
-      <Skeleton className="mb-2" height={50} width={"100%"} />
-      <Skeleton className="mb-2" height={90} width={"100%"} />
-      <Skeleton height={90} width={"100%"} />
+    <div
+      className={`${className} rounded-lg border border-sky-200/30 bg-white/80 p-4 shadow-md backdrop-blur-md`}
+    >
+      <Skeleton className="mb-4" height={24} width="70%" />
+      <div className="rounded-md bg-sky-50/30 p-4">
+        <Skeleton className="mb-2" height={40} width={"100%"} />
+        <Skeleton className="mb-2" height={60} width={"100%"} />
+        <Skeleton height={60} width={"100%"} />
+      </div>
     </div>
   );
 };

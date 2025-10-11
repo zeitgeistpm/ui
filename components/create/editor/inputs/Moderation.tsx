@@ -15,12 +15,11 @@ export const options: Array<{
 }> = [
   {
     mode: "Permissionless",
-    description: "More expensive, but goes live as soon as you need.",
+    description: "Goes live immediately",
   },
   {
     mode: "Advised",
-    description:
-      "Cheaper, but but requires approval from the advisory committee before becoming active.",
+    description: "Requires committee approval",
   },
 ];
 
@@ -38,34 +37,26 @@ export const ModerationModeSelect: React.FC<ModerationModeSelectProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:justify-center md:gap-6">
+    <div className="flex flex-col gap-2 md:flex-row md:gap-2">
       {options.map((option, index) => (
         <button
           key={index}
           type="button"
-          className={`
-              flex max-w-sm flex-1 cursor-pointer flex-col rounded-md p-6 transition-all active:scale-95 md:min-h-[230px]
-              ${value === option.mode ? "bg-nyanza-base" : "bg-gray-100"}
-            `}
+          className={`flex h-[72px] flex-1 cursor-pointer flex-col justify-center rounded-md border p-2 text-left backdrop-blur-md transition-all active:scale-95 ${
+            value === option.mode
+              ? "border-sky-600/50 bg-sky-600/90 text-white shadow-md"
+              : "border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
+          }`}
           onClick={handleSelect(option.mode)}
         >
-          <div className="flex flex-1 flex-row pt-2">
-            <div className="flex flex-1 flex-col text-center">
-              <h3 className="mb-4 text-2xl">{option.mode}</h3>
-              <p className="mx-auto mb-4 flex-1 text-sm md:text-base">
-                {option.description}
-              </p>
-              <p className="">
-                <span className="text-xs text-gray-500">Bond Cost: </span>
-                <span className="text-xs text-gray-900">
-                  {option.mode === "Permissionless"
-                    ? constants?.markets.validityBond
-                    : constants?.markets.advisoryBond}
-                  ZTG
-                </span>
-              </p>
-            </div>
-          </div>
+          <h3 className="text-xs font-semibold leading-tight">{option.mode}</h3>
+          <p className="mt-0.5 text-[11px] leading-tight opacity-75">
+            {option.description} •{" "}
+            {option.mode === "Permissionless"
+              ? constants?.markets.validityBond
+              : constants?.markets.advisoryBond}{" "}
+            ZTG
+          </p>
         </button>
       ))}
     </div>

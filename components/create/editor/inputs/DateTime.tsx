@@ -58,12 +58,14 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
     <>
       {isFirefox ? (
         <div
-          className={`center flex overflow-hidden rounded-full bg-gray-100 transition-all ${
-            isValid && "!bg-nyanza-base"
+          className={`center flex overflow-hidden rounded-md border backdrop-blur-md transition-all ${
+            isValid
+              ? "border-sky-200/30 bg-white/80"
+              : "border-vermilion/50 bg-sky-50/50"
           } ${className}`}
         >
           <Input
-            className="rounded-full bg-transparent px-8 py-3"
+            className="rounded-md bg-transparent px-3 py-1.5 text-xs"
             ref={inputRef}
             name={name}
             type="datetime-local"
@@ -79,19 +81,21 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       ) : (
         <button
           type="button"
-          className={`center flex rounded-full  bg-gray-100 transition-all active:scale-95  ${
-            isValid && "!bg-nyanza-base"
+          className={`center flex rounded-md border backdrop-blur-md transition-all active:scale-95 ${
+            isValid
+              ? "border-sky-200/30 bg-white/80 hover:bg-sky-100/80"
+              : "border-vermilion/50 bg-sky-50/50"
           } ${className}`}
           onClick={() => {
             inputRef.current?.focus();
             inputRef.current?.showPicker();
           }}
         >
-          <div className="relative px-8 py-3">
-            <div>
+          <div className="relative px-3 py-1.5">
+            <div className="text-xs text-sky-900">
               {!value
                 ? (placeholder ?? "Set Date")
-                : momentFn(value).format("MMM D, YYYY, h:mm:ss A")}
+                : momentFn(value).format("MMM D, YYYY, h:mm A")}
             </div>
             <Input
               className="absolute -bottom-2 left-0 h-0 w-0 opacity-0"

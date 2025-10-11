@@ -335,7 +335,7 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
                 <div className="absolute -bottom-8 left-[50%] translate-x-[-50%]">
                   <div
                     className={`w-40 cursor-pointer text-center text-sm font-semibold underline ${
-                      hasEnoughLiquidty ? "text-ztg-blue" : "text-vermilion"
+                      hasEnoughLiquidty ? "text-sky-900" : "text-vermilion"
                     }`}
                     onClick={() => setTotalCostIsOpen(true)}
                   >
@@ -345,15 +345,17 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
                     open={totalCostIsOpen}
                     onClose={() => setTotalCostIsOpen(false)}
                   >
-                    <Dialog.Panel className="rounded-md bg-white p-8">
-                      <h2 className="mb-4 text-lg">Cost Breakdown</h2>
+                    <Dialog.Panel className="rounded-lg border border-sky-200/30 bg-white/95 p-8 shadow-xl backdrop-blur-lg">
+                      <h2 className="mb-4 text-lg text-sky-900">
+                        Cost Breakdown
+                      </h2>
                       <div className="mb-4">
                         <div className="flex-1">
-                          <h3 className="text-base font-normal text-black">
+                          <h3 className="text-base font-normal text-sky-900">
                             {editor.form.moderation} Bond
                           </h3>
                           <div className="flex items-center justify-start gap-6">
-                            <h4 className="flex-1 text-sm font-light text-gray-500">
+                            <h4 className="flex-1 text-sm text-sky-900">
                               {editor.form.moderation === "Permissionless"
                                 ? "Returned if the market isn't deleted by the committee."
                                 : "Returned if the market is approved or ends before being approved by the committee."}
@@ -365,11 +367,11 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
 
                       <div className="mb-4 flex">
                         <div className="flex-1">
-                          <h3 className="text-base font-normal text-black">
+                          <h3 className="text-base font-normal text-sky-900">
                             Oracle Bond
                           </h3>
                           <div className="flex items-center justify-start gap-6">
-                            <h4 className="flex-1 text-sm font-light text-gray-500">
+                            <h4 className="flex-1 text-sm text-sky-900">
                               Returned if oracle reports the market outcome on
                               time.
                             </h4>
@@ -382,11 +384,11 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
                         editor.form.liquidity?.deploy && (
                           <div className="mb-4 mt-4 flex">
                             <div className="flex-1">
-                              <h3 className="text-base font-normal text-black">
+                              <h3 className="text-base font-normal text-sky-900">
                                 Liquidity
                               </h3>
                               <div className="flex items-center justify-start gap-6">
-                                <h4 className="flex-1 text-sm font-light text-gray-500">
+                                <h4 className="flex-1 text-sm text-sky-900">
                                   Can be withdrawn at any time, will collect
                                   fees but subject to impermanent loss.
                                 </h4>
@@ -403,11 +405,11 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
 
                       <div className="flex">
                         <div className="flex-1">
-                          <h3 className="text-base font-normal text-black">
+                          <h3 className="text-base font-normal text-sky-900">
                             Transaction Fee
                           </h3>
                           <div className="flex items-center justify-start gap-6">
-                            <h4 className="flex-1 text-sm font-light text-gray-500">
+                            <h4 className="flex-1 text-sm text-sky-900">
                               Returned if oracle reports the market outcome on
                               time.
                             </h4>
@@ -420,17 +422,17 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
                           </div>
                         </div>
                       </div>
-                      <div className="mb-4 mt-8 flex border-t-1 pt-4">
+                      <div className="mb-4 mt-8 flex border-t-1 border-sky-200/30 pt-4">
                         <div className="flex-1">
-                          <h3 className="text-base font-normal text-black">
+                          <h3 className="text-base font-normal text-sky-900">
                             Total
                           </h3>
                           <div className="flex justify-start gap-6">
-                            <h4 className="flex-1 text-sm font-light text-gray-500">
+                            <h4 className="flex-1 text-sm text-sky-900">
                               Total cost for creating the market.
                             </h4>
                             <div className="center gap-1 font-semibold">
-                              <div className="text-ztg-blue">
+                              <div className="text-sky-900">
                                 {ztgCost.toFixed(3)} ZTG
                               </div>
                               {foreignCurrencyCost && (
@@ -454,13 +456,13 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
                             Insufficient Balance
                           </h3>
                           <div className="flex justify-start gap-6">
-                            <h4 className="flex-1 text-sm font-light text-gray-500">
+                            <h4 className="flex-1 text-sm text-sky-900">
                               Missing balance needed to create the market.
                             </h4>
                             <div className="center gap-1 font-semibold">
                               {ztgBalanceDelta &&
                                 ztgBalanceDelta.lessThan(0) && (
-                                  <div className="text-ztg-blue">
+                                  <div className="text-sky-900">
                                     {ztgBalanceDelta.toFixed(1)} ZTG
                                   </div>
                                 )}
@@ -488,11 +490,12 @@ export const Publishing = ({ editor, creationParams }: PublishingProps) => {
                 <div className="mt-14 flex justify-center md:mt-0">
                   <button
                     className={`
-                    left-0 top-[50%] rounded-full border-2 border-gray-100 px-6 py-2 text-sm 
+                    left-0 top-[50%] rounded-full border-2 px-6 py-2 text-sm backdrop-blur-md
                     duration-200 ease-in-out active:scale-95 md:absolute md:translate-x-[-110%] md:translate-y-[-50%]
                     ${
-                      firstInvalidStep &&
-                      "border-orange-200 bg-white text-orange-500"
+                      firstInvalidStep
+                        ? "border-orange-300 bg-orange-50/80 text-orange-500"
+                        : "border-sky-200/30 bg-white/80 text-sky-900"
                     }
                   `}
                     onClick={() => {

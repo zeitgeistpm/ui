@@ -94,7 +94,11 @@ const Footer = () => {
     { text: "Docs", href: "https://docs.zeitgeist.pm", external: true },
     { text: "Github", href: "https://github.com/zeitgeistpm", external: true },
     { text: "Discord", href: "https://discord.gg/xv8HuA4s8v", external: true },
-    { text: "Twitter", href: "https://twitter.com/ZeitgeistPM", external: true },
+    {
+      text: "Twitter",
+      href: "https://twitter.com/ZeitgeistPM",
+      external: true,
+    },
     { text: "Terms", href: "/terms", external: false },
   ];
 

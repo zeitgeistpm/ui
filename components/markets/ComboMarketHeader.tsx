@@ -108,7 +108,7 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
             </div>
 
             {/* Question */}
-            <h3 className="min-h-12 mb-3 line-clamp-2 text-base font-semibold leading-snug text-gray-900">
+            <h3 className="mb-3 line-clamp-2 min-h-12 text-base font-semibold leading-snug text-gray-900">
               {item.market?.question}
             </h3>
 

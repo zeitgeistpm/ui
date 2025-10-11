@@ -45,32 +45,35 @@ const FeeSelect = ({
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-1.5">
       {presets.map((preset, index) => (
         <button
           key={index}
           type="button"
           onClick={handleFeePresetChange(preset)}
-          className={`center active:scale-9 flex rounded-full bg-gray-100 px-6 py-3 transition-all ${
-            value?.type === "preset" &&
-            value?.value === preset.value &&
-            "bg-nyanza-base"
+          className={`rounded-md border px-2.5 py-1 text-xs font-medium backdrop-blur-md transition-all active:scale-95 ${
+            value?.type === "preset" && value?.value === preset.value
+              ? "border-sky-600/50 bg-sky-600/90 text-white shadow-sm"
+              : "border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
           }`}
         >
           {preset.value}%
         </button>
       ))}
-      <div className="flex h-[50px]">
+      <div className="flex h-7 overflow-hidden rounded-md border backdrop-blur-md transition-all">
         <Input
           type="number"
           min={0}
-          className={`w-32 rounded-r-none bg-gray-100 py-3 pl-4 text-right outline-none ${
-            value?.type === "custom" && isValid && "bg-nyanza-base"
+          step={0.1}
+          className={`w-16 border-0 bg-transparent px-2 text-right text-xs outline-none ${
+            value?.type === "custom" && isValid
+              ? "border-sky-600/50 bg-sky-600/90 text-white"
+              : "border-sky-200/30 bg-white/80 text-sky-900"
           }`}
           value={Number(value?.value).toString()}
           onChange={handleFeeCustomChange}
         />
-        <div className="center pointer-events-none right-0 h-full rounded-r-md border-2 border-l-0 border-gray-100 bg-white px-4 text-gray-600">
+        <div className="flex items-center border-l border-sky-200/30 bg-sky-50/50 px-2 text-xs text-sky-700">
           {label}
         </div>
       </div>

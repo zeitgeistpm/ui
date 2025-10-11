@@ -139,7 +139,7 @@ export const MarketCard = ({
                 }}
               />
             </div>
-            <h5 className="text-sky-900 line-clamp-2 h-12 w-full pr-4 text-base duration-200">
+            <h5 className="line-clamp-2 h-12 w-full pr-4 text-base text-sky-900 duration-200">
               {cmsMetadata?.question ?? question}
             </h5>
           </div>
@@ -204,10 +204,16 @@ const MarketCardPredictionBar = ({
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
-      <div className={`relative h-8 w-full overflow-hidden rounded-lg bg-gradient-to-r from-sky-50 to-sky-100 shadow-sm transition-all`}>
+      <div
+        className={`relative h-8 w-full overflow-hidden rounded-lg bg-gradient-to-r from-sky-50 to-sky-100 shadow-sm transition-all`}
+      >
         <div className="absolute flex h-full w-full items-center justify-between px-3 text-sm">
-          <span className="line-clamp-1 font-semibold text-sky-700">{name}</span>
-          <span className="font-bold text-sky-700 transition-all">{impliedPercentage}%</span>
+          <span className="line-clamp-1 font-semibold text-sky-700">
+            {name}
+          </span>
+          <span className="font-bold text-sky-700 transition-all">
+            {impliedPercentage}%
+          </span>
         </div>
         <div
           className={`h-full bg-gradient-to-r from-sky-200 to-sky-300`}
@@ -265,7 +271,9 @@ const MarketCardDetails = ({
               day: "numeric",
             })}`}
         </span>
-        {isEnding() && <span className="ml-1 text-red font-semibold">Ends Soon</span>}
+        {isEnding() && (
+          <span className="ml-1 font-semibold text-red">Ends Soon</span>
+        )}
         <span className="ml-1 border-l-1 border-l-black pl-1">
           {outcomeAssets.length} outcomes{" "}
         </span>

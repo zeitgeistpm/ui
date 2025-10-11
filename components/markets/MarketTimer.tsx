@@ -21,7 +21,7 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
   return (
     <div className="inline-block w-full">
       {!isInfinity(stage.remainingTime) ? (
-        <div className="relative h-6 w-full overflow-hidden rounded-lg border border-sky-200/30 bg-sky-50/50 shadow-sm backdrop-blur-sm">
+        <div className="relative h-8 w-full overflow-hidden rounded-lg border border-sky-200/30 bg-sky-50/50 shadow-md backdrop-blur-sm">
           <div
             className={`h-full rounded-lg transition-all ${
               copy[stage.type].color
@@ -50,7 +50,7 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
           </div>
         </div>
       ) : (
-        <div className="relative h-8 w-full overflow-hidden rounded-lg border border-sky-200/30 bg-sky-50/50 shadow-sm backdrop-blur-sm">
+        <div className="relative h-8 w-full overflow-hidden rounded-lg border border-sky-200/30 bg-sky-50/50 shadow-md backdrop-blur-sm">
           <div
             className={`h-full rounded-lg ${copy[stage.type].color}`}
             style={{ width: "100%" }}
@@ -74,7 +74,7 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
 export const MarketTimerSkeleton = () => {
   return (
     <div className="inline-block w-full">
-      <div className="relative h-8 w-full overflow-hidden rounded-lg border border-sky-200/30 bg-sky-50/50 shadow-sm backdrop-blur-sm">
+      <div className="relative h-8 w-full overflow-hidden rounded-lg border border-sky-200/30 bg-sky-50/50 shadow-md backdrop-blur-sm">
         <div
           className="h-full rounded-lg bg-sky-200/50 transition-all"
           style={{ width: "15%" }}
@@ -97,57 +97,57 @@ const copy: Record<
 > = {
   Proposed: {
     title: "Proposed",
-    description: "Awaiting approval",
+    description: "Pending",
     color: "bg-gradient-to-r from-yellow-400/80 to-yellow-500/80",
   },
   Trading: {
     title: "Live",
-    description: "Trading open",
-    color: "bg-gradient-to-r from-emerald-400/80 to-emerald-500/80",
+    description: "Trading",
+    color: "bg-gradient-to-r from-sky-400/80 to-sky-500/80",
   },
   GracePeriod: {
     title: "Grace Period",
-    description: "Before reporting",
-    color: "bg-gradient-to-r from-emerald-400/80 to-emerald-500/80",
+    description: "Pre-reporting",
+    color: "bg-gradient-to-r from-sky-400/80 to-sky-500/80",
   },
   OracleReportingPeriod: {
     title: "Ended",
-    description: "Awaiting Oracle report",
-    color: "bg-gradient-to-r from-purple-400/80 to-purple-500/80",
+    description: "Oracle pending",
+    color: "bg-gradient-to-r from-sky-400/80 to-sky-500/80",
   },
   OpenReportingPeriod: {
-    title: "Oracle failed to report",
-    description: "Open to all",
-    color: "bg-gradient-to-r from-purple-400/80 to-purple-500/80",
+    title: "Oracle Failed",
+    description: "Open reporting",
+    color: "bg-gradient-to-r from-orange-400/80 to-orange-500/80",
   },
   Disputed: {
-    title: "Outcome Disputed",
-    description: "Awaiting authority report",
+    title: "Disputed",
+    description: "Authority pending",
     color: "bg-gradient-to-r from-orange-400/80 to-orange-500/80",
   },
   Reported: {
-    title: "Outcome Reported",
-    description: "Disputes open to all",
-    color: "bg-gradient-to-r from-emerald-400/80 to-emerald-500/80",
+    title: "Reported",
+    description: "Disputable",
+    color: "bg-gradient-to-r from-purple-400/80 to-purple-500/80",
   },
   AuthorizedReport: {
-    title: "Outcome Reported by Authority",
-    description: "Awaiting correction period to end",
-    color: "bg-gradient-to-r from-emerald-400/80 to-emerald-500/80",
+    title: "Authority Report",
+    description: "Correction period",
+    color: "bg-gradient-to-r from-purple-400/80 to-purple-500/80",
   },
   Resolved: {
-    title: "Market Resolved",
-    description: "Consensus reached",
+    title: "Resolved",
+    description: "Final",
     color: "bg-gradient-to-r from-emerald-400/80 to-emerald-500/80",
   },
   Destroyed: {
     title: "Destroyed",
-    description: "Market removed",
+    description: "Removed",
     color: "bg-gradient-to-r from-gray-600/80 to-gray-700/80",
   },
   Court: {
-    title: "Disputed in Court",
-    description: "Awaiting ruling",
+    title: "In Court",
+    description: "Pending ruling",
     color: "bg-gradient-to-r from-orange-400/80 to-orange-500/80",
   },
 };

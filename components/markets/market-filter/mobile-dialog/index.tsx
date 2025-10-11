@@ -16,7 +16,12 @@ export type MobileDialogProps = {
   onMarketTypeChange?: (type: MarketType) => void;
 };
 
-const MobileDialog = ({ open, setOpen, marketType, onMarketTypeChange }: MobileDialogProps) => {
+const MobileDialog = ({
+  open,
+  setOpen,
+  marketType,
+  onMarketTypeChange,
+}: MobileDialogProps) => {
   const [showTransition, setShowTransition] = useState(open);
   const [currentSelection, setCurrentSelection] =
     useState<SelectedMenu>("None");

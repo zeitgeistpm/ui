@@ -30,7 +30,8 @@ export const useAccountTokenPositions = (address?: string) => {
     {
       keepPreviousData: true,
       enabled: Boolean(sdk && isIndexedSdk(sdk) && address),
-      staleTime: 10_000,
+      staleTime: 30000, // Increased from 10s to 30s
+      cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     },
   );
 };

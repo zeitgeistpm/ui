@@ -35,31 +35,26 @@ const NotificationCard: FC<{
 
   return (
     <div
-      className={`relative flex flex-1 gap-4 rounded-md  px-5 ${getBgColor(
+      className={`relative flex flex-1 gap-4 rounded-lg border px-5 shadow-lg backdrop-blur-lg transition-all ${getGlassBgColor(
         type,
-      )}`}
+      )} ${getBorderColor(type)}`}
     >
       <div
-        className={`absolute left-0 top-0  z-20 h-1 w-full overflow-hidden rounded-t-md ${getBgColor(
+        className={`absolute left-0 top-0 z-20 h-1 w-full overflow-hidden rounded-t-lg ${getProgressBarBg(
           type,
         )}`}
       >
         <div
-          className={`${getTopBarColor(
+          className={`absolute left-0 top-0 z-40 h-full transition-all duration-500 ease-linear ${getProgressBarColor(
             type,
-          )} absolute left-0 top-0 z-40 h-full transition-all duration-500 ease-linear`}
+          )}`}
           style={{
             width: `${((100 * timer) / lifetime).toFixed(2)}%`,
           }}
         />
-        <div
-          className={`${getTopBarColor(
-            type,
-          )} absolute left-0 top-0 z-40 h-full  w-full opacity-10`}
-        />
       </div>
-      <div className="flex justify-center py-6 text-white">
-        <div className={`center ${getBgColor(type)}`}>
+      <div className="flex justify-center py-6">
+        <div className="center">
           <Loader
             loading={Boolean(lifetime)}
             lineThrough={type === "Error"}
@@ -69,11 +64,15 @@ const NotificationCard: FC<{
         </div>
       </div>
       <div className="center flex-1 py-6">
-        <div className="w-full text-left text-base font-normal">{content}</div>
+        <div
+          className={`w-full text-left text-base font-medium ${getTextColor(type)}`}
+        >
+          {content}
+        </div>
       </div>
       <div className="py-4">
         <X
-          className="ml-auto cursor-pointer"
+          className={`ml-auto cursor-pointer transition-colors ${getIconColor(type)}`}
           size={22}
           onClick={close}
           role="button"
@@ -83,25 +82,69 @@ const NotificationCard: FC<{
   );
 };
 
-const getBgColor = (type: NotificationType) => {
+const getGlassBgColor = (type: NotificationType) => {
   switch (type) {
     case "Success":
-      return "bg-success";
+      return "bg-emerald-50/95";
     case "Info":
-      return "bg-info";
+      return "bg-sky-50/95";
     case "Error":
-      return "bg-error";
+      return "bg-rose-50/95";
   }
 };
 
-const getTopBarColor = (type: NotificationType) => {
+const getBorderColor = (type: NotificationType) => {
   switch (type) {
     case "Success":
-      return "bg-[#31C48D]";
+      return "border-emerald-200/40";
     case "Info":
-      return "bg-[#31A1C4]";
+      return "border-sky-200/40";
     case "Error":
-      return "bg-[#C43131]";
+      return "border-rose-200/40";
+  }
+};
+
+const getProgressBarBg = (type: NotificationType) => {
+  switch (type) {
+    case "Success":
+      return "bg-emerald-100/50";
+    case "Info":
+      return "bg-sky-100/50";
+    case "Error":
+      return "bg-rose-100/50";
+  }
+};
+
+const getProgressBarColor = (type: NotificationType) => {
+  switch (type) {
+    case "Success":
+      return "bg-gradient-to-r from-emerald-400 to-emerald-500";
+    case "Info":
+      return "bg-gradient-to-r from-sky-400 to-sky-500";
+    case "Error":
+      return "bg-gradient-to-r from-rose-400 to-rose-500";
+  }
+};
+
+const getTextColor = (type: NotificationType) => {
+  switch (type) {
+    case "Success":
+      return "text-emerald-900";
+    case "Info":
+      return "text-sky-900";
+    case "Error":
+      return "text-rose-900";
+  }
+};
+
+const getIconColor = (type: NotificationType) => {
+  switch (type) {
+    case "Success":
+      return "text-emerald-700 hover:text-emerald-900";
+    case "Info":
+      return "text-sky-700 hover:text-sky-900";
+    case "Error":
+      return "text-rose-700 hover:text-rose-900";
   }
 };
 
@@ -109,34 +152,30 @@ const NotificationCenter = () => {
   const { notifications, removeNotification } = useNotifications();
 
   return (
-    <div className="pointer-events-none fixed top-0 z-[100] h-full w-full">
-      <div className="flex flex-row justify-end pt-20">
-        <div className="relative flex flex-1 flex-col items-end px-4">
-          <AnimatePresence mode="sync" presenceAffectsLayout>
-            {notifications.map((notification, index) => (
-              <motion.div
+    <div className="pointer-events-none fixed right-4 top-20 z-[200] w-full max-w-[420px] md:right-6">
+      <AnimatePresence mode="sync" presenceAffectsLayout>
+        {notifications.map((notification, index) => (
+          <motion.div
+            key={notification.id}
+            initial={{ x: 300, maxHeight: 0, opacity: 0 }}
+            exit={{ x: 300, maxHeight: 0, opacity: 0 }}
+            animate={{ x: 0, maxHeight: 900, opacity: 1 }}
+            transition={{ type: "spring", duration: 0.7 }}
+            className="pointer-events-auto box-border w-full overflow-hidden"
+          >
+            <div className="mb-4 flex-1">
+              <NotificationCard
+                dataTest="notificationMessage"
                 key={notification.id}
-                initial={{ x: 300, maxHeight: 0, opacity: 0 }}
-                exit={{ x: 300, maxHeight: 0, opacity: 0 }}
-                animate={{ x: 0, maxHeight: 900, opacity: 1 }}
-                transition={{ type: "spring", duration: 0.7 }}
-                className="pointer-events-auto box-border w-full overflow-hidden md:w-[420px] md:max-w-screen-sm"
-              >
-                <div className="mb-4 flex-1">
-                  <NotificationCard
-                    dataTest="notificationMessage"
-                    key={notification.id}
-                    {...notification}
-                    close={() => {
-                      removeNotification(notification);
-                    }}
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      </div>
+                {...notification}
+                close={() => {
+                  removeNotification(notification);
+                }}
+              />
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 };

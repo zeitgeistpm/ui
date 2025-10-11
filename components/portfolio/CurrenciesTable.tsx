@@ -35,7 +35,7 @@ const columns: TableColumn[] = [
   {
     header: "Balance",
     accessor: "balance",
-    type: "text",
+    type: "component",
   },
   {
     header: "",
@@ -53,13 +53,21 @@ const ImageAndText = ({
   imagePath: string;
 }) => {
   return (
-    <div className="flex items-center gap-2">
-      <div className="h-[16px] w-[16px] md:h-[30px] md:w-[30px]">
+    <div className="flex items-center gap-2.5">
+      <div className="h-5 w-5 shrink-0 md:h-7 md:w-7">
         {imagePath && (
-          <Image src={imagePath} alt={name} width={30} height={30} />
+          <Image
+            src={imagePath}
+            alt={name}
+            width={30}
+            height={30}
+            className="rounded-full"
+          />
         )}
       </div>
-      <div className="md:text-md text-xs">{name}</div>
+      <div className="text-sm font-medium text-sky-900 md:text-base">
+        {name}
+      </div>
     </div>
   );
 };
@@ -172,7 +180,11 @@ const CurrenciesTable = ({ address }: { address: string }) => {
               )}
             />
           ),
-          balance: amount.div(ZTG).toFixed(3),
+          balance: (
+            <span className="text-sm font-medium text-sky-900">
+              {amount.div(ZTG).toFixed(3)}
+            </span>
+          ),
           button: (
             <div className="flex w-full flex-col gap-2 whitespace-nowrap py-2">
               <MoveButton
@@ -193,8 +205,13 @@ const CurrenciesTable = ({ address }: { address: string }) => {
   }, [constants, balances, sorting]);
 
   return (
-    <div>
-      <Table data={tableData} columns={columns} showHighlight={false} />
+    <div className="rounded-lg border border-sky-200/30 bg-white/80 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg">
+      <h2 className="mb-4 border-b border-sky-200/30 pb-3 text-base font-semibold text-sky-900">
+        Cross-Chain Balances
+      </h2>
+      <div className="overflow-hidden rounded-md bg-sky-50/30 backdrop-blur-sm">
+        <Table data={tableData} columns={columns} showHighlight={false} />
+      </div>
     </div>
   );
 };

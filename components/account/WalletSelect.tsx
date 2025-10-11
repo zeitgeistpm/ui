@@ -62,41 +62,35 @@ const WalletSelect = () => {
 
   return (
     <div className="flex flex-col">
-      {hasWallet === true && (
-        <>
-          <h3 className="mb-4 text-2xl font-bold">Log back in to Zeitgeist</h3>
-          <p className="mb-4">
-            Use one of the following options to log in and start using
-            Prediction Markets.
-          </p>
-        </>
-      )}
+      <h3 className="mb-4 text-lg font-bold text-sky-900">Wallet Select</h3>
       <Web3wallet />
-      <h3 className="my-4 text-lg font-bold">Crypto Wallet</h3>
-      <div className="flex justify-between gap-6">
+      <div className="mt-5">
+        <h3 className="mb-3 text-base font-semibold text-sky-900">
+          Crypto Wallets
+        </h3>
         {isMobileDevice ? (
-          <div>
+          <div className="w-full">
             <Link
               href="https://novawallet.io/"
-              className="flex h-[56px] w-full items-center justify-center rounded-md border text-center"
+              className="flex h-11 w-full items-center justify-center gap-2.5 rounded-lg border border-sky-200/30 bg-white/80 px-3 py-2 shadow-sm backdrop-blur-sm transition-all hover:border-sky-300/50 hover:bg-sky-50/80 hover:shadow-md"
               target="_blank"
             >
               <Image
                 src="/icons/nova.png"
-                alt={"wallet.logo.alt"}
-                width={30}
-                height={30}
+                alt={"Nova Wallet"}
+                width={28}
+                height={28}
                 quality={100}
               />
-              <div className="relative ml-4 font-medium">
-                <span>Nova Wallet</span>
+              <div className="text-sm font-semibold text-sky-900">
+                Nova Wallet
               </div>
             </Link>
-            <div className="mt-2">
-              <span className="mb-2 text-sm font-semibold">
+            <div className="mt-3 rounded-lg border border-sky-200/30 bg-sky-50/50 p-3 backdrop-blur-sm">
+              <span className="mb-2 block text-sm font-semibold text-sky-900">
                 Nova Wallet instructions:
               </span>
-              <ol className="list-decimal pl-4 text-xs">
+              <ol className="list-decimal space-y-1.5 pl-4 text-xs leading-relaxed text-sky-700">
                 <li>Open Nova Wallet app on your mobile device.</li>
                 <li>Navigate to "Browser" on the bottom menu.</li>
                 <li>Search for and select "Zeitgeist".</li>
@@ -108,27 +102,29 @@ const WalletSelect = () => {
             </div>
           </div>
         ) : (
-          supportedWallets
-            .filter((w) => w.extensionName !== "web3auth")
-            .map((wallet) => {
-              const error = errors.find(
-                (e) => e.extensionName === wallet.extensionName,
-              );
-              const hasError = error != null;
-              return (
-                <WalletIcon
-                  key={wallet.extensionName}
-                  onClick={() => {
-                    handleSelectWallet(wallet);
-                  }}
-                  extensionName={wallet.extensionName}
-                  logoAlt={wallet.logo?.alt}
-                  logoSrc={wallet.logo?.src}
-                  hasError={hasError}
-                  error={error}
-                />
-              );
-            })
+          <div className="grid grid-cols-3 gap-3">
+            {supportedWallets
+              .filter((w) => w.extensionName !== "web3auth")
+              .map((wallet) => {
+                const error = errors.find(
+                  (e) => e.extensionName === wallet.extensionName,
+                );
+                const hasError = error != null;
+                return (
+                  <WalletIcon
+                    key={wallet.extensionName}
+                    onClick={() => {
+                      handleSelectWallet(wallet);
+                    }}
+                    extensionName={wallet.extensionName}
+                    logoAlt={wallet.logo?.alt}
+                    logoSrc={wallet.logo?.src}
+                    hasError={hasError}
+                    error={error}
+                  />
+                );
+              })}
+          </div>
         )}
       </div>
     </div>

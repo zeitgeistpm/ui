@@ -16,8 +16,8 @@ export const Account = () => {
   return (
     <>
       <Modal open={accountSelectModalOpen} onClose={closeAccountSelect}>
-        <Dialog.Panel className="rounded-ztg-10 bg-white p-[15px]">
-          <div className="mb-3">
+        <Dialog.Panel className="w-full max-w-[500px] overflow-visible rounded-lg border border-sky-200/30 bg-white/95 p-5 shadow-xl backdrop-blur-md">
+          <div className="mb-4">
             <AccountModalHead />
           </div>
           <AccountModalContent />
@@ -25,10 +25,7 @@ export const Account = () => {
       </Modal>
 
       <Modal open={walletSelectModalOpen} onClose={closeWalletSelect}>
-        <Dialog.Panel
-          className="
-    w-full max-w-[450px]  rounded-lg bg-white p-8"
-        >
+        <Dialog.Panel className="w-full max-w-[450px] rounded-lg border border-sky-200/30 bg-white/95 p-6 shadow-xl backdrop-blur-md">
           <WalletSelect />
         </Dialog.Panel>
       </Modal>

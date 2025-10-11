@@ -34,7 +34,7 @@ export const Alerts = () => {
   };
 
   return (
-    <Menu as="div" className="relative z-50">
+    <Menu as="div" className="relative">
       {({ open, close }) => {
         return (
           <>
@@ -63,7 +63,7 @@ export const Alerts = () => {
 
             <Transition
               as={Fragment}
-              show={open && hoveringMenu}
+              show={open}
               enter="transition-opacity ease-out duration-100"
               enterFrom="transform opacity-0"
               enterTo="transform opacity-1"
@@ -72,19 +72,21 @@ export const Alerts = () => {
               leaveTo="transform opacity-0 "
             >
               <div
-                className="fixed left-0 top-0 z-40 h-screen w-screen bg-black/10 backdrop-blur-sm"
+                className="fixed left-0 top-0 z-[150] h-screen w-screen bg-black/10 backdrop-blur-sm"
                 aria-hidden="true"
+                onClick={close}
               />
             </Transition>
 
             <Transition
               as={Fragment}
+              show={open}
               enter="transition ease-out duration-100"
-              enterFrom="transform -translate-y-2"
-              enterTo="transform translate-y-0 "
-              leave="transition ease-in translate-y-2 duration-75"
-              leaveFrom="transform translate-y-0"
-              leaveTo="transform opacity-0 -translate-y-2"
+              enterFrom="transform -translate-y-2 opacity-0"
+              enterTo="transform translate-y-0 opacity-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="transform translate-y-0 opacity-100"
+              leaveTo="transform -translate-y-2 opacity-0"
             >
               <Menu.Items
                 onMouseEnter={mouseEnterMenuHandler}
@@ -94,20 +96,20 @@ export const Alerts = () => {
                   e.preventDefault();
                 }}
                 className={`
-                  subtle-scroll-bar subtle-scroll-bar-on-hover fixed bottom-0 right-0 top-11 z-50 
-                  mt-6 h-full w-full origin-top-right divide-gray-100 overflow-hidden overflow-y-scroll 
-                  bg-black/20 p-2 py-3 pb-20 focus:outline-none md:absolute md:bottom-auto md:left-auto md:right-0 md:top-auto 
-                  md:mt-6 md:h-auto md:max-h-[664px] md:w-96  
-                  md:rounded-md md:bg-transparent md:px-4 md:pb-0 
+                  subtle-scroll-bar subtle-scroll-bar-on-hover
+                  fixed left-0 right-0 z-[200] h-[calc(100vh-50px)] w-screen overflow-y-auto
+                  bg-sky-50 p-4 pb-20 focus:outline-none
+                  md:left-auto md:right-4 md:h-auto md:max-h-[664px] md:w-96
+                  md:rounded-lg md:border md:border-sky-200/30 md:bg-white/95 md:p-4 md:pb-4
+                  md:shadow-xl md:backdrop-blur-lg
                 `}
+                style={{
+                  top: "var(--top-bar-height, 50px)",
+                }}
               >
                 {alerts.map((alert) => (
                   <Menu.Item key={alert.id}>
-                    <div
-                      className={`${
-                        !hoveringMenu && "backdrop-blur-lg"
-                      } rounded-lg`}
-                    >
+                    <div className="rounded-lg">
                       {alert.type === "ready-to-report-market" ? (
                         <ReadyToReportMarketAlertItem alert={alert} />
                       ) : alert.type === "market-dispute" ? (
@@ -141,9 +143,9 @@ const AlertCard: React.FC<PropsWithChildren & { onClick?: () => void }> = ({
   children,
   onClick,
 }) => (
-  <div className="mb-2 cursor-pointer rounded-lg transition-all hover:scale-[1.02] hover:shadow-lg">
+  <div className="mb-3 cursor-pointer rounded-lg transition-all hover:scale-[1.02]">
     <div
-      className={`rounded-lg border-1 border-solid border-white/20 bg-white/90 px-4 py-3 shadow-md backdrop-blur-lg transition-all hover:bg-white/95 hover:shadow-xl md:bg-white/80`}
+      className={`rounded-lg border border-sky-200/30 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-all hover:bg-white/95 hover:shadow-md md:bg-white/70 md:hover:bg-white/90`}
       onClick={onClick}
       style={{
         transform: "translate3d(0,0,0)",
@@ -187,8 +189,10 @@ const CourtCaseReadyToSettleItem = ({
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="mb-1 text-sm font-medium">{market?.question}</h3>
-        <p className="text-xxs text-gray-500">
+        <h3 className="mb-1 text-sm font-medium text-sky-900">
+          {market?.question}
+        </h3>
+        <p className="text-xxs text-sky-700">
           This court case can now be settled.
         </p>
       </div>
@@ -228,8 +232,10 @@ const CourtCaseReadyForVoteAlertItem = ({
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="mb-1 text-sm font-medium">{market?.question}</h3>
-        <p className="text-xxs text-gray-500">
+        <h3 className="mb-1 text-sm font-medium text-sky-900">
+          {market?.question}
+        </h3>
+        <p className="text-xxs text-sky-700">
           You have been drawn as juror for this market and can now vote.
         </p>
       </div>
@@ -269,8 +275,10 @@ const CourtCaseReadyForRevealAlertItem = ({
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="mb-1 text-sm  font-medium">{market?.question}</h3>
-        <p className="text-xxs text-gray-500">
+        <h3 className="mb-1 text-sm font-medium text-sky-900">
+          {market?.question}
+        </h3>
+        <p className="text-xxs text-sky-700">
           You are required to reveal your vote for this court case.
         </p>
       </div>
@@ -308,7 +316,9 @@ const ReadyToReportMarketAlertItem = ({
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="text-sm font-medium">{alert.market.question}</h3>
+        <h3 className="text-sm font-medium text-sky-900">
+          {alert.market.question}
+        </h3>
       </div>
     </AlertCard>
   );
@@ -345,7 +355,7 @@ const RedeemableMarketAlertItem = ({
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="text-sm font-medium">
+        <h3 className="text-sm font-medium text-sky-900">
           You have {alert.markets.length} redeemable markets.
         </h3>
       </div>

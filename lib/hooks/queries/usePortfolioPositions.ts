@@ -215,7 +215,10 @@ export const usePortfolioPositions = (
     .filter(isNotNull) ?? [];
 
   // Fetch market IDs for all combinatorial tokens
-  const { data: combinatorialMarketIds, isLoading: isLoadingCombinatorialMarketIds } = useCombinatorialTokenMarketIds(combinatorialTokens);
+  // Note: This hook has internal enabled logic based on combinatorialTokens.length
+  const { data: combinatorialMarketIds, isLoading: isLoadingCombinatorialMarketIds } = useCombinatorialTokenMarketIds(
+    combinatorialTokens
+  );
 
   // Process multi-market tokens only after data is loaded
   const multiMarketTokenIds = useMemo(() => {
@@ -229,14 +232,12 @@ export const usePortfolioPositions = (
   const multiMarketAssets = useMemo(() => {
     return multiMarketTokenIds.map(id => `"combinatorialToken":"${id}"`);
   }, [multiMarketTokenIds]);
+
   // Query for multi-market assets
+  // Note: This hook has internal enabled logic based on multiMarketAssets.length
   const {
     data: multiMarketAssetsData,
     isLoading: isLoadingMultiMarketAssets,
-    isError: isErrorMultiMarketAssets,
-    error: multiMarketAssetsError,
-    isFetching: isFetchingMultiMarketAssets,
-    status: multiMarketAssetsStatus
   } = useMultiMarketAssets(multiMarketAssets);
 
   // Create a map for quick lookup of multi-market assets
@@ -305,6 +306,7 @@ export const usePortfolioPositions = (
   }, [filter]);
 
   // Use custom hook to get pool data for all multi-market pools
+  // Note: This hook has internal enabled logic based on poolIds.length
   const multiMarketPoolsQuery = useMultipleAmm2Pools(uniqueMultiMarketPoolIds);
   const multiMarketPoolDataMap = multiMarketPoolsQuery.data ?? new Map();
 

@@ -507,7 +507,7 @@ const Inner = ({
         />
       ) : (
         <form
-          className="relative rounded-[10px] bg-white"
+          className="relative rounded-[10px] border border-sky-200/30 bg-white/80 shadow-md backdrop-blur-md"
           onSubmit={(e) => {
             e.preventDefault();
             swapTx();
@@ -589,7 +589,7 @@ const Inner = ({
                 />
               )}
             </div>
-            <div className="center relative mb-[20px] h-[56px] rounded-lg bg-anti-flash-white text-ztg-18-150">
+            <div className="center relative mb-[20px] h-[56px] rounded-lg border border-sky-200/30 bg-sky-50/50 text-ztg-18-150 shadow-sm backdrop-blur-sm">
               <Input
                 type="number"
                 {...register("baseAmount", {
@@ -606,7 +606,9 @@ const Inner = ({
                 step="any"
                 className="w-full bg-transparent text-center"
               />
-              <div className="absolute right-2 mr-[10px]">{baseSymbol}</div>
+              <div className="absolute right-2 mr-[10px] text-sky-700">
+                {baseSymbol}
+              </div>
             </div>
             <RangeInput
               min="0"

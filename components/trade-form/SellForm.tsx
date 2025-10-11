@@ -74,9 +74,14 @@ const SellForm = ({
     watch,
     setValue,
     trigger,
+    reset,
   } = useForm({
     reValidateMode: "onChange",
     mode: "onChange",
+    defaultValues: {
+      amount: 0,
+      percentage: "0",
+    },
   });
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
@@ -133,7 +138,7 @@ const SellForm = ({
     selectedAsset,
   );
 
-  const formAmount = getValues("amount");
+  const formAmount = watch("amount");
 
   const amountIn = new Decimal(formAmount && formAmount !== "" ? formAmount : 0)
     .mul(ZTG)
@@ -280,7 +285,9 @@ const SellForm = ({
       onSuccess: (data) => {
         notificationStore.pushNotification(`Successfully traded`, {
           type: "Success",
+          lifetime: 5,
         });
+        reset();
         onSuccess(data, selectedAsset!, amountIn);
       },
     },
@@ -337,61 +344,65 @@ const SellForm = ({
         onSubmit={handleSubmit(onSubmit)}
         className="flex w-full flex-col items-center gap-y-4"
       >
-        <div className="flex w-full items-center justify-center rounded-md bg-white pr-2">
-          <Input
-            type="number"
-            className="w-full bg-transparent outline-none"
-            step="any"
-            {...register("amount", {
-              value: 0,
-              required: {
-                value: true,
-                message: "Value is required",
-              },
-              validate: (value) => {
-                if (value > (selectedAssetBalance?.div(ZTG).toNumber() ?? 0)) {
-                  return `Insufficient balance. Current balance: ${selectedAssetBalance
-                    ?.div(ZTG)
-                    .toFixed(3)}`;
-                } else if (value <= 0) {
-                  return "Value cannot be zero or less";
-                } else if (maxAmountIn?.div(ZTG)?.lessThanOrEqualTo(value)) {
-                  return `Maximum amount that can be traded is ${maxAmountIn
-                    .div(ZTG)
-                    .toFixed(3)}`;
-                } else if (validSell?.isValid === false) {
-                  return validSell.message;
-                }
-              },
-            })}
-          />
-          <div>
-            {(market || poolData) && selectedAsset && (
-              <MarketContextActionOutcomeSelector
-                market={market ?? undefined}
-                selected={selectedAsset}
-                options={outcomeAssets}
-                outcomeCombinations={outcomeCombinations}
-                onChange={(assetId) => {
-                  setSelectedAsset(assetId);
-                  trigger();
-                }}
-              />
-            )}
+        <div className="flex w-full items-center gap-3">
+          <div className="center relative h-[56px] flex-1 rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-sm">
+            <Input
+              type="number"
+              className="w-full bg-transparent text-center text-lg font-semibold text-sky-900 outline-none"
+              step="any"
+              {...register("amount", {
+                required: {
+                  value: true,
+                  message: "Value is required",
+                },
+                validate: (value) => {
+                  if (
+                    value > (selectedAssetBalance?.div(ZTG).toNumber() ?? 0)
+                  ) {
+                    return `Insufficient balance. Current balance: ${selectedAssetBalance
+                      ?.div(ZTG)
+                      .toFixed(3)}`;
+                  } else if (value <= 0) {
+                    return "Value cannot be zero or less";
+                  } else if (maxAmountIn?.div(ZTG)?.lessThanOrEqualTo(value)) {
+                    return `Maximum amount that can be traded is ${maxAmountIn
+                      .div(ZTG)
+                      .toFixed(3)}`;
+                  } else if (validSell?.isValid === false) {
+                    return validSell.message;
+                  }
+                },
+              })}
+            />
           </div>
+          {(market || poolData) && selectedAsset && (
+            <MarketContextActionOutcomeSelector
+              market={market ?? undefined}
+              selected={selectedAsset}
+              options={outcomeAssets}
+              outcomeCombinations={outcomeCombinations}
+              onChange={(assetId) => {
+                setSelectedAsset(assetId);
+                trigger();
+              }}
+            />
+          )}
         </div>
-        <div className="text-sm">For</div>
-        <div className="flex w-full items-center justify-center font-mono">
-          <div className="mr-4">{amountOut.div(ZTG).abs().toFixed(3)}</div>
-          <div className="mr-[10px]">{baseSymbol}</div>
+        <div className="center h-[56px] w-full rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-sm">
+          <div className="text-lg font-semibold text-sky-900">
+            {amountOut.div(ZTG).abs().toFixed(3)} {baseSymbol}
+          </div>
         </div>
         <input
           className="mb-[10px] mt-[30px] w-full"
           type="range"
+          min="0"
+          max="100"
+          step="1"
           disabled={
             !selectedAssetBalance || selectedAssetBalance.lessThanOrEqualTo(0)
           }
-          {...register("percentage", { value: "0" })}
+          {...register("percentage")}
         />
         <div className="mb-[10px] flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600">
           <div className="h-[16px] text-xs text-vermilion">
@@ -399,8 +410,15 @@ const SellForm = ({
           </div>
           <div className="flex w-full justify-between">
             <div>Price after trade:</div>
-            <div className="text-black">
+            <div className="text-sky-900">
               {newSpotPrice?.toFixed(2)} ({priceImpact?.toFixed(2)}%)
+            </div>
+          </div>
+          <div className="flex w-full justify-between">
+            <div>Current shares:</div>
+            <div className="text-sky-900">
+              {selectedAssetBalance?.div(ZTG).toFixed(3, Decimal.ROUND_DOWN) ??
+                "0.000"}
             </div>
           </div>
         </div>

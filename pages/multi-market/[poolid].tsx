@@ -209,7 +209,7 @@ const ComboMarketStats = ({
             <ArrowLeft size={14} />
             <span className="hidden sm:inline">Back</span>
           </Link>
-          <div className="flex items-center gap-1.5 bg-ztg-blue rounded-full bg-sky-600 px-3 py-1 text-sm font-semibold text-white shadow-md">
+          <div className="flex items-center gap-1.5 rounded-full bg-sky-600 bg-ztg-blue px-3 py-1 text-sm font-semibold text-white shadow-md">
             <span className="font-bold">Combinatorial</span>
             <div className="group relative">
               <Info size={14} className="cursor-help" />

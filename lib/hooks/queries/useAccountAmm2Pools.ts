@@ -119,6 +119,8 @@ export const useAccountAmm2Pool = (address?: string) => {
     {
       keepPreviousData: true,
       enabled: enabled,
+      staleTime: 30000, // Data fresh for 30 seconds
+      cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     },
   );
 

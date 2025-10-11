@@ -1,12 +1,22 @@
 import { Fragment, Suspense, useState, useEffect, useRef } from "react";
 
 import { Menu, Transition } from "@headlessui/react";
+import {
+  MarketFilter,
+  MarketsOrderBy,
+  MarketType,
+} from "lib/types/market-filter";
 import { CATEGORIES } from "components/front-page/PopularCategories";
 import MenuLogo from "components/top-bar/MenuLogo";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu as MenuIcon, Users, ChevronDown, TrendingUp } from "react-feather";
+import {
+  Menu as MenuIcon,
+  Users,
+  ChevronDown,
+  TrendingUp,
+} from "react-feather";
 import {
   FiArrowLeft,
   FiArrowRight,
@@ -48,6 +58,13 @@ const AccountButton = dynamic(
   },
 );
 
+const MarketFilterSelection = dynamic(
+  () => import("../markets/market-filter"),
+  {
+    ssr: false,
+  },
+);
+
 const TopBar = () => {
   const router = useRouter();
   const topBarRef = useRef<HTMLDivElement>(null);
@@ -55,21 +72,25 @@ const TopBar = () => {
   // Hide QuickNav on markets list pages (they have their own filter system)
   const hideQuickNavOnPages = ["/markets", "/markets/favorites"];
   const showQuickNav = !hideQuickNavOnPages.includes(router.pathname);
+  const showMarketFilters = hideQuickNavOnPages.includes(router.pathname);
 
   // Set CSS variable for top-bar height so mobile menus can position correctly
   useEffect(() => {
     const updateTopBarHeight = () => {
       if (topBarRef.current) {
         const height = topBarRef.current.offsetHeight;
-        document.documentElement.style.setProperty('--top-bar-height', `${height}px`);
+        document.documentElement.style.setProperty(
+          "--top-bar-height",
+          `${height}px`,
+        );
       }
     };
 
     updateTopBarHeight();
-    window.addEventListener('resize', updateTopBarHeight);
+    window.addEventListener("resize", updateTopBarHeight);
 
-    return () => window.removeEventListener('resize', updateTopBarHeight);
-  }, [showQuickNav]);
+    return () => window.removeEventListener("resize", updateTopBarHeight);
+  }, [showQuickNav, showMarketFilters]);
 
   return (
     <div
@@ -87,103 +108,106 @@ const TopBar = () => {
           </div>
           <div className="flex items-center gap-3 border-x-0 border-sky-200 md:border-x-1 md:px-5">
             {/* Markets Menu - Mobile Only */}
-            <Menu as="div" className="relative inline-block text-left md:hidden">
-            {({ open, close }) => {
-              return (
-                <>
-                  <div className="flex gap-2">
-                    <Menu.Button className="center relative flex gap-2 rounded-lg px-2 py-1 font-light text-sky-100 transition-all hover:bg-white/10">
-                      <div className="relative hidden flex-col items-center md:flex">
-                        <FiGrid size="20px" />
-                        <div className="hidden text-xs md:block">Markets</div>
-                      </div>
-                      <div className="block md:hidden">
-                        <MenuIcon />
-                      </div>
-                    </Menu.Button>
-                    <Link href="/" className="pl-2 md:hidden">
-                      <MenuLogo />
-                    </Link>
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
-                    enterTo="transform opacity-100 translate-y-0 md:scale-100"
-                    leave="transition ease-in duration-150"
-                    leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
-                    leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
-                  >
-                    <Menu.Items
-                      className="text-sky-900 fixed left-0 right-0 bottom-0 z-[60] w-screen overflow-y-auto bg-sky-50 px-5 py-3 shadow-xl focus:outline-none md:absolute md:inset-auto md:left-0 md:top-auto md:mt-8 md:h-auto md:w-72 md:rounded-lg md:border md:border-white/20 md:bg-white/95 md:backdrop-blur-lg"
-                      style={{
-                        top: 'var(--top-bar-height, 50px)',
-                        height: 'calc(100vh - var(--top-bar-height, 50px))'
-                      }}
+            <Menu
+              as="div"
+              className="relative inline-block text-left md:hidden"
+            >
+              {({ open, close }) => {
+                return (
+                  <>
+                    <div className="flex gap-2">
+                      <Menu.Button className="center relative flex gap-2 rounded-lg px-2 py-1 font-light text-sky-100 transition-all hover:bg-white/10">
+                        <div className="relative hidden flex-col items-center md:flex">
+                          <FiGrid size="20px" />
+                          <div className="hidden text-xs md:block">Markets</div>
+                        </div>
+                        <div className="block md:hidden">
+                          <MenuIcon />
+                        </div>
+                      </Menu.Button>
+                      <Link href="/" className="pl-2 md:hidden">
+                        <MenuLogo />
+                      </Link>
+                    </div>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-200"
+                      enterFrom="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
+                      enterTo="transform opacity-100 translate-y-0 md:scale-100"
+                      leave="transition ease-in duration-150"
+                      leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
+                      leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                     >
-                      <Menu.Item>
-                        {({ active, close }) => (
-                          <Link
-                            href="/markets?status=Active&ordering=Newest&liquidityOnly=true"
-                            onClick={close}
-                          >
-                            <button
-                              className={`group mb-4 flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all hover:bg-white/80 ${active ? "bg-white/80" : ""}`}
+                      <Menu.Items
+                        className="fixed bottom-0 left-0 right-0 z-[60] w-screen overflow-y-auto bg-sky-50 px-5 py-3 text-sky-900 shadow-xl focus:outline-none md:absolute md:inset-auto md:left-0 md:top-auto md:mt-8 md:h-auto md:w-72 md:rounded-lg md:border md:border-white/20 md:bg-white/95 md:backdrop-blur-lg"
+                        style={{
+                          top: "var(--top-bar-height, 50px)",
+                          height: "calc(100vh - var(--top-bar-height, 50px))",
+                        }}
+                      >
+                        <Menu.Item>
+                          {({ active, close }) => (
+                            <Link
+                              href="/markets?status=Active&ordering=Newest&liquidityOnly=true"
+                              onClick={close}
                             >
-                              <div className="relative h-6 w-6 text-sky-900">
-                                <FiGrid size={"100%"} />
-                              </div>
+                              <button
+                                className={`group mb-4 flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all hover:bg-white/80 ${active ? "bg-white/80" : ""}`}
+                              >
+                                <div className="relative h-6 w-6 text-sky-900">
+                                  <FiGrid size={"100%"} />
+                                </div>
 
-                              <h3 className="text-sm font-semibold text-sky-900">
-                                All Markets
-                              </h3>
-                            </button>
-                          </Link>
-                        )}
-                      </Menu.Item>
+                                <h3 className="text-sm font-semibold text-sky-900">
+                                  All Markets
+                                </h3>
+                              </button>
+                            </Link>
+                          )}
+                        </Menu.Item>
 
-                      <CreateMarketMenuItem onSelect={close} />
+                        <CreateMarketMenuItem onSelect={close} />
 
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            href="/markets?status=Active&ordering=Most%20Volume&liquidityOnly=true"
-                            onClick={close}
-                          >
-                            <button
-                              className={`group mb-4 flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all hover:bg-white/80 ${active ? "bg-white/80" : ""}`}
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              href="/markets?status=Active&ordering=Most%20Volume&liquidityOnly=true"
+                              onClick={close}
                             >
-                              <div className="relative h-6 w-6 text-sky-900">
-                                <FiStar size={"100%"} />
-                              </div>
+                              <button
+                                className={`group mb-4 flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all hover:bg-white/80 ${active ? "bg-white/80" : ""}`}
+                              >
+                                <div className="relative h-6 w-6 text-sky-900">
+                                  <FiStar size={"100%"} />
+                                </div>
 
-                              <h3 className="text-sm font-semibold text-sky-900">
-                                Popular Markets
-                              </h3>
-                            </button>
-                          </Link>
-                        )}
-                      </Menu.Item>
+                                <h3 className="text-sm font-semibold text-sky-900">
+                                  Popular Markets
+                                </h3>
+                              </button>
+                            </Link>
+                          )}
+                        </Menu.Item>
 
-                      <Menu.Item>
-                        {({ active, close }) => (
-                          <Link href="/markets/favorites" onClick={close}>
-                            <button
-                              className={`group mb-4 flex w-full items-center gap-3 p-3 rounded-md border-b-1 border-gray-200 px-3 py-2.5 pb-5 text-sm transition-all hover:bg-white/80 ${active ? "bg-white/80" : ""}`}
-                            >
-                              <div className="relative h-6 w-6 text-sky-900">
-                                <MdFavoriteBorder size={"100%"} />
-                              </div>
+                        <Menu.Item>
+                          {({ active, close }) => (
+                            <Link href="/markets/favorites" onClick={close}>
+                              <button
+                                className={`group mb-4 flex w-full items-center gap-3 rounded-md border-b-1 border-gray-200 p-3 px-3 py-2.5 pb-5 text-sm transition-all hover:bg-white/80 ${active ? "bg-white/80" : ""}`}
+                              >
+                                <div className="relative h-6 w-6 text-sky-900">
+                                  <MdFavoriteBorder size={"100%"} />
+                                </div>
 
-                              <h3 className="text-sm font-semibold text-sky-900">
-                                Favorites
-                              </h3>
-                            </button>
-                          </Link>
-                        )}
-                      </Menu.Item>
+                                <h3 className="text-sm font-semibold text-sky-900">
+                                  Favorites
+                                </h3>
+                              </button>
+                            </Link>
+                          )}
+                        </Menu.Item>
 
-                      {/* <div className="block md:hidden">
+                        {/* <div className="block md:hidden">
                         <Menu.Item>
                           {({ active }) => (
                             <Link href="/leaderboard/year" onClick={close}>
@@ -202,34 +226,36 @@ const TopBar = () => {
                         </Menu.Item>
                       </div> */}
 
-                      <CategoriesMenuItem onSelect={close} />
+                        <CategoriesMenuItem onSelect={close} />
 
-                      {process.env.NEXT_PUBLIC_SHOW_COURT === "true" && (
-                        <Menu.Item>
-                          {({ active }) => (
-                            <Link href="/court" onClick={close}>
-                              <button
-                                className={`group mt-4 flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all hover:bg-white/80 ${active ? "bg-white/80" : ""}`}
-                              >
-                                <div className="relative z-10 h-6 w-6 text-sky-900">
-                                  <Users size={"100%"} />
-                                </div>
-                                <h3 className="text-sm font-semibold text-sky-900">Court</h3>
-                              </button>
-                            </Link>
-                          )}
-                        </Menu.Item>
-                      )}
-                    </Menu.Items>
-                  </Transition>
-                </>
-              );
-            }}
-          </Menu>
+                        {process.env.NEXT_PUBLIC_SHOW_COURT === "true" && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link href="/court" onClick={close}>
+                                <button
+                                  className={`group mt-4 flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all hover:bg-white/80 ${active ? "bg-white/80" : ""}`}
+                                >
+                                  <div className="relative z-10 h-6 w-6 text-sky-900">
+                                    <Users size={"100%"} />
+                                  </div>
+                                  <h3 className="text-sm font-semibold text-sky-900">
+                                    Court
+                                  </h3>
+                                </button>
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        )}
+                      </Menu.Items>
+                    </Transition>
+                  </>
+                );
+              }}
+            </Menu>
 
-          {/* Create Market Button - Removed (now in QuickNav) */}
+            {/* Create Market Button - Removed (now in QuickNav) */}
 
-          {/* <Link
+            {/* <Link
             className="md:center relative hidden gap-2 font-light text-white md:flex"
             href="/leaderboard/year"
           >
@@ -238,24 +264,24 @@ const TopBar = () => {
               <div className="hidden text-xs md:block">Leaderboard</div>
             </div>
           </Link> */}
+          </div>
+          <MarketSearch />
+          <div className="center relative ml-auto gap-3">
+            {/* <GetTokensButton /> */}
+            <Alerts />
+            <AccountButton />
+          </div>
         </div>
-        <MarketSearch />
-        <div className="center relative ml-auto gap-3">
-          {/* <GetTokensButton /> */}
-          <AccountButton />
-          <Alerts />
-        </div>
-      </div>
       </div>
 
       {/* QuickNav Section */}
       {showQuickNav && (
-        <div className="relative z-30 w-full border-b-1 border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-md">
-          <div className="w-full container-fluid">
+        <div className="relative z-30 w-full border-b-1 border-sky-200/30 bg-sky-50 shadow-sm backdrop-blur-md">
+          <div className="container-fluid w-full">
             <div className="relative flex items-center gap-1 py-1 sm:py-2">
               <Link
                 href="/markets"
-                className="flex min-h-[44px] items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-sky-900 transition-all hover:bg-sky-100/80 sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-xs"
+                className="flex min-h-11 items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-sky-900 transition-all hover:bg-sky-100/80 sm:min-h-0 sm:px-3 sm:py-1"
               >
                 <span className="hidden text-sky-600 sm:inline">
                   <FiGrid size={16} className="sm:h-3.5 sm:w-3.5" />
@@ -264,7 +290,7 @@ const TopBar = () => {
               </Link>
               <Link
                 href="/markets?status=Active&ordering=Newest&liquidityOnly=true"
-                className="flex min-h-[44px] items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-sky-900 transition-all hover:bg-sky-100/80 sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-xs"
+                className="flex min-h-11 items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-sky-900 transition-all hover:bg-sky-100/80 sm:min-h-0 sm:px-3 sm:py-1"
               >
                 <span className="hidden text-sky-600 sm:inline">
                   <TrendingUp size={16} className="sm:h-3.5 sm:w-3.5" />
@@ -273,7 +299,7 @@ const TopBar = () => {
               </Link>
               <Link
                 href="/markets?status=Active&ordering=Most%20Volume&liquidityOnly=true"
-                className="flex min-h-[44px] items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-sky-900 transition-all hover:bg-sky-100/80 sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-xs"
+                className="flex min-h-11 items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-sky-900 transition-all hover:bg-sky-100/80 sm:min-h-0 sm:px-3 sm:py-1"
               >
                 <span className="hidden text-sky-600 sm:inline">
                   <FiStar size={16} className="sm:h-3.5 sm:w-3.5" />
@@ -284,8 +310,11 @@ const TopBar = () => {
                 <Menu as="div" className="relative">
                   {({ open }) => (
                     <>
-                      <Menu.Button className="flex min-h-[44px] items-center gap-1.5 rounded-md bg-sky-600 px-2 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-sky-700 hover:shadow-md sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-xs">
-                        <FiPlusSquare size={16} className="hidden sm:inline sm:h-3.5 sm:w-3.5" />
+                      <Menu.Button className="flex min-h-11 items-center gap-1.5 rounded-md bg-sky-900 px-2 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-sky-700 hover:shadow-md sm:min-h-0 sm:px-3 sm:py-1">
+                        <FiPlusSquare
+                          size={16}
+                          className="hidden sm:inline sm:h-3.5 sm:w-3.5"
+                        />
                         <span>Create Market</span>
                         <ChevronDown
                           size={16}
@@ -312,7 +341,10 @@ const TopBar = () => {
                                       active ? "bg-sky-50/60" : ""
                                     }`}
                                   >
-                                    <MdShowChart size={18} className="text-sky-600" />
+                                    <MdShowChart
+                                      size={18}
+                                      className="text-sky-600"
+                                    />
                                     <div className="flex flex-col items-start">
                                       <span className="font-semibold text-sky-900">
                                         Single Market
@@ -331,7 +363,10 @@ const TopBar = () => {
                                       active ? "bg-sky-50/60" : ""
                                     }`}
                                   >
-                                    <MdStackedLineChart size={18} className="text-sky-600" />
+                                    <MdStackedLineChart
+                                      size={18}
+                                      className="text-sky-600"
+                                    />
                                     <div className="flex flex-col items-start">
                                       <span className="font-semibold text-sky-900">
                                         Combinatorial Market
@@ -355,7 +390,30 @@ const TopBar = () => {
           </div>
         </div>
       )}
+
+      {/* Market Filters Section - shown only on markets pages */}
+      {showMarketFilters && (
+        <Suspense fallback={<div className="h-[50px]" />}>
+          <MarketFilterSelectionWrapper />
+        </Suspense>
+      )}
     </div>
+  );
+};
+
+const MarketFilterSelectionWrapper = () => {
+  const [filters, setFilters] = useState<MarketFilter[]>();
+  const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
+  const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
+  const [marketType, setMarketType] = useState<MarketType>();
+
+  return (
+    <MarketFilterSelection
+      onFiltersChange={setFilters}
+      onOrderingChange={setOrderBy}
+      onWithLiquidityOnlyChange={setWithLiquidityOnly}
+      onMarketTypeChange={setMarketType}
+    />
   );
 };
 
@@ -458,7 +516,9 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
           </div>
           <div className="flex flex-col">
             <div className="font-light text-sky-900">{category.name}</div>
-            <div className="h-[16px] text-xs font-light text-sky-900">{category.count}</div>
+            <div className="h-[16px] text-xs font-light text-sky-900">
+              {category.count}
+            </div>
           </div>
         </Link>
       ))}
@@ -537,10 +597,10 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
         leaveTo="transform opacity-0 translate-x-6 md:scale-95"
       >
         <div
-          className="fixed left-0 right-0 bottom-0 z-[70] w-screen overflow-y-auto bg-sky-50 px-5 py-3 shadow-xl md:absolute md:inset-auto md:-right-4 md:left-auto md:ml-4 md:h-auto md:w-[600px] md:translate-x-[100%] md:rounded-lg md:border md:border-white/20 md:bg-white/95 md:backdrop-blur-lg"
+          className="fixed bottom-0 left-0 right-0 z-[70] w-screen overflow-y-auto bg-sky-50 px-5 py-3 shadow-xl md:absolute md:inset-auto md:-right-4 md:left-auto md:ml-4 md:h-auto md:w-[600px] md:translate-x-[100%] md:rounded-lg md:border md:border-white/20 md:bg-white/95 md:backdrop-blur-lg"
           style={{
-            top: 'var(--top-bar-height, 50px)',
-            height: 'calc(100vh - var(--top-bar-height, 50px))'
+            top: "var(--top-bar-height, 50px)",
+            height: "calc(100vh - var(--top-bar-height, 50px))",
           }}
         >
           <div
@@ -593,10 +653,10 @@ const CreateMarketMenuItem = ({ onSelect }: { onSelect: () => void }) => {
         leaveTo="transform opacity-0 translate-x-6 md:scale-95"
       >
         <div
-          className="fixed left-0 right-0 bottom-0 z-[70] w-screen overflow-y-auto bg-sky-50 px-5 py-3 shadow-xl md:absolute md:inset-auto md:-right-4 md:left-auto md:ml-4 md:h-auto md:w-[400px] md:translate-x-[100%] md:rounded-lg md:border md:border-white/20 md:bg-white/95 md:backdrop-blur-lg"
+          className="fixed bottom-0 left-0 right-0 z-[70] w-screen overflow-y-auto bg-sky-50 px-5 py-3 shadow-xl md:absolute md:inset-auto md:-right-4 md:left-auto md:ml-4 md:h-auto md:w-[400px] md:translate-x-[100%] md:rounded-lg md:border md:border-white/20 md:bg-white/95 md:backdrop-blur-lg"
           style={{
-            top: 'var(--top-bar-height, 50px)',
-            height: 'calc(100vh - var(--top-bar-height, 50px))'
+            top: "var(--top-bar-height, 50px)",
+            height: "calc(100vh - var(--top-bar-height, 50px))",
           }}
         >
           <div

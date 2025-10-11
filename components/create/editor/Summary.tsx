@@ -54,207 +54,198 @@ export const MarketSummary = ({
   const baseAmount = form.liquidity?.amount;
 
   return (
-    <div className="flex-1 text-center">
-      <div className="mb-10">
-        <Label className="mb-2">Question</Label>
-        <h2 className="text-[1.4em]">
+    <div className="space-y-4">
+      {/* Question */}
+      <div className="rounded-md border border-sky-200/30 bg-white/80 p-4 backdrop-blur-md">
+        <Label className="mb-2">Market Question</Label>
+        <p className="text-base font-semibold text-sky-900">
           {form?.question ? (
             form?.question
           ) : (
-            <span className="font-normal text-orange-300">
+            <span className="font-normal text-orange-400">
               No question given.
             </span>
           )}
-        </h2>
+        </p>
       </div>
 
-      <div className="mb-10">
-        <Label className="mb-2">Answers</Label>
-        <div className="gap-4 md:flex md:justify-center md:px-0">
-          {form.answers?.answers?.length === 0 ? (
-            <div className="italic text-gray-500">No answers supplied</div>
-          ) : (
-            <AnswersDisplay
-              answers={form.answers!}
-              baseAssetPrice={baseAssetPrice!}
-              baseCurrency={form.currency!}
-              liquidity={form?.liquidity}
-              moderation={form.moderation!}
-            />
-          )}
-        </div>
-      </div>
-
-      <div className="mb-10">
-        <div className="">
-          <div className="mb-2 flex items-center justify-center gap-2">
-            <Label>Currency</Label>{" "}
-            <div className="center flex gap-1">
-              {form.currency ? (
-                <>
-                  {form.currency}
-                  <div className="relative h-5 w-5">
-                    <Image
-                      alt="Currency token logo"
-                      fill
-                      sizes="100vw"
-                      src={currencyMetadata?.image!}
-                    />
-                  </div>
-                </>
-              ) : (
-                "--"
-              )}
-            </div>
+      {/* Answers */}
+      <div>
+        <Label className="mb-3">Answer Options</Label>
+        {form.answers?.answers?.length === 0 ? (
+          <div className="rounded-md border border-sky-200/30 bg-white/80 p-4 text-center italic text-sky-700 backdrop-blur-md">
+            No answers supplied
           </div>
-          <div>
-            {form?.liquidity?.deploy &&
-            form?.moderation === "Permissionless" ? (
-              <>
-                <div className="mb-4 flex justify-center gap-4">
-                  <div className="flex items-center justify-center gap-2">
-                    <Label>Amount</Label> <div>{baseAmount ?? "--"}</div>
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <Label>Swap Fee</Label>{" "}
-                    {form.liquidity?.swapFee?.value ?? "--"}%
-                  </div>
-                </div>
+        ) : (
+          <AnswersDisplay
+            answers={form.answers!}
+            baseAssetPrice={baseAssetPrice!}
+            baseCurrency={form.currency!}
+            liquidity={form?.liquidity}
+            moderation={form.moderation!}
+          />
+        )}
+      </div>
 
-                <div>
-                  <Label>Total Base Liquidity</Label> {baseAmount}{" "}
-                  {form.currency} <span className="text-gray-400">≈</span>{" "}
-                  {baseAssetPrice?.mul(baseAmount || 0).toFixed(2)} USD
+      {/* Currency & Liquidity */}
+      <div className="rounded-md border border-sky-200/30 bg-white/80 p-4 backdrop-blur-md">
+        <div className="mb-3 flex items-center gap-2">
+          <Label>Currency:</Label>
+          <div className="flex items-center gap-1.5">
+            {form.currency ? (
+              <>
+                <span className="font-medium text-sky-900">{form.currency}</span>
+                <div className="relative h-4 w-4">
+                  <Image
+                    alt="Currency token logo"
+                    fill
+                    sizes="100vw"
+                    src={currencyMetadata?.image!}
+                  />
                 </div>
               </>
-            ) : !form?.liquidity?.deploy &&
-              form?.moderation === "Permissionless" ? (
-              <div className="mt-4">
-                <div className="center mb-2 text-gray-500">
-                  <LuFileWarning size={22} />
-                </div>
-                <div className="center">
-                  <p className="mb-3 text-center text-gray-400 md:max-w-lg">
-                    No liquidity pool will be deployed for the market.
-                    <b className="inline">
-                      You can deploy a pool after you create the market
-                    </b>{" "}
-                    from the market page.
-                  </p>
-                </div>
-                <p className="mb-4 text-xs italic text-gray-400">
-                  Or you can add it now as part of the market creation process
-                </p>
-                <button
-                  type="button"
-                  className={`rounded-md px-3 py-1 transition-all active:scale-95 ${`bg-${currencyMetadata?.twColor}`}  text-white`}
-                  onClick={() => {
-                    editor.mergeFormData({
-                      liquidity: {
-                        deploy: true,
-                      },
-                    });
-                    editor.goToSection("Liquidity");
-                  }}
-                >
-                  Add Liquidity?
-                </button>
-              </div>
             ) : (
-              ""
+              <span className="text-sky-700">--</span>
             )}
           </div>
         </div>
+
+        {form?.liquidity?.deploy && form?.moderation === "Permissionless" ? (
+          <div className="space-y-2 border-t border-sky-200/30 pt-3">
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <span className="text-sky-700">Base Amount:</span>{" "}
+                <span className="font-medium text-sky-900">{baseAmount ?? "--"}</span>
+              </div>
+              <div>
+                <span className="text-sky-700">Swap Fee:</span>{" "}
+                <span className="font-medium text-sky-900">{form.liquidity?.swapFee?.value ?? "--"}%</span>
+              </div>
+            </div>
+            <div className="text-sm">
+              <span className="text-sky-700">Total Liquidity:</span>{" "}
+              <span className="font-semibold text-sky-900">
+                {baseAmount} {form.currency}
+              </span>{" "}
+              <span className="text-sky-400">≈</span>{" "}
+              <span className="font-medium text-sky-700">
+                ${baseAssetPrice?.mul(baseAmount || 0).toFixed(2)}
+              </span>
+            </div>
+          </div>
+        ) : !form?.liquidity?.deploy && form?.moderation === "Permissionless" ? (
+          <div className="border-t border-sky-200/30 pt-3">
+            <div className="mb-2 flex items-center justify-center text-orange-500">
+              <LuFileWarning size={18} />
+            </div>
+            <p className="mb-2 text-center text-sm text-sky-900">
+              No liquidity pool will be deployed.{" "}
+              <span className="font-semibold">
+                You can deploy a pool after market creation
+              </span>{" "}
+              from the market page.
+            </p>
+            <div className="text-center">
+              <button
+                type="button"
+                className="rounded-md border border-sky-600/50 bg-sky-600/90 px-3 py-1.5 text-xs text-white backdrop-blur-md transition-all hover:bg-sky-600 active:scale-95"
+                onClick={() => {
+                  editor.mergeFormData({
+                    liquidity: {
+                      deploy: true,
+                    },
+                  });
+                  editor.goToSection("Liquidity");
+                }}
+              >
+                Add Liquidity Now?
+              </button>
+            </div>
+          </div>
+        ) : null}
       </div>
 
-      <div className="mb-10">
-        <div className="flex items-center justify-center gap-2">
-          <Label>Moderation</Label> <div>{form.moderation}</div>
-        </div>
+      {/* Moderation */}
+      <div className="rounded-md border border-sky-200/30 bg-white/80 p-4 backdrop-blur-md">
+        <Label className="mb-2">Moderation</Label>
+        <p className="text-sm font-medium text-sky-900">{form.moderation}</p>
         {creationParams?.disputeMechanism && (
-          <div className="mt-2 inline-block items-center justify-center gap-2 rounded-md bg-purple-400 p-2 text-white">
-            <Label className="text-white">Dispute Mechanism</Label>{" "}
-            <div>{creationParams.disputeMechanism.toString()}</div>
+          <div className="mt-3 rounded-md border border-purple-400/30 bg-purple-50/50 p-2.5 backdrop-blur-sm">
+            <Label className="mb-1 text-purple-900">Dispute Mechanism</Label>
+            <p className="text-sm text-purple-900">
+              {creationParams.disputeMechanism.toString()}
+            </p>
           </div>
         )}
       </div>
 
-      <div className="mb-10">
+      {/* Oracle */}
+      <div className="rounded-md border border-sky-200/30 bg-white/80 p-4 backdrop-blur-md">
         <Label className="mb-2">Oracle</Label>
-        <h3 className="hidden text-base font-normal md:block">
+        <p className="hidden text-sm font-medium text-sky-900 md:block">
           {form?.oracle ? form?.oracle : "--"}
-        </h3>
-        <h3 className="block text-base font-normal md:hidden">
+        </p>
+        <p className="block text-sm font-medium text-sky-900 md:hidden">
           {form?.oracle ? shortenAddress(form?.oracle, 6, 6) : "--"}
-        </h3>
+        </p>
       </div>
 
-      <div className="mb-10">
-        <div className="mb-4 flex items-center justify-center gap-6">
-          <div className="items-center gap-2">
-            <Label className="mb-2">Ends</Label>
-            <div>
-              {form.endDate
-                ? `${momentFn(form.endDate).format("MMM D, YYYY, h:mm:ss A")} ${
-                    form.timeZone ?? ""
-                  }`
-                : "--"}
-            </div>
-          </div>
+      {/* Timeline */}
+      <div className="rounded-md border border-sky-200/30 bg-white/80 p-4 backdrop-blur-md">
+        <div className="mb-3">
+          <Label className="mb-1.5">Ends</Label>
+          <p className="text-sm font-medium text-sky-900">
+            {form.endDate
+              ? `${momentFn(form.endDate).format("MMM D, YYYY, h:mm:ss A")} ${
+                  form.timeZone ?? ""
+                }`
+              : "--"}
+          </p>
         </div>
-        <div className="items-center justify-center gap-6 md:flex">
-          {/* <div className="mb-2 flex items-center justify-center gap-2 md:mb-0">
-            <Label>Grace</Label>{" "}
-            <div>
-              {form.gracePeriod?.type === "duration"
-                ? timeline?.grace
-                  ? timeline?.grace.period > 0
-                    ? blocksAsDuration(timeline?.grace.period).humanize()
-                    : "None"
-                  : "--"
-                : `${momentFn(form.gracePeriod?.date).format(
-                    "MMM D, YYYY, h:mm:ss A",
-                  )} ${form.timeZone ?? ""}`}
-            </div>
-          </div> */}
-          <div className="mb-2 flex items-center justify-center gap-2 md:mb-0">
-            <Label>Reporting</Label>{" "}
-            <div>
+        <div className="grid gap-3 border-t border-sky-200/30 pt-3 md:grid-cols-2">
+          <div>
+            <Label className="mb-1.5">Reporting Period</Label>
+            <p className="text-sm text-sky-900">
               {timeline?.report
                 ? timeline?.report.period > 0
                   ? blocksAsDuration(timeline?.report.period).humanize()
                   : "None"
                 : "--"}
-            </div>
+            </p>
           </div>
-          <div className="mb-2 flex items-center justify-center gap-2 md:mb-0">
-            <Label>Dispute</Label>{" "}
-            <div>
+          <div>
+            <Label className="mb-1.5">Dispute Period</Label>
+            <p className="text-sm text-sky-900">
               {timeline?.dispute
                 ? timeline?.dispute.period > 0
                   ? blocksAsDuration(timeline?.dispute.period).humanize()
                   : "None"
                 : "--"}
-            </div>
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="mb-10">
-        <Label>Description</Label>
-        <div className="center flex ">
-          {form?.description ? (
-            <div className="h-fit w-full max-w-2xl rounded-md bg-gray-50 p-4 md:w-2/3">
-              <QuillViewer value={form?.description} />
-            </div>
-          ) : (
-            <span className="italic text-gray-500">No description given.</span>
-          )}
-        </div>
+      {/* Description */}
+      <div className="rounded-md border border-sky-200/30 bg-white/80 p-4 backdrop-blur-md">
+        <Label className="mb-2">Description</Label>
+        {form?.description ? (
+          <div className="prose prose-sm max-w-none text-sky-900">
+            <QuillViewer value={form?.description} />
+          </div>
+        ) : (
+          <p className="italic text-sky-700 opacity-75">
+            No description given.
+          </p>
+        )}
       </div>
-      <div>
+
+      {/* Creator Fee */}
+      <div className="rounded-md border border-sky-200/30 bg-white/80 p-4 backdrop-blur-md">
         <Label className="mb-2">Creator Fee</Label>
-        <div className="center flex ">{form?.creatorFee?.value} %</div>
+        <p className="text-sm font-medium text-sky-900">
+          {form?.creatorFee?.value} %
+        </p>
       </div>
     </div>
   );
@@ -286,68 +277,51 @@ const AnswersDisplay = ({
         return (
           <div
             key={answerIndex}
-            className="mb-4 flex-1 rounded-md bg-gray-50 px-5 py-3 md:mb-0"
+            className="mb-4 flex-1 rounded-md border border-sky-200/30 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:mb-0"
           >
-            <div className="text-xl font-semibold uppercase">
+            <div className="mb-2 text-base font-semibold uppercase text-sky-900">
               {answerLiquidity?.asset}
             </div>
             {answers.type === "categorical" && (
-              <div className="text-sm text-gray-400">{answer}</div>
+              <div className="mb-2 text-sm text-sky-700">{answer}</div>
             )}
 
             {liquidity &&
             liquidity.deploy &&
             moderation === "Permissionless" ? (
-              <div className="mt-3 !text-sm">
-                <div className="mb-1 table-row">
-                  <div className="table-cell pr-4 text-left">
-                    <Label className="text-xs">Amount</Label>{" "}
-                  </div>
-                  <div className="table-cell text-left">
-                    <div>
-                      {Number(answerLiquidity?.amount).toFixed(1) ?? "--"}
-                    </div>
-                  </div>
+              <div className="space-y-1.5 border-t border-sky-200/30 pt-2.5 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-sky-700">Amount:</span>
+                  <span className="font-medium text-sky-900">
+                    {Number(answerLiquidity?.amount).toFixed(1) ?? "--"}
+                  </span>
                 </div>
-                <div className="mb-1 table-row">
-                  <div className="table-cell pr-4 text-left">
-                    <Label className="text-xs">Value</Label>{" "}
-                  </div>
-                  <div className="table-cell text-left">
-                    <div className="mb-1">
-                      {answerLiquidity ? (
-                        <>
-                          {new Decimal(answerLiquidity?.amount || 0)
-                            .mul(answerLiquidity?.price.price ?? 0)
-                            .toFixed(1)}{" "}
-                          <span className="text-gray-400">≈</span>{" "}
-                          {baseAssetPrice
-                            ?.mul(answerLiquidity?.amount || 0)
-                            .mul(answerLiquidity?.price.price ?? 0)
-                            .toFixed(2)}{" "}
-                          USD
-                        </>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                  </div>
+                <div className="flex justify-between">
+                  <span className="text-sky-700">Value:</span>
+                  <span className="font-medium text-sky-900">
+                    {answerLiquidity ? (
+                      <>
+                        {new Decimal(answerLiquidity?.amount || 0)
+                          .mul(answerLiquidity?.price.price ?? 0)
+                          .toFixed(1)}{" "}
+                        <span className="text-sky-400">≈</span>{" "}
+                        {baseAssetPrice
+                          ?.mul(answerLiquidity?.amount || 0)
+                          .mul(answerLiquidity?.price.price ?? 0)
+                          .toFixed(2)}{" "}
+                        USD
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </span>
                 </div>
-
-                <div className="table-row ">
-                  <div className="table-cell pr-4 text-left">
-                    <Label className="text-xs">Price</Label>{" "}
-                  </div>
-                  <div className="table-cell text-left">
-                    <div className="flex gap-2">
-                      <div className="font-semibold">
-                        {new Decimal(answerLiquidity?.price.price ?? 0).toFixed(
-                          2,
-                        )}
-                      </div>
-                      <div className="font-bold">{baseCurrency}</div>
-                    </div>
-                  </div>
+                <div className="flex justify-between">
+                  <span className="text-sky-700">Price:</span>
+                  <span className="font-semibold text-sky-900">
+                    {new Decimal(answerLiquidity?.price.price ?? 0).toFixed(2)}{" "}
+                    {baseCurrency}
+                  </span>
                 </div>
               </div>
             ) : (
@@ -364,7 +338,11 @@ const Label: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
   className,
   children,
 }) => {
-  return <div className={`text-sm text-gray-400 ${className}`}>{children}</div>;
+  return (
+    <div className={`text-sm font-medium text-sky-900 ${className}`}>
+      {children}
+    </div>
+  );
 };
 
 export default MarketSummary;

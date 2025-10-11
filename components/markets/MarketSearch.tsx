@@ -173,7 +173,9 @@ const MarketSearch = () => {
                 </Link>
               ))
             ) : (
-              <div className="w-full pb-4 pt-6 text-center text-gray-500">No results</div>
+              <div className="w-full pb-4 pt-6 text-center text-gray-500">
+                No results
+              </div>
             )}
           </div>
         </div>

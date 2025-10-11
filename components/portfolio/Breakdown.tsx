@@ -31,58 +31,62 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
   }, new Decimal(0));
 
   return (
-    <div className="flex flex-col gap-y-[30px] md:flex-row">
-      <div className="flex w-full max-w-[600px] md:border-r-2 md:border-gray-200">
-        <div className="flex-1 border-r-2 border-gray-200">
-          {"loading" in props ? (
-            <BreakdownSlotSkeleton />
-          ) : (
-            <BreakdownSlot
-              title="Total Value"
-              value={props.total.value}
-              usdZtgPrice={props.usdZtgPrice}
-              changePercentage={props.total.changePercentage}
-            />
-          )}
-        </div>
-        <div className="flex-1 pl-4">
-          {"loading" in props ? (
-            <BreakdownSlotSkeleton />
-          ) : (
-            <BreakdownSlot
-              title="Trading Positions"
-              value={props.tradingPositions.value}
-              usdZtgPrice={props.usdZtgPrice}
-              changePercentage={props.tradingPositions.changePercentage}
-            />
-          )}
-        </div>
-      </div>
+    <div className="rounded-lg bg-gradient-to-br from-sky-50 to-blue-50 p-3 shadow-lg">
+      <div className="overflow-hidden rounded-lg bg-white/60 p-3 backdrop-blur-sm">
+        <div className="flex flex-col gap-y-4 md:flex-row">
+          <div className="flex w-full md:flex-1 md:border-r md:border-sky-200/30">
+            <div className="flex-1 border-r border-sky-200/30 pr-3">
+              {"loading" in props ? (
+                <BreakdownSlotSkeleton />
+              ) : (
+                <BreakdownSlot
+                  title="Total Value"
+                  value={props.total.value}
+                  usdZtgPrice={props.usdZtgPrice}
+                  changePercentage={props.total.changePercentage}
+                />
+              )}
+            </div>
+            <div className="flex-1 pl-3">
+              {"loading" in props ? (
+                <BreakdownSlotSkeleton />
+              ) : (
+                <BreakdownSlot
+                  title="Trading Positions"
+                  value={props.tradingPositions.value}
+                  usdZtgPrice={props.usdZtgPrice}
+                  changePercentage={props.tradingPositions.changePercentage}
+                />
+              )}
+            </div>
+          </div>
 
-      <div className="flex w-full max-w-[600px] md:pl-4">
-        <div className="flex-1 border-r-2 border-gray-200">
-          {"loading" in props || poolIsLoading ? (
-            <BreakdownSlotSkeleton />
-          ) : (
-            <BreakdownSlot
-              title="Liquidity"
-              value={poolZtgTotal?.mul(ZTG) ?? new Decimal(0)}
-              usdZtgPrice={props.usdZtgPrice}
-              changePercentage={0}
-            />
-          )}
-        </div>
-        <div className="flex-1 pl-4">
-          {"loading" in props ? (
-            <BreakdownSlotSkeleton />
-          ) : (
-            <BreakdownSlot
-              title="Bonded"
-              value={props.bonded.value}
-              usdZtgPrice={props.usdZtgPrice}
-              changePercentage={props.bonded.changePercentage}
-            />
-          )}
+          <div className="flex w-full md:flex-1 md:pl-3">
+            <div className="flex-1 border-r border-sky-200/30 pr-3">
+              {"loading" in props || poolIsLoading ? (
+                <BreakdownSlotSkeleton />
+              ) : (
+                <BreakdownSlot
+                  title="Liquidity"
+                  value={poolZtgTotal?.mul(ZTG) ?? new Decimal(0)}
+                  usdZtgPrice={props.usdZtgPrice}
+                  changePercentage={0}
+                />
+              )}
+            </div>
+            <div className="flex-1 pl-3">
+              {"loading" in props ? (
+                <BreakdownSlotSkeleton />
+              ) : (
+                <BreakdownSlot
+                  title="Bonded"
+                  value={props.bonded.value}
+                  usdZtgPrice={props.usdZtgPrice}
+                  changePercentage={props.bonded.changePercentage}
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -122,15 +126,17 @@ export const BreakdownSlot = ({
 }: BreakdownSlotProps) => {
   return (
     <>
-      <h4 className="mb-1 text-xs font-medium text-sky-600">{title}</h4>
-      <div className="mb-1 flex items-center font-mono">
-        <div className="font-semibold sm:w-2/3">
+      <h4 className="mb-0.5 text-xxs font-medium uppercase tracking-wide text-sky-600">
+        {title}
+      </h4>
+      <div className="mb-0.5 flex items-center font-mono">
+        <div className="text-sm font-bold text-sky-900 sm:w-2/3">
           {formatNumberLocalized(value.div(ZTG).toNumber())} ZTG
         </div>
         <div
-          className={`hidden w-1/3 flex-1 sm:block ${
+          className={`hidden w-1/3 flex-1 text-xs sm:block ${
             changePercentage < 0.01
-              ? "text-gray-800"
+              ? "text-sky-900"
               : changePercentage < 0
                 ? "text-red-600"
                 : "text-green-500"
@@ -139,7 +145,7 @@ export const BreakdownSlot = ({
           {Math.abs(changePercentage).toFixed(1)}%
         </div>
       </div>
-      <div className="mb-1 font-mono text-sm text-sky-600">
+      <div className="font-mono text-xs text-sky-600">
         $
         {formatNumberLocalized(
           usdZtgPrice?.mul(value.div(ZTG)).toNumber() ?? 0,

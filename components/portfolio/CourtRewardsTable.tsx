@@ -131,7 +131,11 @@ const CourtRewardsTable = ({ address }: { address: string }) => {
           buttonLink="/court"
         />
       ) : (
-        <Table columns={columns} data={tableData} />
+        <div className="rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
+          <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
+            <Table columns={columns} data={tableData} />
+          </div>
+        </div>
       )}
     </div>
   );

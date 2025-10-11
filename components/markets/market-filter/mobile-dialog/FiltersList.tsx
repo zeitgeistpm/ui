@@ -1,5 +1,11 @@
 import { PropsWithChildren } from "react";
-import { Icon, Plus, ChevronDown, ChevronUp, ChevronRight } from "react-feather";
+import {
+  Icon,
+  Plus,
+  ChevronDown,
+  ChevronUp,
+  ChevronRight,
+} from "react-feather";
 import MarketActiveFilters from "../MarketActiveFilters";
 import MarketFiltersCheckboxes from "../MarketFiltersCheckboxes";
 import { SelectedMenu } from "../MarketFiltersContainer";
@@ -97,7 +103,12 @@ export type FiltersListProps = {
   onMarketTypeChange?: (type: MarketType) => void;
 };
 
-const FiltersList = ({ showMenu, close, marketType = "regular", onMarketTypeChange }: FiltersListProps) => {
+const FiltersList = ({
+  showMenu,
+  close,
+  marketType = "regular",
+  onMarketTypeChange,
+}: FiltersListProps) => {
   return (
     <>
       {/* Market Type Section */}

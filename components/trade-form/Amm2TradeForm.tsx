@@ -1,6 +1,6 @@
 import { Tab } from "@headlessui/react";
 import { MarketOutcomeAssetId, getIndexOf, ZTG } from "@zeitgeistpm/sdk";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import BuyForm from "./BuyForm";
 import SellForm from "./SellForm";
 import TradeTab, { TradeTabType } from "./TradeTab";

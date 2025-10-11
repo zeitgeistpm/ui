@@ -14,11 +14,11 @@ const allTimezones = moment.tz.names();
 
 const TimezoneSelect: React.FC<TimezoneSelectProps> = (props) => {
   return (
-    <div className="ml-4 rounded-full bg-gray-100 px-8 py-3">
+    <div className="rounded-md border border-sky-200/30 bg-white/80 px-3 py-1.5 backdrop-blur-md">
       <select
         defaultValue={defaultTimezone}
         value={props.value}
-        className="bg-transparent text-center outline-none"
+        className="bg-transparent text-xs text-sky-900 outline-none"
         onChange={(e) => {
           const value = e.target.value;
           props.onChange({

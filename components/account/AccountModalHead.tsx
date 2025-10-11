@@ -8,16 +8,16 @@ const AccountModalHead = () => {
   };
 
   return (
-    <div className="flex flex-row justify-between">
-      <div className="text-lg font-bold">Account</div>
-      <div
-        className="cursor-pointer rounded-lg border-2 border-gray-300 px-1 hover:border-gray-400"
+    <div className="flex flex-row items-center justify-between">
+      <h3 className="text-lg font-bold text-sky-900">Account</h3>
+      <button
+        className="cursor-pointer rounded-md border border-sky-200/30 bg-sky-50/50 px-3 py-1.5 text-xs font-medium text-sky-900 backdrop-blur-sm transition-all hover:border-sky-300/50 hover:bg-sky-100/60"
         onClick={() => {
           switchExtension();
         }}
       >
         Switch wallet extension
-      </div>
+      </button>
     </div>
   );
 };

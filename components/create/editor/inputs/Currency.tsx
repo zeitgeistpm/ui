@@ -26,36 +26,29 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
   };
 
   return (
-    <div className="mb-6 md:flex md:justify-center md:gap-6">
+    <div className="flex flex-col gap-2 md:flex-row md:gap-2">
       {supportedCurrencies
         .filter((currency) => options?.includes(currency.name) ?? true)
         .map((currency) => (
           <button
             key={currency.name}
             type="button"
-            className={`
-              mb-4 flex min-h-[150px] w-full flex-1 cursor-pointer flex-col justify-center rounded-md p-6 
-              transition-all active:scale-95 md:min-h-[300px] md:max-w-xs
-              ${currency.name === value ? "bg-nyanza-base" : "bg-gray-100"}
-            `}
+            className={`flex h-[72px] flex-1 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-md border p-2 backdrop-blur-md transition-all active:scale-95 ${
+              currency.name === value
+                ? "border-sky-600/50 bg-sky-600/90 text-white shadow-md"
+                : "border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
+            }`}
             onClick={handleSelect(currency.name)}
           >
-            <div className="flex items-center gap-6 md:block">
-              <div className="flex w-20 md:mb-6 md:w-auto md:items-center md:justify-center">
-                <div className="relative h-20 w-20 overflow-hidden rounded-full">
-                  <Image
-                    alt={`Currency token logo for ${currency.name}`}
-                    fill
-                    sizes="100vw"
-                    src={currency.image}
-                  />
-                </div>
-              </div>
-              <div className="text-left md:text-center">
-                <h3 className="mb-2 text-2xl md:mb-4">{currency.name}</h3>
-                <p className="text-sm md:text-base">{currency.description}</p>
-              </div>
+            <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-full">
+              <Image
+                alt={`Currency token logo for ${currency.name}`}
+                fill
+                sizes="100vw"
+                src={currency.image}
+              />
             </div>
+            <h3 className="text-xs font-semibold">{currency.name}</h3>
           </button>
         ))}
     </div>

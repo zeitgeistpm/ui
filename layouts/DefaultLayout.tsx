@@ -68,7 +68,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div
-      className={`bg-sky-50/50 relative flex min-h-screen w-full flex-col ${
+      className={`relative flex min-h-screen w-full flex-col bg-sky-50/50 ${
         greyBackgroundPageRoutes.includes(router.pathname) ||
         router.pathname.match("topics")
           ? "bg-sky-50"

@@ -1,10 +1,10 @@
-import MarketEditor from "components/create/editor/Editor";
+import MarketEditorCompact from "components/create/editor/EditorCompact";
 import { NextPage } from "next";
 
 const CreateMarketPage: NextPage = () => {
   return (
-    <div className="mt-10">
-      <MarketEditor />
+    <div className="rounded-lg">
+      <MarketEditorCompact />
     </div>
   );
 };

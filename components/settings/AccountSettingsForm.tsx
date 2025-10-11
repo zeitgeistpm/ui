@@ -107,7 +107,10 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         updateIdentity();
       }}
     >
-      <label htmlFor="displayName" className="mb-2 font-bold">
+      <label
+        htmlFor="displayName"
+        className="mb-2 text-sm font-semibold text-sky-900"
+      >
         Display Name
       </label>
       <input
@@ -115,12 +118,17 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         id="displayName"
         {...register("displayName", { required: true })}
         className={
-          "h-14 items-center rounded-md border-1 border-transparent bg-anti-flash-white px-3 outline-none " +
-          (errors?.displayName ? "border-vermilion" : "")
+          "mb-4 h-12 rounded-md border px-3 text-sm text-sky-900 outline-none transition-all focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 " +
+          (errors?.displayName
+            ? "border-red-500 bg-red-50/50"
+            : "border-sky-200/30 bg-sky-50/30")
         }
       />
 
-      <label htmlFor="discord" className="mb-2 mt-5 font-bold">
+      <label
+        htmlFor="discord"
+        className="mb-2 text-sm font-semibold text-sky-900"
+      >
         Discord
       </label>
 
@@ -129,12 +137,17 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         id="discord"
         {...register("discord")}
         className={
-          "h-14 items-center rounded-md border-1 border-transparent bg-anti-flash-white px-3 outline-none " +
-          (errors?.discord ? "border-vermilion" : "")
+          "mb-4 h-12 rounded-md border px-3 text-sm text-sky-900 outline-none transition-all focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 " +
+          (errors?.discord
+            ? "border-red-500 bg-red-50/50"
+            : "border-sky-200/30 bg-sky-50/30")
         }
       />
 
-      <label htmlFor="twitter" className="mb-2 mt-5 font-bold">
+      <label
+        htmlFor="twitter"
+        className="mb-2 text-sm font-semibold text-sky-900"
+      >
         Twitter
       </label>
 
@@ -143,12 +156,14 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         id="twitter"
         {...register("twitter")}
         className={
-          "mb-5 h-14 items-center rounded-md border-1 border-transparent bg-anti-flash-white px-3 outline-none " +
-          (errors?.twitter ? "border-vermilion" : "")
+          "mb-4 h-12 rounded-md border px-3 text-sm text-sky-900 outline-none transition-all focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 " +
+          (errors?.twitter
+            ? "border-red-500 bg-red-50/50"
+            : "border-sky-200/30 bg-sky-50/30")
         }
       />
 
-      <div className="mb-5 rounded-lg bg-provincial-pink p-5 text-sm">
+      <div className="mb-5 rounded-md border border-sky-200/30 bg-sky-50/50 p-4 text-sm text-sky-700 backdrop-blur-sm">
         Setting an identity requires a deposit of up to {indetityCost}{" "}
         {constants?.tokenSymbol}. This deposit can be retrieved by clearing your
         identity.

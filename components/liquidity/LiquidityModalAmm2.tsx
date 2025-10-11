@@ -52,18 +52,18 @@ const LiquidityModalAmm2 = ({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white">
+      <Dialog.Panel className="w-full max-w-[564px] overflow-hidden rounded-xl border border-sky-200/30 bg-white/95 shadow-2xl backdrop-blur-lg">
         <Tab.Group>
-          <Tab.List className="flex h-[71px] text-center text-ztg-18-150 font-medium">
-            <Tab className="w-1/2 rounded-tl-[10px] bg-anti-flash-white transition-all ui-selected:bg-white ui-selected:font-bold">
-              Join
+          <Tab.List className="flex h-[71px] border-b border-sky-200/30 text-center text-lg font-semibold">
+            <Tab className="w-1/2 border-r border-sky-200/30 bg-sky-50/50 text-sky-700 transition-all hover:bg-white/80 ui-selected:bg-white/95 ui-selected:text-sky-900 ui-selected:shadow-sm">
+              Join Pool
             </Tab>
-            <Tab className="w-1/2 rounded-tr-[10px] bg-anti-flash-white transition-all ui-selected:bg-white ui-selected:font-bold">
-              Exit
+            <Tab className="w-1/2 bg-sky-50/50 text-sky-700 transition-all hover:bg-white/80 ui-selected:bg-white/95 ui-selected:text-sky-900 ui-selected:shadow-sm">
+              Exit Pool
             </Tab>
           </Tab.List>
 
-          <Tab.Panels className="p-[30px]">
+          <Tab.Panels className="p-8">
             <Tab.Panel>
               {pool && (
                 <JoinPoolFormAmm2

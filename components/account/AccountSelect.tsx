@@ -4,6 +4,7 @@ import React, { FC } from "react";
 import Select, {
   components,
   ControlProps,
+  MenuListProps,
   OnChangeValue,
   OptionProps,
   SingleValueProps,
@@ -18,7 +19,7 @@ export type AccountOption = { label: string; value: string };
 const Control = ({ children, ...rest }: ControlProps<AccountOption, false>) => {
   return (
     <components.Control {...(rest as ControlProps)}>
-      <div className="flex cursor-pointer items-center justify-between rounded-lg bg-sky-100">
+      <div className="flex cursor-pointer items-center rounded-lg">
         {children}
       </div>
     </components.Control>
@@ -28,7 +29,7 @@ const Control = ({ children, ...rest }: ControlProps<AccountOption, false>) => {
 const Option = (props: OptionProps<AccountOption, false>) => {
   const { label, value } = props.data;
   return (
-    <components.Option {...props} className="bg-black">
+    <components.Option {...props}>
       <AccountSelectOption name={label} address={value} />
     </components.Option>
   );
@@ -48,13 +49,21 @@ const IndicatorSeparator = () => {
   return null;
 };
 
+const MenuList = (props: MenuListProps<AccountOption, false>) => {
+  return (
+    <div className="rounded-lg border border-sky-200/30 bg-white/95 p-2 shadow-lg backdrop-blur-md">
+      <components.MenuList {...props}>{props.children}</components.MenuList>
+    </div>
+  );
+};
+
 const customStyles: StylesConfig<AccountOption> = {
   valueContainer: () => {
     return {
       "input[readonly]": {
         display: "block",
       },
-      height: "50px",
+      height: "44px",
       width: "100%",
     };
   },
@@ -73,9 +82,19 @@ const customStyles: StylesConfig<AccountOption> = {
   menu: (provided) => {
     return {
       ...provided,
-      marginTop: "3px",
-      marginBottom: 0,
+      marginTop: "8px",
       backgroundColor: "transparent",
+    };
+  },
+  menuPortal: (provided) => {
+    return {
+      ...provided,
+      zIndex: 9999,
+    };
+  },
+  menuList: () => {
+    return {
+      padding: 0,
     };
   },
 };
@@ -96,30 +115,35 @@ const AccountSelect: FC<AccountSelectProps> = ({
   const wallet = useWallet();
 
   return (
-    <div className="flex w-full items-center justify-between rounded-lg bg-sky-100 px-2">
-      <Select
-        isSearchable={false}
-        options={options}
-        styles={customStyles}
-        value={value}
-        isMulti={false}
-        isDisabled={disabled}
-        placeholder="Select an account"
-        components={{
-          Control,
-          Option,
-          SingleValue,
-          DropdownIndicator,
-          IndicatorSeparator,
-        }}
-        onChange={onChange}
-      />
-      {wallet.activeAccount?.address && (
-        <CopyIcon
-          copyText={wallet.activeAccount?.address}
-          className="w-auto px-1"
-          size={18}
+    <div className="flex w-full items-center gap-2">
+      <div className="flex-1 cursor-pointer rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-sm transition-all hover:border-sky-300/50 hover:bg-sky-50/80">
+        <Select
+          isSearchable={false}
+          options={options}
+          styles={customStyles}
+          value={value}
+          isMulti={false}
+          isDisabled={disabled}
+          placeholder="Select an account"
+          menuPortalTarget={
+            typeof document !== "undefined" ? document.body : null
+          }
+          menuPosition="fixed"
+          components={{
+            Control,
+            Option,
+            SingleValue,
+            DropdownIndicator,
+            IndicatorSeparator,
+            MenuList,
+          }}
+          onChange={onChange}
         />
+      </div>
+      {wallet.activeAccount?.address && (
+        <button className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-sm transition-all hover:border-sky-300/50 hover:bg-sky-50/80">
+          <CopyIcon copyText={wallet.activeAccount?.address} size={18} />
+        </button>
       )}
     </div>
   );

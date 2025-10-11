@@ -170,75 +170,81 @@ const MarketContextActionOutcomeSelector = ({
         }}
       >
         <div className="center gap-3">
-          <Listbox.Button onClick={() => setOpen(!open)}>
-            <div className="center gap-2 text-2xl md:text-xl lg:text-2xl">
-              <TruncatedText length={24} text={getSelectedText()}>
-                {(text) => {
-                  const option = findMatchingOption(selected);
+          <Listbox.Button
+            onClick={() => setOpen(!open)}
+            className="flex h-[56px] items-center gap-2 rounded-lg border border-sky-200/30 bg-white/80 px-4 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md"
+          >
+            <TruncatedText length={24} text={getSelectedText()}>
+              {(text) => {
+                const option = findMatchingOption(selected);
 
-                  return (
-                    <>
-                      {hideValue ? (
-                        <div className="center gap-2">
-                          <span>{revealed ? text : "∗∗∗∗∗∗"}</span>
-                        </div>
-                      ) : (
-                        <div className="center gap-2">
-                          <div
-                            className="h-3 w-3 rounded-full "
-                            style={{ backgroundColor: option?.color }}
-                          ></div>
+                return (
+                  <>
+                    {hideValue ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-base font-semibold text-sky-900">
+                          {revealed ? text : "∗∗∗∗∗∗"}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-3 w-3 rounded-full"
+                          style={{ backgroundColor: option?.color }}
+                        ></div>
+                        <span className="text-base font-semibold text-sky-900">
                           {text}
-                        </div>
-                      )}
-                    </>
-                  );
-                }}
-              </TruncatedText>
-              {!disabled && <RiArrowDownSLine />}
-            </div>
+                        </span>
+                      </div>
+                    )}
+                  </>
+                );
+              }}
+            </TruncatedText>
+            {!disabled && <RiArrowDownSLine className="text-sky-600" />}
           </Listbox.Button>
 
           {hideValue && (
-            <>
+            <button
+              type="button"
+              onClick={() => setRevealed(!revealed)}
+              className="flex h-[56px] w-[56px] items-center justify-center rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md"
+            >
               {revealed ? (
-                <AiOutlineEye size={16} onClick={() => setRevealed(false)} />
+                <AiOutlineEye size={20} className="text-sky-600" />
               ) : (
-                <AiOutlineEyeInvisible
-                  size={16}
-                  onClick={() => setRevealed(true)}
-                />
+                <AiOutlineEyeInvisible size={20} className="text-sky-600" />
               )}
-            </>
+            </button>
           )}
         </div>
 
         <Transition
           show={open}
-          enter="transition duration-100 ease-out"
+          enter="transition duration-200 ease-out"
           enterFrom="transform scale-95 opacity-0"
           enterTo="transform scale-100 opacity-100"
-          leave="transition duration-75 ease-out"
+          leave="transition duration-100 ease-in"
           leaveFrom="transform scale-100 opacity-100"
           leaveTo="transform scale-95 opacity-0"
-          className="absolute bottom-0 right-0 z-50 h-full w-full overflow-hidden rounded-xl bg-white"
+          className="fixed inset-0 z-[100]"
         >
-          <div className="relative flex h-full flex-col">
-            <div className="">
+          <div className="relative flex h-full flex-col bg-sky-50/95 backdrop-blur-md">
+            <div className="border-b border-sky-200/30 bg-sky-100/95 shadow-sm backdrop-blur-lg">
               <div
-                className="flex cursor-pointer items-center gap-4 px-5 py-5 text-lg"
+                className="flex cursor-pointer items-center gap-4 rounded-md px-5 py-4 text-lg font-semibold text-sky-900 transition-all hover:bg-sky-100/50"
                 onClick={() => setOpen(false)}
               >
-                <BsArrowLeft />
+                <BsArrowLeft className="text-sky-600" />
                 Select Outcome Asset
               </div>
               {Number(options?.length) > SEARCH_ITEMS_THRESHOLD && (
-                <div className="mb-3 px-5">
+                <div className="px-5 pb-4">
                   <Input
                     type="text"
                     ref={inputRef}
                     placeholder="Search Assets"
-                    className="w-full text-sm"
+                    className="w-full rounded-lg border border-sky-200/30 bg-white/95 text-sm shadow-sm backdrop-blur-sm"
                     value={search ?? ""}
                     onChange={(event) => {
                       setSearch(event.target.value);
@@ -249,22 +255,34 @@ const MarketContextActionOutcomeSelector = ({
             </div>
             <Listbox.Options
               static
-              className="no-scroll-bar mb-4 h-fit min-h-0 flex-1 overflow-y-scroll"
+              className="no-scroll-bar flex-1 overflow-y-scroll px-4 py-4"
             >
               {(searchResults ?? assetOptions)?.map((option, index) => {
                 return (
                   <Listbox.Option
                     key={option.assetIndex}
                     value={option.asset}
-                    className=" cursor-pointer px-5 py-1 hover:bg-opacity-10"
+                    className="mb-2 cursor-pointer"
                   >
-                    <div className="flex items-center gap-3 rounded-md px-3 py-4 hover:bg-slate-100 md:text-sm lg:text-base">
+                    {({ selected }) => (
                       <div
-                        className="h-4 w-4 rounded-full "
-                        style={{ backgroundColor: option.color }}
-                      ></div>
-                      {option.category?.name || option.assetIndex}
-                    </div>
+                        className={`flex items-center gap-3 rounded-xl border px-4 py-4 shadow-sm backdrop-blur-sm transition-all md:text-sm lg:text-base ${
+                          selected
+                            ? "border-sky-300/50 bg-sky-100/90 shadow-md"
+                            : "border-sky-200/30 bg-white/90 hover:border-sky-300/50 hover:bg-white hover:shadow-md"
+                        }`}
+                      >
+                        <div
+                          className="h-4 w-4 flex-shrink-0 rounded-full shadow-sm"
+                          style={{ backgroundColor: option.color }}
+                        ></div>
+                        <span
+                          className={`font-semibold ${selected ? "text-sky-900" : "text-sky-700"}`}
+                        >
+                          {option.category?.name || option.assetIndex}
+                        </span>
+                      </div>
+                    )}
                   </Listbox.Option>
                 );
               })}

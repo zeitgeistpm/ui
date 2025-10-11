@@ -119,7 +119,7 @@ export const MarketEditor = () => {
     <>
       {isLoaded === false && (
         <div
-          className="flex items-center justify-center bg-white "
+          className="flex items-center justify-center bg-white/80 backdrop-blur-md"
           style={{ height: "calc(100vh - 100px)" }}
         >
           <Loader
@@ -139,7 +139,7 @@ export const MarketEditor = () => {
         leaveTo="opacity-0"
       >
         <h2
-          className="font-3xl relative mb-6 flex items-center justify-center gap-3 text-center"
+          className="font-3xl relative mb-6 flex items-center justify-center gap-3 text-center text-sky-900"
           ref={headerRef}
         >
           <div className="relative items-center justify-center md:flex">
@@ -149,9 +149,9 @@ export const MarketEditor = () => {
         </h2>
 
         <div className="center mb-8 flex">
-          <div className="mr-3 font-light">One Page</div>
+          <div className="mr-3 text-sky-900">One Page</div>
           <Toggle checked={isWizard} onChange={toggleWizard} />
-          <div className="ml-3 font-light">Wizard</div>
+          <div className="ml-3 text-sky-900">Wizard</div>
         </div>
 
         <div className="mb-8 md:mb-12">
@@ -172,7 +172,7 @@ export const MarketEditor = () => {
             nextDisabled={!fieldsState.currency.isValid}
           >
             <div className="mb-4 text-center md:mb-8">
-              <h2 className="flex items-center justify-center gap-2 text-base">
+              <h2 className="flex items-center justify-center gap-2 text-base text-sky-900">
                 Market Currency
                 <InfoPopover
                   title={
@@ -195,7 +195,7 @@ export const MarketEditor = () => {
             />
             {showLiquidityWarning && (
               <div className="center mb-8 mt-4">
-                <div className="w-full text-center text-sm text-gray-400 md:max-w-lg">
+                <div className="w-full text-center text-sm text-sky-900 md:max-w-lg">
                   <LuFileWarning size={22} className="mr-2 inline" />
                   You have already added liquidity to this market. If you change
                   the base currency liquidity settings will be reset to
@@ -215,15 +215,17 @@ export const MarketEditor = () => {
             }
           >
             <div className="mb-4 text-center md:mb-8">
-              <h2 className="mb-4 text-base md:mb-8">What is your question?</h2>
+              <h2 className="mb-4 text-base text-sky-900 md:mb-8">
+                What is your question?
+              </h2>
               <div>
                 <Input
                   autoComplete="off"
-                  className={`mb-4 h-12 w-full rounded-md px-4 py-7 text-center md:w-2/3
+                  className={`mb-4 h-12 w-full rounded-md border px-4 py-7 text-center backdrop-blur-md md:w-2/3
                   ${
                     !fieldsState.question.isValid
-                      ? "border-vermilion bg-gray-100"
-                      : "bg-nyanza-base "
+                      ? "border-vermilion bg-sky-50/50"
+                      : "border-sky-200/30 bg-white/80"
                   }
                 `}
                   placeholder="Ask a question that is specific and has a timeframe."
@@ -234,7 +236,7 @@ export const MarketEditor = () => {
                 </div>
               </div>
             </div>
-            <h2 className="mb-4 flex justify-center text-center text-base md:mb-8">
+            <h2 className="mb-4 flex justify-center text-center text-base text-sky-900 md:mb-8">
               <span className="hidden md:block">
                 Which categories does the market relate to?
               </span>
@@ -258,7 +260,7 @@ export const MarketEditor = () => {
             nextDisabled={!fieldsState.answers.isValid}
           >
             <div className="relative mb-4 text-center md:mb-8">
-              <h2 className="center gap-2 text-base">
+              <h2 className="center gap-2 text-base text-sky-900">
                 Answers
                 <InfoPopover
                   title={<h4 className="answer-types mb-4">Answer Types</h4>}
@@ -307,7 +309,7 @@ export const MarketEditor = () => {
             {showLiquidityWarning && (
               <div className="mb-4 mt-8">
                 <div className="center">
-                  <div className="w-full text-center text-sm text-gray-400 md:max-w-xl">
+                  <div className="w-full text-center text-sm text-sky-900 md:max-w-xl">
                     <LuFileWarning size={22} className="mr-2 inline" />
                     You have already added liquidity to this market. If you
                     change the number of answers the liquidity settings will be
@@ -334,7 +336,9 @@ export const MarketEditor = () => {
             }
           >
             <div className="mb-4 text-center md:mb-8">
-              <h2 className="text-base">When does the market end?</h2>
+              <h2 className="text-base text-sky-900">
+                When does the market end?
+              </h2>
             </div>
             <div className="mb-4">
               <div className="center mb-3 flex">
@@ -466,11 +470,13 @@ export const MarketEditor = () => {
             nextDisabled={!fieldsState.oracle.isValid}
           >
             <div className="mb-4 text-center md:mb-8">
-              <h2 className="mb-4 text-base md:mb-8">Set Up Oracle</h2>
+              <h2 className="mb-4 text-base text-sky-900 md:mb-8">
+                Set Up Oracle
+              </h2>
               <div className="center">
-                <p className="mb-6 text-sm font-light text-gray-500 md:mb-12 md:max-w-2xl">
+                <p className="mb-6 text-sm text-sky-900 md:mb-12 md:max-w-2xl">
                   This is the account that will be{" "}
-                  <b className="font-semibold text-gray-600">
+                  <b className="font-semibold text-sky-900">
                     responsible for submitting the outcome
                   </b>{" "}
                   when the market ends.
@@ -506,7 +512,9 @@ export const MarketEditor = () => {
             nextDisabled={!fieldsState.description.isValid}
           >
             <div className="mb-4 text-center md:mb-8">
-              <h2 className="mb-4 text-base md:mb-8">Market Description</h2>
+              <h2 className="mb-4 text-base text-sky-900 md:mb-8">
+                Market Description
+              </h2>
               <div>
                 <div className="center flex min-w-full">
                   <QuillEditor
@@ -532,7 +540,9 @@ export const MarketEditor = () => {
             nextDisabled={!fieldsState.moderation.isValid}
           >
             <div className="mb-4 text-center md:mb-8">
-              <h2 className="mb-4 text-base md:mb-8">Market Moderation</h2>
+              <h2 className="mb-4 text-base text-sky-900 md:mb-8">
+                Market Moderation
+              </h2>
               <div>
                 <div className="center flex min-w-full">
                   <ModerationModeSelect
@@ -569,7 +579,7 @@ export const MarketEditor = () => {
             {form.currency && (
               <div className="flex flex-col items-center">
                 <div className="mb-2 flex items-center gap-2 text-center md:mb-4">
-                  <h2 className="mb-0 text-base">Creator Fee</h2>
+                  <h2 className="mb-0 text-base text-sky-900">Creator Fee</h2>
                   <InfoPopover>
                     <p>
                       Creators will be paid a fee based on trading volume.
@@ -595,12 +605,16 @@ export const MarketEditor = () => {
             {form.moderation === "Permissionless" && form.currency ? (
               <>
                 <div className="mb-2 text-center md:mb-4">
-                  <h2 className="mb-0 text-base">Market Liquidity</h2>
+                  <h2 className="mb-0 text-base text-sky-900">
+                    Market Liquidity
+                  </h2>
                 </div>
 
                 <div className="mb-10 flex justify-center">
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 text-sm font-light">Deploy Pool?</div>
+                    <div className="mb-2 text-sm text-sky-900">
+                      Deploy Pool?
+                    </div>
                     <Toggle
                       checked={form?.liquidity?.deploy ?? false}
                       activeClassName={`bg-${currencyMetadata?.twColor}`}
@@ -612,11 +626,11 @@ export const MarketEditor = () => {
                 <div className="mb-6">
                   {!form?.liquidity?.deploy ? (
                     <div>
-                      <div className="center mb-4 text-gray-500">
+                      <div className="center mb-4 text-sky-900">
                         <LuFileWarning size={32} />
                       </div>
                       <div className="center">
-                        <p className="text-center text-gray-400 md:max-w-lg">
+                        <p className="text-center text-sky-900 md:max-w-lg">
                           No liquidity pool will be deployed for the market.
                           <b className="inline">
                             You can deploy a pool after you create the market
@@ -650,11 +664,11 @@ export const MarketEditor = () => {
             ) : (
               <>
                 <div className="mt-4">
-                  <div className="center mb-2 text-gray-500">
+                  <div className="center mb-2 text-sky-900">
                     <LuFileWarning size={22} />
                   </div>
                   <div className="center mb-12">
-                    <div className="text-center text-lg text-gray-500 md:max-w-xl">
+                    <div className="text-center text-lg text-sky-900 md:max-w-xl">
                       You have selected <b>advised</b> moderation. This means
                       that the market could be rejected by the moderators.
                       <br />

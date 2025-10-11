@@ -33,47 +33,46 @@ const AccountModalContent: FC = () => {
   }, [activeAccount, options]);
 
   return (
-    <div className="flex flex-col">
-      <AccountSelect
-        options={options}
-        value={value}
-        onChange={onAccountChange}
-      />
-      <div className="mt-4 flex h-12.5 items-center justify-between">
-        <div className="flex h-full w-full items-center rounded-lg bg-sky-100 px-2">
-          <div className="flex items-center px-2">
-            <div className="center rounded-full bg-white">
-              <div className="center rounded-full bg-sky-100">
-                <div className="center h-6 w-6 rounded-full">
-                  <img
-                    src="/currencies/ztg.svg"
-                    alt="Account balance"
-                    style={{ marginTop: "-1px" }}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="ml-4 flex flex-col">
-              <div className="text-xxs font-bold uppercase text-sky-600">
-                balance
-              </div>
-              <div className="font-mono text-sm font-bold text-blue">
-                {activeBalance && constants?.tokenSymbol
-                  ? `${formatNumberLocalized(Number(activeBalance.div(ZTG)))} ${constants.tokenSymbol}`
-                  : "---"}
-              </div>
+    <div className="flex flex-col gap-3">
+      <div className="relative z-10">
+        <AccountSelect
+          options={options}
+          value={value}
+          onChange={onAccountChange}
+        />
+      </div>
+
+      <div className="flex items-center gap-2">
+        {/* Balance Display - More Compact */}
+        <div className="flex flex-1 items-center gap-2.5 rounded-lg border border-sky-200/30 bg-white/80 px-3 py-2 shadow-sm backdrop-blur-sm">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-50/80">
+            <img
+              src="/currencies/ztg.svg"
+              alt="Account balance"
+              className="h-4 w-4"
+            />
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <div className="text-xs font-semibold text-sky-900">
+              {activeBalance && constants?.tokenSymbol
+                ? `${formatNumberLocalized(Number(activeBalance.div(ZTG)))} ${constants.tokenSymbol}`
+                : "---"}
             </div>
           </div>
         </div>
-        <div
-          className="ml-4 flex h-12.5 cursor-pointer items-center justify-center gap-2 rounded-lg bg-border-light px-2 text-white md:w-44"
+
+        {/* Disconnect Button - Matching Height */}
+        <button
+          className="flex h-11 items-center justify-center gap-2 rounded-lg border border-red-200/50 bg-red-50/80 px-4 py-2 backdrop-blur-sm transition-all hover:border-red-300/70 hover:bg-red-100/80"
           onClick={() => {
             disconnectWallet();
           }}
         >
-          <div className="capitalize">disconnect</div>
-          <LogOut size={16} className="text-white" />
-        </div>
+          <LogOut size={16} className="text-red-600" />
+          <span className="hidden text-sm font-medium text-red-700 md:block">
+            Disconnect
+          </span>
+        </button>
       </div>
     </div>
   );

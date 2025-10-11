@@ -49,6 +49,20 @@ const getFiltersFromQueryState = (
   return res;
 };
 
+const convertFiltersToQueryFormat = (filters: MarketFilter[]) => {
+  const result: { status: string[]; tag: string[]; currency: string[] } = {
+    status: [],
+    tag: [],
+    currency: [],
+  };
+
+  for (const filter of filters) {
+    result[filter.type].push(filter.value);
+  }
+
+  return result;
+};
+
 const MarketFilterSelection = ({
   onFiltersChange,
   onOrderingChange,
@@ -71,11 +85,14 @@ const MarketFilterSelection = ({
   const queryState = useMarketsUrlQuery();
 
   const add = (filter: MarketFilter) => {
-    if (!activeFilters) return;
+    const currentFilters = getFiltersFromQueryState(queryState);
 
-    if (findFilterIndex(activeFilters, filter) !== -1) return;
-    const nextFilters = [...activeFilters, filter];
-    setActiveFilters(nextFilters);
+    if (findFilterIndex(currentFilters, filter) !== -1) return;
+    const nextFilters = [...currentFilters, filter];
+
+    queryState.updateQuery({
+      filters: convertFiltersToQueryFormat(nextFilters),
+    });
   };
 
   const clear = () => {
@@ -90,14 +107,37 @@ const MarketFilterSelection = ({
   };
 
   const remove = (filter: MarketFilter) => {
-    if (!activeFilters) return;
-    const idx = findFilterIndex(activeFilters, filter);
+    const currentFilters = getFiltersFromQueryState(queryState);
+    const idx = findFilterIndex(currentFilters, filter);
+
+    if (idx === -1) return;
+
     const nextFilters = [
-      ...activeFilters.slice(0, idx),
-      ...activeFilters.slice(idx + 1),
+      ...currentFilters.slice(0, idx),
+      ...currentFilters.slice(idx + 1),
     ];
 
-    setActiveFilters(nextFilters);
+    queryState.updateQuery({
+      filters: convertFiltersToQueryFormat(nextFilters),
+    });
+  };
+
+  const updateOrdering = (ordering: MarketsOrderBy) => {
+    queryState.updateQuery({
+      ordering,
+    });
+  };
+
+  const updateLiquidityOnly = (liquidityOnly: boolean) => {
+    queryState.updateQuery({
+      liquidityOnly,
+    });
+  };
+
+  const updateMarketType = (marketType: MarketType) => {
+    queryState.updateQuery({
+      marketType,
+    });
   };
 
   useEffect(() => {
@@ -149,9 +189,9 @@ const MarketFilterSelection = ({
       addActiveFilter={add}
       removeActiveFilter={remove}
       withLiquidityOnly={queryState.liquidityOnly}
-      setWithLiquidityOnly={setWithLiquidityOnly}
+      setWithLiquidityOnly={updateLiquidityOnly}
       ordering={queryState.ordering}
-      setOrdering={setActiveOrdering}
+      setOrdering={updateOrdering}
       clearActiveFilters={clear}
       selectedMenu={selectedMenu}
       setSelectedMenu={setSelectedMenu}
@@ -160,41 +200,43 @@ const MarketFilterSelection = ({
         open={mobileDialogOpen}
         setOpen={setMobileDialogOpen}
         marketType={queryState?.marketType}
-        onMarketTypeChange={setMarketType}
+        onMarketTypeChange={updateMarketType}
       ></MobileDialog>
-      <div className="sticky top-topbar-height z-20 mb-4 flex w-full flex-col justify-center bg-gradient-to-b from-white via-sky-50/20 to-transparent py-2 backdrop-blur-sm">
-        {portalRef.current ? (
-          <>
-            <div className="hidden w-full md:flex md:flex-nowrap md:items-center md:gap-1 md:overflow-x-auto md:rounded-lg md:bg-white/60 md:px-2 md:py-2 md:shadow-md md:backdrop-blur-sm lg:gap-2 lg:px-3">
-              <MarketTypeToggle
-                value={queryState.marketType}
-                onChange={setMarketType}
-              />
-              <div className="h-5 w-px shrink-0 bg-gray-200"></div>
-              <MarketFiltersDropdowns className="flex shrink-0 items-center gap-1 lg:gap-2"></MarketFiltersDropdowns>
-              <div className="h-5 w-px shrink-0 bg-gray-200"></div>
-              <MarketFiltersCheckboxes className="shrink-0"></MarketFiltersCheckboxes>
-              <div className="h-5 w-px shrink-0 bg-gray-200"></div>
-              <MarketFiltersSort className="shrink-0"></MarketFiltersSort>
-              <MarketActiveFilters className="ml-auto shrink-0" />
-            </div>
-          </>
-        ) : (
-          <Skeleton width="80%" height="38px" className="mb-4"></Skeleton>
-        )}
-        <button
-          className="mt-2 block w-full rounded-lg bg-gradient-to-br from-sky-50 to-blue-50 px-4 py-3 text-sm font-semibold text-sky-800 shadow-md transition-all hover:shadow-lg md:hidden"
-          onClick={() => setMobileDialogOpen(true)}
-        >
-          <span className="flex items-center justify-center gap-2">
-            Filter & Sort Markets <ChevronDown size={16} />
-          </span>
-        </button>
-        <div
-          className="!mb-0 hidden md:block"
-          id="marketsFiltersMenuPortal"
-          ref={portalRef}
-        ></div>
+      <div className="relative z-30 w-full border-b-1 border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-md">
+        <div className="container-fluid w-full">
+          {portalRef.current ? (
+            <>
+              <div className="relative hidden items-center gap-1 py-1 sm:py-2 md:flex">
+                <MarketTypeToggle
+                  value={queryState.marketType}
+                  onChange={updateMarketType}
+                />
+                <div className="h-5 w-px shrink-0 bg-gray-200"></div>
+                <MarketFiltersSort className="shrink-0"></MarketFiltersSort>
+                <div className="h-5 w-px shrink-0 bg-gray-200"></div>
+                <MarketFiltersDropdowns className="flex shrink-0 items-center gap-1 lg:gap-2"></MarketFiltersDropdowns>
+                <div className="h-5 w-px shrink-0 bg-gray-200"></div>
+                <MarketFiltersCheckboxes className="shrink-0"></MarketFiltersCheckboxes>
+                <MarketActiveFilters className="ml-auto shrink-0" />
+              </div>
+            </>
+          ) : (
+            <Skeleton width="80%" height="38px" className="py-2"></Skeleton>
+          )}
+          <button
+            className="block w-full bg-gradient-to-br from-sky-50 to-blue-50 px-4 py-3 text-sm font-semibold text-sky-800 transition-all hover:bg-sky-100 md:hidden"
+            onClick={() => setMobileDialogOpen(true)}
+          >
+            <span className="flex items-center justify-center gap-2">
+              Filter & Sort Markets <ChevronDown size={16} />
+            </span>
+          </button>
+          <div
+            className="hidden md:block"
+            id="marketsFiltersMenuPortal"
+            ref={portalRef}
+          ></div>
+        </div>
       </div>
     </MarketFiltersContainer>
   );

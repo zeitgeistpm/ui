@@ -11,7 +11,7 @@ const SecondaryButton: FC<
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`line-clamp-1 w-full rounded-full border-2 border-gray-300 px-5 py-1 text-xxs hover:border-gray-400 disabled:opacity-50 md:py-1.5 md:text-xs ${className}`}
+      className={`w-full rounded-md border border-sky-200/30 bg-white/80 px-3 py-2 text-xs font-medium text-sky-900 shadow-sm backdrop-blur-sm transition-all hover:bg-sky-50/80 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 md:text-sm ${className}`}
     >
       {children}
     </button>

@@ -130,7 +130,6 @@ const ComboPoolCard = ({
           disableLink && "cursor-default"
         }`}
       >
-
         {/* Market roles section - now in rows */}
         <div className="flex flex-col gap-2">
           {sortedMarkets.map((market, index) => {
@@ -146,7 +145,7 @@ const ComboPoolCard = ({
             return (
               <div
                 key={market.marketId}
-                className={`rounded-lg ${bgColor} p-1 shadow-sm h-12`}
+                className={`rounded-lg ${bgColor} h-12 p-2 shadow-sm`}
               >
                 <div className="flex items-start gap-2">
                   <span
@@ -154,7 +153,7 @@ const ComboPoolCard = ({
                   >
                     {roleLabel}
                   </span>
-                  <span className="line-clamp-2 flex-1 text-sm font-semibold text-sky-900 leading-tight">
+                  <span className="line-clamp-2 flex-1 text-sm font-semibold leading-tight text-sky-900">
                     {market.question}
                   </span>
                 </div>
@@ -291,7 +290,9 @@ const ComboPoolPredictionBar = ({
     `Combination ${highestIndex + 1}`;
 
   return (
-    <div className={`relative h-8 w-full overflow-hidden rounded-lg bg-gradient-to-r from-sky-50 to-sky-100 shadow-sm transition-all`}>
+    <div
+      className={`relative h-8 w-full overflow-hidden rounded-lg bg-gradient-to-r from-sky-50 to-sky-100 shadow-sm transition-all`}
+    >
       <div className="absolute flex h-full w-full items-center justify-between px-3 text-sm">
         <span className="line-clamp-1 font-semibold text-sky-700">
           {leadingOutcomeName}

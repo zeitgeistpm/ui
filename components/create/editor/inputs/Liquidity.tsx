@@ -61,28 +61,29 @@ export const LiquidityInput = ({
   };
 
   return (
-    <div className="center">
-      <div className="md:max-w-4xl">
-        <>
-          <div className="mb-4 ">
-            <PoolSettings
-              baseAssetPrice={baseAssetPrice ?? undefined}
-              baseAssetSymbol={currencyMetadata?.name ?? ""}
-              baseAssetAmount={value?.amount ?? ""}
-              data={transformRows(value?.rows ?? [])}
-              onChange={handleRowsChange}
-              noDataMessage={errorMessage}
-            />
-          </div>
-          <FeeSelect
-            name={name}
-            value={value?.swapFee}
-            onChange={handleFeeChange}
-            presets={swapFeePresets}
-            isValid={fieldState.isValid}
-            label="% Swap Fee"
-          />
-        </>
+    <div className="w-full">
+      <div className="mb-3">
+        <PoolSettings
+          baseAssetPrice={baseAssetPrice ?? undefined}
+          baseAssetSymbol={currencyMetadata?.name ?? ""}
+          baseAssetAmount={value?.amount ?? ""}
+          data={transformRows(value?.rows ?? [])}
+          onChange={handleRowsChange}
+          noDataMessage={errorMessage}
+        />
+      </div>
+      <div>
+        <label className="mb-1.5 block text-xs font-medium text-sky-900">
+          Creator Swap Fee
+        </label>
+        <FeeSelect
+          name={name}
+          value={value?.swapFee}
+          onChange={handleFeeChange}
+          presets={swapFeePresets}
+          isValid={fieldState.isValid}
+          label="% Swap Fee"
+        />
       </div>
     </div>
   );

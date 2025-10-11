@@ -21,16 +21,16 @@ const PoolFeeOption = ({
   };
   return (
     <button
-      className={`flex h-[40px] w-[100px] items-center justify-center rounded-ztg-100 border-2 bg-sky-200 dark:bg-black
+      className={`flex h-[40px] w-[100px] items-center justify-center rounded-full border-2 shadow-sm backdrop-blur-sm transition-all hover:shadow-md
           ${
             selected
-              ? "border-black text-black dark:border-white dark:text-white"
-              : "text-sky-600 dark:border-black"
+              ? "border-sky-600 bg-gradient-to-r from-sky-500/80 to-sky-600/80 font-semibold text-white"
+              : "border-sky-200/30 bg-white/60 text-sky-700 hover:bg-white/80"
           }
         `}
       onClick={handleClick}
     >
-      <div className={`font-mono text-ztg-14-120`}>{label}</div>
+      <div className="text-sm font-semibold">{label}</div>
     </button>
   );
 };
@@ -99,11 +99,11 @@ const PoolFeesSelect = ({
         />
       ))}
       <div
-        className={`flex h-[40px] w-[100px] items-center justify-center rounded-ztg-100 border-2 bg-sky-200
+        className={`flex h-[40px] w-[100px] items-center justify-center rounded-full border-2 shadow-sm backdrop-blur-sm transition-all hover:shadow-md
               ${
                 inputSelected
-                  ? "border-black dark:border-white"
-                  : "dark:border-black"
+                  ? "border-sky-600 bg-gradient-to-r from-sky-500/80 to-sky-600/80"
+                  : "border-sky-200/30 bg-white/60 hover:bg-white/80"
               }
             `}
         onClick={handleInputClick}
@@ -115,7 +115,11 @@ const PoolFeesSelect = ({
           placeholder="3"
           value={inputValue}
           step={0.1}
-          className="bg-sky-200 text-center font-mono text-ztg-14-150 outline-none"
+          className={`text-center text-sm font-semibold outline-none ${
+            inputSelected
+              ? "bg-transparent text-white placeholder:text-white/60"
+              : "bg-transparent text-sky-700 placeholder:text-sky-400"
+          }`}
           onChange={(e) => handleInputFeeChange(e.target.value)}
           onBlur={() => {
             if (inputValue === "" || inputValue == null) {

@@ -11,6 +11,7 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { getPoolIdForTransaction } from "lib/util/get-pool-id";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -72,17 +73,6 @@ const ExitPoolForm = ({
       // const feeMultiplier = 1 - constants.swaps.exitFee;
       const feeMultiplier = 1;
 
-      const minAssetsOut = poolAssets.map((assetId, index) => {
-        const assetAmount = formValue[index] ?? 0;
-        return assetAmount === ""
-          ? "0"
-          : new Decimal(assetAmount)
-              .mul(ZTG)
-              .mul(slippageMultiplier)
-              .mul(feeMultiplier)
-              .toFixed(0, Decimal.ROUND_DOWN);
-      });
-
       const poolSharesPercentage: string | undefined =
         formValue["poolSharesPercentage"];
 
@@ -91,12 +81,27 @@ const ExitPoolForm = ({
       const poolSharesAmount = userPoolShares.mul(
         Number(poolSharesPercentage) / 100,
       );
+
+      // Calculate minAssetsOut based on actual shares being burned, not form display values
+      // This ensures precision and matches what the blockchain calculates
+      const sharesRatio = poolSharesAmount.div(pool.totalShares);
+
+      const minAssetsOut = reserves.map((reserve) => {
+        return reserve
+          .mul(sharesRatio)
+          .mul(slippageMultiplier)
+          .mul(feeMultiplier)
+          .toFixed(0, Decimal.ROUND_DOWN);
+      });
+
+      const poolIdForTx = getPoolIdForTransaction(pool, marketId);
+
       try {
         return sdk.api.tx.utility.batchAll([
           // shares can't be withdrawn without claiming fees first
-          sdk.api.tx.neoSwaps.withdrawFees(marketId),
+          sdk.api.tx.neoSwaps.withdrawFees(poolIdForTx),
           sdk.api.tx.neoSwaps.exit(
-            marketId,
+            poolIdForTx,
             poolSharesAmount.toFixed(0),
             minAssetsOut,
           ),
@@ -111,6 +116,8 @@ const ExitPoolForm = ({
           type: "Success",
         });
         queryClient.invalidateQueries([id, amm2PoolKey, marketId]);
+        // Invalidate balance queries for all pool assets
+        queryClient.invalidateQueries({ queryKey: [id, "balance"] });
         onSuccess?.();
       },
     },
@@ -199,17 +206,17 @@ const ExitPoolForm = ({
             return (
               <div
                 key={index}
-                className="relative h-[56px] w-full text-ztg-18-150 font-medium"
+                className="relative h-[62px] w-full text-base font-semibold"
               >
-                <div className="absolute left-[15px] top-[14px] h-full w-[40%] truncate capitalize">
+                <div className="absolute left-4 top-[18px] z-10 w-[40%] truncate capitalize text-sky-900">
                   {assetName}
                 </div>
                 <Input
-                  className={`h-[56px] w-full rounded-[5px] bg-anti-flash-white px-[15px] text-right outline-none
+                  className={`h-[56px] w-full rounded-lg border px-4 text-right font-medium shadow-sm backdrop-blur-sm transition-all focus:shadow-md focus:outline-none
               ${
                 formState.errors[index.toString()]?.message
-                  ? "border-2 border-vermilion text-vermilion"
-                  : ""
+                  ? "border-red-300 bg-red-50/80 text-red-600 focus:border-red-400"
+                  : "border-sky-200/30 bg-white/60 text-sky-900 hover:bg-white/80 focus:border-sky-400"
               }
               `}
                   key={index}
@@ -237,7 +244,7 @@ const ExitPoolForm = ({
                     },
                   })}
                 />
-                <div className="mt-[4px] text-ztg-12-120 text-red-500">
+                <div className="mt-1 text-xs text-red-600">
                   <>{formState.errors[index.toString()]?.message}</>
                 </div>
               </div>
@@ -245,9 +252,9 @@ const ExitPoolForm = ({
           })}
       </div>
       <input
-        className="my-[20px]"
+        className="my-5 w-full cursor-pointer accent-sky-600"
         type="range"
-        {...register("poolSharesPercentage", { min: 0, value: "0" })}
+        {...register("poolSharesPercentage", { min: 0, max: 100, value: "0" })}
       />
       <FormTransactionButton
         loading={isLoading}

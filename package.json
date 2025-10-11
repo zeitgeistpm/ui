@@ -101,7 +101,7 @@
     "react-quill": "^2.0.0",
     "react-resize-detector": "^7.0.0",
     "react-select": "^5.10.1",
-    "react-spinners": "^0.10.6",
+    "react-spinners": "^0.17.0",
     "react-table": "^7.7.0",
     "react-twitch-embed": "^3.0.2",
     "recharts": "^2.4.3",

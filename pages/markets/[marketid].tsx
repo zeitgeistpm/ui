@@ -57,7 +57,6 @@ import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useTradeItem } from "lib/hooks/trade";
-import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useWallet } from "lib/state/wallet";
 import { extractChannelName, isLive } from "lib/twitch";
 import {
@@ -372,10 +371,7 @@ const Market: NextPage<MarketPageProps> = ({
     }
   }, [marketId]); // Only depend on marketId to avoid re-setting on every render
 
-  const [showLiquidityParam, setShowLiquidityParam, unsetShowLiquidityParam] =
-    useQueryParamState("showLiquidity");
-
-  const showLiquidity = showLiquidityParam != null;
+  const [showLiquidity, setShowLiquidity] = useState(false);
 
   const { data: disputes } = useMarketDisputes(marketId || 0);
 
@@ -397,19 +393,14 @@ const Market: NextPage<MarketPageProps> = ({
 
   const handlePoolDeployed = () => {
     setPoolDeployed(true);
-    setShowLiquidityParam("");
+    setShowLiquidity(true);
     // Refetch market data after pool deployment
     refetchMarket();
     refetchSpotPrices();
   };
 
   const toggleLiquiditySection = () => {
-    const nextState = !showLiquidity;
-    if (nextState) {
-      setShowLiquidityParam("");
-    } else {
-      unsetShowLiquidityParam();
-    }
+    setShowLiquidity(!showLiquidity);
   };
 
   const token = metadata?.symbol;
@@ -664,7 +655,7 @@ const Market: NextPage<MarketPageProps> = ({
           )}
           <div className="my-8">
             {marketData?.marketType?.scalar !== null && (
-              <div className="mx-auto mb-8 max-w-[800px]">
+              <div className="mb-8">
                 {marketIsLoading ||
                 (!spotPrices?.get(1) && marketData.status !== "Proposed") ||
                 (!spotPrices?.get(0) && marketData.status !== "Proposed") ? (
@@ -695,16 +686,11 @@ const Market: NextPage<MarketPageProps> = ({
               </div>
             </div>
           </div>
-            
-          <div className="mb-12 max-w-[90vw]">
+
+          <div className="mb-12">
             <MarketDescription market={marketData} />
           </div>
 
-          <div className="rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
-            <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
-            <AddressDetails title="Oracle" address={marketData.oracle} />
-            </div>
-          </div>
           {marketHasPool === true && (
             <div className="mt-10 rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
               <h3 className="mb-4 text-lg font-semibold text-gray-900">
@@ -944,7 +930,7 @@ const MobileContextButtons = ({
       </Transition>
 
       <div
-        className={`fixed bottom-12 left-0 z-50 w-full rounded-t-lg bg-white pb-12 transition-all duration-500 ease-in-out md:hidden ${
+        className={`fixed bottom-12 left-0 z-50 w-full rounded-t-lg bg-white pb-2 transition-all duration-500 ease-in-out md:hidden ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
@@ -987,10 +973,10 @@ const MobileContextButtons = ({
             marketData?.status === "Active" ? (
               <>
                 <div
-                  className={`center h-full flex-1  ${
+                  className={`center h-full flex-1 transition-all ${
                     tradeItem?.action === "buy"
-                      ? "bg-fog-of-war text-gray-200"
-                      : "bg-white text-black"
+                      ? "bg-gradient-to-r from-sky-400/80 to-sky-500/80 text-white shadow-md backdrop-blur-md"
+                      : "bg-white/95 text-sky-900 backdrop-blur-md"
                   } `}
                   onClick={() => {
                     setTradeItem({
@@ -1012,10 +998,10 @@ const MobileContextButtons = ({
                   />
                 </div>
                 <div
-                  className={`center h-full flex-1 ${
+                  className={`center h-full flex-1 transition-all ${
                     tradeItem?.action === "sell"
-                      ? "bg-fog-of-war text-gray-200"
-                      : "bg-white text-black"
+                      ? "bg-gradient-to-r from-sky-400/80 to-sky-500/80 text-white shadow-md backdrop-blur-md"
+                      : "bg-white/95 text-sky-900 backdrop-blur-md"
                   }`}
                   onClick={() => {
                     setTradeItem({
@@ -1041,7 +1027,9 @@ const MobileContextButtons = ({
               <>
                 <div
                   className={`center h-full flex-1 transition-all ${
-                    !open ? "bg-ztg-blue text-white" : "bg-slate-200"
+                    !open
+                      ? "bg-gradient-to-r from-purple-400/80 to-purple-500/80 text-white shadow-md backdrop-blur-md"
+                      : "bg-white/95 text-sky-900 backdrop-blur-md"
                   }`}
                   onClick={() => setOpen(!open)}
                 >
@@ -1050,8 +1038,10 @@ const MobileContextButtons = ({
               </>
             ) : market?.status === MarketStatus.Reported ? (
               <div
-                className={`center h-full flex-1 ${
-                  !open ? "bg-ztg-blue text-white" : "bg-slate-200"
+                className={`center h-full flex-1 transition-all ${
+                  !open
+                    ? "bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white shadow-md backdrop-blur-md"
+                    : "bg-white/95 text-sky-900 backdrop-blur-md"
                 }`}
                 onClick={() => setOpen(!open)}
               >
@@ -1083,23 +1073,23 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
               <Disclosure.Button
                 className={`relative z-20 flex w-full items-center rounded-lg px-5 py-3 transition-all ${
                   !open
-                    ? "bg-orange-400 text-white shadow-md"
-                    : "bg-white/60 text-sky-800 backdrop-blur-sm"
+                    ? "bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white shadow-md backdrop-blur-md"
+                    : "border border-sky-200/30 bg-white/80 text-sky-800 backdrop-blur-md"
                 }`}
               >
                 <h3
                   className={`flex-1 text-left text-base font-semibold ${
-                    open ? "opacity-100" : "opacity-100"
+                    open ? "text-sky-900" : "text-white"
                   }`}
                 >
                   {open ? "Close" : "Market can be disputed"}
                 </h3>
                 {open ? (
-                  <X size={18} />
+                  <X className="text-sky-900" size={18} />
                 ) : (
                   <FaChevronUp
                     size={18}
-                    className="rotate-180 justify-end"
+                    className="rotate-180 justify-end text-white"
                   />
                 )}
               </Disclosure.Button>
@@ -1216,7 +1206,7 @@ const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
         disabled={!isFetched}
         onClick={() => router.push(`/court/${caseId}`)}
         onMouseEnter={() => router.prefetch(`/court/${caseId}`)}
-        className={`ztg-transition h-[56px] w-full rounded-full bg-sky-600 text-white shadow-sm transition-all hover:bg-sky-700 hover:shadow-md focus:outline-none disabled:cursor-default disabled:bg-slate-300`}
+        className={`ztg-transition h-[56px] w-full rounded-full bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white shadow-md backdrop-blur-md transition-all hover:from-orange-500/80 hover:to-orange-600/80 hover:shadow-lg focus:outline-none disabled:cursor-default disabled:bg-sky-200/60 disabled:backdrop-blur-sm`}
       >
         View Case
       </button>

@@ -21,7 +21,7 @@ import {
   BarChart,
   ChevronDown,
   DollarSign,
-  Frown,
+  LogOut,
   Settings,
   User,
 } from "react-feather";
@@ -42,10 +42,10 @@ const BalanceRow = ({
   className?: string;
 }) => {
   return (
-    <div className="flex items-center">
-      <img src={imgPath} height={"24px"} width="24px" />
+    <div className="flex items-center gap-2.5 rounded-md bg-white/50 px-3 py-2 backdrop-blur-sm">
+      <img src={imgPath} className="h-6 w-6 rounded-full" />
       <div
-        className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold text-sky-900 ${className}`}
+        className={`flex w-full items-center text-sm font-semibold text-sky-900 ${className}`}
       >
         {balance &&
           `${formatNumberLocalized(balance?.div(ZTG).abs().toNumber())} ${
@@ -290,52 +290,52 @@ const AccountButton: FC<{
                   leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                 >
                   <Menu.Items
-                    className="fixed left-0 right-0 bottom-0 z-[60] w-screen origin-top-right divide-y divide-gray-100 overflow-y-auto bg-sky-50 py-3 shadow-xl ring-1 ring-white/20 focus:outline-none md:absolute md:inset-auto md:left-auto md:right-0 md:h-auto md:w-72 md:overflow-hidden md:rounded-lg md:border md:border-white/20 md:bg-white/95 md:backdrop-blur-lg"
+                    className="fixed bottom-0 left-0 right-0 z-[60] w-screen origin-top-right divide-y divide-gray-100 overflow-y-auto bg-sky-50 py-3 shadow-xl ring-1 ring-white/20 focus:outline-none md:absolute md:inset-auto md:left-auto md:right-0 md:h-auto md:w-72 md:overflow-visible md:rounded-lg md:border md:border-white/20 md:bg-white/95 md:backdrop-blur-lg"
                     style={{
-                      top: 'var(--top-bar-height, 50px)',
-                      height: 'calc(100vh - var(--top-bar-height, 50px))'
+                      top: "var(--top-bar-height, 50px)",
+                      maxHeight: "calc(100vh - var(--top-bar-height, 50px))",
                     }}
                   >
                     <div className="">
-                      <div className="mb-3 flex flex-col gap-2 border-b-2 px-6 py-2">
+                      <div className="mb-3 flex flex-col gap-2 border-b border-sky-200/30 px-6 py-3">
                         <BalanceRow
                           imgPath="/currencies/ztg.jpg"
                           units={constants?.tokenSymbol}
                           balance={activeBalance}
                         />
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-1.5">
                           <BalanceRow
                             imgPath="/currencies/usdc.svg"
                             units="USDC"
                             balance={usdcAssetHubBalance}
-                            className="text-xs font-medium"
+                            className="text-xs"
                           />
                           <BalanceRow
                             imgPath="/currencies/usdc.svg"
                             units="USDC.wh"
                             balance={usdcMoonbeamBalance}
-                            className="text-xs font-medium"
+                            className="text-xs"
                           />
                           <BalanceRow
                             imgPath="/currencies/dot.png"
                             units="DOT"
                             balance={polkadotBalance}
-                            className="text-xs font-medium"
+                            className="text-xs"
                           />
                         </div>
                         <Menu.Item>
                           {({ active }) => (
                             <Link
                               href={`/portfolio/${realAddress}?mainTab=Balances`}
-                              className="mt-3"
+                              className="mt-2"
                             >
-                              <div className="mb-3 flex cursor-pointer items-center rounded-md px-2 py-1 transition-all hover:bg-white/80">
-                                <div className="text-xs font-medium text-sky-900">
+                              <div className="flex cursor-pointer items-center justify-between rounded-md border border-sky-200/30 bg-sky-50/50 px-3 py-2 transition-all hover:border-sky-300/50 hover:bg-sky-100/60">
+                                <div className="text-xs font-semibold text-sky-900">
                                   Go to Balances
                                 </div>
                                 <ArrowRight
                                   size={14}
-                                  className="ml-2 text-sky-900 md:ml-auto"
+                                  className="text-sky-600"
                                 />
                               </div>
                             </Link>
@@ -357,73 +357,79 @@ const AccountButton: FC<{
                           </div>
                         )}
                       </Menu.Item> */}
-                      {isNovaWallet !== true && (
+                      <div className="flex flex-col gap-1 px-6 py-2">
+                        {isNovaWallet !== true && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <div
+                                className="flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2 transition-all hover:bg-white/80"
+                                onClick={() => {
+                                  walletId === "web3auth"
+                                    ? accountModals.openWalletSelect()
+                                    : accountModals.openAccountSelect();
+                                }}
+                              >
+                                <User className="text-sky-600" size={18} />
+                                <button
+                                  className={`text-sm font-medium text-sky-900`}
+                                >
+                                  Select Account
+                                </button>
+                              </div>
+                            )}
+                          </Menu.Item>
+                        )}
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link href={`/portfolio/${realAddress}`}>
+                              <div className="flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2 transition-all hover:bg-white/80">
+                                <BarChart className="text-sky-600" size={18} />
+                                <button
+                                  className={`text-sm font-medium text-sky-900`}
+                                >
+                                  Portfolio
+                                </button>
+                              </div>
+                            </Link>
+                          )}
+                        </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
                             <div
-                              className="mb-3 flex cursor-pointer items-center rounded-md px-6 transition-all hover:bg-white/80"
-                              onClick={() => {
-                                walletId === "web3auth"
-                                  ? accountModals.openWalletSelect()
-                                  : accountModals.openAccountSelect();
-                              }}
+                              className="flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2 transition-all hover:bg-white/80"
+                              onClick={() => setShowSettingsModal(true)}
                             >
-                              <User className="text-sky-900" />
+                              <Settings className="text-sky-600" size={18} />
                               <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold text-sky-900`}
+                                className={`text-sm font-medium text-sky-900`}
                               >
-                                Select Account
+                                Settings
                               </button>
                             </div>
                           )}
                         </Menu.Item>
-                      )}
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link href={`/portfolio/${realAddress}`}>
-                            <div className="mb-3 flex cursor-pointer items-center rounded-md px-6 transition-all hover:bg-white/80">
-                              <BarChart className="text-sky-900" />
+
+                        {/* Divider before disconnect */}
+                        <div className="my-2 border-t border-sky-200/30"></div>
+
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className="flex cursor-pointer items-center gap-2.5 rounded-md border border-red-200/50 bg-red-50/80 px-3 py-2 transition-all hover:border-red-300/70 hover:bg-red-100/80"
+                              onClick={() => {
+                                disconnectWallet();
+                              }}
+                            >
+                              <LogOut className="text-red-600" size={18} />
                               <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold text-sky-900`}
+                                className={`text-sm font-medium text-red-700`}
                               >
-                                Portfolio
+                                Disconnect
                               </button>
                             </div>
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="mb-3 flex cursor-pointer items-center rounded-md px-6 transition-all hover:bg-white/80"
-                            onClick={() => setShowSettingsModal(true)}
-                          >
-                            <Settings className="text-sky-900" />
-                            <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold text-sky-900`}
-                            >
-                              Settings
-                            </button>
-                          </div>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="flex cursor-pointer items-center rounded-md px-6 transition-all hover:bg-white/80"
-                            onClick={() => {
-                              disconnectWallet();
-                            }}
-                          >
-                            <Frown className="text-sky-900" />
-                            <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold text-sky-900`}
-                            >
-                              Disconnect
-                            </button>
-                          </div>
-                        )}
-                      </Menu.Item>
+                          )}
+                        </Menu.Item>
+                      </div>
                     </div>
                   </Menu.Items>
                 </Transition>

@@ -102,18 +102,18 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   const colorClass = useMemo(() => {
     // During SSR, use safe default color
     if (!mounted) {
-      return "bg-ztg-blue"; // Default color on server
+      return "bg-sky-900 hover:bg-sky-950"; // Default color on server
     }
 
     // During location loading, use default color
     if (locationLoading) {
-      return "bg-ztg-blue";
+      return "bg-sky-900 hover:bg-sky-950";
     }
 
     // After fully mounted and location determined
     return locationAllowed !== true || insufficientFeeBalance
-      ? "bg-vermilion"
-      : "bg-ztg-blue";
+      ? "bg-vermilion hover:bg-red-600"
+      : "bg-sky-900 hover:bg-sky-950";
   }, [mounted, locationLoading, locationAllowed, insufficientFeeBalance]);
 
   const getButtonChildren = () => {
@@ -157,8 +157,8 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   return (
     <button
       type={type}
-      className={`ztg-transition h-[56px] w-full rounded-full text-white 
-        focus:outline-none disabled:cursor-default  ${
+      className={`ztg-transition h-[56px] w-full rounded-full text-white shadow-md
+        transition-all focus:outline-none disabled:cursor-default ${
           !isDisabled && "active:scale-95"
         } ${colorClass} ${className} disabled:!bg-slate-300`}
       onClick={(e) => click(e)}

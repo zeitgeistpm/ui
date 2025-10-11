@@ -27,7 +27,7 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
     <components.Control {...props}>
       <div
         className={
-          "flex h-7 items-center justify-center rounded-lg px-1.5 text-xs font-semibold transition-all lg:px-2.5 " +
+          "flex h-7 items-center justify-center rounded-lg px-1.5 text-sm font-semibold transition-all lg:px-2 " +
           (menuIsOpen
             ? "bg-sky-100 text-sky-800"
             : "text-sky-800 hover:bg-sky-50 hover:text-sky-800")
@@ -35,7 +35,7 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
         onClick={onClick}
       >
         <span className="cursor-pointer">{selectProps.placeholder}</span>
-        <Chevron size={14} className="ml-1 cursor-pointer lg:ml-1.5" />
+        <Chevron size={13} className="ml-1 cursor-pointer lg:ml-1.5" />
         {children}
       </div>
     </components.Control>
@@ -113,11 +113,10 @@ const Placeholder = () => {
 const customStyles = {
   menu: (provided) => {
     return {
-      backgroundColor: "white",
       borderRadius: "8px",
-      boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+      boxShadow:
+        "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
       padding: "4px",
-      border: "1px solid #E0F2FE",
     };
   },
   menuList: (provided) => {
@@ -135,7 +134,7 @@ const customStyles = {
     };
   },
   menuPortal: () => {
-    return { width: "100%" };
+    return { width: "100%", zIndex: 50 };
   },
   valueContainer: () => {
     return {};
@@ -157,7 +156,7 @@ const DropDownSelect = ({
 }) => {
   return (
     <ReactSelect<MarketFilter>
-      className="mr-1.5 lg:mr-[10px]"
+      className="mr-1 lg:mr-1.5"
       placeholder={label}
       options={options}
       styles={customStyles}

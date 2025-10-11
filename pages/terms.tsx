@@ -20,7 +20,7 @@ const TermsPage: NextPage = () => {
           Terms & Legal Information
         </h1>
 
-        <div className="space-y-6 text-gray-700 leading-relaxed">
+        <div className="space-y-6 leading-relaxed text-gray-700">
           <section>
             <h2 className="mb-3 text-xl font-semibold text-gray-900">
               Legal Disclaimer

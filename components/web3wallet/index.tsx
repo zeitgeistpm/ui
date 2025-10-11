@@ -8,46 +8,50 @@ const Web3wallet = () => {
   const [email, setEmail] = useState<string>("");
 
   return (
-    <div>
-      <h3 className="mb-4 text-lg font-bold">Social</h3>
-      <div className="grid grid-cols-3 gap-x-6 gap-y-4">
-        <WalletIcon
-          logoAlt="google"
-          logoSrc="/icons/google-g.svg"
-          extensionName="web3auth"
-          onClick={loginGoogle}
-        />
-        <WalletIcon
-          logoAlt="twitter"
-          logoSrc="/icons/x-logo.svg"
-          extensionName="web3auth"
-          className="px-1 invert"
-          onClick={loginTwitter}
-        />
-        <WalletIcon
-          logoAlt="discord"
-          logoSrc="/icons/discord.svg"
-          extensionName="web3auth"
-          onClick={loginDiscord}
-        />
-        <div className="col-span-3 grid grid-cols-3 gap-x-6">
-          <h3 className="col-span-3 mb-4 text-lg font-bold">Email</h3>
+    <>
+      <div>
+        <h3 className="mb-3 text-base font-semibold text-sky-900">Social</h3>
+        <div className="grid grid-cols-3 gap-3">
+          <WalletIcon
+            logoAlt="google"
+            logoSrc="/icons/google-g.svg"
+            extensionName="web3auth"
+            onClick={loginGoogle}
+          />
+          <WalletIcon
+            logoAlt="twitter"
+            logoSrc="/icons/x-logo.svg"
+            extensionName="web3auth"
+            className="px-1 invert"
+            onClick={loginTwitter}
+          />
+          <WalletIcon
+            logoAlt="discord"
+            logoSrc="/icons/discord.svg"
+            extensionName="web3auth"
+            onClick={loginDiscord}
+          />
+        </div>
+      </div>
+      <div className="mt-5">
+        <h3 className="mb-3 text-base font-semibold text-sky-900">Email</h3>
+        <div className="grid grid-cols-3 gap-3">
           <input
             type="text"
-            placeholder="Enter email for passwordless login"
-            className="col-span-3 mb-4 h-[56px] rounded-md border px-2 py-1 leading-8 placeholder:text-xs focus:outline-none focus:ring-1 focus:ring-ztg-blue sm:col-span-2 sm:mb-0"
+            placeholder="Enter email"
+            className="col-span-3 h-11 rounded-lg border border-sky-200/30 bg-white/80 px-3 py-2 text-sm text-sky-900 shadow-sm backdrop-blur-sm transition-all placeholder:text-sm placeholder:text-sky-500 focus:border-sky-400/50 focus:outline-none focus:ring-2 focus:ring-sky-400/20 sm:col-span-2"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <button
-            className="col-span-3 h-[56px] rounded-md bg-ztg-blue py-1 leading-8 text-white hover:bg-black sm:col-span-1"
+            className="col-span-3 h-11 rounded-lg border border-sky-200/30 bg-gradient-to-br from-sky-600 to-sky-700 px-3 py-2 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:from-sky-700 hover:to-sky-800 hover:shadow-lg sm:col-span-1"
             onClick={() => loginEmail(email)}
           >
             Submit
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

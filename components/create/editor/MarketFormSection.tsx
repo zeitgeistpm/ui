@@ -23,46 +23,11 @@ export const MarketFormSection = ({
 }: MarketFormSectionProps) => {
   return (
     <div
-      className={`mb-16 ${
+      className={`mb-12 rounded-ztg-12 border border-sky-200/30 bg-white/80 p-6 shadow-lg backdrop-blur-md md:p-8 ${
         isCurrent || !wizard ? "block" : "hidden"
       } ${className}`}
     >
-      {disabled ? (
-        <></>
-      ) : !wizard ? (
-        children
-      ) : (
-        <>
-          <div className="mb-6 md:mb-4">{children}</div>
-          <div className="center mb-6 flex gap-4">
-            {onClickBack && (
-              <button
-                className={`rounded-full border-2 border-gray-300 px-8 py-4 text-sm duration-200 ease-in-out active:scale-95 `}
-                onClick={onClickBack}
-                type="button"
-              >
-                Go Back
-              </button>
-            )}
-            {onClickNext && (
-              <button
-                disabled={nextDisabled}
-                className={`rounded-full border-2 border-gray-300 px-8 py-4 text-sm transition-all duration-200 ease-in-out ${
-                  nextDisabled && "cursor-not-allowed text-gray-500 opacity-70"
-                }
-                ${
-                  !nextDisabled &&
-                  "border-nyanza-base bg-nyanza-base active:scale-95"
-                }`}
-                type="button"
-                onClick={onClickNext}
-              >
-                Next
-              </button>
-            )}
-          </div>
-        </>
-      )}
+      {disabled ? <></> : children}
     </div>
   );
 };

@@ -3,7 +3,11 @@ import React, { Fragment } from "react";
 import { useRouter } from "next/router";
 import { Menu, Transition } from "@headlessui/react";
 import { FiGrid, FiStar, FiPlusSquare } from "react-icons/fi";
-import { MdFavoriteBorder, MdShowChart, MdStackedLineChart } from "react-icons/md";
+import {
+  MdFavoriteBorder,
+  MdShowChart,
+  MdStackedLineChart,
+} from "react-icons/md";
 import { TrendingUp, ChevronDown } from "react-feather";
 
 const QuickNav = () => {
@@ -41,12 +45,12 @@ const QuickNav = () => {
             <Link
               key={index}
               href={item.href}
-              className="flex min-h-[44px] items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-sky-900 transition-all hover:bg-sky-100/80 sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-xs"
+              className="flex min-h-[44px] items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-sky-900 transition-all hover:bg-sky-100/80 sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-sm"
             >
               <span className="hidden text-sky-600 sm:inline">
                 {React.cloneElement(item.icon as React.ReactElement, {
                   size: 16,
-                  className: "sm:h-3.5 sm:w-3.5"
+                  className: "sm:h-3.5 sm:w-3.5",
                 })}
               </span>
               <span>{item.label}</span>
@@ -56,8 +60,11 @@ const QuickNav = () => {
             <Menu as="div" className="relative">
               {({ open }) => (
                 <>
-                  <Menu.Button className="flex min-h-[44px] items-center gap-1.5 rounded-md bg-sky-600 px-2 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-sky-700 hover:shadow-md sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-xs">
-                    <FiPlusSquare size={16} className="hidden sm:inline sm:h-3.5 sm:w-3.5" />
+                  <Menu.Button className="flex min-h-[44px] items-center gap-1.5 rounded-md bg-sky-600 px-2 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-sky-700 hover:shadow-md sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-sm">
+                    <FiPlusSquare
+                      size={16}
+                      className="hidden sm:inline sm:h-3.5 sm:w-3.5"
+                    />
                     <span>Create Market</span>
                     <ChevronDown
                       size={16}
@@ -81,12 +88,13 @@ const QuickNav = () => {
                             <Link href="/create">
                               <button
                                 className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all ${
-                                  active
-                                    ? "bg-sky-50/60"
-                                    : ""
+                                  active ? "bg-sky-50/60" : ""
                                 }`}
                               >
-                                <MdShowChart size={18} className="text-sky-600" />
+                                <MdShowChart
+                                  size={18}
+                                  className="text-sky-600"
+                                />
                                 <div className="flex flex-col items-start">
                                   <span className="font-semibold text-sky-900">
                                     Single Market
@@ -102,12 +110,13 @@ const QuickNav = () => {
                             <Link href="/create-combo">
                               <button
                                 className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all ${
-                                  active
-                                    ? "bg-sky-50/60"
-                                    : ""
+                                  active ? "bg-sky-50/60" : ""
                                 }`}
                               >
-                                <MdStackedLineChart size={18} className="text-sky-600" />
+                                <MdStackedLineChart
+                                  size={18}
+                                  className="text-sky-600"
+                                />
                                 <div className="flex flex-col items-start">
                                   <span className="font-semibold text-sky-900">
                                     Combinatorial Market

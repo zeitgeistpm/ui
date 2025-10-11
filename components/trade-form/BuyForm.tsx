@@ -75,9 +75,14 @@ const BuyForm = ({
     watch,
     setValue,
     trigger,
+    reset,
   } = useForm({
     reValidateMode: "onChange",
     mode: "onChange",
+    defaultValues: {
+      amount: 0,
+      percentage: "0",
+    },
   });
 
   const [sdk] = useSdkv2();
@@ -154,7 +159,12 @@ const BuyForm = ({
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | CombinatorialToken | undefined
   >(initialAsset);
-  console.log("selectedAsset", selectedAsset);
+
+  const { data: selectedAssetBalance } = useBalance(
+    wallet.realAddress,
+    selectedAsset,
+  );
+
   useEffect(() => {
     if (isCombinatorialToken(selectedAsset)) {
       const getAllOtherAssets = (selectedAsset: CombinatorialToken) => {
@@ -175,10 +185,10 @@ const BuyForm = ({
     }
   }, [outcomeAssets, selectedAsset]);
 
-  const formAmount = getValues("amount");
+  const formAmount = watch("amount");
 
   const amountIn = new Decimal(
-    formAmount && formAmount !== "" ? formAmount : 0,
+    formAmount && formAmount !== 0 ? formAmount : 0,
   ).mul(ZTG);
 
   const assetReserve = poolData?.reserves
@@ -268,7 +278,7 @@ const BuyForm = ({
         !isRpcSdk(sdk) ||
         !effectivePoolId ||
         !amount ||
-        amount === "" ||
+        amount === 0 ||
         assetCount == null ||
         !selectedAsset ||
         !newSpotPrice ||
@@ -321,7 +331,9 @@ const BuyForm = ({
       onSuccess: (data) => {
         notificationStore.pushNotification(`Successfully traded`, {
           type: "Success",
+          lifetime: 5,
         });
+        reset();
         onSuccess(data, selectedAsset!, amountIn);
       },
     },
@@ -343,7 +355,7 @@ const BuyForm = ({
       )
         return;
 
-      if (name === "percentage") {
+      if (name === "percentage" && value.percentage != null) {
         const max = maxSpendableBalance.greaterThan(maxAmountIn)
           ? maxAmountIn
           : maxSpendableBalance;
@@ -358,12 +370,19 @@ const BuyForm = ({
               .toFixed(3, Decimal.ROUND_DOWN),
           ),
         );
-      } else if (name === "amount" && value.amount !== "") {
+      } else if (
+        name === "amount" &&
+        value.amount != null &&
+        value.amount !== 0
+      ) {
+        const max = maxSpendableBalance.greaterThan(maxAmountIn)
+          ? maxAmountIn
+          : maxSpendableBalance;
         setValue(
           "percentage",
           new Decimal(value.amount)
             .mul(ZTG)
-            .div(maxSpendableBalance)
+            .div(max)
             .mul(100)
             .toString(),
         );
@@ -383,33 +402,31 @@ const BuyForm = ({
         onSubmit={handleSubmit(onSubmit)}
         className="flex w-full flex-col items-center gap-y-4"
       >
-        <div className="flex w-full items-center justify-center rounded-md p-2">
-          <div className="mr-4 font-mono">
-            {amountOut.div(ZTG).abs().toFixed(3)}
+        <div className="flex w-full items-center gap-3">
+          <div className="center h-[56px] flex-1 rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-sm">
+            <div className="text-lg font-semibold text-sky-900">
+              {amountOut.div(ZTG).abs().toFixed(3)}
+            </div>
           </div>
-          <div>
-            {(market || poolData) && selectedAsset && (
-              <MarketContextActionOutcomeSelector
-                market={market ?? undefined}
-                selected={selectedAsset}
-                options={outcomeAssets}
-                outcomeCombinations={outcomeCombinations}
-                onChange={(assetId) => {
-                  setSelectedAsset(assetId);
-                  trigger();
-                }}
-              />
-            )}
-          </div>
+          {(market || poolData) && selectedAsset && (
+            <MarketContextActionOutcomeSelector
+              market={market ?? undefined}
+              selected={selectedAsset}
+              options={outcomeAssets}
+              outcomeCombinations={outcomeCombinations}
+              onChange={(assetId) => {
+                setSelectedAsset(assetId);
+                trigger();
+              }}
+            />
+          )}
         </div>
-        <div className="text-sm">For</div>
-        <div className="center relative h-[56px] w-full rounded-md bg-white text-ztg-18-150 font-normal">
+        <div className="center relative h-[56px] w-full rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-sm">
           <Input
             type="number"
-            className="w-full bg-transparent font-mono outline-none"
+            className="w-full bg-transparent text-center text-lg font-semibold text-sky-900 outline-none"
             step="any"
             {...register("amount", {
-              value: 0,
               required: {
                 value: true,
                 message: "Value is required",
@@ -431,15 +448,20 @@ const BuyForm = ({
               },
             })}
           />
-          <div className="absolute right-0 mr-[10px]">{baseSymbol}</div>
+          <div className="absolute right-0 mr-[10px] font-medium text-sky-700">
+            {baseSymbol}
+          </div>
         </div>
         <input
           className="mb-[10px] mt-[30px] w-full"
           type="range"
+          min="0"
+          max="100"
+          step="1"
           disabled={
             !maxSpendableBalance || maxSpendableBalance.lessThanOrEqualTo(0)
           }
-          {...register("percentage", { value: "0" })}
+          {...register("percentage")}
         />
         <div className="mb-[10px] flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600 ">
           <div className="h-[16px] text-xs text-vermilion">
@@ -447,14 +469,21 @@ const BuyForm = ({
           </div>
           <div className="flex w-full justify-between">
             <div>Max profit:</div>
-            <div className="text-black">
+            <div className="text-sky-900">
               {maxProfit.div(ZTG).toFixed(2)} {baseSymbol}
             </div>
           </div>
           <div className="flex w-full justify-between">
             <div>Price after trade:</div>
-            <div className="text-black">
+            <div className="text-sky-900">
               {newSpotPrice?.toFixed(2)} ({priceImpact?.toFixed(2)}%)
+            </div>
+          </div>
+          <div className="flex w-full justify-between">
+            <div>Current shares:</div>
+            <div className="text-sky-900">
+              {selectedAssetBalance?.div(ZTG).toFixed(3, Decimal.ROUND_DOWN) ??
+                "0.000"}
             </div>
           </div>
         </div>
