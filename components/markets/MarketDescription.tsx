@@ -17,7 +17,7 @@ export const MarketDescription = ({
   const { data: marketCmsMetadata } = useMarketCmsMetadata(market.marketId);
 
   const description = marketCmsMetadata?.description ?? market.description;
-
+  console.log(description);
   return (
     <>
       {isArray(description) && description.length ? (

@@ -71,7 +71,7 @@ const MyApp = ({ Component, pageProps }) => {
 
   return (
     <div
-      className={`${inter.variable} ${kanit.variable} ${roboto_mono.variable} font-sans `}
+      className={`${inter.variable} ${kanit.variable} ${roboto_mono.variable} font-sans w-full min-w-full`}
     >
       <style jsx global>
         {`

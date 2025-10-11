@@ -88,6 +88,30 @@ This is a Next.js 13.4 TypeScript application for Zeitgeist prediction markets b
 - Tailwind CSS with mobile-first responsive design
 - Directory naming: lowercase with dashes (market-card, use-zeitgeist)
 
+### Design System
+
+**IMPORTANT**: All UI development must follow the glass morphism design system documented in `/DESIGN_SYSTEM.md`.
+
+**Key Design Principles**:
+- **Glass Morphism**: Translucent backgrounds with backdrop blur for modern, layered interfaces
+- **Sky Color Palette**: Consistent use of sky-50 through sky-950 for all theming
+- **Mobile-First**: Solid backgrounds on mobile (`bg-sky-50`), glass effects on desktop (`bg-white/95 backdrop-blur-lg`)
+- **Consistent Spacing**: Use `container-fluid` for uniform max-width across all pages
+
+**Quick Reference**:
+- Light glass panels: `bg-white/80 backdrop-blur-md border border-sky-200/30 shadow-sm`
+- Dark glass panels: `bg-sky-950/95 backdrop-blur-md border border-white/20`
+- Mobile menus: `bg-sky-50` (solid), positioned `top-[50px]` below TopBar
+- Text colors: `text-sky-900` (primary), `text-sky-700` (secondary)
+- Hover states: `hover:bg-white/80` on light backgrounds
+
+**Before implementing new components**, reference the full design system documentation in `DESIGN_SYSTEM.md` for:
+- Complete component patterns (navigation, menus, cards, timers)
+- Color palette and usage guidelines
+- Responsive breakpoints and mobile patterns
+- Accessibility requirements
+- Common implementation patterns
+
 ### Market Lifecycle
 
 Zeitgeist markets follow the pattern: Created → Active → Closed → Reported → Resolved

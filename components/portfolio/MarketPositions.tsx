@@ -253,20 +253,41 @@ export const MarketPositions = ({
                         poolId={assetId.PoolShare}
                         market={market}
                       />
-                    ) : isMultiMarket && canRedeem && poolId && isWinningPosition ? (
+                    ) : isMultiMarket &&
+                      canRedeem &&
+                      poolId &&
+                      isWinningPosition ? (
                       <Link href={`/multi-market/${poolId}`}>
-                        <SecondaryButton onClick={() => {}}>Redeem Tokens</SecondaryButton>
+                        <SecondaryButton onClick={() => {}}>
+                          Redeem Tokens
+                        </SecondaryButton>
                       </Link>
                     ) : marketStage?.type === "Trading" &&
-                      (IOMarketOutcomeAssetId.is(assetId) || isCombinatorialToken(assetId)) ? (
-                      <Link href={isMultiMarket ? `/multi-market/${market.marketId}` : `/market/${market.marketId}`}>
-                        <SecondaryButton onClick={() => {}}>Trade Tokens</SecondaryButton>
-                      </Link>                    ) : marketStage?.type === "Resolved" ? (
-                      <RedeemButton market={market} assetId={assetId} underlyingMarketIds={underlyingMarketIds} />
-                    ) : (IOMarketOutcomeAssetId.is(assetId) || (isCombinatorialToken(assetId) && !isMultiMarket)) &&
+                      (IOMarketOutcomeAssetId.is(assetId) ||
+                        isCombinatorialToken(assetId)) ? (
+                      <Link
+                        href={
+                          isMultiMarket
+                            ? `/multi-market/${market.marketId}`
+                            : `/market/${market.marketId}`
+                        }
+                      >
+                        <SecondaryButton onClick={() => {}}>
+                          Trade Tokens
+                        </SecondaryButton>
+                      </Link>
+                    ) : marketStage?.type === "Resolved" ? (
+                      <RedeemButton
+                        market={market}
+                        assetId={assetId}
+                        underlyingMarketIds={underlyingMarketIds}
+                      />
+                    ) : (IOMarketOutcomeAssetId.is(assetId) ||
+                        (isCombinatorialToken(assetId) && !isMultiMarket)) &&
                       marketStage?.type === "Disputed" ? (
                       <DisputeButton market={market} assetId={assetId} />
-                    ) : (IOMarketOutcomeAssetId.is(assetId) || (isCombinatorialToken(assetId) && !isMultiMarket)) &&
+                    ) : (IOMarketOutcomeAssetId.is(assetId) ||
+                        (isCombinatorialToken(assetId) && !isMultiMarket)) &&
                       (marketStage?.type === "OpenReportingPeriod" ||
                         (marketStage?.type === "OracleReportingPeriod" &&
                           isOracle)) ? (

@@ -9,6 +9,13 @@
 html {
   font-size: 100%;
   -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  min-width: 100vw;
+}
+
+body {
+  width: 100%;
+  min-width: 100vw;
 }
 
 /* prevents styles injected by headless ui */
@@ -218,7 +225,7 @@ h6 {
 @import "./range-component.css";
 
 .container-fluid {
-  @apply mx-auto max-w-screen-2xl px-4;
+  @apply mx-auto max-w-screen-xl px-4 md:px-6 lg:pl-8;
 }
 
 .carousel__slide--visible {

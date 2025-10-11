@@ -27,13 +27,15 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
     <components.Control {...props}>
       <div
         className={
-          "flex h-8 items-center justify-center text-ztg-16-150 font-medium " +
-          (menuIsOpen ? "text-black" : "text-sky-600")
+          "flex h-7 items-center justify-center rounded-lg px-1.5 text-xs font-semibold transition-all lg:px-2.5 " +
+          (menuIsOpen
+            ? "bg-sky-100 text-sky-800"
+            : "text-sky-800 hover:bg-sky-50 hover:text-sky-800")
         }
         onClick={onClick}
       >
         <span className="cursor-pointer">{selectProps.placeholder}</span>
-        <Chevron size={18} className="ml-ztg-8 cursor-pointer font-bold" />
+        <Chevron size={14} className="ml-1 cursor-pointer lg:ml-1.5" />
         {children}
       </div>
     </components.Control>
@@ -51,25 +53,28 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
     <components.Option {...props}>
       <div
         className={
-          "center h-full cursor-pointer rounded-full px-[5px] " +
-          (isActive ? "bg-fog-of-war" : "bg-platinum")
+          "center h-full cursor-pointer rounded-md px-1.5 py-1 shadow-sm transition-all " +
+          (isActive
+            ? "bg-gradient-to-br from-sky-500 to-blue-500 text-white shadow-md"
+            : "bg-white hover:bg-sky-50 hover:shadow-md")
         }
       >
         {data.imageUrl && (
-          <div className="center mr-[6px] h-[47px] w-[47px] overflow-hidden rounded-full bg-white p-1">
+          <div className="center mr-1 h-7 w-7 overflow-hidden rounded-md bg-white p-0.5 shadow-sm">
             <Image
-              className="rounded-full"
+              className="rounded-md"
               src={data.imageUrl}
               alt={`icon-${data.value.toLowerCase()}`}
-              width={48}
-              height={48}
+              width={28}
+              height={28}
               quality={100}
             />
           </div>
         )}
         <div
           className={
-            "pl-[10px] pr-[10px] " + (isActive ? "text-white" : "text-black")
+            "px-1.5 text-xs font-medium " +
+            (isActive ? "text-white" : "text-sky-800")
           }
         >
           {children}
@@ -82,7 +87,7 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
 const MenuList = ({ children, ...props }: MenuListProps) => {
   return (
     <components.MenuList {...props}>
-      <div className="mx-auto mb-2 flex flex-row flex-wrap gap-[12px]">
+      <div className="mx-auto mb-0.5 flex flex-row flex-wrap gap-1.5">
         {children}
       </div>
     </components.MenuList>
@@ -108,8 +113,11 @@ const Placeholder = () => {
 const customStyles = {
   menu: (provided) => {
     return {
-      backgroundColor: "transparent",
-      color: "black",
+      backgroundColor: "white",
+      borderRadius: "8px",
+      boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+      padding: "4px",
+      border: "1px solid #E0F2FE",
     };
   },
   menuList: (provided) => {
@@ -118,7 +126,7 @@ const customStyles = {
   option: (provided) => {
     return {
       display: "inline-block",
-      height: "56px",
+      height: "34px",
     };
   },
   control: () => {
@@ -149,7 +157,7 @@ const DropDownSelect = ({
 }) => {
   return (
     <ReactSelect<MarketFilter>
-      className="mr-[10px]"
+      className="mr-1.5 lg:mr-[10px]"
       placeholder={label}
       options={options}
       styles={customStyles}

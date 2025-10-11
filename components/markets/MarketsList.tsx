@@ -2,8 +2,9 @@ import React, { useEffect, useState, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 
 import Loader from "react-spinners/PulseLoader";
-import { useInfiniteMarketsWithCombos } from "lib/hooks/queries/useInfiniteMarketsWithCombos";
-import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
+import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
+import { useInfiniteMultiMarkets } from "lib/hooks/queries/useInfiniteMultiMarkets";
+import { MarketFilter, MarketsOrderBy, MarketType } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
 import MarketOrComboCard from "./market-card/MarketOrComboCard";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
@@ -17,6 +18,7 @@ const useChangeQuery = (
   filters?: MarketFilter[],
   orderBy?: MarketsOrderBy,
   withLiquidityOnly?: boolean,
+  marketType?: MarketType,
 ) => {
   const queryState = useMarketsUrlQuery();
   const updateQueryRef = useRef(queryState.updateQuery);
@@ -53,18 +55,45 @@ const useChangeQuery = (
     }
     updateQueryRef.current({ liquidityOnly: withLiquidityOnly });
   }, [withLiquidityOnly]);
+
+  useEffect(() => {
+    if (marketType == null) {
+      return;
+    }
+    updateQueryRef.current({ marketType });
+  }, [marketType]);
 };
 
 const MarketsList = ({ className = "" }: MarketsListProps) => {
   const [filters, setFilters] = useState<MarketFilter[]>();
   const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
   const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
+  const [marketType, setMarketType] = useState<MarketType>();
 
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
   const queryState = useMarketsUrlQuery();
 
-  useChangeQuery(filters, orderBy, withLiquidityOnly);
+  useChangeQuery(filters, orderBy, withLiquidityOnly, marketType);
+
+  // Conditionally fetch the appropriate data based on market type
+  const isMultiMarket = queryState.marketType === "multi";
+
+  // Only fetch regular markets when not in multi-market mode
+  const regularMarketsQuery = useInfiniteMarkets(
+    queryState.ordering,
+    queryState.liquidityOnly,
+    queryState.filters,
+  );
+
+  // Only fetch multi-markets when in multi-market mode
+  const multiMarketsQuery = useInfiniteMultiMarkets(
+    queryState.ordering,
+    queryState.filters,
+  );
+
+  // Use the appropriate query based on market type
+  const activeQuery = isMultiMarket ? multiMarketsQuery : regularMarketsQuery;
 
   const {
     data: marketsPages,
@@ -72,11 +101,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
     isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteMarketsWithCombos(
-    queryState.ordering,
-    queryState.liquidityOnly,
-    queryState.filters,
-  );
+  } = activeQuery;
 
   useEffect(() => {
     if (isLoadMarkerInView === true && hasNextPage === true) {
@@ -98,6 +123,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
         onFiltersChange={setFilters}
         onOrderingChange={setOrderBy}
         onWithLiquidityOnlyChange={setWithLiquidityOnly}
+        onMarketTypeChange={setMarketType}
       />
 
       <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">

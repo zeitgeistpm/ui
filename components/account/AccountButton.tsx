@@ -45,7 +45,7 @@ const BalanceRow = ({
     <div className="flex items-center">
       <img src={imgPath} height={"24px"} width="24px" />
       <div
-        className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold ${className}`}
+        className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold text-sky-900 ${className}`}
       >
         {balance &&
           `${formatNumberLocalized(balance?.div(ZTG).abs().toNumber())} ${
@@ -63,7 +63,7 @@ const HeaderActionButton: FC<
 > = ({ onClick, disabled, children }) => {
   return (
     <button
-      className={`flex w-[185px] cursor-pointer items-center justify-center rounded-full border-2 border-white px-6 font-medium leading-[40px] text-white disabled:cursor-default disabled:opacity-30`}
+      className={`flex w-[185px] cursor-pointer items-center justify-center rounded-full border-2 border-white/60 bg-sky-950/95 px-6 font-medium leading-[40px] text-white backdrop-blur-md transition-all hover:border-sky-400 hover:bg-sky-900/95 disabled:cursor-default disabled:opacity-30`}
       onClick={onClick}
       disabled={disabled}
     >
@@ -182,15 +182,15 @@ const AccountButton: FC<{
                       <div
                         className={`relative z-30 flex	h-full flex-1 cursor-pointer items-center justify-end rounded-full  ${
                           open
-                            ? "border-orange-500"
+                            ? "border-sky-200"
                             : pathname === "/"
                               ? " border-white"
                               : "border-black"
                         }`}
                       >
                         <div
-                          className={`flex h-full items-center rounded-full border-2 bg-black py-1 pl-1.5 text-white transition-all md:py-0 ${
-                            open ? "border-sunglow-2" : "border-white"
+                          className={`flex h-full items-center rounded-full border-2 bg-sky-950/95 py-1 pl-1.5 text-white backdrop-blur-md transition-all hover:bg-sky-900/95 md:py-0 ${
+                            open ? "border-sky-200" : "border-white/60"
                           }`}
                         >
                           <div className={`rounded-full ring-2`}>
@@ -204,7 +204,7 @@ const AccountButton: FC<{
                           </div>
                           <span
                             className={`hidden h-full pl-2 text-sm font-medium leading-[40px] transition-all md:block ${
-                              open ? "text-sunglow-2" : "text-white"
+                              open ? "text-sky-200" : "text-white"
                             }`}
                           >
                             {activeAccount &&
@@ -215,8 +215,8 @@ const AccountButton: FC<{
                             <ChevronDown
                               size={16}
                               viewBox="4 3 16 16"
-                              className={`box-content px-2 ${
-                                open && "rotate-180 text-sunglow-2"
+                              className={`box-content px-2 transition-all ${
+                                open && "rotate-180 text-sky-200"
                               }`}
                             />
                           </div>
@@ -282,14 +282,20 @@ const AccountButton: FC<{
 
                 <Transition
                   as={Fragment}
-                  enter="transition ease-out duration-100"
+                  enter="transition ease-out duration-200"
                   enterFrom="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                   enterTo="transform opacity-100 translate-y-0 md:scale-100"
-                  leave="transition ease-in translate-y-2 md:translate-y-0 duration-75"
+                  leave="transition ease-in duration-150"
                   leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
                   leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                 >
-                  <Menu.Items className="fixed left-0 z-40 mt-3 h-full w-full origin-top-right divide-y divide-gray-100 overflow-hidden bg-white py-3 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:absolute md:left-auto md:right-0 md:mt-6 md:h-auto md:w-64 md:rounded-md">
+                  <Menu.Items
+                    className="fixed left-0 right-0 bottom-0 z-[60] w-screen origin-top-right divide-y divide-gray-100 overflow-y-auto bg-sky-50 py-3 shadow-xl ring-1 ring-white/20 focus:outline-none md:absolute md:inset-auto md:left-auto md:right-0 md:h-auto md:w-72 md:overflow-hidden md:rounded-lg md:border md:border-white/20 md:bg-white/95 md:backdrop-blur-lg"
+                    style={{
+                      top: 'var(--top-bar-height, 50px)',
+                      height: 'calc(100vh - var(--top-bar-height, 50px))'
+                    }}
+                  >
                     <div className="">
                       <div className="mb-3 flex flex-col gap-2 border-b-2 px-6 py-2">
                         <BalanceRow
@@ -323,13 +329,13 @@ const AccountButton: FC<{
                               href={`/portfolio/${realAddress}?mainTab=Balances`}
                               className="mt-3"
                             >
-                              <div className="mb-3 flex items-center">
-                                <div className="text-xs font-medium">
+                              <div className="mb-3 flex cursor-pointer items-center rounded-md px-2 py-1 transition-all hover:bg-white/80">
+                                <div className="text-xs font-medium text-sky-900">
                                   Go to Balances
                                 </div>
                                 <ArrowRight
                                   size={14}
-                                  className="ml-2 md:ml-auto"
+                                  className="ml-2 text-sky-900 md:ml-auto"
                                 />
                               </div>
                             </Link>
@@ -355,16 +361,16 @@ const AccountButton: FC<{
                         <Menu.Item>
                           {({ active }) => (
                             <div
-                              className="mb-3 flex items-center px-6 hover:bg-slate-100"
+                              className="mb-3 flex cursor-pointer items-center rounded-md px-6 transition-all hover:bg-white/80"
                               onClick={() => {
                                 walletId === "web3auth"
                                   ? accountModals.openWalletSelect()
                                   : accountModals.openAccountSelect();
                               }}
                             >
-                              <User />
+                              <User className="text-sky-900" />
                               <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold text-sky-900`}
                               >
                                 Select Account
                               </button>
@@ -375,10 +381,10 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <Link href={`/portfolio/${realAddress}`}>
-                            <div className="mb-3 flex items-center px-6 hover:bg-slate-100">
-                              <BarChart />
+                            <div className="mb-3 flex cursor-pointer items-center rounded-md px-6 transition-all hover:bg-white/80">
+                              <BarChart className="text-sky-900" />
                               <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold text-sky-900`}
                               >
                                 Portfolio
                               </button>
@@ -389,12 +395,12 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <div
-                            className="mb-3 flex cursor-pointer items-center px-6 hover:bg-slate-100"
+                            className="mb-3 flex cursor-pointer items-center rounded-md px-6 transition-all hover:bg-white/80"
                             onClick={() => setShowSettingsModal(true)}
                           >
-                            <Settings />
+                            <Settings className="text-sky-900" />
                             <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold text-sky-900`}
                             >
                               Settings
                             </button>
@@ -404,14 +410,14 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <div
-                            className="flex items-center px-6 hover:bg-slate-100"
+                            className="flex cursor-pointer items-center rounded-md px-6 transition-all hover:bg-white/80"
                             onClick={() => {
                               disconnectWallet();
                             }}
                           >
-                            <Frown />
+                            <Frown className="text-sky-900" />
                             <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold text-sky-900`}
                             >
                               Disconnect
                             </button>

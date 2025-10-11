@@ -39,7 +39,14 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useState, useMemo } from "react";
-import { AlertTriangle, ChevronDown, ExternalLink, X, Info } from "react-feather";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ChevronDown,
+  ExternalLink,
+  X,
+  Info,
+} from "react-feather";
 import { parseAssetId } from "@zeitgeistpm/sdk";
 import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 import { formatNumberCompact } from "lib/util/format-compact";
@@ -140,9 +147,15 @@ const ComboAssetDetails = ({
             />
             <div className="flex flex-col gap-1">
               <span className="font-semibold">{combination.name}</span>
-              <div className="text-xxs text-gray-600 leading-relaxed">
-                <div>Assume: <span className="font-bold">{market1Outcome}</span>, {sourceMarkets[0].question}</div>
-                <div>Then: <span className="font-bold">{market2Outcome}</span>, {sourceMarkets[1].question}</div>
+              <div className="text-xxs leading-relaxed text-gray-600">
+                <div>
+                  Assume: <span className="font-bold">{market1Outcome}</span>,{" "}
+                  {sourceMarkets[0].question}
+                </div>
+                <div>
+                  Then: <span className="font-bold">{market2Outcome}</span>,{" "}
+                  {sourceMarkets[1].question}
+                </div>
               </div>
             </div>
           </div>
@@ -176,12 +189,8 @@ const ComboMarketStats = ({
   const { data: poolStats, isLoading: isStatsLoading } = usePoolStats([poolId]);
 
   // Get earliest start date and latest end date from source markets
-  const starts = Math.min(
-    ...sourceMarkets.map((m) => Number(m.period.start)),
-  );
-  const ends = Math.max(
-    ...sourceMarkets.map((m) => Number(m.period.end)),
-  );
+  const starts = Math.min(...sourceMarkets.map((m) => Number(m.period.start)));
+  const ends = Math.max(...sourceMarkets.map((m) => Number(m.period.end)));
 
   const liquidity = poolStats?.[0]?.liquidity;
   const volume = poolStats?.[0]?.volume
@@ -189,22 +198,33 @@ const ComboMarketStats = ({
     : 0;
 
   return (
-    <div className="mb-6 rounded-lg bg-gradient-to-br from-purple-50 to-blue-50 p-3 shadow-lg">
+    <div className="mb-6 rounded-lg bg-gradient-to-br from-sky-50 to-blue-50 p-3 shadow-lg">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        {/* Combinatorial Badge */}
+        {/* Back Button and Combinatorial Badge */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-full bg-purple-500 px-3 py-1 text-sm font-semibold text-white shadow-md">
-            <span>Combinatorial</span>
+          <Link
+            href="/markets?status=Active&ordering=Newest&liquidityOnly=true&marketType=multi"
+            className="flex items-center gap-1.5 rounded-full bg-gray-200 px-2 py-1 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-300"
+          >
+            <ArrowLeft size={14} />
+            <span className="hidden sm:inline">Back</span>
+          </Link>
+          <div className="flex items-center gap-1.5 bg-ztg-blue rounded-full bg-sky-600 px-3 py-1 text-sm font-semibold text-white shadow-md">
+            <span className="font-bold">Combinatorial</span>
             <div className="group relative">
               <Info size={14} className="cursor-help" />
               <div className="pointer-events-none absolute left-0 top-full z-20 mt-2 w-80 rounded-lg bg-gray-900 px-4 py-3 text-xs text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
                 <div className="space-y-2">
-                  <p className="font-semibold">How Combinatorial Markets Work:</p>
-                  <p>
-                    The <strong>Assume</strong> market is the condition, and the <strong>Then</strong> market is the outcome.
-                    This creates combinations like: "Assuming outcome X happens in Market 1, THEN what happens in Market 2?"
+                  <p className="font-semibold">
+                    How Combinatorial Markets Work:
                   </p>
-                  <p className="text-purple-300">
+                  <p>
+                    The <strong>Assume</strong> market is the condition, and the{" "}
+                    <strong>Then</strong> market is the outcome. This creates
+                    combinations like: "Assuming outcome X happens in Market 1,
+                    THEN what happens in Market 2?"
+                  </p>
+                  <p className="text-sky-300">
                     Example: Assume "Trump wins" → Then "Bitcoin reaches $100k"
                   </p>
                 </div>
@@ -263,9 +283,14 @@ const ComboMarketStats = ({
           {/* Liquidity */}
           {isStatsLoading === false ? (
             <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
-              <div className="text-xxs font-medium text-gray-600">Liquidity</div>
+              <div className="text-xxs font-medium text-gray-600">
+                Liquidity
+              </div>
               <div className="text-xs font-bold text-gray-900">
-                {formatNumberCompact(new Decimal(liquidity ?? 0).div(ZTG).toNumber())} ZTG
+                {formatNumberCompact(
+                  new Decimal(liquidity ?? 0).div(ZTG).toNumber(),
+                )}{" "}
+                ZTG
               </div>
             </div>
           ) : (
@@ -278,7 +303,6 @@ const ComboMarketStats = ({
     </div>
   );
 };
-
 
 // Helper function to set time to now (copied from MarketChart)
 const setTimeToNow = (date: Date) => {
@@ -357,8 +381,8 @@ const ComboChart = ({
             // Map prices to chart data format by matching asset IDs
             const assetPrices = price.prices.reduce((obj, priceData) => {
               // Find the matching combination by comparing asset IDs
-              const matchingIndex = comboMarketData.outcomeCombinations.findIndex(
-                (combo) => {
+              const matchingIndex =
+                comboMarketData.outcomeCombinations.findIndex((combo) => {
                   try {
                     // Parse the assetId string from the API
                     const apiAssetId = JSON.parse(priceData.assetId);
@@ -370,15 +394,15 @@ const ComboChart = ({
                   } catch (e) {
                     return false;
                   }
-                }
-              );
+                });
 
               // Only add if we found a matching combination
               if (matchingIndex !== -1) {
                 // Ensure prices don't exceed 1
                 return {
                   ...obj,
-                  [`v${matchingIndex}`]: priceData.price > 1 ? 1 : priceData.price,
+                  [`v${matchingIndex}`]:
+                    priceData.price > 1 ? 1 : priceData.price,
                 };
               }
               return obj;
@@ -490,7 +514,7 @@ const MobileContextButtons = ({
       </Transition>
 
       <div
-        className={`fixed bottom-20 left-0 z-50 w-full rounded-t-lg bg-white pb-12 transition-all duration-500 ease-in-out md:hidden ${
+        className={`fixed bottom-12 left-0 z-50 w-full rounded-t-lg bg-white pb-12 transition-all duration-500 ease-in-out md:hidden ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
@@ -604,7 +628,7 @@ const MobileContextButtons = ({
       </Transition>
 
       <div
-        className={`fixed bottom-20 left-0 z-50 w-full rounded-t-lg bg-white pb-12 transition-all duration-500 ease-in-out md:hidden ${
+        className={`fixed bottom-12 left-0 z-50 w-full rounded-t-lg bg-white pb-12 transition-all duration-500 ease-in-out md:hidden ${
           showPartialRedeem ? "translate-y-0" : "translate-y-full"
         }`}
       >
@@ -614,8 +638,8 @@ const MobileContextButtons = ({
               Partial Redemption Available
             </h3>
             <p className="mb-4 text-sm text-blue-700">
-              Market 2 ("Then" market) has resolved. You can redeem tokens
-              for Market 1 ("Assume" market) tokens and use those for trading.
+              Market 2 ("Then" market) has resolved. You can redeem tokens for
+              Market 1 ("Assume" market) tokens and use those for trading.
             </p>
             <div className="space-y-3">
               {comboMarketData?.outcomeCombinations?.map(
@@ -648,7 +672,7 @@ const MobileContextButtons = ({
 
       <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
         {comboMarketIsActive ? (
-          <div className="flex h-20 cursor-pointer text-lg font-semibold">
+          <div className="flex h-14 cursor-pointer text-lg font-semibold">
             <div
               className={`center h-full flex-1  ${
                 currentAction === "buy"
@@ -701,7 +725,7 @@ const MobileContextButtons = ({
             </div>
           </div>
         ) : comboMarketIsResolved ? (
-          <div className="flex h-20 cursor-pointer text-lg font-semibold">
+          <div className="flex h-14 cursor-pointer text-lg font-semibold">
             <div
               className="center h-full w-full bg-ztg-blue text-white"
               onClick={() => setOpen(!open)}
@@ -710,7 +734,7 @@ const MobileContextButtons = ({
             </div>
           </div>
         ) : childMarketResolved ? (
-          <div className="flex h-20 cursor-pointer text-lg font-semibold">
+          <div className="flex h-14 cursor-pointer text-lg font-semibold">
             <div
               className="center h-full w-full bg-blue-500 text-white"
               onClick={() => setShowPartialRedeem(!showPartialRedeem)}
@@ -840,10 +864,9 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
   const marketHasPool = true; // Combo markets always have pools
 
   return (
-    <div className="mt-6">
-      <div className="relative flex flex-auto gap-12">
-        <div className="flex-1 overflow-hidden">
-
+    <div className="">
+      <div className="relative grid gap-12 md:grid-cols-[1fr_auto]">
+        <div className="min-w-0">
           {/* Market Stats Section */}
           <ComboMarketStats
             poolId={poolId}
@@ -860,7 +883,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           )}
 
           {/* Chart Section */}
-          <div className="mt-4 rounded-lg bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-lg">
+          <div className="mt-4 rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
             <Tab.Group defaultIndex={0}>
               <Tab.List className="flex gap-2 text-sm"></Tab.List>
 
@@ -890,9 +913,11 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           {realAddress &&
             isOrdersLoading === false &&
             (orders?.length ?? 0) > 0 && (
-              <div className="mt-4 rounded-lg bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-lg">
-                <h3 className="mb-4 text-lg font-semibold text-gray-900">My Orders</h3>
-                <div className="rounded-lg bg-white/60 backdrop-blur-sm overflow-hidden">
+              <div className="mt-4 rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
+                <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                  My Orders
+                </h3>
+                <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
                   <OrdersTable
                     where={{
                       marketId_eq: poolId,
@@ -906,7 +931,10 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           {/* No Pool Warning */}
           {!marketHasPool && (
             <div className="mt-4 flex items-center gap-3 rounded-lg bg-gradient-to-br from-orange-50 to-red-50 p-4 shadow-lg">
-              <AlertTriangle size={24} className="flex-shrink-0 text-orange-500" />
+              <AlertTriangle
+                size={24}
+                className="flex-shrink-0 text-orange-500"
+              />
               <div className="text-sm text-orange-900">
                 This combinatorial market doesn't have a liquidity pool and
                 therefore cannot be traded
@@ -915,9 +943,8 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           )}
 
           {/* Asset Details Table */}
-          <div className="my-8 rounded-lg bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-lg">
-            <h3 className="mb-4 text-lg font-semibold text-gray-900">Outcome Combinations</h3>
-            <div className="rounded-lg bg-white/60 backdrop-blur-sm overflow-hidden">
+          <div className="my-8 rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 shadow-lg">
+            <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
               <ComboAssetDetails
                 combinations={comboMarketData.outcomeCombinations}
                 poolId={poolId}
@@ -935,9 +962,11 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
 
           {/* Latest Trades */}
           {marketHasPool && (
-            <div className="mt-10 rounded-lg bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-lg">
-              <h3 className="mb-4 text-lg font-semibold text-gray-900">Latest Trades</h3>
-              <div className="rounded-lg bg-white/60 backdrop-blur-sm overflow-hidden">
+            <div className="mt-10 rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 shadow-lg">
+              <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                Latest Trades
+              </h3>
+              <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
                 <LatestTrades
                   limit={3}
                   marketId={poolId}
@@ -968,7 +997,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           {marketHasPool && (
             <div className="my-12">
               <div
-                className="mb-4 flex cursor-pointer items-center rounded-lg bg-gradient-to-br from-purple-50/30 to-blue-50/30 px-4 py-3 font-semibold text-purple-700 shadow-lg transition-all hover:shadow-xl"
+                className="mb-4 flex cursor-pointer items-center rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 px-4 py-3 font-semibold text-sky-700 shadow-lg transition-all hover:shadow-xl"
                 onClick={() => toggleLiquiditySection()}
               >
                 <div>Show Liquidity</div>
@@ -989,8 +1018,8 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                 leaveTo="transform opacity-0 "
                 show={showLiquidity && Boolean(marketHasPool)}
               >
-                <div className="rounded-lg bg-gradient-to-br from-purple-50/30 to-blue-50/30 p-4 shadow-lg">
-                  <div className="rounded-lg bg-white/60 backdrop-blur-sm overflow-hidden">
+                <div className="rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
+                  <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
                     <MarketLiquiditySection
                       pool={true}
                       market={virtualMarket}
@@ -1004,7 +1033,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
         </div>
 
         {/* Sidebar */}
-        <div className="hidden md:-mr-6 md:block md:w-[320px] lg:mr-auto lg:w-[460px]">
+        <div className="hidden md:block md:w-[320px] lg:w-[400px] xl:w-[460px]">
           <div className="sticky top-20">
             {comboMarketIsActive ? (
               <div
@@ -1111,8 +1140,8 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                   Partial Redemption Available
                 </h3>
                 <p className="mb-4 text-sm text-blue-700">
-                  Market 2 ("Then" market) has resolved. You can redeem
-                  tokens for Market 1 ("Assume" market) tokens and use those for
+                  Market 2 ("Then" market) has resolved. You can redeem tokens
+                  for Market 1 ("Assume" market) tokens and use those for
                   trading.
                 </p>
                 <div className="space-y-3">

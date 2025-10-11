@@ -29,7 +29,7 @@ import NotFoundPage from "pages/404";
 import { useMemo } from "react";
 
 // type MainTabItem = "Predictions" | "Balances" | "Markets" | "History" | "Court";
-type MainTabItem = "Predictions" | "Balances" | "Markets"
+type MainTabItem = "Predictions" | "Balances" | "Markets";
 
 const mainTabItems: MainTabItem[] = [
   "Predictions",
@@ -39,11 +39,9 @@ const mainTabItems: MainTabItem[] = [
   // "Court",
 ] as MainTabItem[];
 
-type MarketsTabItem =
-  | "Created Markets"
-  | "Manage"
-  // | "Creator Fee Payouts"
-  // | "Orders";
+type MarketsTabItem = "Created Markets" | "Manage";
+// | "Creator Fee Payouts"
+// | "Orders";
 const marketsTabItems: MarketsTabItem[] = [
   // "Created Markets",
   "Manage",
@@ -82,7 +80,7 @@ const Portfolio: NextPageWithLayout = () => {
   if (isValidPolkadotAddress(address) === false) {
     return <NotFoundPage />;
   }
-  
+
   return (
     <div className="mt-8 overflow-hidden">
       {address && <PortfolioIdentity address={address} />}
@@ -151,22 +149,32 @@ const Portfolio: NextPageWithLayout = () => {
                     const canRedeem = marketPositions[0]?.canRedeem;
 
                     if (isMultiMarket && canRedeem) {
-                      const underlyingMarketIds = marketPositions[0]?.underlyingMarketIds || [];
+                      const underlyingMarketIds =
+                        marketPositions[0]?.underlyingMarketIds || [];
 
                       // Check if all underlying markets are resolved
-                      const allMarketsResolved = market.status === 'Resolved';
+                      const allMarketsResolved = market.status === "Resolved";
 
-                      if (market.resolvedOutcome !== null && allMarketsResolved) {
-                        const isParentScalar = (market.neoPool as any)?._debug?.isParentScalar;
-                        const isChildScalar = (market.neoPool as any)?._debug?.isChildScalar;
+                      if (
+                        market.resolvedOutcome !== null &&
+                        allMarketsResolved
+                      ) {
+                        const isParentScalar = (market.neoPool as any)?._debug
+                          ?.isParentScalar;
+                        const isChildScalar = (market.neoPool as any)?._debug
+                          ?.isChildScalar;
 
                         // Find positions with winning outcomes (resolvedOutcome matches)
                         const winningPositions = marketPositions.filter(
                           (position) => {
                             if (isCombinatorialToken(position.assetId)) {
-                              const tokenIndex = market.outcomeAssets?.findIndex(
-                                asset => asset.includes((position.assetId as any).CombinatorialToken)
-                              );
+                              const tokenIndex =
+                                market.outcomeAssets?.findIndex((asset) =>
+                                  asset.includes(
+                                    (position.assetId as any)
+                                      .CombinatorialToken,
+                                  ),
+                                );
 
                               if (tokenIndex === -1) return false;
 
@@ -178,29 +186,40 @@ const Portfolio: NextPageWithLayout = () => {
                                 // tokenIndex = (parentOutcome * numChildOutcomes) + childOutcome
                                 // numChildOutcomes = 2 for scalar (Short, Long)
                                 const parentIndex = Math.floor(tokenIndex / 2);
-                                const matches = parentIndex === Number(market.resolvedOutcome);
+                                const matches =
+                                  parentIndex ===
+                                  Number(market.resolvedOutcome);
 
                                 return matches;
                               }
 
                               // For both categorical: standard index match
-                              const matches = tokenIndex === Number(market.resolvedOutcome);
+                              const matches =
+                                tokenIndex === Number(market.resolvedOutcome);
 
                               return matches;
                             }
                             return false;
-                          }
+                          },
                         );
 
                         // If all markets resolved and winning positions all have 0 balance,
                         // hide all positions (including losing ones)
-                        const allWinningBalancesZero = winningPositions.length > 0 &&
-                          winningPositions.every(pos => pos.userBalance.eq(0));
+                        const allWinningBalancesZero =
+                          winningPositions.length > 0 &&
+                          winningPositions.every((pos) =>
+                            pos.userBalance.eq(0),
+                          );
 
                         // Also check if no winning positions exist (filtered out due to 0 balance)
-                        const noWinningPositions = winningPositions.length === 0 && marketPositions.length > 0;
+                        const noWinningPositions =
+                          winningPositions.length === 0 &&
+                          marketPositions.length > 0;
                         // Hide everything if all markets resolved and all winning balances are 0
-                        if (allMarketsResolved && (allWinningBalancesZero || noWinningPositions)) {
+                        if (
+                          allMarketsResolved &&
+                          (allWinningBalancesZero || noWinningPositions)
+                        ) {
                           return <></>;
                         }
                       }
@@ -210,17 +229,18 @@ const Portfolio: NextPageWithLayout = () => {
                       market.status === "Resolved" &&
                       market.marketType.categorical
                     ) {
-                      marketPositions = marketPositions.filter(
-                        (position) => {
-                          // Handle combinatorial tokens - for now, include all combinatorial tokens for resolved markets
-                          // TODO: Need to determine how to match combinatorial tokens to resolved outcomes
-                          if (isCombinatorialToken(position.assetId)) {
-                            return true; // Include all combinatorial tokens for resolved markets for now
-                          }
-                          // Handle regular market outcome assets
-                          return getIndexOf(position.assetId) === Number(market.resolvedOutcome);
+                      marketPositions = marketPositions.filter((position) => {
+                        // Handle combinatorial tokens - for now, include all combinatorial tokens for resolved markets
+                        // TODO: Need to determine how to match combinatorial tokens to resolved outcomes
+                        if (isCombinatorialToken(position.assetId)) {
+                          return true; // Include all combinatorial tokens for resolved markets for now
                         }
-                      );
+                        // Handle regular market outcome assets
+                        return (
+                          getIndexOf(position.assetId) ===
+                          Number(market.resolvedOutcome)
+                        );
+                      });
                     }
 
                     if (marketPositions.length === 0) return <></>;

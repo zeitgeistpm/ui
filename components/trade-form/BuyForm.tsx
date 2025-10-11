@@ -96,10 +96,10 @@ const BuyForm = ({
   const firstAssetString = market?.outcomeAssets[0];
   let parsedFirstAsset;
   let isFirstCombi = false;
-  
+
   try {
     // Try to parse as JSON first (for combinatorial tokens)
-    parsedFirstAsset = JSON.parse(firstAssetString || '{}');
+    parsedFirstAsset = JSON.parse(firstAssetString || "{}");
     isFirstCombi = isCombinatorialToken(parsedFirstAsset);
   } catch {
     // Fall back to parseAssetIdString for regular assets
@@ -108,19 +108,13 @@ const BuyForm = ({
   }
 
   const poolId =
-    poolData?.poolId ||
-    (isFirstCombi
-      ? market?.neoPool?.poolId
-      : undefined);
+    poolData?.poolId || (isFirstCombi ? market?.neoPool?.poolId : undefined);
 
   const useAmm2PoolMarketId = poolData?.poolId ? 0 : marketId;
   const useAmm2PoolPoolId = poolId ?? null;
 
-  const { data: pool } = useAmm2Pool(
-    useAmm2PoolMarketId,
-    useAmm2PoolPoolId,
-  );
-  
+  const { data: pool } = useAmm2Pool(useAmm2PoolMarketId, useAmm2PoolPoolId);
+
   const [sellAssets, setSellAssets] = useState<CombinatorialToken[]>([]);
 
   const { data: orders } = useOrders({
@@ -164,10 +158,7 @@ const BuyForm = ({
   useEffect(() => {
     if (isCombinatorialToken(selectedAsset)) {
       const getAllOtherAssets = (selectedAsset: CombinatorialToken) => {
-        const allAssets =
-          poolData?.assetIds ||
-          pool?.assetIds ||
-          [];
+        const allAssets = poolData?.assetIds || pool?.assetIds || [];
         return allAssets.filter(
           (assetId) =>
             isCombinatorialToken(assetId) &&

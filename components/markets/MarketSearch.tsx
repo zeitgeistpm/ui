@@ -17,7 +17,7 @@ const MarketSearch = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [showResults, setShowResults] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
+  const [showSearch, setShowSearch] = useState(true);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -75,21 +75,23 @@ const MarketSearch = () => {
   }, [selectedIndex]);
 
   return (
-    <div className="mx-3 w-full md:mx-7" ref={wrapperRef}>
-      <Link href={"/search"} className="w-2 lg:hidden">
-        <Search className="mr-4 text-ztg-blue" />
-      </Link>
-      <div className="hidden items-center lg:flex">
+    <div className="w-full px-4" ref={wrapperRef}>
+      {/* <Link href={"/search"} className="w-2 sm:hidden">
+        <Search className="mr-4 text-sky-200" />
+      </Link> */}
+      <div className="items-center sm:flex">
         <div
-          className={`relative w-full overflow-hidden transition-all ${
-            showSearch ? "max-w-[500px] px-3" : "max-w-[0px]"
-          }`}
+          className={`relative w-full max-w-[400px] overflow-hidden transition-all`}
         >
+          <div className="pointer-events-none absolute left-3 top-[50%] translate-y-[-50%] text-sky-400">
+            <Search size={16} />
+          </div>
+
           <input
             ref={inputRef}
-            className={`h-10 w-full rounded-lg bg-sky-900  px-3 text-white  outline-none transition-all`}
+            className={`h-9 w-full rounded-lg bg-sky-900 pl-9 pr-3 text-sm text-sky-200 outline-none transition-all placeholder:text-sky-400`}
             value={searchTerm}
-            placeholder="Search markets"
+            placeholder="Search markets..."
             onChange={(event) => {
               setShowResults(true);
               setSearchTerm(event.target.value);
@@ -102,7 +104,7 @@ const MarketSearch = () => {
             }}
           />
 
-          <div className="absolute right-12 top-[50%] translate-y-[-50%]">
+          <div className="absolute right-10 top-[50%] translate-y-[-50%]">
             <TypingIndicator
               disabled={selectedIndex !== null}
               inputRef={inputRef}
@@ -110,9 +112,9 @@ const MarketSearch = () => {
             />
           </div>
 
-          {showSearch && (
+          {searchTerm && (
             <button
-              className="absolute right-6 top-[50%] translate-y-[-50%] text-sky-600"
+              className="absolute right-3 top-[50%] translate-y-[-50%] text-sky-400 transition-colors hover:text-sky-200"
               onClick={() => {
                 setSearchTerm("");
                 if (showResults) {
@@ -123,24 +125,10 @@ const MarketSearch = () => {
                 }, 66);
               }}
             >
-              <X size={16} />
+              <X size={14} />
             </button>
           )}
         </div>
-
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowSearch(!showSearch);
-            setTimeout(() => {
-              if (!showSearch) {
-                inputRef.current?.focus();
-              }
-            });
-          }}
-        >
-          <Search className="mr-4 text-ztg-blue" />
-        </button>
       </div>
       <Transition
         as={Fragment}
@@ -152,7 +140,7 @@ const MarketSearch = () => {
         leaveTo="transform opacity-0 :scale-95"
         show={Boolean(showResults && showSearch && markets)}
       >
-        <div className=" absolute top-[45px] hidden max-h-[420px] w-[500px] flex-col rounded-md bg-white px-2 py-4 shadow-2xl lg:flex">
+        <div className="absolute top-[38px] hidden max-h-[420px] w-[400px] flex-col rounded-md bg-white px-2 py-4 shadow-2xl sm:flex">
           <div className="subtle-scroll-bar overflow-y-scroll">
             {markets?.length ? (
               markets?.map((market, index) => (
@@ -168,7 +156,7 @@ const MarketSearch = () => {
                   }}
                   ref={selectedIndex === index ? selectedRef : undefined}
                 >
-                  <div className="line-clamp-1 w-85% overflow-ellipsis">
+                  <div className="line-clamp-1 w-85% overflow-ellipsis text-sky-900">
                     {market.question}
                   </div>
                   <div
@@ -185,7 +173,7 @@ const MarketSearch = () => {
                 </Link>
               ))
             ) : (
-              <div className="w-full pb-4 pt-6 text-center">No results</div>
+              <div className="w-full pb-4 pt-6 text-center text-gray-500">No results</div>
             )}
           </div>
         </div>

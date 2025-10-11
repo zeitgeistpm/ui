@@ -23,7 +23,10 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { CombinatorialToken, isCombinatorialToken } from "lib/types/combinatorial";
+import {
+  CombinatorialToken,
+  isCombinatorialToken,
+} from "lib/types/combinatorial";
 import { useMemo } from "react";
 
 export type RedeemButtonProps = {
@@ -56,7 +59,6 @@ export const RedeemButtonByAssetId = ({
   parentCollectionIds?: string[];
   showBalance?: boolean;
 }) => {
-
   const wallet = useWallet();
   const realAddress = wallet?.realAddress;
 
@@ -104,16 +106,17 @@ export const RedeemButtonByAssetId = ({
       // For multi-markets: parent is marketIds[0], child is marketIds[1]
       // Outcomes are organized as: [Parent0-Child0, Parent0-Child1, ..., Parent1-Child0, Parent1-Child1, ...]
 
-      const tokenIndex = market.outcomeAssets.findIndex(
-        asset => asset.includes(assetId.CombinatorialToken)
+      const tokenIndex = market.outcomeAssets.findIndex((asset) =>
+        asset.includes(assetId.CombinatorialToken),
       );
 
       if (tokenIndex === -1) return zero;
 
       // Get the number of child outcomes (from the second market)
-      const numChildOutcomes = underlyingMarketIds && underlyingMarketIds.length >= 2
-        ? market.categories?.length || 0
-        : 0;
+      const numChildOutcomes =
+        underlyingMarketIds && underlyingMarketIds.length >= 2
+          ? market.categories?.length || 0
+          : 0;
 
       if (isPartialRedemption) {
         // Partial redemption: child market resolved, parent market still active
@@ -123,7 +126,8 @@ export const RedeemButtonByAssetId = ({
 
         // For partial redemption, allow redemption of all positions
         // The blockchain will handle filtering based on the resolved child market
-        const balance = getAccountAssetBalance(realAddress, assetId)?.data?.balance;
+        const balance = getAccountAssetBalance(realAddress, assetId)?.data
+          ?.balance;
         return balance?.div(ZTG) || zero;
       }
 
@@ -134,7 +138,8 @@ export const RedeemButtonByAssetId = ({
 
       if (market.resolvedOutcome === null && isParentScalar) {
         // Parent is scalar - all positions may have value (blockchain calculates payouts)
-        const balance = getAccountAssetBalance(realAddress, assetId)?.data?.balance;
+        const balance = getAccountAssetBalance(realAddress, assetId)?.data
+          ?.balance;
         return balance?.div(ZTG) || zero;
       }
 
@@ -148,7 +153,8 @@ export const RedeemButtonByAssetId = ({
         if (parentIndex === parentResolvedIndex) {
           // This position belongs to the resolved parent outcome
           // Blockchain will calculate correct payout based on scalar resolution
-          const balance = getAccountAssetBalance(realAddress, assetId)?.data?.balance;
+          const balance = getAccountAssetBalance(realAddress, assetId)?.data
+            ?.balance;
           return balance?.div(ZTG) || zero;
         }
         return zero;
@@ -156,7 +162,8 @@ export const RedeemButtonByAssetId = ({
 
       // Both categorical - only winning outcome has value
       if (tokenIndex === Number(market.resolvedOutcome)) {
-        const balance = getAccountAssetBalance(realAddress, assetId)?.data?.balance;
+        const balance = getAccountAssetBalance(realAddress, assetId)?.data
+          ?.balance;
         return balance?.div(ZTG) || zero;
       }
 
@@ -185,7 +192,13 @@ export const RedeemButtonByAssetId = ({
         longBalance.div(ZTG),
       );
     }
-  }, [market, assetId, isLoadingAssetBalance, getAccountAssetBalance, isPartialRedemption]);
+  }, [
+    market,
+    assetId,
+    isLoadingAssetBalance,
+    getAccountAssetBalance,
+    isPartialRedemption,
+  ]);
 
   const button = (
     <RedeemButtonByValue
@@ -232,8 +245,10 @@ const RedeemButtonByValue = ({
   const { data: baseAssetMetadata } = useAssetMetadata(baseAsset);
 
   const tokenIndexData = useMemo(() => {
-    if(isCombinatorialToken(assetId)) {
-      const absoluteIndex = market.outcomeAssets.findIndex(asset => asset.includes(assetId.CombinatorialToken));
+    if (isCombinatorialToken(assetId)) {
+      const absoluteIndex = market.outcomeAssets.findIndex((asset) =>
+        asset.includes(assetId.CombinatorialToken),
+      );
 
       // For multi-markets with parentCollectionIds, the index is relative to the parent collection
       // Each parentCollectionId represents one parent outcome combined with all child outcomes
@@ -263,36 +278,43 @@ const RedeemButtonByValue = ({
 
   const tokenIndex = tokenIndexData.indexSet;
 
-
   // Check if this is a combinatorial market (single-market or multi-market)
   // For single-market: outcomeAssets contain the string "combinatorialToken"
   // For multi-market: outcomeAssets are hex strings (0x...), or marketType is "Combinatorial"
   const isCombinatorialMarket =
-    market.outcomeAssets.some(asset => asset.includes("combinatorialToken")) || // Single-market
+    market.outcomeAssets.some((asset) =>
+      asset.includes("combinatorialToken"),
+    ) || // Single-market
     market.marketType.categorical === "Combinatorial" || // Multi-market
     (underlyingMarketIds && underlyingMarketIds.length > 0); // Multi-market with underlying IDs
 
-    const { isLoading, isSuccess, send } = useExtrinsic(
+  const { isLoading, isSuccess, send } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk) || !signer) return;
-      if(isCombinatorialMarket)
-      {
+      if (isCombinatorialMarket) {
         // For multi-market positions, pass the underlying market IDs array.
         // Multi-markets use first marketId as parent and second marketId as child for splitting positions.
-        const marketIds = underlyingMarketIds && underlyingMarketIds.length > 0
-          ? underlyingMarketIds[1].toString()
-          : market.marketId.toString();
+        const marketIds =
+          underlyingMarketIds && underlyingMarketIds.length > 0
+            ? underlyingMarketIds[1].toString()
+            : market.marketId.toString();
 
         // Calculate which parentCollectionId to use based on absolute token index
         // tokenIndex = (parentOutcome * numChildOutcomes) + childOutcome
         // So parentOutcome = Math.floor(absoluteIndex / numChildOutcomes)
         // where numChildOutcomes = totalCombinations / numParentOutcomes
         let parentCollectionId: string | null = null;
-        if (parentCollectionIds && parentCollectionIds.length > 0 && tokenIndexData.absoluteIndex !== -1) {
+        if (
+          parentCollectionIds &&
+          parentCollectionIds.length > 0 &&
+          tokenIndexData.absoluteIndex !== -1
+        ) {
           const numParentOutcomes = parentCollectionIds.length;
           const totalCombinations = market.outcomeAssets.length;
           const numChildOutcomes = totalCombinations / numParentOutcomes;
-          const parentOutcomeIndex = Math.floor(tokenIndexData.absoluteIndex / numChildOutcomes);
+          const parentOutcomeIndex = Math.floor(
+            tokenIndexData.absoluteIndex / numChildOutcomes,
+          );
           parentCollectionId = parentCollectionIds[parentOutcomeIndex];
         }
 
@@ -300,7 +322,7 @@ const RedeemButtonByValue = ({
           parentCollectionId,
           marketIds,
           tokenIndex,
-          { total: 16, consumeAll: true }
+          { total: 16, consumeAll: true },
         );
       } else {
         return sdk.api.tx.predictionMarkets.redeemShares(market.marketId);
@@ -309,7 +331,7 @@ const RedeemButtonByValue = ({
     {
       onSuccess: () => {
         notificationStore.pushNotification(
-          `Redeemed ${value.toFixed(2)} ${parentCollectionIds?.length && parentCollectionIds.length > 0 ? "parent market outcome tokens" :  baseAssetMetadata?.symbol}`,
+          `Redeemed ${value.toFixed(2)} ${parentCollectionIds?.length && parentCollectionIds.length > 0 ? "parent market outcome tokens" : baseAssetMetadata?.symbol}`,
           {
             type: "Success",
           },

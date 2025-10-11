@@ -115,8 +115,8 @@ const ComboPoolCard = ({
   return (
     <div
       data-testid={`comboPoolCard-${pool.poolId}`}
-      className={`ztg-transition group relative flex min-w-full flex-col  
-      rounded-[10px] bg-white p-5 md:min-w-[calc(50%-8px)] md:hover:scale-[1.015] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+      className={`ztg-transition group relative flex min-w-full flex-col
+      rounded-lg bg-white p-4 shadow-md transition-all hover:shadow-lg md:min-w-[calc(50%-8px)] md:hover:scale-[1.01] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
     >
       <Link
         href={item.link}
@@ -126,30 +126,38 @@ const ComboPoolCard = ({
             return;
           }
         }}
-        className={`flex flex-1 flex-col gap-4 ${
+        className={`flex flex-1 flex-col gap-3 ${
           disableLink && "cursor-default"
         }`}
       >
-        {/* Market roles section */}
-        <div className="flex gap-2 text-xs">
+
+        {/* Market roles section - now in rows */}
+        <div className="flex flex-col gap-2">
           {sortedMarkets.map((market, index) => {
             const roleLabel = index === 0 ? "Assume" : "Then";
             const roleColor =
               index === 0
-                ? "bg-blue-100 text-blue-700"
-                : "bg-green-100 text-green-700";
+                ? "bg-blue-500 text-white"
+                : "bg-green-500 text-white";
+            const bgColor =
+              index === 0
+                ? "bg-gradient-to-br from-blue-50 to-blue-100/50"
+                : "bg-gradient-to-br from-green-50 to-green-100/50";
             return (
               <div
                 key={market.marketId}
-                className="flex-1 rounded border border-gray-200 bg-gray-50 p-2"
+                className={`rounded-lg ${bgColor} p-1 shadow-sm h-12`}
               >
-                <span className="line-clamp-3 text-xs text-gray-700">
-                <span
-                  className={`mb-1 rounded mr-1 px-1.5 py-0.5 text-xxs font-semibold ${roleColor}`}
-                >
-                  {roleLabel}
-                </span> {market.question}
-                </span>
+                <div className="flex items-start gap-2">
+                  <span
+                    className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold shadow-sm ${roleColor}`}
+                  >
+                    {roleLabel}
+                  </span>
+                  <span className="line-clamp-2 flex-1 text-sm font-semibold text-sky-900 leading-tight">
+                    {market.question}
+                  </span>
+                </div>
               </div>
             );
           })}
@@ -162,63 +170,59 @@ const ComboPoolCard = ({
           />
         </div>
 
-        <div className="flex flex-1 gap-2">
-          <div className="flex-1">
-            <div className="flex items-center text-xs">
-              <div>
-                <span>
-                  {earliestEndDate &&
-                    `${hasEnded ? "Ended" : "Ends"} ${new Date(
-                      earliestEndDate,
-                    ).toLocaleString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}`}
-                </span>
-                {isEnding() && <span className="ml-1 text-red">Ends Soon</span>}
-                <span className="ml-1 border-l-1 border-l-black pl-1 font-semibold ">
-                  {totalOutcomes} outcomes • {sortedMarkets.length} markets
-                </span>
+        <div className="mt-auto flex w-full items-center text-xs text-sky-900">
+          <div>
+            <span className="font-semibold">
+              {earliestEndDate &&
+                `${hasEnded ? "Ended" : "Ends"} ${new Date(
+                  earliestEndDate,
+                ).toLocaleString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })}`}
+            </span>
+            {isEnding() && <span className="ml-1 text-red">Ends Soon</span>}
+            <span className="ml-1 border-l-1 border-l-black pl-1 ">
+              {totalOutcomes} outcomes
+            </span>
+          </div>
+          <div className="ml-auto flex items-center justify-center gap-1.5">
+            {stats.participants != undefined && baseAsset ? (
+              <div className="flex items-center gap-0.5">
+                <Users size={12} className="text-sky-900" />
+                <span>{formatNumberCompact(stats.participants, 2)}</span>
               </div>
-              <div className="ml-auto flex items-center justify-center gap-1.5">
-                {stats.participants != undefined && baseAsset ? (
-                  <div className="flex items-center gap-0.5">
-                    <Users size={12} />
-                    <span>{formatNumberCompact(stats.participants, 2)}</span>
-                  </div>
-                ) : (
-                  <Skeleton width={30} height={12} />
+            ) : (
+              <Skeleton width={30} height={12} />
+            )}
+            <div className="flex items-center gap-1">
+              <BarChart2 size={12} className="text-sky-900" />
+              <span>
+                {formatNumberCompact(
+                  new Decimal(stats.volume).div(ZTG).toNumber(),
+                  2,
                 )}
-                <div className="flex items-center gap-1">
-                  <BarChart2 size={12} />
-                  <span>
-                    {formatNumberCompact(
-                      new Decimal(stats.volume).div(ZTG).toNumber(),
-                      2,
-                    )}
-                  </span>
-                </div>
-                {stats.liquidity != undefined && baseAsset ? (
-                  <div className="flex items-center gap-1">
-                    <Droplet size={12} />
-                    <span>
-                      {formatNumberCompact(
-                        new Decimal(stats.liquidity).div(ZTG).toNumber(),
-                        2,
-                      )}
-                    </span>
-                  </div>
-                ) : (
-                  <Skeleton width={30} height={12} />
-                )}
-                <SimpleImage
-                  src={imagePath}
-                  alt="Currency token logo"
-                  className="rounded-full"
-                  style={{ width: "12px", height: "12px" }}
-                />
-              </div>
+              </span>
             </div>
+            {stats.liquidity != undefined && baseAsset ? (
+              <div className="flex items-center gap-1">
+                <Droplet size={12} className="text-sky-900" />
+                <span>
+                  {formatNumberCompact(
+                    new Decimal(stats.liquidity).div(ZTG).toNumber(),
+                    2,
+                  )}
+                </span>
+              </div>
+            ) : (
+              <Skeleton width={30} height={12} />
+            )}
+            <SimpleImage
+              src={imagePath}
+              alt="Currency token logo"
+              className="rounded-full"
+              style={{ width: "12px", height: "12px" }}
+            />
           </div>
         </div>
       </Link>
@@ -248,11 +252,11 @@ const ComboPoolPredictionBar = ({
   if (!spotPrices || spotPrices.size === 0) {
     return (
       <>
-        <div className="mb-1 flex justify-between text-sm">
+        <div className="mb-1 flex justify-between text-xs">
           <span className="text-gray-500">No liquidity in this pool</span>
           <span className="text-gray-500">0%</span>
         </div>
-        <div className="h-1.5 w-full rounded-lg bg-gray-100"></div>
+        <div className="h-2 w-full rounded-lg bg-gray-100"></div>
       </>
     );
   }
@@ -287,17 +291,17 @@ const ComboPoolPredictionBar = ({
     `Combination ${highestIndex + 1}`;
 
   return (
-    <div className={`relative h-[30px] w-full bg-gray-200 transition-all`}>
-      <div className="absolute flex h-full w-full items-center justify-between px-2.5 text-sm">
-        <span className="line-clamp-1 text-purple-600">
+    <div className={`relative h-8 w-full overflow-hidden rounded-lg bg-gradient-to-r from-sky-50 to-sky-100 shadow-sm transition-all`}>
+      <div className="absolute flex h-full w-full items-center justify-between px-3 text-sm">
+        <span className="line-clamp-1 font-semibold text-sky-700">
           {leadingOutcomeName}
         </span>
-        <span className="text-purple-600 transition-all">
+        <span className="font-bold text-sky-700 transition-all">
           {highestPercentage}%
         </span>
       </div>
       <div
-        className={`h-full bg-purple-200`}
+        className={`h-full bg-gradient-to-r from-sky-200 to-sky-300`}
         style={{
           width: `${isNaN(highestPercentage) ? 0 : highestPercentage}%`,
         }}

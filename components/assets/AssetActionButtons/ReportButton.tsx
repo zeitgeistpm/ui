@@ -45,7 +45,7 @@ const ReportButton = ({
         // For combinatorial tokens, find the index in the market's outcome assets
         const tokenHash = assetId.CombinatorialToken;
         const index = market.outcomeAssets?.findIndex((outcomeAsset) =>
-          outcomeAsset.includes(tokenHash)
+          outcomeAsset.includes(tokenHash),
         );
         if (index !== undefined && index >= 0) {
           outcomeIndex = index;
@@ -83,7 +83,7 @@ const ReportButton = ({
       // For combinatorial tokens in multi-market positions, find the outcome by matching the token
       const tokenHash = assetId.CombinatorialToken;
       const index = market.outcomeAssets?.findIndex((outcomeAsset) =>
-        outcomeAsset.includes(tokenHash)
+        outcomeAsset.includes(tokenHash),
       );
       if (index !== undefined && index >= 0) {
         outcomeName = market.categories?.[index]?.name || "";

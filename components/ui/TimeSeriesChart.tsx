@@ -46,9 +46,9 @@ const ChartToolTip = (props) => {
       {props.label !== undefined &&
       props.label !== -Infinity &&
       props.label !== Infinity ? (
-        <div className="rounded-lg bg-gradient-to-br from-purple-50 to-blue-50 px-3 py-3 shadow-xl backdrop-blur-sm">
+        <div className="rounded-lg bg-gradient-to-br from-sky-50 to-blue-50 px-3 py-3 shadow-xl backdrop-blur-sm">
           <div className="text-xs">
-            <div className="mb-2 flex items-center gap-2 border-b border-purple-200/50 pb-2">
+            <div className="mb-2 flex items-center gap-2 border-b border-sky-200/50 pb-2">
               <span className="font-semibold text-gray-700">
                 {new Intl.DateTimeFormat("default", {
                   dateStyle: "short",
@@ -63,7 +63,10 @@ const ChartToolTip = (props) => {
             </div>
             <div className="space-y-2">
               {items?.map((item, index) => (
-                <div key={index} className="flex items-center justify-between gap-4">
+                <div
+                  key={index}
+                  className="flex items-center justify-between gap-4"
+                >
                   <div className="flex items-center gap-2">
                     <div
                       className="h-2 w-2 rounded-full"
@@ -135,7 +138,7 @@ const TimeSeriesChart = ({
             <CartesianGrid
               strokeDasharray="3 3"
               strokeWidth={1}
-              stroke="#E9D5FF"
+              stroke="#BAE6FD"
               vertical={false}
             />
             <XAxis
@@ -150,7 +153,7 @@ const TimeSeriesChart = ({
               }}
               tickMargin={10}
               type="number"
-              stroke="#E9D5FF"
+              stroke="#BAE6FD"
               tickLine={true}
               strokeWidth={2}
               tickFormatter={(unixTime) => {
@@ -191,7 +194,7 @@ const TimeSeriesChart = ({
                   },
                 ]
               }
-              stroke="#E9D5FF"
+              stroke="#BAE6FD"
               strokeWidth={2}
               tickFormatter={(val) => `${+val.toFixed(2)}`}
             >

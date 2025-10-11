@@ -221,9 +221,8 @@ const Market: NextPage<MarketPageProps> = ({
   const { marketid } = router.query;
 
   // Prioritize URL parameter over static props to ensure correct data on navigation
-  const marketId = router.isReady && marketid
-    ? Number(marketid)
-    : indexedMarket?.marketId;
+  const marketId =
+    router.isReady && marketid ? Number(marketid) : indexedMarket?.marketId;
   const { realAddress } = useWallet();
   const marketData = indexedMarket;
 
@@ -291,27 +290,29 @@ const Market: NextPage<MarketPageProps> = ({
     if (hasCategorialOutcomes) {
       // Regular market using combo pool - need to match combo tokens to market.outcomeAssets order
       const comboTokens = poolData.assetIds.filter(isCombinatorialToken);
-      
+
       // Sort combo tokens to match the order in market.outcomeAssets
       const sortedTokens: CombinatorialToken[] = [];
       for (const marketAsset of marketAssetStrings) {
         // Parse the market asset to get the token ID
         const marketAssetObj = JSON.parse(marketAsset);
         const tokenId = marketAssetObj?.combinatorialToken;
-        
+
         if (tokenId) {
           // Find the matching combo token
-          const matchingToken = comboTokens.find(token => 
-            token.CombinatorialToken === tokenId
+          const matchingToken = comboTokens.find(
+            (token) => token.CombinatorialToken === tokenId,
           );
           if (matchingToken) {
             sortedTokens.push(matchingToken);
           }
         }
       }
-      
+
       // If we didn't find all tokens, fall back to original order
-      return sortedTokens.length > 0 ? sortedTokens : comboTokens.slice(0, outcomeAssets.length);
+      return sortedTokens.length > 0
+        ? sortedTokens
+        : comboTokens.slice(0, outcomeAssets.length);
     }
 
     // True combo market - try to match tokens and maintain market.outcomeAssets order
@@ -337,20 +338,24 @@ const Market: NextPage<MarketPageProps> = ({
 
     // Sort filtered assets to match market.outcomeAssets order
     const sortedFiltered = filtered.sort((a, b) => {
-      const aString = isCombinatorialToken(a) ? a.CombinatorialToken : JSON.stringify(a);
-      const bString = isCombinatorialToken(b) ? b.CombinatorialToken : JSON.stringify(b);
-      
-      const aIndex = marketAssetStrings.findIndex((marketAsset: string) => 
-        marketAsset.includes(aString)
+      const aString = isCombinatorialToken(a)
+        ? a.CombinatorialToken
+        : JSON.stringify(a);
+      const bString = isCombinatorialToken(b)
+        ? b.CombinatorialToken
+        : JSON.stringify(b);
+
+      const aIndex = marketAssetStrings.findIndex((marketAsset: string) =>
+        marketAsset.includes(aString),
       );
-      const bIndex = marketAssetStrings.findIndex((marketAsset: string) => 
-        marketAsset.includes(bString)
+      const bIndex = marketAssetStrings.findIndex((marketAsset: string) =>
+        marketAsset.includes(bString),
       );
-      
+
       // If not found, put at end
       const aPos = aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex;
       const bPos = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
-      
+
       return aPos - bPos;
     });
 
@@ -494,15 +499,14 @@ const Market: NextPage<MarketPageProps> = ({
     // Debug logging
     const filteredAssets = relevantPoolAssets.filter(isCombinatorialToken);
 
-    return filteredAssets
-      .map((asset, index) => {
-        const categoryIndex = index < categories.length ? index : 0;
-        return {
-          assetId: asset,
-          name: categories[categoryIndex]?.name || `Outcome ${index}`,
-          color: categories[categoryIndex]?.color || colors[index],
-        };
-      });
+    return filteredAssets.map((asset, index) => {
+      const categoryIndex = index < categories.length ? index : 0;
+      return {
+        assetId: asset,
+        name: categories[categoryIndex]?.name || `Outcome ${index}`,
+        color: categories[categoryIndex]?.color || colors[index],
+      };
+    });
   }, [
     relevantPoolAssets,
     market?.categories,
@@ -512,9 +516,9 @@ const Market: NextPage<MarketPageProps> = ({
   ]);
 
   return (
-    <div className="mt-6">
-      <div className="relative flex flex-auto gap-12">
-        <div className="flex-1 overflow-hidden">
+    <div className="">
+      <div className="relative grid gap-8 md:grid-cols-[1fr_auto]">
+        <div className="min-w-0">
           <MarketMeta market={marketData} />
 
           <MarketHeader
@@ -534,7 +538,7 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           )}
 
-          <div className="mt-4">
+          <div className="mt-4 rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
             <Tab.Group defaultIndex={hasLiveTwitchStream ? 1 : 0}>
               <Tab.List
                 className={`flex gap-2 text-sm ${
@@ -635,25 +639,24 @@ const Market: NextPage<MarketPageProps> = ({
           {realAddress &&
             isOrdersLoading === false &&
             (orders?.length ?? 0) > 0 && (
-              <div className="mt-3 flex flex-col gap-y-3">
-                <div>My Orders</div>
-                <OrdersTable
-                  where={{
-                    marketId_eq: marketId,
-                    makerAccountId_eq: realAddress,
-                  }}
-                />
+              <div className="mt-4 rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
+                <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                  My Orders
+                </h3>
+                <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
+                  <OrdersTable
+                    where={{
+                      marketId_eq: marketId,
+                      makerAccountId_eq: realAddress,
+                    }}
+                  />
+                </div>
               </div>
             )}
           {marketIsLoading === false && marketHasPool === false && (
-            <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
-              <div className="h-ztg-20 w-ztg-20">
-                <AlertTriangle size={20} />
-              </div>
-              <div
-                className="ml-ztg-10 text-ztg-12-120 "
-                data-test="liquidityPoolMessage"
-              >
+            <div className="flex items-center gap-3 rounded-lg bg-red-50/80 p-4 text-red-600 shadow-sm backdrop-blur-sm">
+              <AlertTriangle size={20} className="flex-shrink-0" />
+              <div className="text-sm" data-test="liquidityPoolMessage">
                 This market doesn't have a liquidity pool and therefore cannot
                 be traded
               </div>
@@ -683,77 +686,83 @@ const Market: NextPage<MarketPageProps> = ({
                 )}
               </div>
             )}
-            <MarketAssetDetails
-              marketId={marketId ?? 0}
-              categories={marketData.categories}
-            />
+            <div className="rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 shadow-lg">
+              <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
+                <MarketAssetDetails
+                  marketId={marketId ?? 0}
+                  categories={marketData.categories}
+                />
+              </div>
+            </div>
           </div>
-
+            
           <div className="mb-12 max-w-[90vw]">
             <MarketDescription market={marketData} />
           </div>
 
-          <AddressDetails title="Oracle" address={marketData.oracle} />
+          <div className="rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
+            <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
+            <AddressDetails title="Oracle" address={marketData.oracle} />
+            </div>
+          </div>
           {marketHasPool === true && (
-            <div className="mt-10 flex flex-col gap-4">
-              <h3 className="mb-5 text-2xl">Latest Trades</h3>
-              <LatestTrades
-                limit={3}
-                marketId={marketId}
-                outcomeAssets={(() => {
-                  if (!relevantPoolAssets?.some(isCombinatorialToken))
-                    return undefined;
+            <div className="mt-10 rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
+              <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                Latest Trades
+              </h3>
+              <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
+                <LatestTrades
+                  limit={3}
+                  marketId={marketId}
+                  outcomeAssets={(() => {
+                    if (!relevantPoolAssets?.some(isCombinatorialToken))
+                      return undefined;
 
-                  const comboAssets =
-                    relevantPoolAssets.filter(isCombinatorialToken);
+                    const comboAssets =
+                      relevantPoolAssets.filter(isCombinatorialToken);
 
-                  // Apply consistent ordering to match market.outcomeAssets
-                  if (!marketData?.outcomeAssets) return comboAssets;
+                    // Apply consistent ordering to match market.outcomeAssets
+                    if (!marketData?.outcomeAssets) return comboAssets;
 
-                  return comboAssets.sort((a, b) => {
-                    const aIndex = marketData.outcomeAssets.findIndex(
-                      (marketAsset) => {
-                        if (
-                          typeof marketAsset === "string" &&
-                          marketAsset.includes(a.CombinatorialToken)
-                        ) {
-                          return true;
-                        }
-                        return JSON.stringify(marketAsset).includes(
-                          a.CombinatorialToken,
-                        );
-                      },
-                    );
+                    return comboAssets.sort((a, b) => {
+                      const aIndex = marketData.outcomeAssets.findIndex(
+                        (marketAsset) => {
+                          if (
+                            typeof marketAsset === "string" &&
+                            marketAsset.includes(a.CombinatorialToken)
+                          ) {
+                            return true;
+                          }
+                          return JSON.stringify(marketAsset).includes(
+                            a.CombinatorialToken,
+                          );
+                        },
+                      );
 
-                    const bIndex = marketData.outcomeAssets.findIndex(
-                      (marketAsset) => {
-                        if (
-                          typeof marketAsset === "string" &&
-                          marketAsset.includes(b.CombinatorialToken)
-                        ) {
-                          return true;
-                        }
-                        return JSON.stringify(marketAsset).includes(
-                          b.CombinatorialToken,
-                        );
-                      },
-                    );
+                      const bIndex = marketData.outcomeAssets.findIndex(
+                        (marketAsset) => {
+                          if (
+                            typeof marketAsset === "string" &&
+                            marketAsset.includes(b.CombinatorialToken)
+                          ) {
+                            return true;
+                          }
+                          return JSON.stringify(marketAsset).includes(
+                            b.CombinatorialToken,
+                          );
+                        },
+                      );
 
-                    return aIndex - bIndex;
-                  });
-                })()}
-                outcomeNames={
-                  relevantPoolAssets?.some(isCombinatorialToken)
-                    ? marketData?.categories?.map((cat) => cat.name)
-                    : undefined
-                }
-              />
-              <Link
-                className="w-full text-center text-ztg-blue"
-                href={`/latest-trades?marketId=${marketId}`}
-              >
-                View more
-              </Link>
+                      return aIndex - bIndex;
+                    });
+                  })()}
+                  outcomeNames={
+                    relevantPoolAssets?.some(isCombinatorialToken)
+                      ? marketData?.categories?.map((cat) => cat.name)
+                      : undefined
+                  }
+                />
+              </div>
             </div>
           )}
 
@@ -766,18 +775,18 @@ const Market: NextPage<MarketPageProps> = ({
           {market && (marketHasPool || poolDeployed) && (
             <div className="my-12">
               <div
-                className="mb-8 flex cursor-pointer items-center text-mariner"
+                className="mb-4 flex cursor-pointer items-center rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 px-4 py-3 font-semibold text-sky-700 shadow-lg transition-all hover:shadow-xl"
                 onClick={() => toggleLiquiditySection()}
               >
                 <div>Show Liquidity</div>
                 <ChevronDown
-                  size={12}
-                  viewBox="6 6 12 12"
-                  className={`box-content px-2 ${
+                  size={16}
+                  className={`ml-2 transition-transform ${
                     showLiquidity && "rotate-180"
                   }`}
                 />
               </div>
+
               <Transition
                 enter="transition ease-out duration-100"
                 enterFrom="transform opacity-0 "
@@ -787,20 +796,24 @@ const Market: NextPage<MarketPageProps> = ({
                 leaveTo="transform opacity-0 "
                 show={showLiquidity && Boolean(marketHasPool || poolDeployed)}
               >
-                <MarketLiquiditySection
-                  pool={poolDeployed}
-                  market={market}
-                  comboMarket={false}
-                />
+                <div className="rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
+                  <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
+                    <MarketLiquiditySection
+                      pool={poolDeployed}
+                      market={market}
+                      comboMarket={false}
+                    />
+                  </div>
+                </div>
               </Transition>
             </div>
           )}
         </div>
 
-        <div className="hidden md:-mr-6 md:block md:w-[320px] lg:mr-auto lg:w-[460px]">
-          <div className="sticky top-28">
+        <div className="hidden md:block md:w-[320px] lg:w-[400px] xl:w-[460px]">
+          <div className="sticky top-20">
             <div
-              className="mb-12 animate-pop-in rounded-lg  opacity-0 shadow-lg"
+              className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg"
               style={{
                 background:
                   "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
@@ -931,7 +944,7 @@ const MobileContextButtons = ({
       </Transition>
 
       <div
-        className={`fixed bottom-20 left-0 z-50 w-full rounded-t-lg bg-white pb-12 transition-all duration-500 ease-in-out md:hidden ${
+        className={`fixed bottom-12 left-0 z-50 w-full rounded-t-lg bg-white pb-12 transition-all duration-500 ease-in-out md:hidden ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
@@ -969,7 +982,7 @@ const MobileContextButtons = ({
         market?.status === MarketStatus.Reported ||
         marketData?.status === "Reported") && (
         <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-          <div className="flex h-20 cursor-pointer text-lg font-semibold">
+          <div className="flex h-14 cursor-pointer text-lg font-semibold">
             {market?.status === MarketStatus.Active ||
             marketData?.status === "Active" ? (
               <>
@@ -1068,25 +1081,25 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
           {({ open }) => (
             <>
               <Disclosure.Button
-                className={`relative z-20 flex w-full items-center rounded-md px-5 py-2 ${
-                  !open && "bg-orange-400 "
+                className={`relative z-20 flex w-full items-center rounded-lg px-5 py-3 transition-all ${
+                  !open
+                    ? "bg-orange-400 text-white shadow-md"
+                    : "bg-white/60 text-sky-800 backdrop-blur-sm"
                 }`}
               >
                 <h3
-                  className={`flex-1 text-left text-base ${
-                    open ? "opacity-0" : "text-white opacity-100"
+                  className={`flex-1 text-left text-base font-semibold ${
+                    open ? "opacity-100" : "opacity-100"
                   }`}
                 >
-                  Market can be disputed
+                  {open ? "Close" : "Market can be disputed"}
                 </h3>
                 {open ? (
-                  <X />
+                  <X size={18} />
                 ) : (
                   <FaChevronUp
                     size={18}
-                    className={`justify-end text-gray-600 ${
-                      !open && "rotate-180 text-white"
-                    }`}
+                    className="rotate-180 justify-end"
                   />
                 )}
               </Disclosure.Button>
@@ -1097,7 +1110,7 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
                 leave="transition duration-75 ease-out"
                 leaveFrom="transform scale-100 opacity-100"
                 leaveTo="transform scale-95 opacity-0"
-                className="relative z-10 -mt-[30px]"
+                className="relative z-10 -mt-[8px] rounded-b-lg bg-white/60 px-5 pb-10 pt-12 backdrop-blur-sm"
               >
                 <Disclosure.Panel>
                   {isMarketCategoricalOutcome(reportedOutcome) ? (
@@ -1140,26 +1153,26 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
   return !userCanReport ? (
     <></>
   ) : (
-    <div className="px-5 py-10">
+    <div className="rounded-lg bg-white/60 px-5 py-10 shadow-sm backdrop-blur-sm">
       {reportedOutcome ? (
         <ReportResult market={market} outcome={reportedOutcome} />
       ) : (
         <>
-          <h4 className="mb-4 flex items-center gap-2">
-            <AiOutlineFileAdd size={20} className="text-gray-600" />
-            <span>Report Market Outcome</span>
+          <h4 className="mb-4 flex items-center gap-2 text-sky-800">
+            <AiOutlineFileAdd size={20} />
+            <span className="font-semibold">Report Market Outcome</span>
           </h4>
 
-          <p className="mb-6 text-sm">
+          <p className="mb-6 text-sm text-gray-700">
             Market has closed and the outcome can now be reported.
           </p>
 
           {stage?.type === "OpenReportingPeriod" && (
             <>
-              <p className="-mt-3 mb-6 text-sm italic text-gray-500">
+              <p className="-mt-3 mb-6 text-sm italic text-gray-600">
                 Oracle failed to report. Reporting is now open to all.
               </p>
-              <p className="mb-6 text-sm">
+              <p className="mb-6 text-sm text-gray-700">
                 Bond cost: {chainConstants?.markets.outsiderBond}{" "}
                 {chainConstants?.tokenSymbol}
               </p>
@@ -1189,13 +1202,13 @@ const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
   const router = useRouter();
 
   return (
-    <div className="px-5 py-8">
-      <h4 className="mb-3 flex items-center gap-2">
+    <div className="rounded-lg bg-white/60 px-5 py-8 shadow-sm backdrop-blur-sm">
+      <h4 className="mb-3 flex items-center gap-2 font-semibold text-sky-800">
         <Image width={22} height={22} src="/icons/court.svg" alt="court" />
         <span>Market Court Case</span>
       </h4>
 
-      <p className="mb-5 text-sm">
+      <p className="mb-5 text-sm text-gray-700">
         Market has been disputed and is awaiting a ruling in court.
       </p>
 
@@ -1203,7 +1216,7 @@ const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
         disabled={!isFetched}
         onClick={() => router.push(`/court/${caseId}`)}
         onMouseEnter={() => router.prefetch(`/court/${caseId}`)}
-        className={`ztg-transition h-[56px] w-full rounded-full bg-purple-400 text-white focus:outline-none disabled:cursor-default disabled:bg-slate-300`}
+        className={`ztg-transition h-[56px] w-full rounded-full bg-sky-600 text-white shadow-sm transition-all hover:bg-sky-700 hover:shadow-md focus:outline-none disabled:cursor-default disabled:bg-slate-300`}
       >
         View Case
       </button>

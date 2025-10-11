@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useRef, useState } from "react";
+import { FC, PropsWithChildren, useRef, useState, useEffect } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -37,6 +37,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   useSubscribeBlockEvents();
   const [tradeItem, setTradeItem] = useState<TradeItem | null>(null);
+  const [topBarHeight, setTopBarHeight] = useState(52); // Default fallback
 
   const {
     width,
@@ -46,22 +47,41 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Measure TopBar height dynamically (includes QuickNav when visible)
+  useEffect(() => {
+    const measureTopBarHeight = () => {
+      const topBarElement = document.getElementById("top-bar-container");
+      if (topBarElement) {
+        const height = topBarElement.offsetHeight;
+        setTopBarHeight(height);
+      }
+    };
+
+    // Measure on mount and route changes
+    measureTopBarHeight();
+
+    // Re-measure after a short delay to account for transitions
+    const timer = setTimeout(measureTopBarHeight, 100);
+
+    return () => clearTimeout(timer);
+  }, [router.pathname]);
+
   return (
     <div
-      className={`relative min-h-screen justify-evenly ${
+      className={`bg-sky-50/50 relative flex min-h-screen w-full flex-col ${
         greyBackgroundPageRoutes.includes(router.pathname) ||
         router.pathname.match("topics")
-          ? "bg-light-gray"
+          ? "bg-sky-50"
           : ""
       }`}
     >
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
-        <div ref={contentRef} className={`flex-grow`}>
+        <div ref={contentRef} className="flex flex-1 flex-col">
           <TopBar />
           <main
-            className="container-fluid mb-12 mt-16"
+            className="container-fluid mb-10 flex-1"
+            style={{ marginTop: `${topBarHeight + 16}px` }}
             ref={mainRef}
-            style={{ minHeight: "calc(100vh - 300px)" }}
           >
             <div
               className={`w-full ${

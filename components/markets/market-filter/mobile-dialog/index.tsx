@@ -7,12 +7,16 @@ import FilterDetails from "./FilterDetails";
 
 const TRANSITION_DURATION = 300;
 
+import { MarketType } from "lib/types/market-filter";
+
 export type MobileDialogProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
+  marketType?: MarketType;
+  onMarketTypeChange?: (type: MarketType) => void;
 };
 
-const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
+const MobileDialog = ({ open, setOpen, marketType, onMarketTypeChange }: MobileDialogProps) => {
   const [showTransition, setShowTransition] = useState(open);
   const [currentSelection, setCurrentSelection] =
     useState<SelectedMenu>("None");
@@ -54,21 +58,22 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
         className="absolute left-0 top-0 h-full w-full bg-white"
         appear={true}
       >
-        <Dialog.Panel className="h-full w-full">
-          <div className="flex h-[72px] items-center border-b border-gray-200 px-8 py-3.5 text-xl">
-            <div className="text-xl">Filters</div>
+        <Dialog.Panel className="h-full w-full bg-gradient-to-b from-white via-sky-50/20 to-white">
+          <div className="flex h-16 items-center border-b border-sky-200 bg-white px-6 py-3 shadow-sm">
+            <div className="text-lg font-semibold text-gray-900">Filters</div>
             <div className="ml-auto">
-              <X
-                size={24}
-                className="cursor-pointer"
+              <button
                 onClick={close}
                 tabIndex={1}
-              />
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-sky-50 hover:text-sky-700"
+              >
+                <X size={20} />
+              </button>
             </div>
           </div>
           <div
-            className="flex h-full flex-col px-10 py-6"
-            style={{ height: "calc(100vh - 72px)" }}
+            className="flex h-full flex-col px-6 py-4"
+            style={{ height: "calc(100vh - 64px)" }}
           >
             {
               {
@@ -79,6 +84,8 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
                       setStep(1);
                     }}
                     close={close}
+                    marketType={marketType}
+                    onMarketTypeChange={onMarketTypeChange}
                   />
                 ),
                 1: (

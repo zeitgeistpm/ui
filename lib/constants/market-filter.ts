@@ -76,6 +76,7 @@ export const defaultMarketsQueryState: MarketsListQuery = {
   },
   ordering: MarketsOrderBy.MostVolume,
   liquidityOnly: true,
+  marketType: "regular",
 };
 
 export const marketsOrderByOptions: MarketOrderByOption[] = Object.values(

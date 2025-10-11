@@ -479,25 +479,46 @@ const ComboMarketEditor: React.FC = () => {
             <div className="space-y-4 text-sm">
               {/* Core Concept */}
               <p className="text-gray-800">
-                Trade on <strong>conditional outcomes</strong> — what happens in one market given an outcome in another.
-                <strong className="text-blue-700"> Market 1 ("Assume")</strong> is the condition, and
-                <strong className="text-green-700"> Market 2 ("Then")</strong> is the consequence or welfare metric.
+                Trade on <strong>conditional outcomes</strong> — what happens in
+                one market given an outcome in another.
+                <strong className="text-blue-700">
+                  {" "}
+                  Market 1 ("Assume")
+                </strong>{" "}
+                is the condition, and
+                <strong className="text-green-700">
+                  {" "}
+                  Market 2 ("Then")
+                </strong>{" "}
+                is the consequence or welfare metric.
               </p>
 
               {/* Examples */}
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="rounded-md bg-white p-3 shadow-sm">
-                  <div className="mb-1 text-xs font-semibold text-gray-600">Example 1:</div>
+                  <div className="mb-1 text-xs font-semibold text-gray-600">
+                    Example 1:
+                  </div>
                   <p className="text-xs leading-relaxed text-gray-800">
-                    <strong className="text-blue-700">Assume:</strong> "Referendum #1764 passes", <strong className="text-blue-700">No</strong> <br />
-                    <strong className="text-green-700">THEN:</strong> "Ecosystem gains 100k new users",<strong className="text-green-700"> Short</strong>
+                    <strong className="text-blue-700">Assume:</strong>{" "}
+                    "Referendum #1764 passes",{" "}
+                    <strong className="text-blue-700">No</strong> <br />
+                    <strong className="text-green-700">THEN:</strong> "Ecosystem
+                    gains 100k new users",
+                    <strong className="text-green-700"> Short</strong>
                   </p>
                 </div>
                 <div className="rounded-md bg-white p-3 shadow-sm">
-                  <div className="mb-1 text-xs font-semibold text-gray-600">Example 2:</div>
+                  <div className="mb-1 text-xs font-semibold text-gray-600">
+                    Example 2:
+                  </div>
                   <p className="text-xs leading-relaxed text-gray-800">
-                    <strong className="text-blue-700">Assume:</strong> "Lakers win championship", <strong className="text-blue-700">Yes</strong> <br />
-                    <strong className="text-green-700">THEN:</strong> "Bitcoin reaches $100k", <strong className="text-green-700">Long</strong>
+                    <strong className="text-blue-700">Assume:</strong> "Lakers
+                    win championship",{" "}
+                    <strong className="text-blue-700">Yes</strong> <br />
+                    <strong className="text-green-700">THEN:</strong> "Bitcoin
+                    reaches $100k",{" "}
+                    <strong className="text-green-700">Long</strong>
                   </p>
                 </div>
               </div>
@@ -538,7 +559,9 @@ const ComboMarketEditor: React.FC = () => {
                         >
                           "{marketRole}" Market
                         </span>
-                        <h3 className="font-medium text-base">{market.question}</h3>
+                        <h3 className="text-base font-medium">
+                          {market.question}
+                        </h3>
                       </div>
                       <div className="mb-1 text-xs italic text-gray-600">
                         {roleDescription}
@@ -608,13 +631,14 @@ const ComboMarketEditor: React.FC = () => {
       {outcomeCombinations.length > 0 && form.selectedMarkets.length === 2 && (
         <div className="mb-8">
           <h2 className="mb-4 text-xl font-semibold">
-            Outcome Combinations & Pricing ({outcomeCombinations.length} Outcomes)
+            Outcome Combinations & Pricing ({outcomeCombinations.length}{" "}
+            Outcomes)
           </h2>
           {/* Helpful tip */}
           <div className="my-3 rounded-md bg-blue-50 p-3 text-xs text-blue-800">
-            💡 <strong>Tip:</strong> These combinations show how traders will interpret
-            your market. Make sure the logic flows naturally from the "Assume" condition
-            to the "Then" outcome.
+            💡 <strong>Tip:</strong> These combinations show how traders will
+            interpret your market. Make sure the logic flows naturally from the
+            "Assume" condition to the "Then" outcome.
           </div>
           <div className="space-y-4">
             {outcomeCombinations.map((combination, index) => {
@@ -627,7 +651,7 @@ const ComboMarketEditor: React.FC = () => {
               return (
                 <div
                   key={combination.id}
-                  className="rounded-lg border-l-4 border bg-white p-5 shadow-sm"
+                  className="rounded-lg border border-l-4 bg-white p-5 shadow-sm"
                   style={{ borderLeftColor: combination.color }}
                 >
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -643,14 +667,26 @@ const ComboMarketEditor: React.FC = () => {
                         </div>
                         <div className="text-xs leading-relaxed text-gray-700">
                           <div className="mb-1">
-                            <span className="font-semibold text-blue-700">Assume:</span>{" "}
-                            <span className="italic text-gray-600">{form.selectedMarkets[0].question}, </span>
-                            <span className="font-semibold text-blue-700 uppercase">{combination.market1Outcome}</span>
+                            <span className="font-semibold text-blue-700">
+                              Assume:
+                            </span>{" "}
+                            <span className="italic text-gray-600">
+                              {form.selectedMarkets[0].question},{" "}
+                            </span>
+                            <span className="font-semibold uppercase text-blue-700">
+                              {combination.market1Outcome}
+                            </span>
                           </div>
                           <div>
-                            <span className="font-semibold text-green-700">THEN:</span>{" "}
-                            <span className="italic text-gray-600">{form.selectedMarkets[1].question}, </span>
-                            <span className="font-semibold text-green-700 uppercase">{combination.market2Outcome}</span>
+                            <span className="font-semibold text-green-700">
+                              THEN:
+                            </span>{" "}
+                            <span className="italic text-gray-600">
+                              {form.selectedMarkets[1].question},{" "}
+                            </span>
+                            <span className="font-semibold uppercase text-green-700">
+                              {combination.market2Outcome}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -672,7 +708,9 @@ const ComboMarketEditor: React.FC = () => {
                         <Input
                           type="number"
                           value={form.spotPrices[index] || ""}
-                          onChange={(e) => updateSpotPrice(index, e.target.value)}
+                          onChange={(e) =>
+                            updateSpotPrice(index, e.target.value)
+                          }
                           className="w-30 text-right"
                           step="0.1"
                           min="0"

@@ -206,7 +206,8 @@ const SellForm = ({
       const amount = getValues("amount");
       const effectivePoolId = poolData?.poolId || pool?.poolId;
 
-      const categoryCount = poolData?.assetIds?.length || market?.categories?.length;
+      const categoryCount =
+        poolData?.assetIds?.length || market?.categories?.length;
 
       if (
         !isRpcSdk(sdk) ||

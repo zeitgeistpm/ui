@@ -41,11 +41,12 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
       // Get the current query from the URL at the time of calling
       const currentQueryParams = getQueryParams(router.asPath);
       const currentQuery = parseQuery(currentQueryParams);
-      
+
       const filters = update.filters ?? currentQuery.filters;
       const ordering = update.ordering ?? currentQuery.ordering;
       const liquidityOnly = update.liquidityOnly ?? currentQuery.liquidityOnly;
-      const newQuery = { filters, ordering, liquidityOnly };
+      const marketType = update.marketType ?? currentQuery.marketType;
+      const newQuery = { filters, ordering, liquidityOnly, marketType };
       router.replace(
         {
           query: toString(newQuery),
@@ -61,7 +62,7 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
 };
 
 const toString = (query: DeepPartial<MarketsListQuery>) => {
-  const { filters, ordering, liquidityOnly } = query;
+  const { filters, ordering, liquidityOnly, marketType } = query;
 
   const filtersEntries = filterTypes
     .map((type) => {
@@ -86,7 +87,14 @@ const toString = (query: DeepPartial<MarketsListQuery>) => {
 
   const liquidityOnlyQueryStr = `liquidityOnly=${liquidityOnly}`;
 
-  return [filtersQueryStr, orderingQueryStr, liquidityOnlyQueryStr].join("&");
+  const marketTypeQueryStr = `marketType=${marketType}`;
+
+  return [
+    filtersQueryStr,
+    orderingQueryStr,
+    liquidityOnlyQueryStr,
+    marketTypeQueryStr,
+  ].join("&");
 };
 
 const parse = (rawQuery: ParsedUrlQuery): MarketsListQuery => {
@@ -98,6 +106,8 @@ const parse = (rawQuery: ParsedUrlQuery): MarketsListQuery => {
 
   const ordering: MarketsOrderBy = rawQuery["ordering"] as MarketsOrderBy;
   const liquidityOnly = rawQuery["liquidityOnly"] === "true";
+  const marketType =
+    (rawQuery["marketType"] as "regular" | "multi") ?? "regular";
 
   for (const filterType of filterTypes) {
     if (rawQuery[filterType] && filters) {
@@ -111,6 +121,7 @@ const parse = (rawQuery: ParsedUrlQuery): MarketsListQuery => {
     filters,
     ordering: ordering ?? MarketsOrderBy.Newest,
     liquidityOnly,
+    marketType,
   };
 };
 

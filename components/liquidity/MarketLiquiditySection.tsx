@@ -89,15 +89,25 @@ const LiquidityHeaderButtonItem: FC<
   );
 };
 
-const LiquidityHeader = ({ market, comboMarket }: { market: FullMarketFragment; comboMarket?: boolean }) => {
+const LiquidityHeader = ({
+  market,
+  comboMarket,
+}: {
+  market: FullMarketFragment;
+  comboMarket?: boolean;
+}) => {
   const { pool, neoPool } = market;
 
   const { data: stats } = useMarketsStats([market.marketId]);
-  const neoPoolLiquidity = (neoPool as any)?.totalShares ?? 
-    neoPool?.liquiditySharesManager?.reduce((total: any, manager: any) => 
-      total + Number(manager.stake), 0) ?? neoPool?.liquidityParameter;
+  const neoPoolLiquidity =
+    (neoPool as any)?.totalShares ??
+    neoPool?.liquiditySharesManager?.reduce(
+      (total: any, manager: any) => total + Number(manager.stake),
+      0,
+    ) ??
+    neoPool?.liquidityParameter;
 
-    const liquidity = new Decimal(stats?.[0]?.liquidity ?? neoPoolLiquidity);
+  const liquidity = new Decimal(stats?.[0]?.liquidity ?? neoPoolLiquidity);
 
   const swapFee = new Decimal(Number(pool?.swapFee ?? neoPool?.swapFee ?? 0))
     .div(ZTG)

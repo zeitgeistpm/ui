@@ -175,8 +175,12 @@ const PoolTable = ({
       const amount =
         activeMarket?.scoringRule === ScoringRule.Cpmm
           ? new Decimal(balances?.[assetIndex]?.free.toString() ?? 0)
-          : marketData?.neoPool?.reserves && typeof assetId === 'object' && 'CombinatorialToken' in assetId
-            ? new Decimal(marketData.neoPool.reserves[assetId.CombinatorialToken] || 0)
+          : marketData?.neoPool?.reserves &&
+              typeof assetId === "object" &&
+              "CombinatorialToken" in assetId
+            ? new Decimal(
+                marketData.neoPool.reserves[assetId.CombinatorialToken] || 0,
+              )
             : lookupAssetReserve(amm2Pool?.reserves, assetId);
 
       const usdValue = amount

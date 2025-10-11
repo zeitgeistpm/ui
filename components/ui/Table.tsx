@@ -283,7 +283,7 @@ const Table = ({
   onPaginate,
   onLoadMore,
   rowColorClass,
-  rowHeightPx = 72,
+  rowHeightPx = 52,
   hideLoadMore = false,
   noDataMessage = "No data found",
   loadingMore = false,
@@ -395,7 +395,7 @@ const Table = ({
       ) : (
         <>
           <table
-            className="w-full border-separate rounded-lg overflow-hidden"
+            className="w-full border-separate overflow-hidden rounded-lg"
             ref={tableRef}
             style={
               isOverflowing === true
@@ -408,11 +408,11 @@ const Table = ({
             }
           >
             <thead>
-              <tr className="h-12 bg-gradient-to-r from-purple-50 to-blue-50">
+              <tr className="h-12 bg-gradient-to-r from-sky-50 to-blue-50">
                 {renderColumns.map((column, index) => (
                   <th
                     key={index}
-                    className={`${getHeaderClass(column)} border-b border-purple-200/50 ${
+                    className={`${getHeaderClass(column)} border-b border-sky-200/50 ${
                       index == 0 ? "rounded-tl-lg" : ""
                     } ${index == columns.length - 1 ? "rounded-tr-lg" : ""}
                     ${column.hideMobile ? "hidden sm:table-cell" : ""}
@@ -472,11 +472,11 @@ const Table = ({
                     key={row.id}
                     className={`
                       group
-                      border-t-1 border-purple-100
+                      border-t-1 border-sky-100
                       transition-colors duration-100 ease-in-out
                       ${
                         showHighlight === true
-                          ? " hover:border-purple-300 hover:bg-purple-50/30 "
+                          ? " hover:border-sky-300 hover:bg-sky-50/30 "
                           : ""
                       }
                     ${rowColorClass}
@@ -533,7 +533,7 @@ const Table = ({
           {onLoadMore && !hideLoadMore && (
             <div className="mb-5 mt-4 flex justify-center">
               <div
-                className="cursor-pointer rounded-full bg-purple-500 px-4 py-2 text-xs font-bold uppercase text-white transition-colors hover:bg-purple-600"
+                className="cursor-pointer rounded-full bg-sky-600 px-4 py-2 text-xs font-bold uppercase text-white transition-colors hover:bg-sky-700"
                 role="button"
                 onClick={handleLoadMore}
               >

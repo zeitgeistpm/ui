@@ -8,7 +8,10 @@ import {
   Market,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
-import { CombinatorialToken, isCombinatorialToken } from "lib/types/combinatorial";
+import {
+  CombinatorialToken,
+  isCombinatorialToken,
+} from "lib/types/combinatorial";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TransactionButton from "components/ui/TransactionButton";
 import TruncatedText from "components/ui/TruncatedText";
@@ -34,24 +37,30 @@ const CategoricalReportBox = ({
   const notificationStore = useNotifications();
   if (!market) return null;
 
-  const outcomeAssets = market.outcomeAssets.map(
-    (assetIdString) => parseAssetIdStringWithCombinatorial(assetIdString)
+  const outcomeAssets = market.outcomeAssets.map((assetIdString) =>
+    parseAssetIdStringWithCombinatorial(assetIdString),
   );
 
   // Filter to only categorical and combinatorial tokens, exclude scalar outcomes
   const categoricalOutcomeAssets = outcomeAssets.filter(
-    (asset): asset is CategoricalAssetId | CombinatorialToken => 
-      !('ScalarOutcome' in asset)
+    (asset): asset is CategoricalAssetId | CombinatorialToken =>
+      !("ScalarOutcome" in asset),
   );
 
-  const [selectedOutcome, setSelectedOutcome] = useState<CategoricalAssetId | CombinatorialToken>(categoricalOutcomeAssets[0]);
+  const [selectedOutcome, setSelectedOutcome] = useState<
+    CategoricalAssetId | CombinatorialToken
+  >(categoricalOutcomeAssets[0]);
 
   // Helper function to get the categorical index from either outcome type
-  const getCategoricalIndex = (outcome: CategoricalAssetId | CombinatorialToken): number | undefined => {
+  const getCategoricalIndex = (
+    outcome: CategoricalAssetId | CombinatorialToken,
+  ): number | undefined => {
     if (isCombinatorialToken(outcome)) {
       // Find the index of this combinatorial token in the outcomeAssets array
-      const index = outcomeAssets.findIndex(asset => 
-        isCombinatorialToken(asset) && asset.CombinatorialToken === outcome.CombinatorialToken
+      const index = outcomeAssets.findIndex(
+        (asset) =>
+          isCombinatorialToken(asset) &&
+          asset.CombinatorialToken === outcome.CombinatorialToken,
       );
       return index >= 0 ? index : undefined;
     } else if (IOCategoricalAssetId.is(outcome)) {
@@ -104,7 +113,9 @@ const CategoricalReportBox = ({
             selected={selectedOutcome}
             options={outcomeAssets}
             onChange={(assetId) => {
-              setSelectedOutcome(assetId as CategoricalAssetId | CombinatorialToken);
+              setSelectedOutcome(
+                assetId as CategoricalAssetId | CombinatorialToken,
+              );
             }}
           />
         )}
@@ -120,7 +131,8 @@ const CategoricalReportBox = ({
           length={12}
           text={
             // Use the categorical index to get the category name for both types
-            market.categories?.[getCategoricalIndex(selectedOutcome) ?? 0]?.name ?? ""
+            market.categories?.[getCategoricalIndex(selectedOutcome) ?? 0]
+              ?.name ?? ""
           }
         >
           {(text) => <>{text}</>}

@@ -68,10 +68,8 @@ export const useLatestTrades = (
   const { limit, marketId, outcomeAssets, outcomeNames, marketQuestion } =
     params;
 
-    // Fetch market data if we have marketId
-  const { data: market } = useMarket(
-    marketId ? { marketId } : undefined,
-  );
+  // Fetch market data if we have marketId
+  const { data: market } = useMarket(marketId ? { marketId } : undefined);
 
   // Determine if we're dealing with combinatorial tokens
   const hasExplicitComboTokens = Boolean(
@@ -189,8 +187,7 @@ export const useLatestTrades = (
                 traderAddress: swap.accountId,
                 marketId: marketId || 0,
                 question: market?.question || marketQuestion || "",
-                outcomeName:
-                  outcomeName || "",
+                outcomeName: outcomeName || "",
                 type: assetInIsBaseAsset ? "buy" : "sell",
                 time: new Date(swap.timestamp),
                 cost: assetInIsBaseAsset

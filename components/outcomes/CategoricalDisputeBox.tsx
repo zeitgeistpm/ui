@@ -8,7 +8,10 @@ import {
   isRpcSdk,
   Market,
 } from "@zeitgeistpm/sdk";
-import { CombinatorialToken, isCombinatorialToken } from "lib/types/combinatorial";
+import {
+  CombinatorialToken,
+  isCombinatorialToken,
+} from "lib/types/combinatorial";
 import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 import TransactionButton from "components/ui/TransactionButton";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
@@ -37,11 +40,16 @@ const CategoricalDisputeBox = ({
     useChainConstants();
 
   // Helper function to get the categorical index from either outcome type
-  const getCategoricalIndex = (outcome: CategoricalAssetId | CombinatorialToken, allAssets: any[]): number | undefined => {
+  const getCategoricalIndex = (
+    outcome: CategoricalAssetId | CombinatorialToken,
+    allAssets: any[],
+  ): number | undefined => {
     if (isCombinatorialToken(outcome)) {
       // Find the index of this combinatorial token in the allAssets array
-      const index = allAssets.findIndex(asset => 
-        isCombinatorialToken(asset) && asset.CombinatorialToken === outcome.CombinatorialToken
+      const index = allAssets.findIndex(
+        (asset) =>
+          isCombinatorialToken(asset) &&
+          asset.CombinatorialToken === outcome.CombinatorialToken,
       );
       return index >= 0 ? index : undefined;
     } else if (IOCategoricalAssetId.is(outcome)) {
@@ -50,22 +58,20 @@ const CategoricalDisputeBox = ({
     return undefined;
   };
 
-  const allOutcomeAssets = market.outcomeAssets.map(
-    (assetIdString) => parseAssetIdStringWithCombinatorial(assetIdString)
+  const allOutcomeAssets = market.outcomeAssets.map((assetIdString) =>
+    parseAssetIdStringWithCombinatorial(assetIdString),
   );
 
   // Filter to only categorical and combinatorial tokens, exclude scalar outcomes
   const categoricalOutcomeAssets = allOutcomeAssets.filter(
-    (asset): asset is CategoricalAssetId | CombinatorialToken => 
-      !('ScalarOutcome' in asset)
+    (asset): asset is CategoricalAssetId | CombinatorialToken =>
+      !("ScalarOutcome" in asset),
   );
 
-  const outcomeAssets = categoricalOutcomeAssets.filter(
-    (asset) => {
-      const assetIndex = getCategoricalIndex(asset, allOutcomeAssets);
-      return market.report?.outcome?.categorical !== assetIndex;
-    }
-  );
+  const outcomeAssets = categoricalOutcomeAssets.filter((asset) => {
+    const assetIndex = getCategoricalIndex(asset, allOutcomeAssets);
+    return market.report?.outcome?.categorical !== assetIndex;
+  });
 
   const disputeBond = constants?.markets.disputeBond;
   const tokenSymbol = constants?.tokenSymbol;
@@ -87,11 +93,7 @@ const CategoricalDisputeBox = ({
       onBroadcast: () => {},
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: [
-            id,
-            marketDisputesRootKey,
-            market.marketId,
-          ],
+          queryKey: [id, marketDisputesRootKey, market.marketId],
         });
         if (onSuccess) {
           onSuccess();

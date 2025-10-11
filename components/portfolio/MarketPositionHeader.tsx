@@ -21,9 +21,10 @@ const MarketPositionHeader = ({
   const imagePath = lookupAssetImagePath(baseAssetId);
 
   // Use multi-market URL if this is a multi-market position
-  const href = isMultiMarket && poolId
-    ? `/multi-market/${poolId}`
-    : `/markets/${marketId}`;
+  const href =
+    isMultiMarket && poolId
+      ? `/multi-market/${poolId}`
+      : `/markets/${marketId}`;
 
   return (
     <h3 className="mb-5 flex items-center text-sm font-normal sm:text-base">

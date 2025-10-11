@@ -1,9 +1,11 @@
 import { PropsWithChildren } from "react";
-import { Icon, Plus, ChevronDown, ChevronUp } from "react-feather";
+import { Icon, Plus, ChevronDown, ChevronUp, ChevronRight } from "react-feather";
 import MarketActiveFilters from "../MarketActiveFilters";
 import MarketFiltersCheckboxes from "../MarketFiltersCheckboxes";
 import { SelectedMenu } from "../MarketFiltersContainer";
 import MarketFiltersSort from "../MarketFiltersSort";
+import MarketTypeToggle from "../MarketTypeToggle";
+import { MarketType } from "lib/types/market-filter";
 
 const sortBySelectStyles = {
   container: (provided) => {
@@ -77,13 +79,13 @@ const FilterButton = ({
   return (
     <div
       className={
-        "mb-5 box-content flex h-10 items-center border-b border-gray-200 " +
+        "mb-3 flex h-12 items-center rounded-lg bg-white px-4 shadow-sm transition-all hover:shadow-md " +
         className
       }
       onClick={onClick}
     >
-      {children}
-      {RightIcon && <RightIcon className="ml-auto" size={24} />}
+      <div className="text-sm font-semibold text-gray-700">{children}</div>
+      {RightIcon && <RightIcon className="ml-auto text-sky-600" size={20} />}
     </div>
   );
 };
@@ -91,14 +93,35 @@ const FilterButton = ({
 export type FiltersListProps = {
   showMenu: (menu: SelectedMenu) => void;
   close: () => void;
+  marketType?: MarketType;
+  onMarketTypeChange?: (type: MarketType) => void;
 };
 
-const FiltersList = ({ showMenu, close }: FiltersListProps) => {
+const FiltersList = ({ showMenu, close, marketType = "regular", onMarketTypeChange }: FiltersListProps) => {
   return (
     <>
-      <MarketActiveFilters className="mb-5 flex w-full flex-row flex-wrap justify-center gap-2 " />
+      {/* Market Type Section */}
+      <div className="mb-4">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+          Market Type
+        </div>
+        <div className="flex justify-center rounded-lg bg-white p-3 shadow-sm">
+          <MarketTypeToggle
+            value={marketType}
+            onChange={onMarketTypeChange || (() => {})}
+          />
+        </div>
+      </div>
+
+      {/* Active Filters */}
+      <MarketActiveFilters className="mb-4 flex w-full flex-row flex-wrap justify-start gap-1.5" />
+
+      {/* Filter Options */}
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+        Filter By
+      </div>
       <FilterButton
-        RightIcon={Plus}
+        RightIcon={ChevronRight}
         onClick={() => {
           showMenu("Category");
         }}
@@ -107,7 +130,7 @@ const FiltersList = ({ showMenu, close }: FiltersListProps) => {
         Category
       </FilterButton>
       <FilterButton
-        RightIcon={Plus}
+        RightIcon={ChevronRight}
         onClick={() => {
           showMenu("Currency");
         }}
@@ -116,7 +139,7 @@ const FiltersList = ({ showMenu, close }: FiltersListProps) => {
         Currency
       </FilterButton>
       <FilterButton
-        RightIcon={Plus}
+        RightIcon={ChevronRight}
         onClick={() => {
           showMenu("Status");
         }}
@@ -124,19 +147,27 @@ const FiltersList = ({ showMenu, close }: FiltersListProps) => {
       >
         Status
       </FilterButton>
-      <FilterButton>
-        <div className="flex flex-grow items-center">
-          <div style={{ minWidth: "62px" }}>Sort By:</div>
-          <MarketFiltersSort
-            className="w-full"
-            selectStyles={sortBySelectStyles}
-            components={{ IndicatorsContainer }}
-          />
-        </div>
-      </FilterButton>
-      <MarketFiltersCheckboxes className="mt-4" />
+
+      {/* Sort By Section */}
+      <div className="mb-2 mt-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+        Sort By
+      </div>
+      <div className="mb-3 flex items-center rounded-lg bg-white px-4 py-3 shadow-sm">
+        <MarketFiltersSort
+          className="w-full"
+          selectStyles={sortBySelectStyles}
+          components={{ IndicatorsContainer }}
+        />
+      </div>
+
+      {/* Liquidity Checkbox */}
+      <div className="mb-4 rounded-lg bg-white px-4 py-3 shadow-sm">
+        <MarketFiltersCheckboxes />
+      </div>
+
+      {/* Show Markets Button */}
       <button
-        className="mt-auto h-14 rounded-full bg-ztg-blue text-white"
+        className="mt-auto h-12 rounded-lg bg-sky-600 text-sm font-semibold text-white shadow-md transition-all hover:bg-sky-700"
         onClick={close}
       >
         Show Markets

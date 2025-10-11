@@ -40,17 +40,15 @@ const AccountPoolsTable = ({ address }: { address: string }) => {
   const { data: pools, isLoading } = useAccountAmm2Pool(address);
 
   const tableData: TableData[] | undefined = pools?.map((pool) => {
-    const isMultiMarket = pool.isMultiMarket && pool.marketIds && pool.marketIds.length > 1;
+    const isMultiMarket =
+      pool.isMultiMarket && pool.marketIds && pool.marketIds.length > 1;
     const href = isMultiMarket
       ? `/multi-market/${pool.poolId}`
       : `/markets/${pool.marketId}`;
 
     return {
       question: (
-        <Link
-          href={href}
-          className="line-clamp-1 text-[14px]"
-        >
+        <Link href={href} className="line-clamp-1 text-[14px]">
           {pool.question}
         </Link>
       ),
@@ -59,7 +57,13 @@ const AccountPoolsTable = ({ address }: { address: string }) => {
         usdValue: pool.addressUsdValue?.toNumber(),
       },
       fees: new Decimal(pool.account?.fees ?? 0).div(ZTG).toFixed(3),
-      buttons: <PoolButtons poolId={pool.poolId} marketId={pool.marketId} isMultiMarket={isMultiMarket} />,
+      buttons: (
+        <PoolButtons
+          poolId={pool.poolId}
+          marketId={pool.marketId}
+          isMultiMarket={isMultiMarket}
+        />
+      ),
     };
   });
 
@@ -82,7 +86,7 @@ const AccountPoolsTable = ({ address }: { address: string }) => {
 const PoolButtons = ({
   poolId,
   marketId,
-  isMultiMarket
+  isMultiMarket,
 }: {
   poolId: number;
   marketId: number | null;
@@ -117,10 +121,7 @@ const PoolButtons = ({
   return (
     <div className="flex justify-end gap-2">
       <Link href={href}>
-        <SecondaryButton
-          className="w-full max-w-[150px]"
-          onClick={() => {}}
-        >
+        <SecondaryButton className="w-full max-w-[150px]" onClick={() => {}}>
           Manage
         </SecondaryButton>
       </Link>

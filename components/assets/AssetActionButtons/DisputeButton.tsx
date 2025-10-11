@@ -41,7 +41,7 @@ const DisputeButton = ({
       // For combinatorial tokens, find the index in the market's outcome assets
       const tokenHash = assetId.CombinatorialToken;
       const index = market.outcomeAssets?.findIndex((outcomeAsset) =>
-        outcomeAsset.includes(tokenHash)
+        outcomeAsset.includes(tokenHash),
       );
       if (index !== undefined && index >= 0) {
         assetIndex = index;

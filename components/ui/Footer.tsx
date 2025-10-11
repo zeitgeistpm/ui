@@ -36,7 +36,7 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
       <div className="mb-auto flex h-10 w-full items-center gap-3">
         <Input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-          className={`h-full grow rounded-md border-[1px] bg-anti-flash-white p-2 text-ztg-12-120 text-sky-600 focus:outline-none ${
+          className={`h-full grow rounded-md border-[1px] bg-anti-flash-white p-2 text-ztg-12-120 text-gray-600 focus:outline-none ${
             invalid ? "border-vermilion" : "border-none"
           }`}
           type="email"
@@ -65,7 +65,7 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
   return (
     <div className={`${className}`}>
       <h6 className="mb-1 font-semibold text-white">{title}</h6>
-      <div className="flex flex-col text-ztg-14-150 text-sky-600">
+      <div className="flex flex-col text-ztg-14-150 text-gray-400">
         {links.map(({ text, href }, idx) => {
           return (
             <Link
@@ -84,58 +84,43 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
 };
 
 const Footer = () => {
+  const footerLinks = [
+    {
+      text: "Apps",
+      href: `https://polkadot.js.org/apps/?rpc=${endpointOptions[0].value}`,
+      external: true,
+    },
+    { text: "Website", href: "https://zeitgeist.pm", external: true },
+    { text: "Docs", href: "https://docs.zeitgeist.pm", external: true },
+    { text: "Github", href: "https://github.com/zeitgeistpm", external: true },
+    { text: "Discord", href: "https://discord.gg/xv8HuA4s8v", external: true },
+    { text: "Twitter", href: "https://twitter.com/ZeitgeistPM", external: true },
+    { text: "Terms", href: "/terms", external: false },
+  ];
+
   return (
-    <div className="mt-auto flex w-full flex-col bg-[#1C1C1C] pb-24 pt-12">
+    <div className="mt-auto w-full bg-sky-950/95 py-4 shadow-lg backdrop-blur-md">
       <div className="container-fluid">
-        <div className="mb-8 flex flex-wrap justify-between gap-12 md:mb-16 md:flex-nowrap lg:gap-36">
-          <div className="flex w-full justify-between gap-7 max-w-lg">
-            <FooterMenu
-              title="General"
-              links={[
-                {
-                  text: "Apps (Advanced UI)",
-                  href: `https://polkadot.js.org/apps/?rpc=${endpointOptions[0].value}`,
-                },
-                { text: "Website", href: "https://zeitgeist.pm" },
-              ]}
-            />
-            <FooterMenu
-              title="Technology"
-              links={[
-                { text: "Documentation", href: "https://docs.zeitgeist.pm" },
-                { text: "Github", href: "https://github.com/zeitgeistpm" },
-              ]}
-            />
-            <FooterMenu
-              title="Community"
-              links={[
-                { text: "Discord", href: "https://discord.gg/xv8HuA4s8v" },
-                // { text: "Telegram", href: "https://t.me/zeitgeist_official" },
-                { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
-              ]}
-            />
-          </div>
-          {/* <FooterNewsletterSub title="Subscribe to Newsletter" /> */}
-        </div>
-        <div className="flex flex-col gap-5 md:flex-row">
-          <span className="whitespace-nowrap text-center text-ztg-12-150 text-white md:text-start">
+        {/* Main Footer Row */}
+        <div className="flex flex-col items-center justify-between gap-3 md:flex-row md:gap-6">
+          {/* Copyright */}
+          <span className="text-xs text-white/80">
             © {new Date().getFullYear()} Equipoise Corp.
           </span>
-          <span className="text-[11px] leading-relaxed text-sky-600">
-            Please be advised that Equipoise Corp. d/b/a Zeitgeist is registered
-            under the laws of Panama, and Zeitgeist has not sought licensing
-            with any other regulatory authority of any country or jurisdiction,
-            nor has any such regulatory authority passed upon or endorsed the
-            merits of the financial products offered by Zeitgeist. Therefore,
-            Zeitgeist does not accept clients from the United States and other
-            similar jurisdictions where regulations prohibit Zeitgeist from
-            offering its financial products (“Regulated Jurisdictions”). While
-            this website may be accessed worldwide, the information provided is
-            only intended for use by any person in any country where such use
-            would not be contrary to local law or regulation. Browsers from
-            Regulated Jurisdictions are specifically prohibited from using this
-            site.
-          </span>
+
+          {/* Links */}
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
+            {footerLinks.map((link, idx) => (
+              <Link
+                key={idx}
+                href={link.href}
+                target={link.external ? "_blank" : undefined}
+                className="text-white/70 transition-colors hover:text-sky-300"
+              >
+                {link.text}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>

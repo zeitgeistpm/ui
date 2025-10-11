@@ -14,44 +14,78 @@ type MarketFilterSortProps = {
 };
 
 const sortBySelectStyles = {
-  control: (provided) => {
+  control: (provided, state) => {
     return {
       ...provided,
-      width: "180px",
-      height: "32px",
-      minHeight: "32px",
-      fontSize: "14px",
+      width: "160px",
+      height: "30px",
+      minHeight: "30px",
+      fontSize: "13px",
+      borderRadius: "6px",
+      border: state.isFocused ? "1px solid #0EA5E9" : "1px solid #E0F2FE",
+      boxShadow: state.isFocused ? "0 0 0 2px rgba(14, 165, 233, 0.1)" : "none",
+      backgroundColor: "white",
+      transition: "all 0.2s",
+      "&:hover": {
+        borderColor: "#0EA5E9",
+      },
     };
   },
   dropdownIndicator: (provided) => {
     return {
       ...provided,
       padding: "0px",
-      paddingRight: "10px",
+      paddingRight: "6px",
+      color: "#0EA5E9",
     };
   },
   singleValue: (provided) => {
     return {
       ...provided,
+      fontWeight: 600,
+      color: "#075985",
+      fontSize: "13px",
     };
   },
   valueContainer: (provided) => {
     return {
       ...provided,
       paddingLeft: "10px",
+      padding: "0 10px",
     };
   },
   input: (provided) => {
     return {
       ...provided,
+      margin: 0,
+      padding: 0,
     };
   },
   menu: (provided) => {
     return {
       ...provided,
       backgroundColor: "white",
-      color: "black",
+      borderRadius: "6px",
+      boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+      border: "1px solid #E0F2FE",
       zIndex: 100,
+    };
+  },
+  option: (provided, state) => {
+    return {
+      ...provided,
+      backgroundColor: state.isSelected
+        ? "#0EA5E9"
+        : state.isFocused
+        ? "#F0F9FF"
+        : "white",
+      color: state.isSelected ? "white" : "#075985",
+      fontWeight: state.isSelected ? 600 : 500,
+      fontSize: "13px",
+      padding: "6px 10px",
+      "&:active": {
+        backgroundColor: "#0EA5E9",
+      },
     };
   },
 };

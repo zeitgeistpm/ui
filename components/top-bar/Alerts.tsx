@@ -41,7 +41,7 @@ export const Alerts = () => {
             <div className="flex gap-2">
               <Menu.Button
                 disabled={alerts.length === 0}
-                className="center relative flex gap-2 font-light text-white"
+                className="center relative flex gap-2 rounded-lg px-2 py-1 font-light text-white transition-all hover:bg-white/10"
               >
                 <div
                   className={`transition-all ${
@@ -141,9 +141,9 @@ const AlertCard: React.FC<PropsWithChildren & { onClick?: () => void }> = ({
   children,
   onClick,
 }) => (
-  <div className="mb-2 cursor-pointer rounded-md ring-[#fa8cce] transition-all hover:ring-1 md:hover:scale-105">
+  <div className="mb-2 cursor-pointer rounded-lg transition-all hover:scale-[1.02] hover:shadow-lg">
     <div
-      className={`rounded-md border-1 border-solid border-black/10  bg-white/80 px-4 py-3 transition-all md:bg-white/60 hover:md:bg-white/80`}
+      className={`rounded-lg border-1 border-solid border-white/20 bg-white/90 px-4 py-3 shadow-md backdrop-blur-lg transition-all hover:bg-white/95 hover:shadow-xl md:bg-white/80`}
       onClick={onClick}
       style={{
         transform: "translate3d(0,0,0)",

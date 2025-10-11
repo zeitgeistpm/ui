@@ -28,31 +28,31 @@ const FilterToggle = ({ option }: { option: MarketFilter }) => {
   };
 
   return (
-    <div className="mb-7 w-1/2">
-      <a
-        className={"cursor-pointer " + (isActive ? "text-ztg-blue" : "")}
-        onClick={() => {
-          toggle();
-        }}
-      >
-        {option.label}{" "}
-        {isActive ? <X className="inline text-gray-600" size={14} /> : ""}
-      </a>
-    </div>
+    <button
+      onClick={toggle}
+      className={`mb-3 mr-3 flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium shadow-sm transition-all ${
+        isActive
+          ? "bg-gradient-to-br from-sky-500 to-blue-500 text-white shadow-md"
+          : "bg-white text-gray-700 hover:bg-sky-50 hover:shadow-md"
+      }`}
+    >
+      <span>{option.label}</span>
+      {isActive && <X size={14} />}
+    </button>
   );
 };
 
 const FilterDetails = ({ back, menu }: FilterDetailsProps) => {
   return (
     <>
-      <a
-        className="mr-auto mt-1 flex cursor-pointer text-sky-600"
+      <button
+        className="mb-4 flex items-center gap-2 text-sm font-semibold text-sky-600 transition-colors hover:text-sky-700"
         onClick={back}
       >
-        <ChevronLeft className="w-6" transform="translate(-6, 0)" />{" "}
-        <div className="inline-block">Back</div>
-      </a>
-      <h3 className="my-7 text-2xl">{menu}</h3>
+        <ChevronLeft size={18} />
+        <span>Back</span>
+      </button>
+      <h3 className="mb-4 text-xl font-semibold text-gray-900">{menu}</h3>
       <div className="flex flex-wrap">
         {
           {
@@ -81,10 +81,10 @@ const FilterDetails = ({ back, menu }: FilterDetailsProps) => {
         }
       </div>
       <button
-        className="mt-auto h-14 rounded-full bg-ztg-blue text-white"
+        className="mt-auto h-12 rounded-lg bg-sky-600 text-sm font-semibold text-white shadow-md transition-all hover:bg-sky-700"
         onClick={back}
       >
-        Apply
+        Apply Filters
       </button>
     </>
   );

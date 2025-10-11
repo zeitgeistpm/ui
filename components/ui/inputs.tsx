@@ -25,48 +25,48 @@ const inputClasses =
 const invalidClasses = "!border-vermilion !text-vermilion";
 
 const Input: any = React.forwardRef<
-    HTMLInputElement,
-    InputProps & InputHTMLAttributes<HTMLInputElement>
-  >(
-    (
-      {
-        placeholder = "",
-        type,
-        onChange,
-        min,
-        max,
-        step,
-        value,
-        className = "",
-        ...restProps
-      },
-      ref,
-    ) => {
-      const { name, ...rest } = restProps;
-
-      return (
-        <input
-          {...rest}
-          ref={ref}
-          name={name}
-          className={`${inputClasses} ${className}`}
-          placeholder={placeholder}
-          type={type}
-          onChange={onChange}
-          onBlur={(e) => {
-            rest.onBlur && rest.onBlur(e);
-          }}
-          min={min}
-          max={max}
-          step={step}
-          value={value}
-          onWheel={(event) => {
-            if (type === "number") event.currentTarget.blur();
-          }}
-        />
-      );
+  HTMLInputElement,
+  InputProps & InputHTMLAttributes<HTMLInputElement>
+>(
+  (
+    {
+      placeholder = "",
+      type,
+      onChange,
+      min,
+      max,
+      step,
+      value,
+      className = "",
+      ...restProps
     },
-  );
+    ref,
+  ) => {
+    const { name, ...rest } = restProps;
+
+    return (
+      <input
+        {...rest}
+        ref={ref}
+        name={name}
+        className={`${inputClasses} ${className}`}
+        placeholder={placeholder}
+        type={type}
+        onChange={onChange}
+        onBlur={(e) => {
+          rest.onBlur && rest.onBlur(e);
+        }}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onWheel={(event) => {
+          if (type === "number") event.currentTarget.blur();
+        }}
+      />
+    );
+  },
+);
 
 const rdtpInput = (
   props: InputProps & InputHTMLAttributes<HTMLInputElement>,

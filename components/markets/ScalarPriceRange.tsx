@@ -62,10 +62,10 @@ const ScalarPriceRange = ({
 
   return (
     <div
-      className={`relative flex h-[30px]  w-full items-center overflow-hidden bg-gray-200 p-2 transition-all ${className}`}
+      className={`relative flex h-8 w-full items-center overflow-hidden rounded-lg bg-gradient-to-r from-sky-50 to-sky-100 px-3 shadow-sm transition-all ${className}`}
       ref={ref}
     >
-      <span className="z-10 text-xs font-semibold text-gray-400">
+      <span className="z-10 text-xs font-semibold text-gray-600">
         {lowerDisplay}
       </span>
       {status !== "Proposed" && (
@@ -74,14 +74,14 @@ const ScalarPriceRange = ({
             style={{
               width: `${averagePosition != null ? averagePosition : 0}px`,
             }}
-            className="absolute bottom-0 left-0 h-full bg-scalar-bar"
+            className="absolute bottom-0 left-0 h-full bg-gradient-to-r from-sky-200 to-sky-300"
           ></div>
-          <span className="relative px-2.5 text-sm  text-scalar-text">
+          <span className="relative z-10 px-2.5 text-sm font-semibold text-sky-700">
             Prediction: {positionDisplay}
           </span>
         </>
       )}
-      <span className="z-10 ml-auto text-xs font-semibold text-gray-400">
+      <span className="z-10 ml-auto text-xs font-semibold text-gray-600">
         {upperDisplay}
       </span>
     </div>

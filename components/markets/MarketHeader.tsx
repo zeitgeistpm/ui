@@ -353,18 +353,11 @@ const MarketHeader: FC<{
   promotionData,
   poolId,
 }) => {
-  const {
-    categories,
-    status,
-    question,
-    period,
-    marketType,
-    scalarType,
-  } = market;
+  const { categories, status, question, period, marketType, scalarType } =
+    market;
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const starts = Number(period.start);
   const ends = Number(period.end);
-
 
   const { outcome, by } = getMarketStatusDetails(
     marketType,
@@ -380,24 +373,28 @@ const MarketHeader: FC<{
   );
 
   // Use poolStats for combo markets, marketStats for regular markets
-  const { data: marketStats, isLoading: isMarketStatsLoading } = useMarketsStats(
-    poolId ? [] : [market.marketId], // Skip if we have poolId
-  );
-  
+  const { data: marketStats, isLoading: isMarketStatsLoading } =
+    useMarketsStats(
+      poolId ? [] : [market.marketId], // Skip if we have poolId
+    );
+
   const { data: poolStats, isLoading: isPoolStatsLoading } = usePoolStats(
     poolId ? [poolId] : [], // Only fetch if we have poolId
   );
 
   const isStatsLoading = poolId ? isPoolStatsLoading : isMarketStatsLoading;
   const stats = poolId ? poolStats : marketStats;
-  
+
   const liquidity = stats?.[0]?.liquidity;
-  const participants = poolId ? (poolStats?.[0] as any)?.traders : stats?.[0]?.participants;
-  
+  const participants = poolId
+    ? (poolStats?.[0] as any)?.traders
+    : stats?.[0]?.participants;
+
   // Use volume from poolStats for combo markets, market.volume for regular markets
-  const volume = poolId && poolStats?.[0]?.volume 
-    ? new Decimal(poolStats[0].volume).div(ZTG).toNumber()
-    : new Decimal(market.volume).div(ZTG).toNumber();
+  const volume =
+    poolId && poolStats?.[0]?.volume
+      ? new Decimal(poolStats[0].volume).div(ZTG).toNumber()
+      : new Decimal(market.volume).div(ZTG).toNumber();
 
   const oracleReported = marketHistory?.reported?.by === market.oracle;
 
@@ -427,223 +424,285 @@ const MarketHeader: FC<{
 
   return (
     <header className="flex w-full flex-col gap-4">
-      <div className="flex items-start gap-3 xl:items-center">
-        <div className="hidden lg:block">
-          <div className="relative mt-3 h-16 w-16 overflow-hidden rounded-lg xl:mt-0 ">
-            <Image
-              alt={"Market image"}
-              src={marketImage}
-              fill
-              className="overflow-hidden rounded-lg"
-              style={{
-                objectFit: "cover",
-                objectPosition: "50% 50%",
-              }}
-              sizes={"100px"}
-            />
+      <div className="rounded-lg bg-gradient-to-br from-sky-50 to-blue-50 p-4 shadow-lg">
+        <div className="flex items-center gap-4">
+          <div className="flex-shrink-0">
+            <div className="relative h-12 w-12 overflow-hidden rounded-lg shadow-md">
+              <Image
+                alt={"Market image"}
+                src={marketImage}
+                fill
+                className="overflow-hidden rounded-lg"
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "50% 50%",
+                }}
+                sizes={"100px"}
+              />
+            </div>
           </div>
-        </div>
 
-        <div>
-          <h1 className="text-[32px] font-extrabold">{question}</h1>
-          {rejectReason && rejectReason.length > 0 && (
-            <div className="mt-2.5">Market rejected: {rejectReason}</div>
-          )}
-          <div className="flex flex-wrap items-center gap-2">
-            <HeaderStat label={hasDatePassed(starts) ? "Started" : "Starts"}>
-              {new Intl.DateTimeFormat("default", {
-                dateStyle: "medium",
-              }).format(starts)}
-            </HeaderStat>
-            <HeaderStat label={hasDatePassed(ends) ? "Ended" : "Ends"}>
-              {new Intl.DateTimeFormat("default", {
-                dateStyle: "medium",
-              }).format(ends)}
-            </HeaderStat>
-            {(status === "Active" || status === "Closed") && (
-              <HeaderStat label="Resolves">
-                {new Intl.DateTimeFormat("default", {
-                  dateStyle: "medium",
-                }).format(resolutionDateEstimate)}
-              </HeaderStat>
-            )}
-            {market.status === "Proposed" && (
-              <HeaderStat label="Reports Open">
-                {new Intl.DateTimeFormat("default", {
-                  dateStyle: "medium",
-                }).format(reportsOpenAt)}
-              </HeaderStat>
-            )}
-            {token ? (
-              <HeaderStat label="Volume">
-                {formatNumberCompact(volume)}
-                &nbsp;
-                {token}
-              </HeaderStat>
-            ) : (
-              <Skeleton width="150px" height="20px" />
-            )}
-            {isStatsLoading === false && token ? (
-              <HeaderStat label="Liquidity" border={true}>
-                {formatNumberCompact(
-                  new Decimal(liquidity ?? 0)?.div(ZTG).toNumber(),
-                )}
-                &nbsp;
-                {token}
-              </HeaderStat>
-            ) : (
-              <Skeleton width="150px" height="20px" />
-            )}
-            {isStatsLoading === false && token ? (
-              <HeaderStat label="Traders" border={false}>
-                {formatNumberCompact(participants ?? 0)}
-              </HeaderStat>
-            ) : (
-              <Skeleton width="150px" height="20px" />
+          <div className="flex-1">
+            <h1 className="text-xl font-bold text-gray-900">{question}</h1>
+            {rejectReason && rejectReason.length > 0 && (
+              <div className="mt-2 rounded-md bg-red-50 px-3 py-1.5 text-sm text-red-700">
+                Market rejected: {rejectReason}
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      <div className="relative mb-4 flex items-center gap-3 pl-1">
-        <AddressDetails title="Creator" address={market.creator} />
+      <div className="rounded-lg bg-gradient-to-br from-sky-50 to-blue-50 p-3 shadow-lg">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:flex-wrap lg:gap-3">
+              <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+                <div className="text-xxs font-medium text-gray-600">
+                  {hasDatePassed(starts) ? "Started" : "Starts"}
+                </div>
+                <div className="text-xs font-bold text-gray-900">
+                  {new Intl.DateTimeFormat("default", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  }).format(starts)}
+                </div>
+              </div>
 
-        <div className="group relative">
-          <Image
-            width={20}
-            height={20}
-            src={imagePath}
-            alt="Currency token logo"
-            className="rounded-full"
-          />
-          <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity  group-hover:opacity-100">
-            <div className="rounded-lg bg-blue-100 px-2 py-1 text-sm">
-              <span className="text-gray-500">Currency: </span>
-              <span className="font-semibold">{token}</span>
+              <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+                <div className="text-xxs font-medium text-gray-600">
+                  {hasDatePassed(ends) ? "Ended" : "Ends"}
+                </div>
+                <div className="text-xs font-bold text-gray-900">
+                  {new Intl.DateTimeFormat("default", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  }).format(ends)}
+                </div>
+              </div>
+
+              {(status === "Active" || status === "Closed") && (
+                <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+                  <div className="text-xxs font-medium text-gray-600">Resolves</div>
+                  <div className="text-xs font-bold text-gray-900">
+                    {new Intl.DateTimeFormat("default", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    }).format(resolutionDateEstimate)}
+                  </div>
+                </div>
+              )}
+
+              {market.status === "Proposed" && (
+                <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+                  <div className="text-xxs font-medium text-gray-600">Reports Open</div>
+                  <div className="text-xs font-bold text-gray-900">
+                    {new Intl.DateTimeFormat("default", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    }).format(reportsOpenAt)}
+                  </div>
+                </div>
+              )}
+
+              {token ? (
+                <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+                  <div className="text-xxs font-medium text-gray-600">Volume</div>
+                  <div className="text-xs font-bold text-gray-900">
+                    {formatNumberCompact(volume)} {token}
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+                  <Skeleton width="60px" height="24px" />
+                </div>
+              )}
+
+              {isStatsLoading === false && token ? (
+                <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+                  <div className="text-xxs font-medium text-gray-600">Liquidity</div>
+                  <div className="text-xs font-bold text-gray-900">
+                    {formatNumberCompact(
+                      new Decimal(liquidity ?? 0)?.div(ZTG).toNumber(),
+                    )}{" "}
+                    {token}
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+                  <Skeleton width="60px" height="24px" />
+                </div>
+              )}
+
+              {isStatsLoading === false && token ? (
+                <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+                  <div className="text-xxs font-medium text-gray-600">Traders</div>
+                  <div className="text-xs font-bold text-gray-900">
+                    {formatNumberCompact(participants ?? 0)}
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-md bg-white/60 px-2.5 py-1.5 backdrop-blur-sm">
+                  <Skeleton width="60px" height="24px" />
+                </div>
+              )}
             </div>
           </div>
-        </div>
 
-        {market.disputeMechanism === "Court" && (
+      <div className="rounded-lg bg-gradient-to-br from-sky-50 to-blue-50 p-3 shadow-lg">
+        <div className="flex flex-wrap items-center gap-3">
+          <AddressDetails title="Creator" address={market.creator} />
+
           <div className="group relative">
-            <Image width={22} height={22} src="/icons/court.svg" alt="court" />
+            <div className="flex items-center gap-1.5 rounded-md bg-white/60 px-2 py-1 backdrop-blur-sm">
+              <Image
+                width={16}
+                height={16}
+                src={imagePath}
+                alt="Currency token logo"
+                className="rounded-full"
+              />
+              <span className="text-xs font-semibold text-gray-700">{token}</span>
+            </div>
             <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
-              <div className="rounded-lg bg-purple-200 px-2 py-1 text-sm">
-                Court Dispute Mechanism Enabled
+              <div className="rounded-lg bg-blue-100 px-2 py-1 text-xs shadow-md">
+                <span className="text-gray-500">Currency</span>
               </div>
             </div>
           </div>
-        )}
 
-        <div className="group relative">
-          <Image
-            width={22}
-            height={22}
-            src="/icons/verified-icon.svg"
-            alt="verified checkmark"
-          />
-          <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
-            <div className="rounded-lg bg-green-lighter px-2 py-1 text-sm">
-              Verified Market
+          {market.disputeMechanism === "Court" && (
+            <div className="group relative">
+              <div className="flex items-center gap-1.5 rounded-md bg-purple-100/80 px-2 py-1 backdrop-blur-sm">
+                <Image width={16} height={16} src="/icons/court.svg" alt="court" />
+                <span className="text-xs font-semibold text-purple-700">Court</span>
+              </div>
+              <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="rounded-lg bg-purple-200 px-2 py-1 text-xs shadow-md">
+                  Court Dispute Mechanism
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )}
 
-        {!market.disputeMechanism && (
           <div className="group relative">
-            <InfoPopover
-              position="bottom-end"
-              icon={
-                <div className="center h-[22px] w-[22px] rounded-full bg-orange-200">
-                  <HiOutlineShieldCheck size={14} />
-                </div>
-              }
-            >
-              <div className="text-left">
-                <div className="mb-3">
-                  This market has no dispute mechanism and will be resolved
-                  automatically when reported.
-                </div>
-                <div className="flex gap-4">
-                  <div>
-                    <AddressDetails title="Creator" address={market.creator} />
-                  </div>
-                  <div>
-                    <AddressDetails title="Oracle" address={market.oracle} />
-                  </div>
-                </div>
-              </div>
-            </InfoPopover>
+            <div className="flex items-center gap-1.5 rounded-md bg-green-100/80 px-2 py-1 backdrop-blur-sm">
+              <Image
+                width={16}
+                height={16}
+                src="/icons/verified-icon.svg"
+                alt="verified checkmark"
+              />
+              <span className="text-xs font-semibold text-green-700">Verified</span>
+            </div>
             <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
-              <div className="rounded-lg bg-orange-200 px-2 py-1 text-sm">
-                Trusted Market
+              <div className="rounded-lg bg-green-lighter px-2 py-1 text-xs shadow-md">
+                Verified Market
               </div>
             </div>
           </div>
-        )}
 
-        {market.hasEdits && (
-          <div className="group relative">
-            <InfoPopover
-              position="bottom-end"
-              icon={
-                <div className="center h-[22px] w-[22px] rounded-full bg-yellow-200">
-                  <MdModeEdit size={12} />
-                </div>
-              }
-            >
-              <div className="text-left">
-                <h4 className="mb-1 text-lg font-bold">Market edits</h4>
-                <p className="mb-3 text-sm text-gray-500">
-                  This market has been edited in the zeitgeist cms. The
-                  following is the immutable original metadata that was set when
-                  the market was created.
-                </p>
-
-                {market.originalMetadata?.question && (
-                  <div className="mb-3">
-                    <label className="mb-1 text-xs text-gray-500">
-                      Question:
-                    </label>
-                    <div>{market.originalMetadata.question}</div>
+          {!market.disputeMechanism && (
+            <div className="group relative">
+              <InfoPopover
+                position="bottom-end"
+                icon={
+                  <div className="flex items-center gap-1.5 rounded-md bg-orange-100/80 px-2 py-1 backdrop-blur-sm">
+                    <HiOutlineShieldCheck size={16} className="text-orange-700" />
+                    <span className="text-xs font-semibold text-orange-700">Trusted</span>
                   </div>
-                )}
-
-                {market.originalMetadata?.description && (
+                }
+              >
+                <div className="text-left">
                   <div className="mb-3">
-                    <label className="mb-1 text-xs text-gray-500">
-                      Description:
-                    </label>
+                    This market has no dispute mechanism and will be resolved
+                    automatically when reported.
+                  </div>
+                  <div className="flex gap-4">
                     <div>
-                      <QuillViewer
-                        value={market.originalMetadata.description}
-                      />
+                      <AddressDetails title="Creator" address={market.creator} />
+                    </div>
+                    <div>
+                      <AddressDetails title="Oracle" address={market.oracle} />
                     </div>
                   </div>
-                )}
-              </div>
-            </InfoPopover>
-            <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
-              <div className="rounded-lg bg-yellow-200 px-2 py-1 text-sm">
-                Has been edited.
+                </div>
+              </InfoPopover>
+              <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="rounded-lg bg-orange-200 px-2 py-1 text-xs shadow-md">
+                  Trusted Market
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        <div className="group relative flex items-center">
-          <div className="pt-1">
-            <MarketFavoriteToggle size={24} marketId={market.marketId} />
-          </div>
-          <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
-            <div className="rounded-lg bg-pink-300 px-2 py-1 text-sm">
-              Toggle Favorited
-            </div>
-          </div>
-        </div>
+          )}
 
-        {promotionData && (
-          <MarketPromotionCallout market={market} promotion={promotionData} />
-        )}
+          {market.hasEdits && (
+            <div className="group relative">
+              <InfoPopover
+                position="bottom-end"
+                icon={
+                  <div className="flex items-center gap-1.5 rounded-md bg-yellow-100/80 px-2 py-1 backdrop-blur-sm">
+                    <MdModeEdit size={16} className="text-yellow-700" />
+                    <span className="text-xs font-semibold text-yellow-700">Edited</span>
+                  </div>
+                }
+              >
+                <div className="text-left">
+                  <h4 className="mb-1 text-lg font-bold">Market edits</h4>
+                  <p className="mb-3 text-sm text-gray-500">
+                    This market has been edited in the zeitgeist cms. The
+                    following is the immutable original metadata that was set when
+                    the market was created.
+                  </p>
+
+                  {market.originalMetadata?.question && (
+                    <div className="mb-3">
+                      <label className="mb-1 text-xs text-gray-500">
+                        Question:
+                      </label>
+                      <div>{market.originalMetadata.question}</div>
+                    </div>
+                  )}
+
+                  {market.originalMetadata?.description && (
+                    <div className="mb-3">
+                      <label className="mb-1 text-xs text-gray-500">
+                        Description:
+                      </label>
+                      <div>
+                        <QuillViewer
+                          value={market.originalMetadata.description}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </InfoPopover>
+              <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap pt-1 opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="rounded-lg bg-yellow-200 px-2 py-1 text-xs shadow-md">
+                  Has been edited
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="group relative flex items-center">
+            <div className="rounded-md bg-pink-100/80 px-2 py-1 backdrop-blur-sm">
+              <MarketFavoriteToggle size={20} marketId={market.marketId} />
+            </div>
+            <div className="absolute bottom-0 right-0 z-10 translate-x-[50%] translate-y-[115%] whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="rounded-lg bg-pink-300 px-2 py-1 text-xs shadow-md">
+                Toggle Favorited
+              </div>
+            </div>
+          </div>
+
+          {promotionData && (
+            <MarketPromotionCallout market={market} promotion={promotionData} />
+          )}
+        </div>
       </div>
 
       <div className="flex w-full flex-col gap-2">

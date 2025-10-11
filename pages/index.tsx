@@ -1,3 +1,42 @@
+import { NextPage } from "next";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+
+/**
+ * Home page - Redirects to /markets
+ *
+ * The original home page code is preserved below (commented out)
+ * in case you want to restore it in the future.
+ */
+const IndexPage: NextPage = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to markets page on mount
+    router.replace("/markets");
+  }, [router]);
+
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="flex flex-col items-center gap-4 text-center">
+        {/* Loading Spinner */}
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-sky-200 border-t-sky-600"></div>
+        <p className="text-lg font-medium text-gray-700">Loading markets...</p>
+      </div>
+    </div>
+  );
+};
+
+export default IndexPage;
+
+/* ============================================================================
+ * ORIGINAL HOME PAGE CODE (COMMENTED OUT)
+ * ============================================================================
+ *
+ * To restore the original home page, uncomment the code below and
+ * comment out the redirect implementation above.
+ *
+
 import { GenericChainProperties } from "@polkadot/types";
 import { QueryClient, dehydrate } from "@tanstack/react-query";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
@@ -122,7 +161,7 @@ export async function getStaticProps() {
   for (const market of [...featuredMarkets, ...trendingMarkets]) {
     const cmsData = marketsCmsData.find((m) => m.marketId === market.marketId);
     if (cmsData?.question) market.question = cmsData.question;
-  if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
+    if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
   }
 
   return {
@@ -281,13 +320,13 @@ const IndexPage: NextPage<{
             </div>
             <LatestTradesCompact />
           </div>
-        </div> */}
+        </div> *\/}
 
         {/* <div className="mb-12">
           <PopularCategories imagePlaceholders={categoryPlaceholders} />
-        </div> */}
+        </div> *\/}
 
-        {/* <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} /> */}
+        {/* <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} /> *\/}
 
         <div className="mb-12">
           <WatchHow />
@@ -302,3 +341,5 @@ const IndexPage: NextPage<{
 };
 
 export default IndexPage;
+
+ * ============================================================================ */

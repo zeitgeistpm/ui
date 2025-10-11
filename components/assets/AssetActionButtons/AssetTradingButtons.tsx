@@ -29,11 +29,16 @@ const AssetTradingButtons = ({
 
   // For combinatorial tokens, we need to use the marketIdOverride
   // For regular market outcomes, use getMarketIdOf
-  const marketId = marketIdOverride ??
+  const marketId =
+    marketIdOverride ??
     (IOMarketOutcomeAssetId.is(assetId) ? getMarketIdOf(assetId) : 0);
 
   // Convert AssetId to the appropriate type for TradeItem
-  const getTradeAssetId = (): CategoricalAssetId | ScalarAssetId | CombinatorialToken | undefined => {
+  const getTradeAssetId = ():
+    | CategoricalAssetId
+    | ScalarAssetId
+    | CombinatorialToken
+    | undefined => {
     if (IOCategoricalAssetId.is(assetId)) {
       return assetId;
     } else if (IOScalarAssetId.is(assetId)) {
