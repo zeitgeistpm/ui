@@ -11,7 +11,7 @@ import {
   MarketType,
 } from "lib/types/market-filter";
 import { findFilterIndex } from "lib/util/market-filter";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { ChevronDown } from "react-feather";
 import MarketActiveFilters from "./MarketActiveFilters";
 import MarketFiltersCheckboxes from "./MarketFiltersCheckboxes";
@@ -20,6 +20,10 @@ import MarketFiltersDropdowns from "./MarketFiltersDropdowns";
 import MarketFiltersSort from "./MarketFiltersSort";
 import MobileDialog from "./mobile-dialog";
 import MarketTypeToggle from "./MarketTypeToggle";
+import { Menu, Transition } from "@headlessui/react";
+import { FiPlusSquare } from "react-icons/fi";
+import { MdShowChart, MdStackedLineChart } from "react-icons/md";
+import Link from "next/link";
 
 const getFiltersFromQueryState = (
   queryState: MarketsListQuery,
@@ -218,6 +222,84 @@ const MarketFilterSelection = ({
                 <div className="h-5 w-px shrink-0 bg-gray-200"></div>
                 <MarketFiltersCheckboxes className="shrink-0"></MarketFiltersCheckboxes>
                 <MarketActiveFilters className="ml-auto shrink-0" />
+                <Menu as="div" className="relative ml-2">
+                  {({ open }) => (
+                    <>
+                      <Menu.Button className="flex min-h-[44px] items-center gap-1.5 rounded-md bg-sky-600 px-2 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-sky-700 hover:shadow-md sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-sm">
+                        <FiPlusSquare
+                          size={16}
+                          className="hidden sm:inline sm:h-3.5 sm:w-3.5"
+                        />
+                        <span>Create Market</span>
+                        <ChevronDown
+                          size={16}
+                          className={`ml-0.5 transition-transform sm:h-3.5 sm:w-3.5 ${open ? "rotate-180" : ""}`}
+                        />
+                      </Menu.Button>
+
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-lg border border-white/20 bg-white/95 shadow-xl backdrop-blur-lg focus:outline-none">
+                          <div className="p-1">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <Link href="/create">
+                                  <button
+                                    className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all ${
+                                      active ? "bg-sky-50/60" : ""
+                                    }`}
+                                  >
+                                    <MdShowChart
+                                      size={18}
+                                      className="text-sky-600"
+                                    />
+                                    <div className="flex flex-col items-start">
+                                      <span className="font-semibold text-sky-900">
+                                        Single Market
+                                      </span>
+                                    </div>
+                                  </button>
+                                </Link>
+                              )}
+                            </Menu.Item>
+
+                            <Menu.Item>
+                              {({ active }) => (
+                                <Link href="/create-combo">
+                                  <button
+                                    className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all ${
+                                      active ? "bg-sky-50/60" : ""
+                                    }`}
+                                  >
+                                    <MdStackedLineChart
+                                      size={18}
+                                      className="text-sky-600"
+                                    />
+                                    <div className="flex flex-col items-start">
+                                      <span className="font-semibold text-sky-900">
+                                        Combinatorial Market
+                                      </span>
+                                      <span className="text-xs text-gray-600">
+                                        Multi-market combinations
+                                      </span>
+                                    </div>
+                                  </button>
+                                </Link>
+                              )}
+                            </Menu.Item>
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </>
+                  )}
+                </Menu>
               </div>
             </>
           ) : (

@@ -290,11 +290,7 @@ const AccountButton: FC<{
                   leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                 >
                   <Menu.Items
-                    className="fixed bottom-0 left-0 right-0 z-[60] w-screen origin-top-right divide-y divide-gray-100 overflow-y-auto bg-sky-50 py-3 shadow-xl ring-1 ring-white/20 focus:outline-none md:absolute md:inset-auto md:left-auto md:right-0 md:h-auto md:w-72 md:overflow-visible md:rounded-lg md:border md:border-white/20 md:bg-white/95 md:backdrop-blur-lg"
-                    style={{
-                      top: "var(--top-bar-height, 50px)",
-                      maxHeight: "calc(100vh - var(--top-bar-height, 50px))",
-                    }}
+                    className="fixed left-0 right-0 z-[60] w-screen origin-top-right divide-y divide-gray-100 overflow-y-auto bg-sky-50 py-3 shadow-xl ring-1 ring-white/20 [top:var(--top-bar-height,50px)] [max-height:calc(100vh-var(--top-bar-height,50px))] focus:outline-none md:fixed md:inset-auto md:left-auto md:right-4 md:top-[110px] md:h-auto md:w-72 md:max-h-[calc(100vh-100px)] md:overflow-visible md:rounded-lg md:border md:border-white/20 md:bg-white/95 md:backdrop-blur-lg"
                   >
                     <div className="">
                       <div className="mb-3 flex flex-col gap-2 border-b border-sky-200/30 px-6 py-3">

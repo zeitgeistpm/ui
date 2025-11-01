@@ -22,14 +22,14 @@ export const Tooltip: FC<TooltipProps> = ({
 
   return (
     <div className="group relative inline-flex">
-      <div className="cursor-help text-sky-600">
+      <div className="cursor-help text-sky-600 transition-colors hover:text-sky-700">
         {children || icon || <AiOutlineInfoCircle className="h-3.5 w-3.5" />}
       </div>
       <div
-        className={`pointer-events-none absolute z-50 w-64 opacity-0 transition-opacity duration-150 group-hover:opacity-100 ${positionClasses[position]}`}
+        className={`pointer-events-none absolute z-50 w-64 opacity-0 transition-opacity duration-200 group-hover:opacity-100 ${positionClasses[position]}`}
         style={{ maxWidth: "calc(100vw - 2rem)" }}
       >
-        <div className="rounded-md bg-gray-900 px-2.5 py-1.5 text-xs leading-snug text-white shadow-lg">
+        <div className="rounded-md border border-sky-200/30 bg-sky-950/95 px-3 py-2 text-xs leading-snug text-white shadow-lg backdrop-blur-md">
           {content}
         </div>
       </div>

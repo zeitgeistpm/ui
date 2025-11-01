@@ -209,8 +209,8 @@ export const MarketEditorCompact = () => {
 
           {/* Row 2: Stepper - Full width on mobile, integrated on desktop */}
           {isWizard && (
-            <div className="md:flex md:items-center md:gap-6">
-              <div className="flex-1 overflow-x-auto">
+            <div className="md:flex md:items-center md:gap-6 py-2">
+              <div className="flex-1">
                 <WizardStepper
                   steps={steps}
                   current={currentStep}
@@ -340,9 +340,11 @@ export const MarketEditorCompact = () => {
                   fieldState={fieldsState.answers}
                 />
                 {showLiquidityWarning && (
-                  <div className="mt-3 rounded-md border border-orange-200/50 bg-orange-50/50 px-3 py-2 text-xs text-sky-900">
-                    <LuFileWarning size={14} className="mr-1 inline text-orange-500" />
-                    Changing answers will reset liquidity settings
+                  <div className="mt-3 flex items-start gap-2 rounded-md border border-orange-200/50 bg-orange-50/80 px-3 py-2 backdrop-blur-sm">
+                    <LuFileWarning size={14} className="mt-0.5 flex-shrink-0 text-orange-600" />
+                    <span className="text-xs leading-relaxed text-orange-900">
+                      Changing answers will reset liquidity settings
+                    </span>
                   </div>
                 )}
                 <div className="mt-1 h-4 text-xs text-red-400">
@@ -515,9 +517,9 @@ export const MarketEditorCompact = () => {
                       {...input("currency")}
                     />
                     {showLiquidityWarning && (
-                      <div className="mt-2 text-xs text-orange-500">
-                        <LuFileWarning size={12} className="mr-1 inline" />
-                        Resets liquidity
+                      <div className="mt-2 flex items-start gap-1.5 text-xs text-orange-600">
+                        <LuFileWarning size={12} className="mt-0.5 flex-shrink-0" />
+                        <span>Resets liquidity</span>
                       </div>
                     )}
                   </div>
@@ -550,13 +552,13 @@ export const MarketEditorCompact = () => {
 
               {/* Advised warning */}
               {form.moderation === "Advised" && (
-                <div className="rounded border border-orange-200/50 bg-orange-50/50 px-2.5 py-2">
-                  <p className="text-xs text-sky-900">
-                    <LuFileWarning
-                      size={12}
-                      className="mr-1 inline text-orange-500"
-                    />
-                    Requires approval.{" "}
+                <div className="flex items-start gap-2 rounded-md border border-orange-200/50 bg-orange-50/80 px-3 py-2.5 backdrop-blur-sm">
+                  <LuFileWarning
+                    size={16}
+                    className="mt-0.5 flex-shrink-0 text-orange-600"
+                  />
+                  <p className="text-xs leading-relaxed text-orange-900">
+                    <span className="font-semibold">Requires approval.</span>{" "}
                     {constants?.markets.advisoryBondSlashPercentage}% slash if
                     rejected. Add liquidity after approval.
                   </p>
@@ -622,9 +624,11 @@ export const MarketEditorCompact = () => {
                       </div>
                     </div>
                   ) : (
-                    <p className="text-xs text-sky-700">
-                      Pool can be deployed later from market page
-                    </p>
+                    <div className="flex items-start gap-2 rounded-md border border-sky-200/30 bg-sky-50/50 px-3 py-2 backdrop-blur-sm">
+                      <p className="text-xs leading-relaxed text-sky-700">
+                        💡 Pool can be deployed later from market page
+                      </p>
+                    </div>
                   )}
                 </div>
               )}

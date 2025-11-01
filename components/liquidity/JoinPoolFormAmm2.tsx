@@ -285,7 +285,7 @@ const JoinPoolForm = ({
         disabled={
           formState.isValid === false ||
           isLoading ||
-          market?.status !== "Active" ||
+          activeMarket?.status !== "Active" ||
           hasInsufficientBalance
         }
       >

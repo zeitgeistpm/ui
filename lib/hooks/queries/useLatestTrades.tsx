@@ -123,13 +123,22 @@ export const useLatestTrades = (
 
         // Build where filter based on market type
         if (isComboMarket) {
-          const tokensToFilter = hasExplicitComboTokens
-            ? outcomeAssets!.map((asset) => asset.CombinatorialToken)
-            : market!.outcomeAssets;
+          // Build exact JSON strings for each combinatorial token
+          // The format stored in the database is: {"combinatorialToken":"0xHEX"}
+          const exactJsonStrings = comboAssetsForProcessing.map((asset) => {
+            // Extract the hex value from the CombinatorialToken object
+            const tokenHex = asset.CombinatorialToken;
+            // Build the EXACT JSON string as it appears in the database
+            // Note: no spaces in the JSON, lowercase "combinatorialToken"
+            return `{"combinatorialToken":"${tokenHex}"}`;
+          });
 
-          const comboFilters = tokensToFilter.map((token) => ({
-            OR: [{ assetIn_contains: token }, { assetOut_contains: token }],
-          }));
+          // Use exact equality (_eq) to match the complete asset string
+          // This prevents false matches from similar token prefixes
+          const comboFilters = exactJsonStrings.flatMap((exactJson) => [
+            { assetIn_eq: exactJson },
+            { assetOut_eq: exactJson },
+          ]);
 
           whereFilter = {
             AND: [swapsMetaFilter, { OR: comboFilters }],
@@ -157,6 +166,11 @@ export const useLatestTrades = (
         });
 
         if (isComboMarket) {
+          // Build set of exact token hex values for this pool for client-side filtering
+          const exactTokenHexSet = new Set(
+            comboAssetsForProcessing.map(asset => asset.CombinatorialToken.toLowerCase())
+          );
+
           // Handle combinatorial token trades
           const trades: TradeItem[] = historicalSwaps
             .map((swap) => {
@@ -167,8 +181,34 @@ export const useLatestTrades = (
               const assetInId = parseAssetIdStringWithCombinatorial(
                 swap.assetIn,
               );
+              const assetOutId = parseAssetIdStringWithCombinatorial(
+                swap.assetOut,
+              );
               const assetInIsBaseAsset =
                 !isCombinatorialToken(assetInId) && IOBaseAssetId.is(assetInId);
+
+              // CRITICAL: Verify that one of the assets in this swap EXACTLY matches
+              // one of this pool's tokens (not just a substring match)
+              let matchedToken: CombinatorialToken | null = null;
+
+              // Check assetIn
+              if (isCombinatorialToken(assetInId)) {
+                const hexValue = assetInId.CombinatorialToken.toLowerCase();
+                if (exactTokenHexSet.has(hexValue)) {
+                  matchedToken = assetInId;
+                }
+              }
+
+              // Check assetOut
+              if (!matchedToken && isCombinatorialToken(assetOutId)) {
+                const hexValue = assetOutId.CombinatorialToken.toLowerCase();
+                if (exactTokenHexSet.has(hexValue)) {
+                  matchedToken = assetOutId;
+                }
+              }
+
+              // Skip this trade if it doesn't exactly match any of our pool's tokens
+              if (!matchedToken) return null;
 
               // Find which combo token was traded and get its name
               const { asset: comboAsset, name: outcomeName } =
