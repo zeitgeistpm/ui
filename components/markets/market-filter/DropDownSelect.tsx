@@ -5,15 +5,30 @@ import { ChevronDown, ChevronUp } from "react-feather";
 import ReactSelect, {
   components,
   ControlProps,
+  InputProps,
   MenuListProps,
   OptionProps,
+  ValueContainerProps,
 } from "react-select";
 import { useMarketFiltersContext } from "./MarketFiltersContainer";
 
 const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
-  const { setSelectedMenu, selectedMenu } = useMarketFiltersContext();
+  const { setSelectedMenu, selectedMenu, activeFilters } = useMarketFiltersContext();
   const { menuIsOpen, selectProps } = props;
   const Chevron = menuIsOpen ? ChevronUp : ChevronDown;
+
+  // Map label to filter type
+  const labelToTypeMap: Record<string, string> = {
+    "Category": "tag",
+    "Currency": "currency",
+    "Status": "status",
+  };
+
+  // Check if this filter type has any active filters
+  const filterType = labelToTypeMap[selectProps.placeholder || ""] || selectProps.placeholder?.toLowerCase();
+  const hasActiveFilters = activeFilters?.some(
+    (filter) => filter.type === filterType
+  ) ?? false;
 
   const onClick = () => {
     if (selectedMenu === selectProps.placeholder) {
@@ -27,23 +42,25 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
     <components.Control {...props}>
       <div
         className={
-          "flex h-7 items-center justify-center rounded-lg px-1.5 text-sm font-semibold transition-all lg:px-2 " +
+          "flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-2.5 sm:text-sm md:px-3 " +
           (menuIsOpen
-            ? "bg-sky-100 text-sky-800"
-            : "text-sky-800 hover:bg-sky-50 hover:text-sky-800")
+            ? "text-white bg-white/15"
+            : hasActiveFilters
+            ? "text-ztg-green-400 bg-white/15 hover:bg-white/20 hover:text-white"
+            : "text-white/90 bg-white/15 hover:bg-white/20 hover:text-white")
         }
         onClick={onClick}
       >
         <span className="cursor-pointer">{selectProps.placeholder}</span>
-        <Chevron size={13} className="ml-1 cursor-pointer lg:ml-1.5" />
-        {children}
+        <Chevron size={14} className="cursor-pointer transition-transform sm:h-4 sm:w-4" />
+        <div className="!absolute !opacity-0 !pointer-events-none !w-0 !h-0 !m-0 !p-0">{children}</div>
       </div>
     </components.Control>
   );
 };
 
 const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
-  const { data } = props;
+  const { data, isFocused } = props;
 
   const { activeFilters } = useMarketFiltersContext();
 
@@ -53,14 +70,16 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
     <components.Option {...props}>
       <div
         className={
-          "center h-full cursor-pointer rounded-md px-1.5 py-1 shadow-sm transition-all " +
+          "center h-full cursor-pointer rounded-md px-2 py-1.5 transition-all " +
           (isActive
-            ? "bg-gradient-to-br from-sky-500 to-blue-500 text-white shadow-md"
-            : "bg-white hover:bg-sky-50 hover:shadow-md")
+            ? "text-ztg-green-400 bg-ztg-green-500/20"
+            : isFocused
+            ? "text-white bg-white/10"
+            : "text-white/90 hover:bg-white/10 hover:text-white")
         }
       >
         {data.imageUrl && (
-          <div className="center mr-1 h-7 w-7 overflow-hidden rounded-md bg-white p-0.5 shadow-sm">
+          <div className="center mr-1 h-7 w-7 overflow-hidden rounded-md bg-white/10 p-0.5 shadow-md backdrop-blur-sm">
             <Image
               className="rounded-md"
               src={data.imageUrl}
@@ -71,13 +90,18 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
             />
           </div>
         )}
-        <div
-          className={
-            "px-1.5 text-xs font-medium " +
-            (isActive ? "text-white" : "text-sky-800")
-          }
-        >
-          {children}
+        <div className="flex items-center gap-1.5">
+          {isActive && (
+            <div className="h-1.5 w-1.5 rounded-full bg-ztg-green-400"></div>
+          )}
+          <div
+            className={
+              "px-1 text-xs font-medium " +
+              (isActive ? "text-ztg-green-400" : "inherit")
+            }
+          >
+            {children}
+          </div>
         </div>
       </div>
     </components.Option>
@@ -87,10 +111,30 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
 const MenuList = ({ children, ...props }: MenuListProps) => {
   return (
     <components.MenuList {...props}>
-      <div className="mx-auto mb-0.5 flex flex-row flex-wrap gap-1.5">
+      <div className="mx-auto flex flex-row flex-wrap gap-1.5">
         {children}
       </div>
     </components.MenuList>
+  );
+};
+
+const Input = (props: InputProps<MarketFilter, false>) => {
+  return (
+    <components.Input
+      {...props}
+      className="!absolute !opacity-0 !pointer-events-none !w-0 !h-0 !m-0 !p-0"
+      style={{ position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0, margin: 0, padding: 0 }}
+    />
+  );
+};
+
+const ValueContainer = (props: ValueContainerProps<MarketFilter, false>) => {
+  return (
+    <components.ValueContainer
+      {...props}
+      className="!absolute !opacity-0 !pointer-events-none !w-0 !h-0 !m-0 !p-0"
+      style={{ position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0, margin: 0, padding: 0 }}
+    />
   );
 };
 
@@ -113,10 +157,13 @@ const Placeholder = () => {
 const customStyles = {
   menu: (provided) => {
     return {
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+      backdropFilter: "blur(12px)",
       borderRadius: "8px",
+      border: "2px solid rgba(34, 181, 122, 0.4)",
       boxShadow:
         "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
-      padding: "4px",
+      padding: "8px",
     };
   },
   menuList: (provided) => {
@@ -137,7 +184,26 @@ const customStyles = {
     return { width: "100%", zIndex: 50 };
   },
   valueContainer: () => {
-    return {};
+    return {
+      position: "absolute",
+      opacity: 0,
+      pointerEvents: "none",
+      width: 0,
+      height: 0,
+      margin: 0,
+      padding: 0,
+    };
+  },
+  input: () => {
+    return {
+      position: "absolute",
+      opacity: 0,
+      pointerEvents: "none",
+      width: 0,
+      height: 0,
+      margin: 0,
+      padding: 0,
+    };
   },
 };
 
@@ -171,6 +237,8 @@ const DropDownSelect = ({
       captureMenuScroll={false}
       components={{
         Control,
+        Input,
+        ValueContainer,
         SingleValue,
         IndicatorSeparator,
         DropdownIndicator,

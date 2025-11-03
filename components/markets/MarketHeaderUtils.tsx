@@ -28,7 +28,7 @@ export const HeaderStat: FC<
   PropsWithChildren<{ label: string; border?: boolean }>
 > = ({ label, border = true, children }) => {
   return (
-    <div className={border ? "pr-2 sm:border-r sm:border-ztg-blue" : ""}>
+    <div className={border ? "pr-2 sm:border-r-2 sm:border-ztg-blue" : ""}>
       <span>{label}: </span>
       <span className="font-medium">{children}</span>
     </div>
@@ -50,8 +50,8 @@ export const CompactCreatorBadge: FC<{ address: string }> = ({ address }) => {
   return (
     <div className="group relative">
       <Link href={`/portfolio/${address}`}>
-        <div className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md bg-sky-100/80 backdrop-blur-sm transition-all hover:scale-105 hover:bg-sky-200/80 hover:shadow-sm">
-          <Avatar address={address} copy={false} size={16} />
+        <div className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-lg bg-ztg-primary-100/80 backdrop-blur-sm transition-all hover:scale-110 hover:bg-ztg-primary-200/80 hover:shadow-md">
+          <Avatar address={address} copy={false} size={14} />
         </div>
       </Link>
       <div className="pointer-events-none absolute bottom-full left-0 z-10 mb-1 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">

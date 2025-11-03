@@ -135,16 +135,16 @@ export const CategoricalMarketChart = ({
 
   const colors = calcMarketColors(marketId, chartSeries.length);
   return (
-    <div className="-ml-ztg-25 flex flex-col">
-      <div className="ml-auto">
-        <TimeFilters onClick={handleFilterChange} value={chartFilter} />
-      </div>
+    <div className="flex flex-col">
       <TimeSeriesChart
         data={chartData}
         series={chartSeries.map((s, i) => ({ ...s, color: colors[i] }))}
         yUnits={metadata?.symbol ?? ""}
         isLoading={isLoading}
       />
+      <div className="mt-2 w-full sm:mt-3">
+        <TimeFilters onClick={handleFilterChange} value={chartFilter} />
+      </div>
     </div>
   );
 };
@@ -212,10 +212,7 @@ export const ScalarMarketChart = ({
     color: "#2468e2",
   };
   return (
-    <div className="-ml-ztg-25 flex flex-col">
-      <div className="ml-auto">
-        <TimeFilters onClick={handleFilterChange} value={chartFilter} />
-      </div>
+    <div className="flex flex-col">
       <TimeSeriesChart
         data={chartData}
         series={[series]}
@@ -223,6 +220,9 @@ export const ScalarMarketChart = ({
         yDomain={[lowerBound, upperBound]}
         isLoading={isLoading}
       />
+      <div className="mt-2 w-full sm:mt-3">
+        <TimeFilters onClick={handleFilterChange} value={chartFilter} />
+      </div>
     </div>
   );
 };

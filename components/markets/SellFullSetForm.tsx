@@ -135,14 +135,14 @@ const SellFullSetForm = ({
 
   return (
     <div className="flex w-full flex-col gap-y-4">
-      <div className="flex items-center justify-between rounded-lg border border-sky-200/30 bg-sky-50/50 p-4 shadow-sm backdrop-blur-sm">
-        <span className="text-sm font-semibold text-sky-700">Your Balance</span>
-        <span className="font-bold text-sky-900">
+      <div className="flex items-center justify-between rounded-lg border-2 border-ztg-primary-200/30 bg-ztg-primary-50/50 p-4 shadow-sm backdrop-blur-sm">
+        <span className="text-sm font-semibold text-ztg-primary-700">Your Balance</span>
+        <span className="font-bold text-ztg-primary-900">
           {maxTokenSet.div(ZTG).toFixed(2)} Full Sets
         </span>
       </div>
 
-      <div className="h-[56px] w-full rounded-lg border border-sky-200/30 bg-white/60 px-4 shadow-sm backdrop-blur-sm transition-all focus-within:border-sky-400 focus-within:shadow-md">
+      <div className="h-[56px] w-full rounded-lg border-2 border-ztg-primary-200/30 bg-white/60 px-4 shadow-sm backdrop-blur-sm transition-all focus-within:border-ztg-primary-400 focus-within:shadow-md">
         <input
           type="number"
           min="0"
@@ -150,7 +150,7 @@ const SellFullSetForm = ({
           value={amount}
           step="0.1"
           onChange={(e) => handleAmountChange(e.target.value)}
-          className="h-full w-full bg-transparent text-right text-base font-medium text-sky-900 outline-none"
+          className="h-full w-full bg-transparent text-right text-base font-medium text-ztg-primary-900 outline-none"
         />
       </div>
 
@@ -164,18 +164,18 @@ const SellFullSetForm = ({
         className="w-full cursor-pointer accent-sky-600"
       />
 
-      <div className="rounded-lg border border-sky-200/30 bg-sky-50/50 p-4 shadow-sm backdrop-blur-sm">
+      <div className="rounded-lg border-2 border-ztg-primary-200/30 bg-ztg-primary-50/50 p-4 shadow-sm backdrop-blur-sm">
         <div className="mb-3 flex items-center justify-between">
-          <span className="text-sm font-semibold text-sky-700">
+          <span className="text-sm font-semibold text-ztg-primary-700">
             You'll Sell
           </span>
-          <span className="font-bold text-sky-900">
+          <span className="font-bold text-ztg-primary-900">
             {amount ? amount : 0} Full Sets
           </span>
         </div>
         {market?.categories && Number(amount) > 0 && (
-          <div className="space-y-2 border-t border-sky-200/30 pt-3">
-            <p className="mb-2 text-xs font-semibold text-sky-600">
+          <div className="space-y-2 border-t-2 border-ztg-primary-200/30 pt-3">
+            <p className="mb-2 text-xs font-semibold text-ztg-primary-600">
               Breakdown per set:
             </p>
             {market.categories.map((category, index) => (
@@ -183,10 +183,10 @@ const SellFullSetForm = ({
                 key={index}
                 className="flex items-center justify-between text-sm"
               >
-                <span className="capitalize text-sky-700">
+                <span className="capitalize text-ztg-primary-700">
                   {category.name || `Outcome ${index + 1}`}
                 </span>
-                <span className="font-medium text-sky-900">
+                <span className="font-medium text-ztg-primary-900">
                   {amount ? amount : 0} tokens
                 </span>
               </div>
@@ -195,21 +195,21 @@ const SellFullSetForm = ({
         )}
       </div>
 
-      <div className="rounded-lg border border-sky-200/30 bg-white/60 p-4 shadow-sm backdrop-blur-sm">
+      <div className="rounded-lg border-2 border-ztg-primary-200/30 bg-white/60 p-4 shadow-sm backdrop-blur-sm">
         <div className="mb-2 text-center">
-          <span className="text-sm font-semibold text-sky-700">
+          <span className="text-sm font-semibold text-ztg-primary-700">
             You'll Receive
           </span>
         </div>
         <div className="text-center">
-          <span className="text-lg font-bold text-sky-900">
+          <span className="text-lg font-bold text-ztg-primary-900">
             {amount ? amount : 0} {metadata?.symbol}
           </span>
         </div>
       </div>
 
-      <div className="rounded-lg border border-sky-200/30 bg-white/60 p-3 shadow-sm backdrop-blur-sm">
-        <p className="text-center text-sm text-sky-700">
+      <div className="rounded-lg border-2 border-ztg-primary-200/30 bg-white/60 p-3 shadow-sm backdrop-blur-sm">
+        <p className="text-center text-sm text-ztg-primary-700">
           <span className="font-semibold">Price Per Set:</span> 1{" "}
           {metadata?.symbol}
         </p>

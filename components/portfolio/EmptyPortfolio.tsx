@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Frown } from "react-feather";
+import { Inbox } from "react-feather";
 
 const EmptyPortfolio = ({
   headerText,
@@ -13,20 +13,20 @@ const EmptyPortfolio = ({
   buttonLink?: string;
 }) => {
   return (
-    <div className="my-16 flex flex-col items-center justify-center gap-6 rounded-lg border border-sky-200/30 bg-white/80 p-12 shadow-md backdrop-blur-md">
-      <div className="rounded-full bg-sky-50/80 p-6 backdrop-blur-sm">
-        <Frown className="text-sky-600" size={64} />
+    <div className="my-16 flex flex-col items-center justify-center gap-6 rounded-lg border border-ztg-primary-200/30 bg-white/10 p-12 shadow-lg backdrop-blur-md">
+      <div className="flex h-20 w-20 items-center justify-center rounded-full border border-ztg-primary-200/20 bg-ztg-primary-900/30 backdrop-blur-sm">
+        <Inbox className="text-white/60" size={40} strokeWidth={1.5} />
       </div>
       <div className="text-center">
-        <h3 className="mb-2 text-xl font-semibold text-sky-900">
+        <h3 className="mb-2 text-xl font-semibold text-white">
           {headerText}
         </h3>
-        <p className="text-sm text-sky-700">{bodyText}</p>
+        <p className="text-sm text-white/70">{bodyText}</p>
       </div>
       {buttonText && buttonLink && (
         <Link
           href={buttonLink}
-          className="rounded-md border border-sky-200/30 bg-sky-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-sky-700 hover:shadow-md"
+          className="rounded-md bg-ztg-green-600/80 px-6 py-2.5 text-sm font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md"
         >
           {buttonText}
         </Link>

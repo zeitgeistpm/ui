@@ -31,34 +31,36 @@ export const ModerationModeSelect: React.FC<ModerationModeSelectProps> = ({
 }) => {
   const { data: constants } = useChainConstants();
 
-  const handleSelect = (mode: Moderation) => () => {
-    onChange({ target: { name, value: mode }, type: "change" });
-    onBlur({ target: { name, value: mode }, type: "blur" });
-  };
-
   return (
-    <div className="flex flex-col gap-2 md:flex-row md:gap-2">
-      {options.map((option, index) => (
-        <button
-          key={index}
-          type="button"
-          className={`flex h-[72px] flex-1 cursor-pointer flex-col justify-center rounded-md border p-2 text-left backdrop-blur-md transition-all active:scale-95 ${
-            value === option.mode
-              ? "border-sky-600/50 bg-sky-600/90 text-white shadow-md"
-              : "border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
-          }`}
-          onClick={handleSelect(option.mode)}
-        >
-          <h3 className="text-xs font-semibold leading-tight">{option.mode}</h3>
-          <p className="mt-0.5 text-[11px] leading-tight opacity-75">
-            {option.description} •{" "}
+    <div
+      className="flex w-full items-center rounded-lg border-2 border-white/20 backdrop-blur-sm transition-all h-12 bg-white/10 hover:border-white/30"
+    >
+      <select
+        value={value || ""}
+        className="w-full h-full bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50"
+        onChange={(e) => {
+          const selectedValue = e.target.value || undefined;
+          onChange({ target: { name, value: selectedValue as Moderation | undefined }, type: "change" });
+          onBlur({ target: { name, value: selectedValue as Moderation | undefined }, type: "blur" });
+        }}
+      >
+        <option value="" className="bg-ztg-primary-600 text-white">
+          Select market type
+        </option>
+        {options.map((option, index) => (
+          <option
+            key={index}
+            value={option.mode}
+            className="bg-ztg-primary-600 text-white"
+          >
+            {option.mode} - {option.description} (
             {option.mode === "Permissionless"
               ? constants?.markets.validityBond
               : constants?.markets.advisoryBond}{" "}
-            ZTG
-          </p>
-        </button>
-      ))}
+            ZTG)
+          </option>
+        ))}
+      </select>
     </div>
   );
 };

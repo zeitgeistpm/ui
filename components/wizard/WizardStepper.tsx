@@ -46,10 +46,10 @@ export const WizardStepper = <T extends WizardStep<any>>({
   return (
     <div className="relative flex w-full items-center">
       {/* Progress bar background */}
-      <div className="absolute left-0 right-0 top-[10px] -z-20 h-[2px] bg-sky-300/60" />
+      <div className="absolute left-0 right-0 top-[10px] -z-20 h-[2px] bg-ztg-primary-300/60" />
       {/* Progress bar fill */}
       <div
-        className="absolute left-0 top-[10px] -z-10 h-[2px] bg-sky-600 transition-all duration-300 ease-in-out"
+        className="absolute left-0 top-[10px] -z-10 h-[2px] bg-ztg-primary-600 transition-all duration-300 ease-in-out"
         style={{
           width: `${progress}%`,
         }}
@@ -88,14 +88,14 @@ export const WizardStepper = <T extends WizardStep<any>>({
                   group-active:scale-95
                   ${
                     canNavigate || index === visibleStepIndex
-                      ? "bg-sky-600 text-white"
-                      : "bg-sky-300/60 text-sky-700"
+                      ? "bg-ztg-primary-600 text-white"
+                      : "bg-ztg-primary-300/60 text-ztg-primary-700"
                   }
                   ${showError && "bg-red-500 text-white"}
                   ${showCompleted && "bg-emerald-500 text-white"}
                   ${
                     index === visibleStepIndex &&
-                    "ring-2 ring-sky-400 ring-offset-1"
+                    "ring-2 ring-ztg-primary-400 ring-offset-1"
                   }
                 `}
                 >
@@ -110,8 +110,8 @@ export const WizardStepper = <T extends WizardStep<any>>({
               <div
                 className={`center hidden text-center text-[10px] leading-tight md:flex ${
                   currentStepIndex >= index
-                    ? "font-medium text-sky-900"
-                    : "text-sky-700"
+                    ? "font-medium text-ztg-primary-900"
+                    : "text-ztg-primary-700"
                 } ${index === visibleStepIndex && "font-semibold"}`}
               >
                 {step.label}

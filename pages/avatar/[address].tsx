@@ -216,7 +216,7 @@
 //                 </div>
 //                 <div
 //                   onClick={() => setShowKsmInfo(false)}
-//                   className="border-2 self-end cursor-pointer border-red-800 py-2 px-4 text-red-800 rounded-md"
+//                   className="border-2 self-end cursor-pointer border-r-2ed-800 py-2 px-4 text-red-800 rounded-md"
 //                 >
 //                   Got it!
 //                 </div>
@@ -229,10 +229,10 @@
 //             <div className="relative rounded-full mr-ztg-40">
 //               <div
 //                 style={{ overflow: "hidden" }}
-//                 className={`w-fit rounded-full overflow-hidden border-2 border-black ${
+//                 className={`w-fit rounded-full overflow-hidden border-2 border-b-2lack ${
 //                   isOwner &&
 //                   hasPendingItems &&
-//                   " border-yellow-500 border-solid"
+//                   " border-y-2ellow-500 border-solid"
 //                 }`}
 //               >
 //                 <ZeitgeistAvatar
@@ -529,7 +529,7 @@
 //             </div>
 //             {!props.isTarotHolder && (
 //               <div className="text-center text-xs">
-//                 <div className=" h-ztg-18 px-ztg-8 text-ztg-12-150 font-bold text-sky-600">
+//                 <div className=" h-ztg-18 px-ztg-8 text-ztg-12-150 font-bold text-ztg-primary-600">
 //                   <div className="flex px-ztg-8 justify-between">
 //                     <span>Exchange Fee: </span>
 //                     <span className="font-mono">{(fee / ZTG).toFixed(4)}</span>

@@ -32,12 +32,12 @@ export const MarketStats: FC<MarketStatsProps> = ({
   isStatsLoading,
 }) => {
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-      <div className="rounded-md bg-white/60 px-2 py-1 backdrop-blur-sm">
-        <div className="text-xxs font-medium text-gray-600">
+    <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 lg:grid-cols-6">
+      <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white/15 sm:px-3 sm:py-2">
+        <div className="text-[10px] font-medium text-white/70 sm:text-xs">
           {hasDatePassed(starts) ? "Started" : "Starts"}
         </div>
-        <div className="text-xs font-bold text-gray-900">
+        <div className="text-xs font-bold leading-tight text-white/90 sm:text-sm">
           {new Intl.DateTimeFormat("default", {
             month: "short",
             day: "numeric",
@@ -46,11 +46,11 @@ export const MarketStats: FC<MarketStatsProps> = ({
         </div>
       </div>
 
-      <div className="rounded-md bg-white/60 px-2 py-1 backdrop-blur-sm">
-        <div className="text-xxs font-medium text-gray-600">
+      <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white/15 sm:px-3 sm:py-2">
+        <div className="text-[10px] font-medium text-white/70 sm:text-xs">
           {hasDatePassed(ends) ? "Ended" : "Ends"}
         </div>
-        <div className="text-xs font-bold text-gray-900">
+        <div className="text-xs font-bold leading-tight text-white/90 sm:text-sm">
           {new Intl.DateTimeFormat("default", {
             month: "short",
             day: "numeric",
@@ -64,11 +64,11 @@ export const MarketStats: FC<MarketStatsProps> = ({
         status === "Reported" ||
         status === "Disputed" ||
         status === "Resolved") && (
-        <div className="rounded-md bg-white/60 px-2 py-1 backdrop-blur-sm">
-          <div className="text-xxs font-medium text-gray-600">
+        <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white/15 sm:px-3 sm:py-2">
+          <div className="text-[10px] font-medium text-white/70 sm:text-xs">
             {status === "Resolved" ? "Resolved" : "Resolves"}
           </div>
-          <div className="text-xs font-bold text-gray-900">
+          <div className="text-xs font-bold leading-tight text-white/90 sm:text-sm">
             {new Intl.DateTimeFormat("default", {
               month: "short",
               day: "numeric",
@@ -79,9 +79,9 @@ export const MarketStats: FC<MarketStatsProps> = ({
       )}
 
       {status === "Proposed" && (
-        <div className="rounded-md bg-white/60 px-2 py-1 backdrop-blur-sm">
-          <div className="text-xxs font-medium text-gray-600">Reports Open</div>
-          <div className="text-xs font-bold text-gray-900">
+        <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white/15 sm:px-3 sm:py-2">
+          <div className="text-[10px] font-medium text-white/70 sm:text-xs">Reports Open</div>
+          <div className="text-xs font-bold leading-tight text-white/90 sm:text-sm">
             {new Intl.DateTimeFormat("default", {
               month: "short",
               day: "numeric",
@@ -92,22 +92,22 @@ export const MarketStats: FC<MarketStatsProps> = ({
       )}
 
       {token ? (
-        <div className="rounded-md bg-white/60 px-2 py-1 backdrop-blur-sm">
-          <div className="text-xxs font-medium text-gray-600">Volume</div>
-          <div className="text-xs font-bold text-gray-900">
+        <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white/15 sm:px-3 sm:py-2">
+          <div className="text-[10px] font-medium text-white/70 sm:text-xs">Volume</div>
+          <div className="text-xs font-bold leading-tight text-white/90 sm:text-sm">
             {formatNumberCompact(volume)} {token}
           </div>
         </div>
       ) : (
-        <div className="rounded-md bg-white/60 px-2 py-1 backdrop-blur-sm">
-          <Skeleton width="60px" height="24px" />
+        <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm sm:px-4 sm:py-2.5">
+          <Skeleton width="60px" height="20px" className="sm:h-6" />
         </div>
       )}
 
       {isStatsLoading === false && token ? (
-        <div className="rounded-md bg-white/60 px-2 py-1 backdrop-blur-sm">
-          <div className="text-xxs font-medium text-gray-600">Liquidity</div>
-          <div className="text-xs font-bold text-gray-900">
+        <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white/15 sm:px-3 sm:py-2">
+          <div className="text-[10px] font-medium text-white/70 sm:text-xs">Liquidity</div>
+          <div className="text-xs font-bold leading-tight text-white/90 sm:text-sm">
             {formatNumberCompact(
               new Decimal(liquidity ?? 0)?.div(ZTG).toNumber(),
             )}{" "}
@@ -115,21 +115,21 @@ export const MarketStats: FC<MarketStatsProps> = ({
           </div>
         </div>
       ) : (
-        <div className="rounded-md bg-white/60 px-2 py-1 backdrop-blur-sm">
-          <Skeleton width="60px" height="24px" />
+        <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm sm:px-4 sm:py-2.5">
+          <Skeleton width="60px" height="20px" className="sm:h-6" />
         </div>
       )}
 
       {isStatsLoading === false && token ? (
-        <div className="rounded-md bg-white/60 px-2 py-1 backdrop-blur-sm">
-          <div className="text-xxs font-medium text-gray-600">Traders</div>
-          <div className="text-xs font-bold text-gray-900">
+        <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white/15 sm:px-3 sm:py-2">
+          <div className="text-[10px] font-medium text-white/70 sm:text-xs">Traders</div>
+          <div className="text-xs font-bold leading-tight text-white/90 sm:text-sm">
             {formatNumberCompact(participants ?? 0)}
           </div>
         </div>
       ) : (
-        <div className="rounded-md bg-white/60 px-2 py-1 backdrop-blur-sm">
-          <Skeleton width="60px" height="24px" />
+        <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm sm:px-4 sm:py-2.5">
+          <Skeleton width="60px" height="20px" className="sm:h-6" />
         </div>
       )}
     </div>

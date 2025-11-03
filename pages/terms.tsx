@@ -8,7 +8,7 @@ const TermsPage: NextPage = () => {
       {/* Back Button */}
       <Link
         href="/"
-        className="mb-6 inline-flex items-center gap-2 text-sm text-sky-600 transition-colors hover:text-sky-500"
+        className="mb-6 inline-flex items-center gap-2 text-sm text-ztg-primary-600 transition-colors hover:text-ztg-primary-500"
       >
         <ChevronLeft size={16} />
         Back to Home
@@ -61,7 +61,7 @@ const TermsPage: NextPage = () => {
             </p>
           </section>
 
-          <section className="mt-8 rounded-lg bg-sky-50 p-4">
+          <section className="mt-8 rounded-lg bg-ztg-primary-50 p-4">
             <p className="text-sm text-gray-600">
               <strong>Note:</strong> By using this website and its services, you
               acknowledge that you have read, understood, and agree to be bound
@@ -71,7 +71,7 @@ const TermsPage: NextPage = () => {
         </div>
 
         {/* Footer Note */}
-        <div className="mt-12 border-t border-gray-200 pt-6">
+        <div className="mt-12 border-t-2 border-gray-200 pt-6">
           <p className="text-sm text-gray-500">
             Last updated: {new Date().getFullYear()}
           </p>

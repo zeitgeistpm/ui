@@ -1,7 +1,7 @@
 const ClearAllButton = ({ clear }) => {
   return (
     <button
-      className="flex items-center rounded-md border border-sky-600 bg-white px-2 py-1 text-sm font-semibold text-sky-800 transition-all hover:bg-sky-50"
+      className="flex items-center rounded-md bg-white/15 px-2 py-1 text-sm font-semibold text-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white/20"
       onClick={clear}
     >
       Clear All

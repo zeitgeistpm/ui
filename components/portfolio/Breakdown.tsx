@@ -31,11 +31,11 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
   }, new Decimal(0));
 
   return (
-    <div className="rounded-lg bg-gradient-to-br from-sky-50 to-blue-50 p-3 shadow-lg">
-      <div className="overflow-hidden rounded-lg bg-white/60 p-3 backdrop-blur-sm">
+    <div className="rounded-lg bg-white/10 p-3 shadow-lg backdrop-blur-md">
+      <div className="overflow-hidden rounded-lg p-3">
         <div className="flex flex-col gap-y-4 md:flex-row">
-          <div className="flex w-full md:flex-1 md:border-r md:border-sky-200/30">
-            <div className="flex-1 border-r border-sky-200/30 pr-3">
+          <div className="flex w-full md:flex-1 md:border-r-2 md:border-white/10">
+            <div className="flex-1 border-r-2 border-white/10 pr-3">
               {"loading" in props ? (
                 <BreakdownSlotSkeleton />
               ) : (
@@ -62,7 +62,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
           </div>
 
           <div className="flex w-full md:flex-1 md:pl-3">
-            <div className="flex-1 border-r border-sky-200/30 pr-3">
+            <div className="flex-1 border-r-2 border-white/10 pr-3">
               {"loading" in props || poolIsLoading ? (
                 <BreakdownSlotSkeleton />
               ) : (
@@ -126,26 +126,26 @@ export const BreakdownSlot = ({
 }: BreakdownSlotProps) => {
   return (
     <>
-      <h4 className="mb-0.5 text-xxs font-medium uppercase tracking-wide text-sky-600">
+      <h4 className="mb-0.5 text-xxs font-medium uppercase tracking-wide text-white/80">
         {title}
       </h4>
       <div className="mb-0.5 flex items-center font-mono">
-        <div className="text-sm font-bold text-sky-900 sm:w-2/3">
+        <div className="text-sm font-bold text-white sm:w-2/3">
           {formatNumberLocalized(value.div(ZTG).toNumber())} ZTG
         </div>
         <div
           className={`hidden w-1/3 flex-1 text-xs sm:block ${
             changePercentage < 0.01
-              ? "text-sky-900"
+              ? "text-white"
               : changePercentage < 0
-                ? "text-red-600"
-                : "text-green-500"
+                ? "text-red-400"
+                : "text-ztg-green-400"
           }`}
         >
           {Math.abs(changePercentage).toFixed(1)}%
         </div>
       </div>
-      <div className="font-mono text-xs text-sky-600">
+      <div className="font-mono text-xs text-white/90">
         $
         {formatNumberLocalized(
           usdZtgPrice?.mul(value.div(ZTG)).toNumber() ?? 0,
@@ -171,7 +171,7 @@ const BreakdownSlotSkeleton = () => {
 
   return (
     <>
-      <h4 className="mb-2 text-gray-500">
+      <h4 className="mb-2">
         <Skeleton width={title} height={20} />{" "}
       </h4>
       <div className="mb-2 flex text-lg">
@@ -179,7 +179,7 @@ const BreakdownSlotSkeleton = () => {
           <Skeleton width={value} height={20} />
         </div>
       </div>
-      <div className="mb-1 text-gray-500">
+      <div className="mb-1">
         <Skeleton width={conversion} height={20} />
       </div>
     </>

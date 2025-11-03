@@ -51,7 +51,7 @@ const IndicatorSeparator = () => {
 
 const MenuList = (props: MenuListProps<AccountOption, false>) => {
   return (
-    <div className="rounded-lg border border-sky-200/30 bg-white/95 p-2 shadow-lg backdrop-blur-md">
+    <div className="rounded-lg border-2 border-white/10 bg-ztg-primary-700/95 p-2 shadow-lg backdrop-blur-lg ring-2 ring-white/5">
       <components.MenuList {...props}>{props.children}</components.MenuList>
     </div>
   );
@@ -116,7 +116,7 @@ const AccountSelect: FC<AccountSelectProps> = ({
 
   return (
     <div className="flex w-full items-center gap-2">
-      <div className="flex-1 cursor-pointer rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-sm transition-all hover:border-sky-300/50 hover:bg-sky-50/80">
+      <div className="flex-1 cursor-pointer rounded-lg border-2 border-white/10 bg-white/10 shadow-sm backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/20">
         <Select
           isSearchable={false}
           options={options}
@@ -141,7 +141,7 @@ const AccountSelect: FC<AccountSelectProps> = ({
         />
       </div>
       {wallet.activeAccount?.address && (
-        <button className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-sm transition-all hover:border-sky-300/50 hover:bg-sky-50/80">
+        <button className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border-2 border-white/10 bg-white/10 shadow-sm backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/20">
           <CopyIcon copyText={wallet.activeAccount?.address} size={18} />
         </button>
       )}

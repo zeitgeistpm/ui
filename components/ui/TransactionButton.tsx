@@ -22,6 +22,7 @@ interface TransactionButtonProps {
   disableFeeCheck?: boolean;
   loading?: boolean;
   connectText?: string;
+  variant?: "green" | "red";
 }
 
 const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
@@ -36,6 +37,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   disableFeeCheck = false,
   connectText = "Connect Wallet",
   loading,
+  variant = "green",
 }) => {
   const wallet = useWallet();
   const [sdk] = useSdkv2();
@@ -100,21 +102,27 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   ]);
 
   const colorClass = useMemo(() => {
+    // Determine base color based on variant
+    const baseColor = variant === "red" 
+      ? "bg-ztg-red-600/80 hover:bg-ztg-red-600"
+      : "bg-ztg-green-600/80 hover:bg-ztg-green-600 backdrop-blur-sm";
+    
     // During SSR, use safe default color
     if (!mounted) {
-      return "bg-sky-900 hover:bg-sky-950"; // Default color on server
+      return baseColor;
     }
 
     // During location loading, use default color
     if (locationLoading) {
-      return "bg-sky-900 hover:bg-sky-950";
+      return baseColor;
     }
 
     // After fully mounted and location determined
+    // Error states always use red, otherwise use variant color
     return locationAllowed !== true || insufficientFeeBalance
-      ? "bg-vermilion hover:bg-red-600"
-      : "bg-sky-900 hover:bg-sky-950";
-  }, [mounted, locationLoading, locationAllowed, insufficientFeeBalance]);
+      ? "bg-ztg-red-600/80 hover:bg-ztg-red-600"
+      : baseColor;
+  }, [mounted, locationLoading, locationAllowed, insufficientFeeBalance, variant]);
 
   const getButtonChildren = () => {
     // Always wrap content in consistent structure for hydration
@@ -150,17 +158,17 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
 
     // Always wrap in consistent div structure for hydration consistency
     return (
-      <div className="center w-full rounded-full bg-inherit">{content}</div>
+      <div className="center w-full">{content}</div>
     );
   };
 
   return (
     <button
       type={type}
-      className={`ztg-transition h-[56px] w-full rounded-full text-white shadow-md
-        transition-all focus:outline-none disabled:cursor-default ${
-          !isDisabled && "active:scale-95"
-        } ${colorClass} ${className} disabled:!bg-slate-300`}
+      className={`ztg-transition h-[56px] w-full rounded-full font-bold text-white shadow-lg
+        transition-all duration-200 focus:outline-none disabled:cursor-default ${
+          !isDisabled && "active:scale-[0.97] hover:shadow-xl"
+        } ${colorClass} ${className} disabled:!bg-ztg-primary-300`}
       onClick={(e) => click(e)}
       disabled={isDisabled}
       data-test={dataTest}

@@ -20,11 +20,11 @@ const Skeleton: React.FC<SkeletonProps> = ({
   if (variant === "dots") {
     return (
       <div
-        className={`flex items-center justify-center rounded-lg border border-sky-200/30 bg-white/80 p-3 shadow-sm backdrop-blur-md ${className}`}
+        className={`flex items-center justify-center rounded-lg bg-white/10 p-3 shadow-sm backdrop-blur-md ${className}`}
         style={{ width, height: height || "auto" }}
       >
         <BeatLoader
-          color="#0ea5e9"
+          color="#2ccc30"
           size={8}
           margin={4}
           speedMultiplier={0.8}
@@ -36,7 +36,7 @@ const Skeleton: React.FC<SkeletonProps> = ({
   // Traditional skeleton placeholder (default)
   return (
     <div
-      className={"h-4 w-full animate-pulse rounded bg-gray-300 " + className}
+      className={"h-4 w-full animate-pulse rounded bg-ztg-primary-600/20 " + className}
       style={{ width, height }}
     ></div>
   );

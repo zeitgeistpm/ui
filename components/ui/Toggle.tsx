@@ -22,7 +22,7 @@ export const Toggle = ({
       disabled={disabled}
       className={`
         relative box-content inline-flex h-3 w-16 shrink-0 cursor-pointer rounded-full 
-        border-2 border-transparent p-[2px] transition-all duration-200 ease-in-out 
+        border-2 border-t-2ransparent p-[2px] transition-all duration-200 ease-in-out 
         focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75 active:scale-105
         ${disabled && "!cursor-not-allowed !bg-gray-400"}
         ${

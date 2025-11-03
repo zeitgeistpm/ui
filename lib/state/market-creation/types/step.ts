@@ -7,10 +7,10 @@ import { union } from "lib/types/union";
  * @note a step represents a group of FieldStates.
  */
 export type MarketCreationStepType =
-  | "The Basics"
-  | "Timing & Resolution"
-  | "Economics & Deployment"
-  | "Review & Publish";
+  | "Question & Answers"
+  | "Timeline & Resolution"
+  | "Pricing & Options"
+  | "Review & Launch";
 
 /**
  * Market creation step that extends the wizard stepper data by the market creation
@@ -25,21 +25,21 @@ export type MarketCreationStep = WizardStep<MarketCreationStepType>;
 export const marketCreationSteps = union<MarketCreationStep>()
   .by("label")
   .exhaust([
-    { label: "The Basics", isValid: false, isTouched: false, reached: true },
+    { label: "Question & Answers", isValid: false, isTouched: false, reached: true },
     {
-      label: "Timing & Resolution",
+      label: "Timeline & Resolution",
       isValid: false,
       isTouched: false,
       reached: false,
     },
     {
-      label: "Economics & Deployment",
+      label: "Pricing & Options",
       isValid: false,
       isTouched: false,
       reached: false,
     },
     {
-      label: "Review & Publish",
+      label: "Review & Launch",
       isValid: false,
       isTouched: false,
       reached: false,
@@ -54,8 +54,8 @@ export const stepFormKeys: Record<
   MarketCreationStepType,
   Array<keyof MarketFormData>
 > = union<MarketCreationStepType>().exhaustAsRecord({
-  "The Basics": ["question", "tags", "description", "answers"],
-  "Timing & Resolution": [
+  "Question & Answers": ["question", "answers", "tags", "description"],
+  "Timeline & Resolution": [
     "endDate",
     "timeZone",
     "gracePeriod",
@@ -63,13 +63,13 @@ export const stepFormKeys: Record<
     "disputePeriod",
     "oracle",
   ],
-  "Economics & Deployment": [
+  "Pricing & Options": [
     "currency",
     "creatorFee",
     "moderation",
     "liquidity",
   ],
-  "Review & Publish": [
+  "Review & Launch": [
     "currency",
     "question",
     "tags",

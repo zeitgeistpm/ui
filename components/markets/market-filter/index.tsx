@@ -205,27 +205,32 @@ const MarketFilterSelection = ({
         setOpen={setMobileDialogOpen}
         marketType={queryState?.marketType}
         onMarketTypeChange={updateMarketType}
+        ordering={queryState?.ordering}
+        onOrderingChange={updateOrdering}
       ></MobileDialog>
-      <div className="relative z-30 w-full border-b-1 border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-md">
+      <div className="relative w-full -z-10 border-b-2 border-white/10 bg-ztg-primary-500 shadow-md backdrop-blur-md" id="market-filters-container">
         <div className="container-fluid w-full">
           {portalRef.current ? (
             <>
-              <div className="relative hidden items-center gap-1 py-1 sm:py-2 md:flex">
+              <div className="relative hidden flex-wrap items-center gap-1.5 py-1 sm:gap-2 sm:py-2 md:gap-3 md:flex">
                 <MarketTypeToggle
                   value={queryState.marketType}
                   onChange={updateMarketType}
                 />
-                <div className="h-5 w-px shrink-0 bg-gray-200"></div>
+                <div className="h-5 w-px shrink-0 bg-ztg-green-500/40"></div>
                 <MarketFiltersSort className="shrink-0"></MarketFiltersSort>
-                <div className="h-5 w-px shrink-0 bg-gray-200"></div>
-                <MarketFiltersDropdowns className="flex shrink-0 items-center gap-1 lg:gap-2"></MarketFiltersDropdowns>
-                <div className="h-5 w-px shrink-0 bg-gray-200"></div>
+                <div className="h-5 w-px shrink-0 bg-ztg-green-500/40"></div>
+                <MarketFiltersDropdowns className="flex shrink-0 items-center gap-1.5 sm:gap-2"></MarketFiltersDropdowns>
+                <div className="h-5 w-px shrink-0 bg-ztg-green-500/40"></div>
                 <MarketFiltersCheckboxes className="shrink-0"></MarketFiltersCheckboxes>
-                <MarketActiveFilters className="ml-auto shrink-0" />
-                <Menu as="div" className="relative ml-2">
+                {/* Spacer that grows to push action items right, but doesn't affect wrapped rows */}
+                <div className="flex-grow shrink-0 basis-0 min-w-0"></div>
+                <div className="flex shrink-0 items-center gap-1.5 sm:gap-2 md:gap-3">
+                  <MarketActiveFilters className="shrink-0" />
+                  <Menu as="div" className="relative">
                   {({ open }) => (
                     <>
-                      <Menu.Button className="flex min-h-[44px] items-center gap-1.5 rounded-md bg-sky-600 px-2 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-sky-700 hover:shadow-md sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-sm">
+                      <Menu.Button className="flex min-h-[44px] items-center gap-1.5 rounded-md bg-ztg-green-600/80 px-2 py-2 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-sm">
                         <FiPlusSquare
                           size={16}
                           className="hidden sm:inline sm:h-3.5 sm:w-3.5"
@@ -246,22 +251,22 @@ const MarketFilterSelection = ({
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-lg border border-white/20 bg-white/95 shadow-xl backdrop-blur-lg focus:outline-none">
+                        <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-lg bg-ztg-primary-700/85 shadow-xl backdrop-blur-lg focus:outline-none">
                           <div className="p-1">
                             <Menu.Item>
                               {({ active }) => (
                                 <Link href="/create">
                                   <button
                                     className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all ${
-                                      active ? "bg-sky-50/60" : ""
+                                      active ? "bg-white/20" : ""
                                     }`}
                                   >
                                     <MdShowChart
                                       size={18}
-                                      className="text-sky-600"
+                                      className="text-ztg-green-400"
                                     />
                                     <div className="flex flex-col items-start">
-                                      <span className="font-semibold text-sky-900">
+                                      <span className="font-semibold text-white/90">
                                         Single Market
                                       </span>
                                     </div>
@@ -275,18 +280,18 @@ const MarketFilterSelection = ({
                                 <Link href="/create-combo">
                                   <button
                                     className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all ${
-                                      active ? "bg-sky-50/60" : ""
+                                      active ? "bg-white/20" : ""
                                     }`}
                                   >
                                     <MdStackedLineChart
                                       size={18}
-                                      className="text-sky-600"
+                                      className="text-ztg-green-400"
                                     />
                                     <div className="flex flex-col items-start">
-                                      <span className="font-semibold text-sky-900">
+                                      <span className="font-semibold text-white/90">
                                         Combinatorial Market
                                       </span>
-                                      <span className="text-xs text-gray-600">
+                                      <span className="text-xs text-white/70">
                                         Multi-market combinations
                                       </span>
                                     </div>
@@ -300,25 +305,25 @@ const MarketFilterSelection = ({
                     </>
                   )}
                 </Menu>
+                </div>
               </div>
             </>
           ) : (
             <Skeleton width="80%" height="38px" className="py-2"></Skeleton>
           )}
-          <button
-            className="block w-full bg-gradient-to-br from-sky-50 to-blue-50 px-4 py-3 text-sm font-semibold text-sky-800 transition-all hover:bg-sky-100 md:hidden"
-            onClick={() => setMobileDialogOpen(true)}
-          >
-            <span className="flex items-center justify-center gap-2">
-              Filter & Sort Markets <ChevronDown size={16} />
-            </span>
-          </button>
           <div
             className="hidden md:block"
             id="marketsFiltersMenuPortal"
             ref={portalRef}
           ></div>
         </div>
+        <button
+          className="flex w-full items-center justify-center gap-1.5 border-t-2 border-white/10 bg-white/15 px-4 py-2 text-xs font-semibold text-white/90 shadow-md backdrop-blur-sm transition-all active:scale-95 hover:bg-white/20 touch-manipulation sm:gap-2 sm:px-4 sm:text-sm md:hidden"
+          onClick={() => setMobileDialogOpen(true)}
+        >
+          <span className="whitespace-nowrap">Filter & Sort Markets</span>
+          <ChevronDown size={14} className="shrink-0 text-white/70 transition-transform sm:h-4 sm:w-4" />
+        </button>
       </div>
     </MarketFiltersContainer>
   );

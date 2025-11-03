@@ -17,11 +17,11 @@ const IndexPage: NextPage = () => {
   }, [router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center bg-ztg-primary-500">
       <div className="flex flex-col items-center gap-4 text-center">
         {/* Loading Spinner */}
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-sky-200 border-t-sky-600"></div>
-        <p className="text-lg font-medium text-gray-700">Loading markets...</p>
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-ztg-primary-700 border-t-ztg-green-500"></div>
+        <p className="text-lg font-medium text-white/90">Loading markets...</p>
       </div>
     </div>
   );

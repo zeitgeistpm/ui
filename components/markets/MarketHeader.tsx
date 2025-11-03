@@ -19,7 +19,8 @@ import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolutio
 import { getMarketStatusDetails } from "lib/util/market-status-details";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import { FC, useState } from "react";
-import { MarketHero } from "./MarketHero";
+import Image from "next/image";
+import { MarketMetadataBadges } from "./MarketMetadataBadges";
 import { MarketHistoryModal } from "./MarketHistoryModal";
 import { MarketOutcomeDisplay } from "./MarketOutcomeDisplay";
 import { MarketStats } from "./MarketStats";
@@ -118,35 +119,69 @@ const MarketHeader: FC<{
   });
 
   return (
-    <header className="flex w-full flex-col gap-4">
-      <MarketHero
-        question={market.question}
-        marketImage={marketImage ?? ""}
-        rejectReason={rejectReason}
-        market={market}
-        token={token}
-        imagePath={imagePath}
-        promotionData={promotionData}
-      />
+    <header className="flex w-full flex-col gap-2 sm:gap-3">
+      <div className="rounded-lg bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4 md:p-5">
+        {/* Hero Section */}
+        <div className="mb-3 flex gap-3 sm:mb-4 sm:gap-4 md:gap-5">
+          {/* Icon */}
+          <div className="flex-shrink-0 self-start">
+            <div className="relative h-14 w-14 overflow-hidden rounded-lg shadow-md sm:h-16 sm:w-16 md:h-20 md:w-20">
+              <Image
+                alt="Market image"
+                src={marketImage ?? ""}
+                fill
+                className="overflow-hidden rounded-lg"
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "50% 50%",
+                }}
+                sizes="100px"
+              />
+            </div>
+          </div>
 
-      <div className="rounded-lg bg-gradient-to-br from-sky-50 to-blue-50 p-2.5 shadow-lg">
-        <MarketStats
-          starts={starts}
-          ends={ends}
-          status={status}
-          resolutionDateEstimate={resolutionDateEstimate}
-          reportsOpenAt={reportsOpenAt}
-          volume={volume}
-          liquidity={liquidity}
-          participants={participants}
-          token={token}
-          isStatsLoading={isStatsLoading}
-        />
+          {/* Title + Badges */}
+          <div className="flex min-h-[56px] flex-1 flex-col justify-between sm:min-h-[60px]">
+            <div className="flex-[2]">
+              <h1 className="text-xl font-bold leading-tight text-white sm:text-2xl md:text-4xl">{market.question}</h1>
+              {rejectReason && rejectReason.length > 0 && (
+                <div className="mt-1 rounded-md border-2 border-r-2ed-500/40 bg-red-900/30 px-2.5 py-1 text-xs text-red-400 backdrop-blur-sm sm:px-3 sm:py-1.5 sm:text-sm">
+                  Market rejected: {rejectReason}
+                </div>
+              )}
+            </div>
+            <div className="flex-1 pt-1">
+              <MarketMetadataBadges
+                market={market}
+                token={token}
+                imagePath={imagePath}
+                promotionData={promotionData}
+              />
+            </div>
+          </div>
+        </div>
 
-        <div className="mt-2.5 flex w-full flex-col gap-2">
+        {/* Stats Section */}
+        <div className="mb-2 sm:mb-3">
+          <MarketStats
+            starts={starts}
+            ends={ends}
+            status={status}
+            resolutionDateEstimate={resolutionDateEstimate}
+            reportsOpenAt={reportsOpenAt}
+            volume={volume}
+            liquidity={liquidity}
+            participants={participants}
+            token={token}
+            isStatsLoading={isStatsLoading}
+          />
+        </div>
+
+        {/* Timer Section */}
+        <div className="flex w-full flex-col gap-1.5 sm:gap-2">
           {marketStage?.type === "Court" ? (
             <div className="w-full">
-              <h3 className="mb-2 text-sm text-gray-700">Market is in court</h3>
+              <h3 className="mb-1.5 text-xs text-white/70 sm:mb-2 sm:text-sm">Market is in court</h3>
               {caseId != null ? (
                 <CourtStageTimer caseId={caseId} />
               ) : (

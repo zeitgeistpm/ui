@@ -31,7 +31,7 @@ const ReferendumSummary = ({
 
   if (isLoading) {
     return (
-      <div className="flex w-full items-center justify-center rounded-xl border border-sky-200/30 bg-white/80 p-8 shadow-md backdrop-blur-md">
+      <div className="flex w-full items-center justify-center rounded-xl border-2 border-ztg-primary-200/30 bg-white/80 p-8 shadow-md backdrop-blur-md">
         <Loader variant="Success" loading className="h-10 w-10" />
       </div>
     );
@@ -40,17 +40,17 @@ const ReferendumSummary = ({
   return (
     <>
       {referendum && (
-        <div className="flex w-full flex-col gap-4 rounded-xl border border-sky-200/30 bg-white/80 px-6 py-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg">
+        <div className="flex w-full flex-col gap-4 rounded-xl border-2 border-ztg-primary-200/30 bg-white/80 px-6 py-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg">
           {/* Header with Title and External Link */}
-          <div className="flex items-center border-b border-sky-200/30 pb-3">
+          <div className="flex items-center border-b-2 border-ztg-primary-200/30 pb-3">
             <div className="flex items-center gap-2">
-              <div className="text-lg font-bold text-sky-900">
+              <div className="text-lg font-bold text-ztg-primary-900">
                 Referendum #{referendumIndex}
               </div>
             </div>
             <a
               href={`https://polkadot.polkassembly.io/referenda/${referendumIndex}`}
-              className="group ml-auto flex items-center gap-2 rounded-lg border border-sky-200/30 bg-white/60 px-2.5 py-1.5 text-sm font-medium text-sky-900 shadow-sm transition-all hover:bg-white/80 hover:shadow-md"
+              className="group ml-auto flex items-center gap-2 rounded-lg border-2 border-ztg-primary-200/30 bg-white/60 px-2.5 py-1.5 text-sm font-medium text-ztg-primary-900 shadow-sm transition-all hover:bg-white/80 hover:shadow-md"
               target="_blank"
               rel="noreferrer"
             >
@@ -60,7 +60,7 @@ const ReferendumSummary = ({
                 width={"70px"}
                 className="opacity-90 transition-opacity group-hover:opacity-100"
               />
-              <ExternalLink size={12} className="text-sky-600" />
+              <ExternalLink size={12} className="text-ztg-primary-600" />
             </a>
           </div>
 
@@ -86,22 +86,22 @@ const ReferendumSummary = ({
           {/* Vote Breakdown */}
           <div className="flex gap-2.5">
             {/* Aye Votes */}
-            <div className="flex flex-1 flex-col items-center gap-1.5 rounded-lg border border-sky-200/30 bg-gradient-to-br from-sky-50/50 to-sky-100/50 p-2.5 shadow-sm backdrop-blur-sm">
+            <div className="flex flex-1 flex-col items-center gap-1.5 rounded-lg border-2 border-ztg-primary-200/30 bg-gradient-to-br from-ztg-primary-50/50 to-ztg-primary-100/50 p-2.5 shadow-sm backdrop-blur-sm">
               <div className="flex items-baseline gap-1.5">
-                <div className="text-xs font-semibold uppercase tracking-wide text-sky-700">
+                <div className="text-xs font-semibold uppercase tracking-wide text-ztg-primary-700">
                   Aye:
                 </div>
-                <div className="text-lg font-bold text-sky-600">
+                <div className="text-lg font-bold text-ztg-primary-600">
                   {referendum.ayePercentage.mul(100).toFixed(1)}%
                 </div>
               </div>
-              <div className="text-xs font-semibold text-sky-600">
+              <div className="text-xs font-semibold text-ztg-primary-600">
                 {formatVoteAmount(referendum.ayes)} DOT
               </div>
             </div>
 
             {/* Nay Votes */}
-            <div className="flex flex-1 flex-col items-center gap-1.5 rounded-lg border border-orange-200/30 bg-gradient-to-br from-orange-50/50 to-orange-100/50 p-2.5 shadow-sm backdrop-blur-sm">
+            <div className="flex flex-1 flex-col items-center gap-1.5 rounded-lg border-2 border-orange-200/30 bg-gradient-to-br from-orange-50/50 to-orange-100/50 p-2.5 shadow-sm backdrop-blur-sm">
               <div className="flex items-baseline gap-1.5">
                 <div className="text-xs font-semibold uppercase tracking-wide text-orange-700">
                   Nay:
@@ -117,9 +117,9 @@ const ReferendumSummary = ({
           </div>
 
           {/* Total Votes Display */}
-          <div className="flex items-center justify-center gap-2 rounded-lg border border-sky-200/30 bg-sky-50/50 py-2 text-center backdrop-blur-sm">
-            <span className="text-sm font-semibold text-sky-700">Total:</span>
-            <span className="text-sm font-bold text-sky-900">
+          <div className="flex items-center justify-center gap-2 rounded-lg border-2 border-ztg-primary-200/30 bg-ztg-primary-50/50 py-2 text-center backdrop-blur-sm">
+            <span className="text-sm font-semibold text-ztg-primary-700">Total:</span>
+            <span className="text-sm font-bold text-ztg-primary-900">
               {formatVoteAmount(referendum.ayes.plus(referendum.nays))} DOT
             </span>
           </div>

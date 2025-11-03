@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { FormEvent } from "../types";
 import {
   SupportedCurrencyTag,
@@ -20,37 +19,36 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
   onChange,
   onBlur,
 }) => {
-  const handleSelect = (tag: SupportedCurrencyTag) => () => {
-    onChange({ target: { name, value: tag }, type: "change" });
-    onBlur({ target: { name, value: tag }, type: "blur" });
-  };
+  const availableCurrencies = supportedCurrencies.filter(
+    (currency) => options?.includes(currency.name) ?? true
+  );
 
   return (
-    <div className="flex flex-col gap-2 md:flex-row md:gap-2">
-      {supportedCurrencies
-        .filter((currency) => options?.includes(currency.name) ?? true)
-        .map((currency) => (
-          <button
+    <div
+      className="flex w-full items-center rounded-lg border-2 border-white/20 backdrop-blur-sm transition-all h-12 bg-white/10 hover:border-white/30"
+    >
+      <select
+        value={value || ""}
+        className="w-full h-full bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50"
+        onChange={(e) => {
+          const selectedValue = e.target.value || undefined;
+          onChange({ target: { name, value: selectedValue as SupportedCurrencyTag | undefined }, type: "change" });
+          onBlur({ target: { name, value: selectedValue as SupportedCurrencyTag | undefined }, type: "blur" });
+        }}
+      >
+        <option value="" className="bg-ztg-primary-600 text-white">
+          Select currency
+        </option>
+        {availableCurrencies.map((currency) => (
+          <option
             key={currency.name}
-            type="button"
-            className={`flex h-[72px] flex-1 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-md border p-2 backdrop-blur-md transition-all active:scale-95 ${
-              currency.name === value
-                ? "border-sky-600/50 bg-sky-600/90 text-white shadow-md"
-                : "border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
-            }`}
-            onClick={handleSelect(currency.name)}
+            value={currency.name}
+            className="bg-ztg-primary-600 text-white"
           >
-            <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-full">
-              <Image
-                alt={`Currency token logo for ${currency.name}`}
-                fill
-                sizes="100vw"
-                src={currency.image}
-              />
-            </div>
-            <h3 className="text-xs font-semibold">{currency.name}</h3>
-          </button>
+            {currency.name}
+          </option>
         ))}
+      </select>
     </div>
   );
 };

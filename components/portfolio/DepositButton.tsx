@@ -224,7 +224,7 @@ const DepositModal = ({
             disabled={maxTransferAmount.lessThanOrEqualTo(0)}
             {...register("percentage", { value: "0" })}
           />
-          <div className="my-[4px] h-[16px] text-ztg-12-120 text-vermilion">
+          <div className="my-[4px] h-[16px] text-ztg-12-120 text-ztg-red-400">
             {formState.errors["amount"]?.message?.toString()}
             {!formState.errors["amount"]?.message &&
               remainingSourceBalance.lessThan(sourceExistentialDeposit) &&
@@ -236,7 +236,7 @@ const DepositModal = ({
                 )} ${tokenSymbol} on ${sourceChain} will be lost`}</>
               )}
           </div>
-          <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
+          <div className="center mb-[10px] text-ztg-12-120 font-normal text-ztg-primary-600">
             {sourceChain} fee:
             <span className="ml-1 text-black">
               {fee ? fee.div(ZTG).toFixed(3) : 0} {tokenSymbol}

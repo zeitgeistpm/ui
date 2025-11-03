@@ -79,8 +79,10 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[50vh] w-full items-center justify-center">
-        <Skeleton className="w-32" variant="dots" />
+      <div className="container-fluid flex min-h-[50vh] w-full items-center justify-center">
+        <div className="rounded-lg border border-ztg-primary-200/30 bg-white/10 p-8 shadow-lg backdrop-blur-md">
+          <Skeleton className="w-32" variant="dots" />
+        </div>
       </div>
     );
   }

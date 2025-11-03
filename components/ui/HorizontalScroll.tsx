@@ -38,7 +38,7 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
         onClick={handleLeftClick}
         className={`ztg-transition ml-[12px] mr-[8px] hidden h-[40px] w-[40px] items-center justify-center rounded-full sm:flex ${
           leftDisabled
-            ? "bg-sky-600 text-pastel-blue opacity-30"
+            ? "bg-ztg-primary-600 text-pastel-blue opacity-30"
             : "bg-pastel-blue text-white"
         }`}
         disabled={leftDisabled}
@@ -49,7 +49,7 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
         onClick={handleRightClick}
         className={`ztg-transition hidden h-[40px] w-[40px] items-center justify-center rounded-full sm:flex  ${
           rightDisabled
-            ? "bg-sky-600 text-pastel-blue opacity-30"
+            ? "bg-ztg-primary-600 text-pastel-blue opacity-30"
             : "bg-pastel-blue text-white"
         }`}
         disabled={rightDisabled}

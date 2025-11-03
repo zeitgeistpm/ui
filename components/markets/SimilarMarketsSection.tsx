@@ -25,8 +25,8 @@ export const SimilarMarketsSection = ({
   return (
     <>
       {!isLoading && recommendedMarkets && (
-        <div className="relative z-[-1] animate-pop-in rounded-lg border border-sky-200/30 bg-white/80 p-6 opacity-0 shadow-md backdrop-blur-md">
-          <h4 className="mb-4 text-lg font-semibold text-sky-900">
+        <div className="relative z-[-1] animate-pop-in rounded-lg bg-white/10 p-6 opacity-0 shadow-lg backdrop-blur-md">
+          <h4 className="mb-5 text-lg font-semibold text-white/90">
             {recommendedMarkets.type === "similar"
               ? "Similar Markets"
               : "Popular Markets"}
@@ -39,7 +39,7 @@ export const SimilarMarketsSection = ({
               return (
                 <div
                   key={`market-${market.marketId}`}
-                  className="animate-pop-in opacity-0"
+                  className="animate-pop-in opacity-0 transition-transform hover:scale-[1.02]"
                   style={{
                     animationDelay: `${200 * (index + 1)}ms`,
                   }}

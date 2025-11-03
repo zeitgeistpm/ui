@@ -77,9 +77,9 @@ const ReferendumSignalWidget = () => {
     const outcomesToDisplay = showAllOutcomes ? sortedOutcomes : topOutcome;
 
     return (
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border-2 border-gray-200 bg-white p-4 shadow-sm">
         <div className="items-top mb-3 flex flex-col justify-center gap-2 sm:flex-row">
-          <div className="flex-1 rounded border border-blue-200 bg-blue-50 p-2">
+          <div className="flex-1 rounded border-2 border-b-2lue-200 bg-blue-50 p-2">
             <div className="mb-1 inline-block rounded bg-blue-100 px-1.5 py-0.5 text-xxs font-semibold text-blue-800">
               Assume
             </div>
@@ -94,7 +94,7 @@ const ReferendumSignalWidget = () => {
               </a>
             </div>
           </div>
-          <div className="flex-1 rounded border border-green-200 bg-green-50 p-2">
+          <div className="flex-1 rounded border-2 border-green-200 bg-green-50 p-2">
             <div className="mb-1 inline-block rounded bg-green-100 px-1.5 py-0.5 text-xxs font-semibold text-green-800">
               Then
             </div>
@@ -158,7 +158,7 @@ const ReferendumSignalWidget = () => {
         )}
 
         {/* Footer Link */}
-        <div className="border-t pt-2">
+        <div className="border-t-2 pt-2">
           <a
             href={combinatorial_market.pool_url}
             target="_blank"
@@ -176,7 +176,7 @@ const ReferendumSignalWidget = () => {
   // Render base markets view if no combinatorial market
   if (data.base_markets && data.base_markets.length > 0) {
     return (
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border-2 border-gray-200 bg-white p-4 shadow-sm">
         <div className="mb-3">
           <h3 className="text-sm font-semibold text-gray-900">
             Prediction Markets for Referendum #{data.referendumId}
@@ -193,7 +193,7 @@ const ReferendumSignalWidget = () => {
               href={market.market_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded border border-gray-200 bg-gray-50 p-3 transition-colors hover:border-blue-300 hover:bg-blue-50"
+              className="block rounded border-2 border-gray-200 bg-gray-50 p-3 transition-colors hover:border-b-2lue-300 hover:bg-blue-50"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
@@ -226,7 +226,7 @@ const ReferendumSignalWidget = () => {
           ))}
         </div>
 
-        <div className="mt-3 border-t pt-3">
+        <div className="mt-3 border-t-2 pt-3">
           <p className="text-xxs text-gray-600">
             Powered by{" "}
             <a

@@ -109,7 +109,7 @@ export const MarketCard = ({
       <div
         data-testid={`marketCard-${marketId}`}
         className={`ztg-transition group relative flex min-w-full flex-col
-        rounded-lg bg-white/80 p-4 shadow-md transition-all hover:shadow-lg md:min-w-[calc(50%-8px)] md:hover:scale-[1.01] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+        rounded-lg bg-white/10 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg md:min-w-[calc(50%-8px)] md:hover:scale-[1.01] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
@@ -127,7 +127,7 @@ export const MarketCard = ({
             <div className="absolute right-4 top-4">
               <MarketFavoriteToggle marketId={marketId} />
             </div>
-            <div className="relative min-h-12 min-w-12 rounded-lg bg-gray-400 bg-opacity-30">
+            <div className="relative min-h-12 min-w-12 rounded-lg bg-white/5 backdrop-blur-sm">
               <SimpleImage
                 alt={"Market image"}
                 src={image}
@@ -139,7 +139,7 @@ export const MarketCard = ({
                 }}
               />
             </div>
-            <h5 className="line-clamp-2 h-12 w-full pr-4 text-base text-sky-900 duration-200">
+            <h5 className="line-clamp-2 h-12 w-full pr-4 text-base text-white/90 duration-200">
               {cmsMetadata?.question ?? question}
             </h5>
           </div>
@@ -170,14 +170,14 @@ export const MarketCard = ({
             ) : (
               <>
                 <div className="mb-1 flex justify-between text-sm">
-                  <span className="text-gray-500">
+                  <span className="text-white/70">
                     No liquidity in this market
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-white/70">
                     {lower} - {upper}
                   </span>
                 </div>
-                <div className="h-1.5 w-full rounded-lg bg-gray-200"></div>
+                <div className="h-1.5 w-full rounded-lg bg-ztg-primary-600/20"></div>
               </>
             )}
           </div>
@@ -205,18 +205,18 @@ const MarketCardPredictionBar = ({
 
     return (
       <div
-        className={`relative h-8 w-full overflow-hidden rounded-lg bg-gradient-to-r from-sky-50 to-sky-100 shadow-sm transition-all`}
+        className={`relative h-6 w-full overflow-hidden rounded-lg bg-white/10 shadow-md backdrop-blur-sm transition-all sm:h-[30px]`}
       >
         <div className="absolute flex h-full w-full items-center justify-between px-3 text-sm">
-          <span className="line-clamp-1 font-semibold text-sky-700">
+          <span className="line-clamp-1 font-semibold text-white/90">
             {name}
           </span>
-          <span className="font-bold text-sky-700 transition-all">
+          <span className="font-bold text-white/90 transition-all">
             {impliedPercentage}%
           </span>
         </div>
         <div
-          className={`h-full bg-gradient-to-r from-sky-200 to-sky-300`}
+          className={`h-full bg-gradient-to-r from-ztg-green-500/60 to-ztg-green-400/70`}
           style={{
             width: `${isNaN(impliedPercentage) ? 0 : impliedPercentage}%`,
           }}
@@ -227,10 +227,10 @@ const MarketCardPredictionBar = ({
     return (
       <>
         <div className="mb-1 flex justify-between text-xs">
-          <span className="text-gray-500">No liquidity in this market</span>
-          <span className="text-gray-500">0%</span>
+          <span className="text-white/70">No liquidity in this market</span>
+          <span className="text-white/70">0%</span>
         </div>
-        <div className="h-2 w-full rounded-lg bg-gray-100"></div>
+        <div className="h-2 w-full rounded-lg bg-ztg-primary-600/20"></div>
       </>
     );
   }
@@ -260,7 +260,7 @@ const MarketCardDetails = ({
   const imagePath = lookupAssetImagePath(assetId);
 
   return (
-    <div className="flex items-center text-xs text-sky-900">
+    <div className="flex items-center text-xs text-white/90">
       <div>
         <span className="font-semibold">
           {period.end &&
@@ -272,30 +272,30 @@ const MarketCardDetails = ({
             })}`}
         </span>
         {isEnding() && (
-          <span className="ml-1 font-semibold text-red">Ends Soon</span>
+          <span className="ml-1 font-semibold text-ztg-red-400">Ends Soon</span>
         )}
-        <span className="ml-1 border-l-1 border-l-black pl-1">
+        <span className="ml-1 border-l-1 border-l-ztg-green-500/40 pl-1">
           {outcomeAssets.length} outcomes{" "}
         </span>
       </div>
       <div className="ml-auto flex items-center justify-center gap-1.5">
         {numParticipants != undefined && baseAsset ? (
           <div className="flex items-center gap-0.5">
-            <Users size={12} className="text-sky-900" />
+            <Users size={12} className="text-white/90" />
             <span>{formatNumberCompact(numParticipants, 2)}</span>
           </div>
         ) : (
           <Skeleton width={30} height={12} />
         )}
         <div className="flex items-center gap-1">
-          <BarChart2 size={12} className="text-sky-900" />
+          <BarChart2 size={12} className="text-white/90" />
           <span>
             {formatNumberCompact(new Decimal(volume).div(ZTG).toNumber(), 2)}
           </span>
         </div>
         {liquidity != undefined && baseAsset ? (
           <div className="flex items-center gap-1">
-            <Droplet size={12} className="text-sky-900" />
+            <Droplet size={12} className="text-white/90" />
             <span>
               {formatNumberCompact(
                 new Decimal(liquidity).div(ZTG).toNumber(),

@@ -79,7 +79,7 @@ const Portfolio: NextPageWithLayout = () => {
   }
 
   return (
-    <div className="mt-6 overflow-hidden">
+    <div className="container-fluid mt-6 overflow-hidden">
       <PortfolioHeader
         address={address}
         {...(breakdown ?? {

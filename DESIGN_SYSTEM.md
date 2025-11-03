@@ -8,30 +8,73 @@ This document outlines the glass morphism design system implemented across the Z
 
 ### Core Principles
 
-1. **Glass Morphism**: Use of translucent backgrounds with backdrop blur to create layered, modern interfaces
-2. **Sky Color Palette**: Consistent use of sky-based colors (sky-50 through sky-950) for cohesive theming
-3. **Subtle Depth**: Soft shadows and borders instead of harsh outlines
-4. **Visual Hierarchy**: Clear distinction between interactive and static elements through transparency and color
-5. **Mobile-First Responsiveness**: Solid backgrounds on mobile, glass effects on desktop where appropriate
+1. **Glass Morphism on Dark Navy Background**: Light translucent glass panels with backdrop blur on a dark navy background (#1a1e3b)
+2. **Zeitgeist Navy & Green Color Palette**: Consistent use of dark navy (ztg-primary) with bright green accents (ztg-green) for cohesive theming
+3. **Dark Theme**: Dark navy background (#1a1e3b) with white/light text for optimal contrast
+4. **Bright Green Accents**: Prominent green (#2ccc30) for borders, highlights, and UI separation
+5. **Mobile-First Responsiveness**: Consistent dark glass experience across all devices
 
 ## Color Palette
 
-### Primary Colors
+### Zeitgeist Primary Colors (Navy)
 
-- **Sky-950**: `#0c4a6e` - Primary navigation backgrounds (dark)
-- **Sky-900**: `#0369a1` - Primary text, headings, strong emphasis
-- **Sky-700**: `#0284c7` - Secondary text, descriptions
-- **Sky-600**: `#0ea5e9` - Icons, accents, primary buttons
-- **Sky-200**: `#bae6fd` - Borders, subtle accents
-- **Sky-100**: `#e0f2fe` - Hover states (with opacity)
-- **Sky-50**: `#f0f9ff` - Light backgrounds, menu backgrounds
+The primary color system is based on **#1a1e3b** (dark navy blue).
+
+- **ztg-primary-950**: `#050608` - Almost black navy (deepest backgrounds)
+- **ztg-primary-900**: `#0A0C12` - Very dark navy
+- **ztg-primary-800**: `#0E1019` - Darker navy
+- **ztg-primary-700**: `#121524` - Dark navy
+- **ztg-primary-600**: `#16192F` - Slightly darker navy
+- **ztg-primary-500**: `#1a1e3b` - **PRIMARY BASE - NAVY**, main background color
+- **ztg-primary-400**: `#454A75` - Medium navy (lighter elements)
+- **ztg-primary-300**: `#6C7195` - Medium light navy
+- **ztg-primary-200**: `#989CB5` - Lighter navy tint
+- **ztg-primary-100**: `#C4C6D2` - Light navy tint (text on dark backgrounds)
+- **ztg-primary-50**: `#E8E9ED` - Very light navy tint
+
+### Zeitgeist Secondary Colors (Bright Green)
+
+The secondary green system is used for **prominent borders, highlights, accents, separators, and success states**.
+
+- **ztg-green-950**: `#051406` - Almost black green
+- **ztg-green-900**: `#0B290D` - Very dark green
+- **ztg-green-800**: `#135215` - Darker green
+- **ztg-green-700**: `#1B7A1E` - Dark green
+- **ztg-green-600**: `#24A327` - Medium dark green
+- **ztg-green-500**: `#2ccc30` - **BASE GREEN - BRIGHT**, primary accent color for borders and highlights
+- **ztg-green-400**: `#3DD941` - Medium bright green (success states, "THEN" labels)
+- **ztg-green-300**: `#5DE361` - Medium light green
+- **ztg-green-200**: `#8FEB91` - Lighter green
+- **ztg-green-100**: `#C1F5C3` - Light green tint
+- **ztg-green-50**: `#E8FBE9` - Very light green tint
 
 ### Supporting Colors
 
-- **White**: Base for glass morphism effects
-  - `bg-white/95` - Desktop glass panels
-  - `bg-white/80` - Hover states on light backgrounds
-  - `bg-white` - Solid mobile backgrounds
+- **Light Glass Panels**: Translucent light panels over dark navy background
+  - `bg-white/10 backdrop-blur-lg` - Standard light glass panels (primary pattern)
+  - `bg-white/15 backdrop-blur-lg` - Slightly more opaque panels
+  - `bg-white/5 backdrop-blur-md` - Very subtle overlays
+
+- **App Background**: Solid dark navy
+  - `bg-ztg-primary-500` - Main background color (#1a1e3b)
+
+### Color Usage Guidelines
+
+**When to use Bright Green Accents:**
+- **Prominent borders**: `border-2 border-ztg-green-500` - Primary use for all major UI sections
+- **Section separators and dividers**: `border-ztg-green-500/60` or `border-ztg-green-500`
+- **Focus states on inputs**: `focus:border-ztg-green-500 focus:ring-ztg-green-500/30`
+- **Success indicators**: `text-ztg-green-400`
+- **"THEN" labels in combinatorial markets**: `text-ztg-green-400`
+- **Heading accent bars**: `bg-ztg-green-500` with `h-1.5 w-10` for visibility
+- **Buttons and CTAs**: `bg-ztg-green-600 hover:bg-ztg-green-600`
+- Breaking up dark navy sections
+
+**Text Color Hierarchy on Dark Navy Background:**
+1. Primary headings: `text-white`
+2. Body text: `text-white/90`
+3. Secondary/muted text: `text-white/80` or `text-white/75`
+4. Very subtle text: `text-white/70`
 
 - **Gradients**: Used for progress indicators and dynamic elements
   - Emerald: `from-emerald-400/80 to-emerald-500/80` (success, active states)
@@ -272,13 +315,14 @@ z-10: Overlays and modals
 ### Text Colors
 
 ```tsx
-text-sky-950 // Darkest - high contrast (timers, critical info)
-text-sky-900 // Primary text, headings
-text-sky-700 // Secondary text, descriptions
-text-sky-600 // Icons, accents
-text-sky-400 // Placeholders, disabled states
-text-sky-200 // Light text on dark backgrounds
-text-white   // Text on very dark backgrounds
+text-ztg-primary-950 // Very dark text on light backgrounds
+text-ztg-primary-900 // Primary text, headings (accent - use sparingly)
+text-ztg-primary-700 // Primary text, headings
+text-ztg-primary-600 // Secondary text, descriptions
+text-ztg-primary-500 // Icons, accents (primary brand color)
+text-ztg-primary-400 // Placeholders, disabled states
+text-ztg-primary-200 // Light text on dark backgrounds
+text-white          // Text on very dark backgrounds
 ```
 
 ## Effects & Animations
@@ -406,29 +450,49 @@ For any glass morphism component:
 
 ## Common Patterns Reference
 
-### Glass Panel (Light)
+### Standard Glass Panel (Dark Mode)
 ```tsx
-className="rounded-lg border border-sky-200/30 bg-white/80 p-4 shadow-md backdrop-blur-md"
+className="rounded-lg border border-ztg-primary-200/30 bg-ztg-primary-900/50 p-4 shadow-md backdrop-blur-md"
 ```
 
-### Glass Panel (Dark)
+### Prominent Glass Panel with Green Accent (Dark Mode)
 ```tsx
-className="rounded-lg border border-white/20 bg-sky-950/95 p-4 shadow-md backdrop-blur-md"
+className="rounded-lg border border-ztg-green-500/40 bg-ztg-primary-900/60 p-5 shadow-lg shadow-ztg-green-500/10 backdrop-blur-md"
 ```
 
-### Mobile Full-Screen Menu
+### Section Heading with Green Accent Bar
 ```tsx
-className="fixed left-0 right-0 bottom-0 top-[50px] z-40 h-[calc(100vh-50px)] w-screen overflow-y-auto bg-sky-50 md:absolute md:inset-auto md:mt-6 md:h-auto md:w-72 md:rounded-lg md:border md:border-white/20 md:bg-white/95 md:backdrop-blur-lg"
+<h2 className="flex items-center gap-2 text-lg font-semibold text-ztg-primary-100">
+  <span className="h-1 w-6 rounded-full bg-ztg-green-500"></span>
+  Heading Text
+</h2>
 ```
 
-### Interactive Button/Link
+### Card with Green Left Border
 ```tsx
-className="rounded-md px-3 py-1.5 text-sm font-medium text-sky-900 transition-all hover:bg-white/80"
+className="rounded-lg border-l-4 border-l-ztg-green-500 border-y border-r border-ztg-primary-200/20 bg-ztg-primary-900/40 p-4 shadow-sm backdrop-blur-md transition-all hover:border-ztg-green-400"
 ```
 
-### Card with Hover Effect
+### Text Colors on Dark Background
 ```tsx
-className="rounded-lg bg-white/80 p-4 shadow-md transition-all hover:shadow-lg md:hover:scale-[1.01]"
+// Primary headings
+className="text-ztg-primary-100"
+
+// Body text
+className="text-ztg-primary-200"
+
+// Secondary/muted text
+className="text-ztg-primary-300"
+```
+
+### Interactive Button/Link (Dark Mode)
+```tsx
+className="rounded-md px-3 py-1.5 text-sm font-medium text-ztg-primary-100 transition-all hover:bg-ztg-primary-700/30 active:scale-95"
+```
+
+### Card with Hover Effect (Dark Mode)
+```tsx
+className="rounded-lg border border-ztg-primary-200/30 bg-ztg-primary-800/30 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg hover:border-ztg-primary-200/50"
 ```
 
 ### Gradient Progress Bar

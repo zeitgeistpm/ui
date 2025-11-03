@@ -79,7 +79,7 @@ const FeePayingAssetSelect = () => {
       </div>
       <div
         className={
-          "relative h-14 w-full rounded-md border-1 border-transparent bg-anti-flash-white "
+          "relative h-14 w-full rounded-md border-2 border-t-2ransparent bg-anti-flash-white "
         }
       >
         <AssetSelect

@@ -24,7 +24,7 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
       >
         <button
           type="button"
-          className="center gap-1 rounded-md border border-sky-200/30 bg-white/80 px-2 py-1 text-xs text-sky-900 backdrop-blur-md transition-all hover:bg-sky-100/80 active:scale-95"
+          className="center gap-1 rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/50 px-2 py-1 text-xs text-ztg-primary-100 backdrop-blur-md transition-all hover:bg-ztg-primary-100/80 active:scale-95"
           onClick={() => setShowResetConfirmation(true)}
         >
           Clear form
@@ -55,7 +55,6 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
               className="rounded-full border-2 border-gray-300 px-6 py-3 text-sm transition-all duration-200 ease-in-out active:scale-95"
               onClick={() => {
                 editor.reset();
-                setShowResetConfirmation(false);
               }}
             >
               Clear

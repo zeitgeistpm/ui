@@ -41,13 +41,13 @@ export const Alerts = () => {
             <div className="flex gap-2">
               <Menu.Button
                 disabled={alerts.length === 0}
-                className="center relative flex gap-2 rounded-lg px-2 py-1 font-light text-white transition-all hover:bg-white/10"
+                className="center relative flex gap-2 rounded-lg bg-white/10 px-2 py-1 font-light text-white/90 backdrop-blur-sm transition-all hover:bg-white/20"
               >
                 <div
                   className={`transition-all ${
                     hasNotifications
-                      ? "cursor-pointer text-gray-200"
-                      : "text-gray-500"
+                      ? "cursor-pointer text-white"
+                      : "text-white/50"
                   }`}
                 >
                   <IoMdNotificationsOutline
@@ -55,7 +55,7 @@ export const Alerts = () => {
                     size={24}
                   />
                   {hasNotifications && (
-                    <div className="absolute right-0 top-0 h-3 w-3 animate-pulse-scale rounded-full bg-vermilion"></div>
+                    <div className="absolute right-0 top-0 h-3 w-3 animate-pulse-scale rounded-full border-2 border-white/20 bg-ztg-green-500"></div>
                   )}
                 </div>
               </Menu.Button>
@@ -98,9 +98,9 @@ export const Alerts = () => {
                 className={`
                   subtle-scroll-bar subtle-scroll-bar-on-hover
                   fixed left-0 right-0 z-[200] h-[calc(100vh-50px)] w-screen overflow-y-auto
-                  bg-sky-50 p-4 pb-20 focus:outline-none
+                  bg-ztg-primary-800/95 p-4 pb-20 backdrop-blur-md focus:outline-none
                   md:left-auto md:right-4 md:h-auto md:max-h-[664px] md:w-96
-                  md:rounded-lg md:border md:border-sky-200/30 md:bg-white/95 md:p-4 md:pb-4
+                  md:rounded-lg md:bg-white/10 md:p-4 md:pb-4
                   md:shadow-xl md:backdrop-blur-lg
                 `}
                 style={{
@@ -145,7 +145,7 @@ const AlertCard: React.FC<PropsWithChildren & { onClick?: () => void }> = ({
 }) => (
   <div className="mb-3 cursor-pointer rounded-lg transition-all hover:scale-[1.02]">
     <div
-      className={`rounded-lg border border-sky-200/30 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-all hover:bg-white/95 hover:shadow-md md:bg-white/70 md:hover:bg-white/90`}
+      className={`rounded-lg bg-white/10 px-4 py-3 shadow-sm backdrop-blur-md transition-all hover:bg-white/20 hover:shadow-md`}
       onClick={onClick}
       style={{
         transform: "translate3d(0,0,0)",
@@ -184,15 +184,15 @@ const CourtCaseReadyToSettleItem = ({
               "linear-gradient(131.15deg, rgb(36 104 226 / 22%) 11.02%, rgb(69 83 226 / 60%) 93.27%)",
           }}
         >
-          <LuClipboardCheck size={12} className="text-gray-700" />
+          <LuClipboardCheck size={12} className="text-white/90" />
           Ready to Settle
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="mb-1 text-sm font-medium text-sky-900">
+        <h3 className="mb-1 text-sm font-medium text-white/90">
           {market?.question}
         </h3>
-        <p className="text-xxs text-sky-700">
+        <p className="text-xxs text-white/70">
           This court case can now be settled.
         </p>
       </div>
@@ -227,15 +227,15 @@ const CourtCaseReadyForVoteAlertItem = ({
               "linear-gradient(131.15deg, rgb(135 238 240 / 40%) 11.02%, rgb(157 0 254 / 40%) 93.27%)",
           }}
         >
-          <LuVote size={12} className="text-gray-700" />
+          <LuVote size={12} className="text-white/90" />
           Ready for vote
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="mb-1 text-sm font-medium text-sky-900">
+        <h3 className="mb-1 text-sm font-medium text-white/90">
           {market?.question}
         </h3>
-        <p className="text-xxs text-sky-700">
+        <p className="text-xxs text-white/70">
           You have been drawn as juror for this market and can now vote.
         </p>
       </div>
@@ -270,15 +270,15 @@ const CourtCaseReadyForRevealAlertItem = ({
               "linear-gradient(131.15deg, rgb(135 240 170 / 40%) 11.02%, rgb(204 0 254 / 40%) 93.27%)",
           }}
         >
-          <AiOutlineEye size={12} className="text-gray-700" />
+          <AiOutlineEye size={12} className="text-white/90" />
           Ready to reveal vote
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="mb-1 text-sm font-medium text-sky-900">
+        <h3 className="mb-1 text-sm font-medium text-white/90">
           {market?.question}
         </h3>
-        <p className="text-xxs text-sky-700">
+        <p className="text-xxs text-white/70">
           You are required to reveal your vote for this court case.
         </p>
       </div>
@@ -311,12 +311,12 @@ const ReadyToReportMarketAlertItem = ({
               "linear-gradient(131.15deg, rgba(240, 206, 135, 0.4) 11.02%, rgba(254, 0, 152, 0.4) 93.27%)",
           }}
         >
-          <AiOutlineFileAdd size={12} className="text-gray-700" />
+          <AiOutlineFileAdd size={12} className="text-white/90" />
           Submit Report
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="text-sm font-medium text-sky-900">
+        <h3 className="text-sm font-medium text-white/90">
           {alert.market.question}
         </h3>
       </div>
@@ -350,12 +350,12 @@ const RedeemableMarketAlertItem = ({
               "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgb(142 185 231 / 38%) 93.27%)",
           }}
         >
-          <BiMoneyWithdraw size={12} className="text-gray-600" />
+          <BiMoneyWithdraw size={12} className="text-white/90" />
           Redeemable Tokens
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="text-sm font-medium text-sky-900">
+        <h3 className="text-sm font-medium text-white/90">
           You have {alert.markets.length} redeemable markets.
         </h3>
       </div>

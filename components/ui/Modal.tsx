@@ -1,30 +1,41 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { ReactNode, Fragment, useEffect } from "react";
+import { ReactNode, Fragment } from "react";
+import { useScrollLock } from "lib/hooks/useScrollLock";
+
+export interface ModalProps {
+  children: ReactNode;
+  open: boolean;
+  onClose: () => void;
+  /**
+   * Whether to prevent closing on backdrop click
+   * @default false
+   */
+  closeOnBackdropClick?: boolean;
+}
 
 const Modal = ({
   open,
   children,
   onClose,
-}: {
-  children: ReactNode;
-  open: boolean;
-  onClose: () => void;
-}) => {
-  useEffect(() => {
-    if (typeof window !== undefined) {
-      const htmlElement = document.documentElement;
+  closeOnBackdropClick = true,
+}: ModalProps) => {
+  // Lock body scroll when modal is open
+  useScrollLock(open);
 
-      if (open) {
-        htmlElement.classList.add("dialog-open");
-      } else {
-        htmlElement.classList.remove("dialog-open");
-      }
+  const handleClose = (value: boolean) => {
+    if (!value && closeOnBackdropClick) {
+      onClose();
     }
-  }, [open]);
+  };
 
   return (
     <Transition appear show={open} as={Fragment}>
-      <Dialog open={true} onClose={onClose} className="relative z-ztg-50">
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        className="relative z-ztg-50"
+        static={!closeOnBackdropClick}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-200"
@@ -35,8 +46,9 @@ const Modal = ({
           leaveTo="opacity-0"
         >
           <div
-            className="fixed inset-0 bg-sky-950/40 backdrop-blur-sm"
+            className="fixed inset-0 bg-ztg-primary-950/50 backdrop-blur-md"
             aria-hidden="true"
+            style={{ zIndex: 40 }}
           />
         </Transition.Child>
 
@@ -50,9 +62,10 @@ const Modal = ({
           leaveTo="opacity-0 scale-95"
         >
           <div
-            className={`fixed inset-0 z-50 flex w-screen items-center justify-center p-4`}
+            className="fixed inset-0 z-50 flex w-screen items-center justify-center p-4"
+            style={{ pointerEvents: "none" }}
           >
-            {children}
+            <div style={{ pointerEvents: "auto" }}>{children}</div>
           </div>
         </Transition.Child>
       </Dialog>

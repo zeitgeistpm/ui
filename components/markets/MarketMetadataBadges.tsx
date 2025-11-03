@@ -34,7 +34,7 @@ const IconBadge: FC<{
   return (
     <div className="group relative">
       <div
-        className={`flex h-6 w-6 cursor-help items-center justify-center rounded-md ${bgColor} backdrop-blur-sm transition-all hover:scale-105 hover:opacity-90 hover:shadow-sm`}
+        className={`flex h-6 w-6 cursor-help items-center justify-center rounded-lg ${bgColor} backdrop-blur-sm transition-all hover:scale-110 hover:opacity-95 hover:shadow-md`}
       >
         {icon}
       </div>
@@ -70,7 +70,7 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
   promotionData,
 }) => {
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
       <CompactCreatorBadge address={market.creator} />
 
       {/* Oracle Badge - Icon Only with Tooltip */}
@@ -102,7 +102,7 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
       {market.disputeMechanism === "Court" && (
         <IconBadge
           icon={
-            <Image width={14} height={14} src="/icons/court.svg" alt="court" />
+            <Image width={12} height={12} src="/icons/court.svg" alt="court" />
           }
           tooltip="Court Dispute Mechanism"
           bgColor="bg-purple-100/80"
@@ -129,7 +129,7 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
           <InfoPopover
             position="bottom-end"
             icon={
-              <div className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md bg-orange-100/80 backdrop-blur-sm transition-all hover:scale-105 hover:bg-orange-200/80 hover:shadow-sm">
+              <div className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-lg bg-orange-100/80 backdrop-blur-sm transition-all hover:scale-110 hover:bg-orange-200/80 hover:shadow-md">
                 <HiOutlineShieldCheck size={14} className="text-orange-700" />
               </div>
             }
@@ -165,7 +165,7 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
           <InfoPopover
             position="bottom-end"
             icon={
-              <div className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md bg-yellow-100/80 backdrop-blur-sm transition-all hover:scale-105 hover:bg-yellow-200/80 hover:shadow-sm">
+              <div className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-lg bg-yellow-100/80 backdrop-blur-sm transition-all hover:scale-110 hover:bg-yellow-200/80 hover:shadow-md">
                 <MdModeEdit size={14} className="text-yellow-700" />
               </div>
             }

@@ -76,7 +76,7 @@ export const TypingIndicator = ({
       {
         opacity: 1,
         transform: "scale(2.7)",
-        backgroundColor: TAILWIND.theme.colors["blue"][500],
+        backgroundColor: "#2ccc30", // ztg-green-500
       },
       { duration: 0.6 },
     );
@@ -85,7 +85,7 @@ export const TypingIndicator = ({
       {
         transform: "scale(1)",
         opacity: 0.2,
-        backgroundColor: TAILWIND.theme.colors["gray"][500],
+        backgroundColor: "rgba(255, 255, 255, 0.3)", // white/30 for consistency
       },
       { duration: 0.3 },
     );
@@ -112,9 +112,9 @@ export const TypingIndicator = ({
         isTyping && !disabled ? "opacity-100" : "opacity-0"
       }`}
     >
-      <motion.div className="h-1 w-1 rounded-full bg-gray-500"></motion.div>
-      <motion.div className="h-1 w-1 rounded-full bg-gray-500"></motion.div>
-      <motion.div className="h-1 w-1 rounded-full bg-gray-500"></motion.div>
+      <motion.div className="h-1 w-1 rounded-full bg-white/50"></motion.div>
+      <motion.div className="h-1 w-1 rounded-full bg-white/50"></motion.div>
+      <motion.div className="h-1 w-1 rounded-full bg-white/50"></motion.div>
     </div>
   );
 };

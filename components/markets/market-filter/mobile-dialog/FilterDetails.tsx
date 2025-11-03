@@ -30,14 +30,14 @@ const FilterToggle = ({ option }: { option: MarketFilter }) => {
   return (
     <button
       onClick={toggle}
-      className={`mb-3 mr-3 flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium shadow-sm transition-all ${
+      className={`mb-3 mr-3 flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium shadow-md transition-all active:scale-[0.98] backdrop-blur-sm touch-manipulation ${
         isActive
-          ? "bg-gradient-to-br from-sky-500 to-blue-500 text-white shadow-md"
-          : "bg-white text-gray-700 hover:bg-sky-50 hover:shadow-md"
+          ? "bg-ztg-green-600/80 text-white"
+          : "bg-white/15 text-white hover:bg-white/20 hover:shadow-lg"
       }`}
     >
       <span>{option.label}</span>
-      {isActive && <X size={14} />}
+      {isActive && <X size={16} />}
     </button>
   );
 };
@@ -46,14 +46,14 @@ const FilterDetails = ({ back, menu }: FilterDetailsProps) => {
   return (
     <>
       <button
-        className="mb-4 flex items-center gap-2 text-sm font-semibold text-sky-600 transition-colors hover:text-sky-700"
+        className="mb-5 flex items-center gap-2 text-sm font-semibold text-ztg-green-400 transition-all active:scale-95 hover:text-ztg-green-300 touch-manipulation"
         onClick={back}
       >
         <ChevronLeft size={18} />
         <span>Back</span>
       </button>
-      <h3 className="mb-4 text-xl font-semibold text-gray-900">{menu}</h3>
-      <div className="flex flex-wrap">
+      <h3 className="mb-5 text-xl font-semibold text-white">{menu}</h3>
+      <div className="flex flex-wrap pb-4">
         {
           {
             Category: (
@@ -81,7 +81,7 @@ const FilterDetails = ({ back, menu }: FilterDetailsProps) => {
         }
       </div>
       <button
-        className="mt-auto h-12 rounded-lg bg-sky-600 text-sm font-semibold text-white shadow-md transition-all hover:bg-sky-700"
+        className="sticky bottom-0 mt-auto h-12 rounded-lg bg-ztg-green-600/80 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all active:scale-[0.98] hover:bg-ztg-green-600 touch-manipulation"
         onClick={back}
       >
         Apply Filters

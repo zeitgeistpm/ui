@@ -118,7 +118,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
 
   return (
     <div
-      className={`flex flex-wrap items-center justify-start gap-2 transition-opacity ${
+      className={`flex items-center justify-start gap-2 transition-opacity ${
         disabled && "pointer-events-none !cursor-default opacity-60"
       }`}
     >
@@ -126,10 +126,10 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
         <button
           key={index}
           type="button"
-          className={`rounded-md border px-3 py-1.5 text-xs font-medium backdrop-blur-md transition-all active:scale-95 ${
+          className={`shrink-0 rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
             value?.type === "duration" && value?.preset === option.preset
-              ? "border-sky-600/50 bg-sky-600/90 text-white shadow-sm"
-              : "border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
+              ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
+              : "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:border-white/30"
           }`}
           onClick={() => handleOnClickOption(option)}
         >
@@ -139,7 +139,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
 
       {hasCustomDurationOption && value?.type === "duration" && (
         <DurationInput
-          className="min-w-[200px] flex-1"
+          className="flex-1 min-w-[200px]"
           value={value}
           onChange={handleDurationChange}
           onBlur={handleDurationBlur}
@@ -148,20 +148,22 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
       )}
 
       {hasCustomDateOption && (
-        <DateTimePicker
-          timezone={timezone}
-          name={name}
-          className={`${
-            value?.type === "date"
-              ? "border-sky-600/50 !bg-sky-600/90 !text-white shadow-sm"
-              : ""
-          }`}
-          placeholder="Custom Date"
-          isValid={value?.type === "date" && isValid}
-          value={chainTime && value?.type === "date" ? value.date : undefined}
-          onChange={handleDateChange}
-          onBlur={handleDateBlur}
-        />
+        <div className="w-full">
+          <DateTimePicker
+            timezone={timezone}
+            name={name}
+            className={`w-full ${
+              value?.type === "date"
+                ? "border-ztg-green-600/80 !bg-ztg-green-600/90 !text-white shadow-md"
+                : ""
+            }`}
+            placeholder="Custom Date"
+            isValid={value?.type === "date" && isValid}
+            value={chainTime && value?.type === "date" ? value.date : undefined}
+            onChange={handleDateChange}
+            onBlur={handleDateBlur}
+          />
+        </div>
       )}
     </div>
   );
@@ -228,20 +230,20 @@ const DurationInput = ({
   };
 
   return (
-    <div className={`flex ${className}`}>
+    <div className={`flex w-full ${className}`}>
       <div
-        className={`relative flex flex-1 overflow-hidden rounded-md border backdrop-blur-md transition-all ${
+        className={`relative flex w-full flex-1 overflow-hidden rounded-lg border-2 backdrop-blur-sm transition-all ${
           isSelected
-            ? "border-sky-600/50 bg-sky-600/90 shadow-sm"
-            : "border-sky-200/30 bg-white/80"
+            ? "border-ztg-green-600/80 bg-ztg-green-600/90 shadow-md"
+            : "border-white/20 bg-white/10 hover:border-white/30"
         }`}
       >
         <Input
           type="number"
-          className={`w-full border-0 bg-transparent px-3 py-1.5 text-right text-xs outline-none ${
+          className={`w-full border-0 bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50 ${
             isSelected
               ? "text-white placeholder:text-white/60"
-              : "text-sky-900 placeholder:text-sky-400"
+              : "text-white placeholder:text-white/50"
           }`}
           value={value?.value}
           onChange={handleValueChange}
@@ -249,21 +251,21 @@ const DurationInput = ({
         />
 
         <div
-          className={`flex items-center justify-center gap-1 border-l px-3 transition-all ${
+          className={`flex items-center justify-center gap-1 border-l-2 px-4 py-3 transition-all ${
             isSelected
               ? "border-white/20 bg-white/10"
-              : "border-sky-200/30 bg-sky-50/50"
+              : "border-white/20 bg-white/5"
           }`}
         >
           <select
-            className={`min-w-[60px] bg-transparent text-xs outline-none ${
-              isSelected ? "text-white" : "text-sky-900"
+            className={`min-w-[70px] bg-transparent text-sm text-white outline-none ${
+              isSelected ? "text-white" : "text-white"
             }`}
             onChange={handleUnitChange}
             value={value?.unit}
           >
             {["days", "hours"].map((unit) => (
-              <option key={unit} className="bg-white text-sky-900" value={unit}>
+              <option key={unit} className="bg-ztg-primary-600 text-white" value={unit}>
                 {value && value?.value <= 1 ? unit.replace("s", "") : unit}
               </option>
             ))}

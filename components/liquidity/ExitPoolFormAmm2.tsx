@@ -189,8 +189,8 @@ const ExitPoolForm = ({
     exitPool();
   };
   return (
-    <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex max-h-[200px] flex-col gap-y-6 overflow-y-auto py-5 md:max-h-[400px]">
+    <form className="flex flex-col gap-y-3" onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex max-h-[220px] flex-col gap-y-3 overflow-y-auto py-2 md:max-h-[300px]">
         {activeMarket &&
           poolAssets?.map((assetId, index) => {
             const assetName = virtualMarket
@@ -206,17 +206,17 @@ const ExitPoolForm = ({
             return (
               <div
                 key={index}
-                className="relative h-[62px] w-full text-base font-semibold"
+                className="relative h-[52px] w-full text-sm font-semibold"
               >
-                <div className="absolute left-4 top-[18px] z-10 w-[40%] truncate capitalize text-sky-900">
+                <div className="absolute left-3 top-[14px] z-10 w-[40%] truncate capitalize text-white/90">
                   {assetName}
                 </div>
                 <Input
-                  className={`h-[56px] w-full rounded-lg border px-4 text-right font-medium shadow-sm backdrop-blur-sm transition-all focus:shadow-md focus:outline-none
+                  className={`h-11 w-full rounded-lg border-2 px-3 text-right text-sm font-medium text-white shadow-sm backdrop-blur-sm transition-all focus:shadow-md focus:outline-none
               ${
                 formState.errors[index.toString()]?.message
-                  ? "border-red-300 bg-red-50/80 text-red-600 focus:border-red-400"
-                  : "border-sky-200/30 bg-white/60 text-sky-900 hover:bg-white/80 focus:border-sky-400"
+                  ? "border-ztg-red-500/60 bg-ztg-red-900/30 text-ztg-red-400 focus:border-ztg-red-500/80"
+                  : "border-white/10 bg-white/10 text-white/90 hover:bg-white/15 focus:bg-white/15 focus:border-white/20 focus:ring-2 focus:ring-white/10"
               }
               `}
                   key={index}
@@ -244,7 +244,7 @@ const ExitPoolForm = ({
                     },
                   })}
                 />
-                <div className="mt-1 text-xs text-red-600">
+                <div className="mt-1 text-xs font-medium text-ztg-red-400">
                   <>{formState.errors[index.toString()]?.message}</>
                 </div>
               </div>
@@ -252,7 +252,7 @@ const ExitPoolForm = ({
           })}
       </div>
       <input
-        className="my-5 w-full cursor-pointer accent-sky-600"
+        className="my-3 w-full cursor-pointer accent-white/80"
         type="range"
         {...register("poolSharesPercentage", { min: 0, max: 100, value: "0" })}
       />

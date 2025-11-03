@@ -44,8 +44,8 @@ const AccountModalContent: FC = () => {
 
       <div className="flex items-center gap-2">
         {/* Balance Display - More Compact */}
-        <div className="flex flex-1 items-center gap-2.5 rounded-lg border border-sky-200/30 bg-white/80 px-3 py-2 shadow-sm backdrop-blur-sm">
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-50/80">
+        <div className="flex flex-1 items-center gap-2.5 rounded-lg border-2 border-white/10 bg-white/10 px-3 py-2 shadow-sm backdrop-blur-sm">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 ring-2 ring-white/20">
             <img
               src="/currencies/ztg.svg"
               alt="Account balance"
@@ -53,7 +53,7 @@ const AccountModalContent: FC = () => {
             />
           </div>
           <div className="flex min-w-0 flex-1 flex-col">
-            <div className="text-xs font-semibold text-sky-900">
+            <div className="text-xs font-semibold text-white/90">
               {activeBalance && constants?.tokenSymbol
                 ? `${formatNumberLocalized(Number(activeBalance.div(ZTG)))} ${constants.tokenSymbol}`
                 : "---"}
@@ -63,13 +63,13 @@ const AccountModalContent: FC = () => {
 
         {/* Disconnect Button - Matching Height */}
         <button
-          className="flex h-11 items-center justify-center gap-2 rounded-lg border border-red-200/50 bg-red-50/80 px-4 py-2 backdrop-blur-sm transition-all hover:border-red-300/70 hover:bg-red-100/80"
+          className="flex h-11 items-center justify-center gap-2 rounded-lg border-2 border-ztg-red-500/40 bg-ztg-red-900/30 px-4 py-2 backdrop-blur-sm transition-all hover:border-ztg-red-500/60 hover:bg-ztg-red-900/50"
           onClick={() => {
             disconnectWallet();
           }}
         >
-          <LogOut size={16} className="text-red-600" />
-          <span className="hidden text-sm font-medium text-red-700 md:block">
+          <LogOut size={16} className="text-ztg-red-400" />
+          <span className="hidden text-sm font-medium text-ztg-red-300 md:block">
             Disconnect
           </span>
         </button>

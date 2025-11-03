@@ -35,11 +35,11 @@ export const MarketLiquiditySection = ({
   return (
     <>
       {pool && !marketHasPool && (
-        <div className="center rounded-lg border border-sky-200/30 bg-sky-50/50 p-8 shadow-sm backdrop-blur-sm">
+        <div className="center rounded-lg bg-white/10 p-8 shadow-sm backdrop-blur-md">
           <div className="center mr-4 h-12 w-12">
             <Loader variant="Success" loading className="h-12 w-12" />
           </div>
-          <h4 className="font-semibold text-sky-700">
+          <h4 className="font-semibold text-white/90">
             Waiting for pool to be indexed
           </h4>
         </div>
@@ -66,10 +66,10 @@ const LiquidityHeaderTextItem: FC<
   return (
     <div className={"w-full text-sm " + className}>
       <div className="center py-3 sm:flex-col sm:items-center md:items-start md:justify-start">
-        <div className="center mr-2 font-semibold text-sky-700 md:justify-start">
+        <div className="center mr-2 font-semibold text-white/70 md:justify-start">
           {label}
         </div>
-        <div className="center font-bold text-sky-900 sm:text-lg">
+        <div className="center font-bold text-white/90 sm:text-lg">
           {children}
         </div>
       </div>
@@ -141,33 +141,33 @@ const LiquidityHeader = ({
       <div className="mb-8 flex flex-col sm:flex-row md:mb-0 md:w-full">
         <LiquidityHeaderTextItem
           label="Pool Value"
-          className="border-b border-sky-200/30 sm:border-b-0 sm:border-r md:mr-6"
+          className="border-b-2 border-white/10 sm:border-b-0 sm:border-r-2 md:mr-6"
         >
           {formatNumberCompact(liquidity?.div(ZTG).abs().toNumber() ?? 0)}{" "}
           {metadata?.symbol}
         </LiquidityHeaderTextItem>
         <LiquidityHeaderTextItem
           label="Fees"
-          className="border-b border-sky-200/30 sm:border-b-0 sm:border-r md:mr-6"
+          className="border-b-2 border-white/10 sm:border-b-0 sm:border-r-2 md:mr-6"
         >
           {swapFee + creatorFee}%
           <InfoPopover
             className="ml-2"
             title={
-              <h3 className="mb-4 flex items-center justify-center gap-2 text-sky-900">
+              <h3 className="mb-4 flex items-center justify-center gap-2 text-white/90">
                 <AiOutlineInfoCircle />
                 <span className="font-semibold">Swap Fees</span>
               </h3>
             }
           >
             <div className="mt-2 flex w-full flex-col gap-3">
-              <div className="flex items-center justify-between rounded-lg border border-sky-200/30 bg-sky-50/50 p-3">
-                <span className="text-sm text-sky-700">Creator fee:</span>
-                <span className="font-bold text-sky-900">{creatorFee}%</span>
+              <div className="flex items-center justify-between rounded-lg bg-white/10 p-3 backdrop-blur-sm">
+                <span className="text-sm text-white/70">Creator fee:</span>
+                <span className="font-bold text-white/90">{creatorFee}%</span>
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-sky-200/30 bg-sky-50/50 p-3">
-                <span className="text-sm text-sky-700">Pool fee:</span>
-                <span className="font-bold text-sky-900">{swapFee}%</span>
+              <div className="flex items-center justify-between rounded-lg bg-white/10 p-3 backdrop-blur-sm">
+                <span className="text-sm text-white/70">Pool fee:</span>
+                <span className="font-bold text-white/90">{swapFee}%</span>
               </div>
             </div>
           </InfoPopover>
@@ -183,7 +183,7 @@ const LiquidityHeader = ({
             <LiquidityHeaderButtonItem className="lg:-ml-14">
               <button
                 onClick={() => setManageLiquidityOpen(true)}
-                className="max-w-[200px] rounded-lg border border-sky-200/30 bg-gradient-to-r from-sky-500/80 to-sky-600/80 px-6 py-2.5 font-semibold text-white shadow-md backdrop-blur-md transition-all hover:from-sky-600/80 hover:to-sky-700/80 hover:shadow-lg focus:outline-none md:ml-auto md:mr-0"
+                className="max-w-[200px] rounded-lg bg-ztg-green-600/80 px-6 py-2.5 font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg focus:outline-none md:ml-auto md:mr-0"
               >
                 Manage Liquidity
               </button>

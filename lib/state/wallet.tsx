@@ -176,7 +176,30 @@ export const userConfigAtom = persistentAtom<WalletUserConfig>({
        * Migrate existing localStorage values to new atom state.
        * So existing users don't have to reselect their wallet and address.
        */
-      if (!state || Object.keys(state).length === 0) {
+      
+      // Only validate and reset if state exists but is clearly corrupted
+      // A valid state should have at least __version or be empty
+      if (state && typeof state === "object") {
+        const hasValidKeys = 
+          "__version" in state || 
+          "walletId" in state || 
+          "selectedAddress" in state || 
+          "proxyFor" in state;
+        
+        // If state exists but has no valid keys and has other keys, it's corrupted
+        if (!hasValidKeys && Object.keys(state).length > 0) {
+          console.warn("Invalid wallet config state detected, resetting to default");
+          // Clear potentially corrupted localStorage entry
+          try {
+            globalThis.localStorage?.removeItem("wallet-user-config");
+          } catch (e) {
+            console.error("Failed to clear corrupted wallet config:", e);
+          }
+          return {};
+        }
+      }
+
+      if (!state || (typeof state === "object" && Object.keys(state).length === 0)) {
         const walletId = globalThis.localStorage?.getItem("walletId");
         let selectedAddress =
           globalThis.localStorage?.getItem("accountAddress");
@@ -202,7 +225,40 @@ export const userConfigAtom = persistentAtom<WalletUserConfig>({
         };
       }
 
-      return state;
+      // Validate existing state has proper structure
+      if (state && typeof state === "object") {
+        const validatedState = state as Partial<WalletUserConfig>;
+        const result: WalletUserConfig = {};
+
+        // Validate walletId
+        if (validatedState.walletId && typeof validatedState.walletId === "string") {
+          result.walletId = validatedState.walletId;
+        }
+
+        // Validate selectedAddress
+        if (
+          validatedState.selectedAddress &&
+          typeof validatedState.selectedAddress === "string"
+        ) {
+          const addressValidation = tryCatch(() =>
+            encodeAddress(validatedState.selectedAddress!, 73)
+          );
+          if (addressValidation.isSome()) {
+            result.selectedAddress = validatedState.selectedAddress;
+          } else {
+            console.warn("Invalid address in wallet config, clearing it");
+          }
+        }
+
+        // Preserve proxyFor if valid
+        if (validatedState.proxyFor && typeof validatedState.proxyFor === "object") {
+          result.proxyFor = validatedState.proxyFor;
+        }
+
+        return result;
+      }
+
+      return {};
     },
   ],
 });
@@ -375,6 +431,7 @@ const enableWallet = async (
 
     return true;
   } catch (error) {
+    console.error(`Failed to enable wallet "${walletId}":`, error);
     store.set(walletAtom, (state) => {
       return {
         ...state,
@@ -382,7 +439,9 @@ const enableWallet = async (
         errors: [
           {
             extensionName: wallet?.extensionName ?? "unknown wallet",
-            type: "InteractionDenied",
+            type: error instanceof Error && error.message.includes("denied") 
+              ? "InteractionDenied" 
+              : "InteractionDenied",
           },
         ],
       };
@@ -394,11 +453,17 @@ const enableWallet = async (
 /**
  * Enable wallet on first load if wallet id is set.
  */
-const initialWalletId = store.get(userConfigAtom).walletId;
-if (initialWalletId) {
-  //used to stop wallet connect modal from appearing on initial load
-  const skipModal = initialWalletId === "walletconnect" ? true : false;
-  enableWallet(initialWalletId, undefined, skipModal);
+try {
+  const initialWalletId = store.get(userConfigAtom).walletId;
+  if (initialWalletId) {
+    //used to stop wallet connect modal from appearing on initial load
+    const skipModal = initialWalletId === "walletconnect" ? true : false;
+    enableWallet(initialWalletId, undefined, skipModal).catch((error) => {
+      console.error("Failed to enable wallet on initial load:", error);
+    });
+  }
+} catch (error) {
+  console.error("Error reading wallet config on initial load:", error);
 }
 
 /**

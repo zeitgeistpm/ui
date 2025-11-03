@@ -75,21 +75,18 @@ const MarketSearch = () => {
   }, [selectedIndex]);
 
   return (
-    <div className="w-full px-4" ref={wrapperRef}>
-      {/* <Link href={"/search"} className="w-2 sm:hidden">
-        <Search className="mr-4 text-sky-200" />
-      </Link> */}
-      <div className="items-center sm:flex">
-        <div
-          className={`relative w-full max-w-[400px] overflow-hidden transition-all`}
-        >
-          <div className="pointer-events-none absolute left-3 top-[50%] translate-y-[-50%] text-sky-400">
-            <Search size={16} />
+      <div className="relative w-full" ref={wrapperRef}>
+        <div className="flex items-center">
+          <div
+            className="relative w-full transition-all"
+          >
+          <div className="pointer-events-none absolute left-3 top-[50%] translate-y-[-50%] text-white/70">
+            <Search size={14} className="sm:h-4 sm:w-4" />
           </div>
 
           <input
             ref={inputRef}
-            className={`h-9 w-full rounded-lg bg-sky-900 pl-9 pr-3 text-sm text-sky-200 outline-none transition-all placeholder:text-sky-400`}
+            className={`h-9 w-full rounded-lg bg-white/10 pl-9 pr-9 text-xs text-white outline-none backdrop-blur-sm transition-all placeholder:text-white/60 ring-2 ring-transparent focus:bg-white/15 focus:ring-2 focus:ring-ztg-green-500/30 focus:shadow-lg touch-manipulation sm:pl-10 sm:pr-10 sm:text-sm md:h-11 md:text-base md:pl-10 md:pr-10 overflow-hidden text-ellipsis`}
             value={searchTerm}
             placeholder="Search markets..."
             onChange={(event) => {
@@ -102,9 +99,12 @@ const MarketSearch = () => {
                 setShowResults(true);
               }
             }}
+            onBlur={() => {
+              // Keep focus behavior simple
+            }}
           />
 
-          <div className="absolute right-10 top-[50%] translate-y-[-50%]">
+          <div className="absolute right-9 top-[50%] translate-y-[-50%] sm:right-10">
             <TypingIndicator
               disabled={selectedIndex !== null}
               inputRef={inputRef}
@@ -114,7 +114,7 @@ const MarketSearch = () => {
 
           {searchTerm && (
             <button
-              className="absolute right-3 top-[50%] translate-y-[-50%] text-sky-400 transition-colors hover:text-sky-200"
+              className="absolute right-2.5 top-[50%] translate-y-[-50%] text-white/70 transition-colors hover:text-white/90 sm:right-3"
               onClick={() => {
                 setSearchTerm("");
                 if (showResults) {
@@ -125,7 +125,7 @@ const MarketSearch = () => {
                 }, 66);
               }}
             >
-              <X size={14} />
+              <X size={14} className="sm:h-4 sm:w-4" />
             </button>
           )}
         </div>
@@ -137,33 +137,33 @@ const MarketSearch = () => {
         enterTo="transform opacity-100 scale-100"
         leave="transition ease-in duration-75"
         leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 :scale-95"
+        leaveTo="transform opacity-0 scale-95"
         show={Boolean(showResults && showSearch && markets)}
       >
-        <div className="absolute top-[38px] hidden max-h-[420px] w-[400px] flex-col rounded-md bg-white px-2 py-4 shadow-2xl sm:flex">
+        <div className="absolute top-[42px] left-1/2 z-50 max-h-[420px] w-full max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-col rounded-md bg-white/10 px-2 py-4 shadow-2xl backdrop-blur-lg md:max-w-xl">
           <div className="subtle-scroll-bar overflow-y-scroll">
             {markets?.length ? (
               markets?.map((market, index) => (
                 <Link
                   key={market.marketId}
                   href={`/markets/${market.marketId}`}
-                  className={`flex justify-between overflow-ellipsis rounded-md px-4 py-2 
-                    ${selectedIndex === index && "bg-sky-100"}
-                    ${selectedIndex === null && "hover:bg-sky-100"}
+                  className={`flex justify-between overflow-ellipsis rounded-md px-4 py-2 text-white/90 transition-all
+                    ${selectedIndex === index && "bg-white/20"}
+                    ${selectedIndex === null && "hover:bg-white/20"}
                   `}
                   onClick={() => {
                     setShowResults(false);
                   }}
                   ref={selectedIndex === index ? selectedRef : undefined}
                 >
-                  <div className="line-clamp-1 w-85% overflow-ellipsis text-sky-900">
+                  <div className="line-clamp-1 w-85% overflow-ellipsis">
                     {market.question}
                   </div>
                   <div
                     className={`w-16 rounded-md px-2 py-1 text-center text-xs text-white ${
                       market.status === MarketStatus.Active
-                        ? "bg-green-400"
-                        : "bg-gray-400"
+                        ? "bg-ztg-green-500"
+                        : "bg-gray-500"
                     }`}
                   >
                     {market.status === MarketStatus.Active
@@ -173,7 +173,7 @@ const MarketSearch = () => {
                 </Link>
               ))
             ) : (
-              <div className="w-full pb-4 pt-6 text-center text-gray-500">
+              <div className="w-full pb-4 pt-6 text-center text-white/70">
                 No results
               </div>
             )}

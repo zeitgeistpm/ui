@@ -13,13 +13,13 @@ export const MarketActiveFilterItem = ({
   onRemove,
 }: MarketActiveFilterItemProps) => {
   return (
-    <div className="flex items-center gap-1 rounded-md bg-sky-100 px-2 py-1 text-xs font-semibold text-sky-800 transition-all hover:bg-sky-200">
+    <div className="flex items-center gap-1 rounded-md bg-white/15 px-2 py-1 text-sm font-semibold text-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white/20">
       <span>{filter.label}</span>
       <button
         onClick={() => onRemove(filter)}
         className="flex items-center transition-transform hover:scale-110"
       >
-        <X size={12} className="text-sky-800"></X>
+        <X size={12} className="text-white/90"></X>
       </button>
     </div>
   );

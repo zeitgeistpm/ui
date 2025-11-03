@@ -4,12 +4,10 @@ import PoolSettings, {
 import Decimal from "decimal.js";
 import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
-import { swapFeePresets } from "lib/state/market-creation/constants/swap-fee";
 import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
 import { ReactNode } from "react";
 import { FormEvent } from "../types";
-import FeeSelect, { Fee } from "./FeeSelect";
 import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 
 export type LiquidityInputProps = {
@@ -47,45 +45,16 @@ export const LiquidityInput = ({
     });
   };
 
-  const handleFeeChange = (event: FormEvent<Fee>) => {
-    onChange({
-      type: "change",
-      target: {
-        name,
-        value: {
-          ...value!,
-          swapFee: event.target.value,
-        },
-      },
-    });
-  };
-
   return (
-    <div className="w-full">
-      <div className="mb-3">
-        <PoolSettings
-          baseAssetPrice={baseAssetPrice ?? undefined}
-          baseAssetSymbol={currencyMetadata?.name ?? ""}
-          baseAssetAmount={value?.amount ?? ""}
-          data={transformRows(value?.rows ?? [])}
-          onChange={handleRowsChange}
-          noDataMessage={errorMessage}
-        />
-      </div>
-      <div>
-        <label className="mb-1.5 block text-xs font-medium text-sky-900">
-          Creator Swap Fee
-        </label>
-        <FeeSelect
-          name={name}
-          value={value?.swapFee}
-          onChange={handleFeeChange}
-          presets={swapFeePresets}
-          isValid={fieldState.isValid}
-          label="% Swap Fee"
-        />
-      </div>
-    </div>
+    <PoolSettings
+      baseAssetPrice={baseAssetPrice ?? undefined}
+      baseAssetSymbol={currencyMetadata?.name ?? ""}
+      baseAssetAmount={value?.amount ?? ""}
+      data={transformRows(value?.rows ?? [])}
+      onChange={handleRowsChange}
+      noDataMessage={errorMessage}
+      hideBaseLiquidity={true}
+    />
   );
 };
 

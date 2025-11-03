@@ -128,11 +128,11 @@ const CategoricalDisputeBox = ({
       </div>
 
       <div className="item-center flex flex-col text-center">
-        <span className="text-[14px] text-sky-600">Previous Report:</span>
+        <span className="text-[14px] text-ztg-primary-600">Previous Report:</span>
         <span className="">{getPreviousReportName()}</span>
       </div>
       {/* <div className="flex flex-col item-center text-center">
-        <span className="text-sky-600 text-[14px]">New Report:</span>
+        <span className="text-ztg-primary-600 text-[14px]">New Report:</span>
 
         <div className="mb-4">
           {market && selectedAssetId && (
@@ -149,7 +149,7 @@ const CategoricalDisputeBox = ({
       </div> */}
       {bondAmount !== disputeBond && bondAmount !== undefined && (
         <div className="item-center flex flex-col text-center">
-          <span className="text-[14px] text-sky-600">Previous Bond:</span>
+          <span className="text-[14px] text-ztg-primary-600">Previous Bond:</span>
           <span className="">{bondAmount}</span>
         </div>
       )}

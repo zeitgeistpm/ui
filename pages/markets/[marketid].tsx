@@ -507,8 +507,8 @@ const Market: NextPage<MarketPageProps> = ({
   ]);
 
   return (
-    <div className="">
-      <div className="relative grid gap-8 md:grid-cols-[1fr_auto]">
+    <div className="w-full overflow-x-hidden">
+      <div className="relative grid gap-8 md:grid-cols-[1fr_auto] lg:gap-10">
         <div className="min-w-0">
           <MarketMeta market={marketData} />
 
@@ -524,31 +524,31 @@ const Market: NextPage<MarketPageProps> = ({
           />
 
           {market?.rejectReason && market.rejectReason.length > 0 && (
-            <div className="mt-[10px] text-ztg-14-150">
+            <div className="mt-[10px] text-ztg-14-150 text-red-400">
               Market rejected: {market.rejectReason}
             </div>
           )}
 
-          <div className="mt-4 rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
+          <div className="mt-8 rounded-lg bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4 md:p-5">
             <Tab.Group defaultIndex={hasLiveTwitchStream ? 1 : 0}>
               <Tab.List
-                className={`flex gap-2 text-sm ${
+                className={`flex gap-1.5 text-xs sm:gap-2 sm:text-sm ${
                   activeTabsCount < 2 ? "hidden" : ""
                 }`}
               >
                 <Tab
                   key="chart"
-                  className="rounded-md border-1 border-gray-400 px-2 py-1 ui-selected:border-transparent ui-selected:bg-gray-300"
+                  className="rounded-md bg-white/10 px-2 py-1 text-xs text-white/70 shadow-md backdrop-blur-sm ui-selected:bg-ztg-green-600/80 ui-selected:text-white sm:text-sm"
                 >
                   Chart
                 </Tab>
 
                 <Tab
                   key="twitch"
-                  className="flex items-center gap-2 rounded-md border-1 border-twitch-purple px-2 py-1 text-twitch-purple ui-selected:border-transparent ui-selected:bg-twitch-purple ui-selected:text-twitch-gray"
+                  className="flex items-center gap-1.5 rounded-md bg-white/10 px-2 py-1 text-xs text-white/70 shadow-md backdrop-blur-sm ui-selected:bg-ztg-green-600/80 ui-selected:text-white sm:gap-2 sm:text-sm"
                 >
-                  <FaTwitch size={16} />
-                  Twitch Stream
+                  <FaTwitch size={14} className="sm:h-4 sm:w-4" />
+                  <span className="whitespace-nowrap">Twitch Stream</span>
                   {hasLiveTwitchStream && (
                     <div className="flex items-center gap-1 text-orange-400">
                       <div className="animate-pulse-scale">
@@ -571,7 +571,7 @@ const Market: NextPage<MarketPageProps> = ({
                     <BsFillChatSquareTextFill
                       size={18}
                       className={
-                        showTwitchChat ? "text-twitch-purple" : "text-gray-400"
+                        showTwitchChat ? "text-ztg-green-400" : "text-white/50"
                       }
                     />
                   </div>
@@ -630,11 +630,11 @@ const Market: NextPage<MarketPageProps> = ({
           {realAddress &&
             isOrdersLoading === false &&
             (orders?.length ?? 0) > 0 && (
-              <div className="mt-4 rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
-                <h3 className="mb-4 text-lg font-semibold text-gray-900">
+              <div className="mt-8 rounded-lg bg-white/10 p-4 shadow-lg backdrop-blur-md">
+                <h3 className="mb-4 text-lg font-semibold text-white">
                   My Orders
                 </h3>
-                <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
+                <div className="overflow-hidden rounded-lg">
                   <OrdersTable
                     where={{
                       marketId_eq: marketId,
@@ -645,15 +645,15 @@ const Market: NextPage<MarketPageProps> = ({
               </div>
             )}
           {marketIsLoading === false && marketHasPool === false && (
-            <div className="flex items-center gap-3 rounded-lg bg-red-50/80 p-4 text-red-600 shadow-sm backdrop-blur-sm">
-              <AlertTriangle size={20} className="flex-shrink-0" />
-              <div className="text-sm" data-test="liquidityPoolMessage">
+            <div className="flex mt-8 items-center gap-2.5 rounded-lg border-2 border-red-500/40 bg-red-900/30 p-3 text-red-400 shadow-md backdrop-blur-sm sm:gap-3 sm:p-4">
+              <AlertTriangle size={18} className="flex-shrink-0 sm:h-5 sm:w-5" />
+              <div className="text-xs sm:text-sm" data-test="liquidityPoolMessage">
                 This market doesn't have a liquidity pool and therefore cannot
                 be traded
               </div>
             </div>
           )}
-          <div className="my-8">
+          <div className="mt-8">
             {marketData?.marketType?.scalar !== null && (
               <div className="mb-8">
                 {marketIsLoading ||
@@ -677,8 +677,8 @@ const Market: NextPage<MarketPageProps> = ({
                 )}
               </div>
             )}
-            <div className="rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 shadow-lg">
-              <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
+            <div className="rounded-lg bg-white/15 shadow-lg backdrop-blur-md">
+              <div className="overflow-hidden rounded-lg">
                 <MarketAssetDetails
                   marketId={marketId ?? 0}
                   categories={marketData.categories}
@@ -687,16 +687,16 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           </div>
 
-          <div className="mb-12">
+          <div className="mt-8">
             <MarketDescription market={marketData} />
           </div>
 
           {marketHasPool === true && (
-            <div className="mt-10 rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
-              <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                Latest Trades
-              </h3>
-              <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
+            <div className="mt-8 rounded-lg bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4">
+                <h3 className="mb-3 text-base font-semibold text-white sm:mb-4 sm:text-lg">
+                  Latest Trades
+                </h3>
+                <div className="pb-3 sm:pb-4">
                 <LatestTrades
                   limit={3}
                   marketId={marketId}
@@ -748,20 +748,22 @@ const Market: NextPage<MarketPageProps> = ({
                       : undefined
                   }
                 />
-              </div>
+                </div>
             </div>
           )}
 
           {marketHasPool === false && (
-            <PoolDeployer
-              marketId={marketId}
-              onPoolDeployed={handlePoolDeployed}
-            />
+            <div className="mt-8">
+              <PoolDeployer
+                marketId={marketId}
+                onPoolDeployed={handlePoolDeployed}
+              />
+            </div>
           )}
           {market && (marketHasPool || poolDeployed) && (
-            <div className="my-12">
+            <div className="mt-8">
               <div
-                className="mb-4 flex cursor-pointer items-center rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 px-4 py-3 font-semibold text-sky-700 shadow-lg transition-all hover:shadow-xl"
+                className="mb-3 flex cursor-pointer items-center rounded-lg bg-white/10 px-3 py-2.5 text-sm font-semibold text-white/90 shadow-lg backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-xl sm:mb-4 sm:px-4 sm:py-3 sm:text-base"
                 onClick={() => toggleLiquiditySection()}
               >
                 <div>Show Liquidity</div>
@@ -782,14 +784,12 @@ const Market: NextPage<MarketPageProps> = ({
                 leaveTo="transform opacity-0 "
                 show={showLiquidity && Boolean(marketHasPool || poolDeployed)}
               >
-                <div className="rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
-                  <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
-                    <MarketLiquiditySection
-                      pool={poolDeployed}
-                      market={market}
-                      comboMarket={false}
-                    />
-                  </div>
+                <div className="rounded-lg bg-white/10 p-4 shadow-lg backdrop-blur-md">
+                  <MarketLiquiditySection
+                    pool={poolDeployed}
+                    market={market}
+                    comboMarket={false}
+                  />
                 </div>
               </Transition>
             </div>
@@ -797,23 +797,28 @@ const Market: NextPage<MarketPageProps> = ({
         </div>
 
         <div className="hidden md:block md:w-[320px] lg:w-[400px] xl:w-[460px]">
-          <div className="sticky top-20">
+          <div className="sticky">
             <div
-              className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
-              }}
+                className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg bg-white/15 backdrop-blur-md"
             >
               {market?.status === MarketStatus.Active ||
               marketData?.status === "Active" ? (
                 <>
-                  <Amm2TradeForm
-                    marketId={marketId}
-                    poolData={poolData}
-                    filteredAssets={relevantPoolAssets}
-                    outcomeCombinations={outcomeCombinations}
-                  />
+                  {marketHasPool ? (
+                    <Amm2TradeForm
+                      marketId={marketId}
+                      poolData={poolData}
+                      filteredAssets={relevantPoolAssets}
+                      outcomeCombinations={outcomeCombinations}
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2.5 rounded-lg border-2 border-orange-500/40 bg-orange-900/30 p-4 text-orange-400 shadow-md backdrop-blur-sm">
+                      <AlertTriangle size={18} className="flex-shrink-0 sm:h-5 sm:w-5" />
+                      <div className="text-sm">
+                        This market doesn't have a liquidity pool yet. Deploy a pool below to enable trading.
+                      </div>
+                    </div>
+                  )}
                 </>
               ) : (market?.status === MarketStatus.Closed ||
                   marketData?.status === "Closed") &&
@@ -848,6 +853,7 @@ const Market: NextPage<MarketPageProps> = ({
           relevantPoolAssets={relevantPoolAssets}
           marketData={marketData}
           poolData={poolData}
+          marketHasPool={marketHasPool}
         />
       )}
     </div>
@@ -859,11 +865,13 @@ const MobileContextButtons = ({
   relevantPoolAssets,
   marketData,
   poolData,
+  marketHasPool,
 }: {
   market: FullMarketFragment | null | undefined;
   relevantPoolAssets?: (MarketOutcomeAssetId | CombinatorialToken)[];
   marketData?: any; // Allow any type for marketData since it comes from static props
   poolData?: any;
+  marketHasPool: boolean;
 }) => {
   const wallet = useWallet();
 
@@ -930,22 +938,31 @@ const MobileContextButtons = ({
       </Transition>
 
       <div
-        className={`fixed bottom-12 left-0 z-50 w-full rounded-t-lg bg-white pb-2 transition-all duration-500 ease-in-out md:hidden ${
+        className={`fixed bottom-12 left-0 right-0 z-50 w-full rounded-t-lg bg-ztg-primary-700/95 border-t-2 border-white/10 shadow-2xl backdrop-blur-lg pb-safe pb-2 transition-all duration-500 ease-in-out md:hidden ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
         {market?.status === MarketStatus.Active ||
         marketData?.status === "Active" ? (
-          <Amm2TradeForm
-            marketId={market?.marketId || marketData?.marketId || 0}
-            poolData={poolData}
-            showTabs={false}
-            selectedTab={
-              tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell
-            }
-            filteredAssets={relevantPoolAssets}
-            outcomeCombinations={outcomeCombinations}
-          />
+          marketHasPool ? (
+            <Amm2TradeForm
+              marketId={market?.marketId || marketData?.marketId || 0}
+              poolData={poolData}
+              showTabs={false}
+              selectedTab={
+                tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell
+              }
+              filteredAssets={relevantPoolAssets}
+              outcomeCombinations={outcomeCombinations}
+            />
+          ) : (
+            <div className="flex items-center gap-2.5 rounded-lg border-2 border-orange-500/40 bg-orange-900/30 p-4 text-orange-400 shadow-md backdrop-blur-sm mx-4 my-4">
+              <AlertTriangle size={18} className="flex-shrink-0 sm:h-5 sm:w-5" />
+              <div className="text-sm">
+                This market doesn't have a liquidity pool yet. Deploy a pool to enable trading.
+              </div>
+            </div>
+          )
         ) : (market?.status === MarketStatus.Closed ||
             marketData?.status === "Closed") &&
           canReport ? (
@@ -968,84 +985,90 @@ const MobileContextButtons = ({
         market?.status === MarketStatus.Reported ||
         marketData?.status === "Reported") && (
         <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-          <div className="flex h-14 cursor-pointer text-lg font-semibold">
+          <div className="flex h-14 cursor-pointer text-base font-semibold sm:text-lg">
             {market?.status === MarketStatus.Active ||
             marketData?.status === "Active" ? (
-              <>
-                <div
-                  className={`center h-full flex-1 transition-all ${
-                    tradeItem?.action === "buy"
-                      ? "bg-gradient-to-r from-sky-400/80 to-sky-500/80 text-white shadow-md backdrop-blur-md"
-                      : "bg-white/95 text-sky-900 backdrop-blur-md"
-                  } `}
-                  onClick={() => {
-                    setTradeItem({
-                      assetId: tradeItem?.assetId ?? outcomeAssets[0],
-                      action: "buy",
-                    });
-                    if (open && tradeItem?.action === "buy") {
-                      setOpen(false);
-                    } else {
-                      setOpen(true);
-                    }
-                  }}
-                >
-                  Buy{" "}
-                  <X
-                    className={`center h-full w-0 transition-all  ${
-                      open && tradeItem?.action === "buy" && "w-6"
+              marketHasPool ? (
+                <>
+                  <div
+                    className={`center h-full flex-1 border-r-2 border-white/10 transition-all ${
+                      tradeItem?.action === "buy"
+                        ? "bg-ztg-green-600/90 text-white shadow-md backdrop-blur-md"
+                        : "bg-white/10 text-white/90 shadow-md backdrop-blur-md hover:bg-white/15"
+                    } `}
+                    onClick={() => {
+                      setTradeItem({
+                        assetId: tradeItem?.assetId ?? outcomeAssets[0],
+                        action: "buy",
+                      });
+                      if (open && tradeItem?.action === "buy") {
+                        setOpen(false);
+                      } else {
+                        setOpen(true);
+                      }
+                    }}
+                  >
+                    Buy{" "}
+                    <X
+                      className={`ml-1.5 h-5 w-0 transition-all ${
+                        open && tradeItem?.action === "buy" && "w-5"
+                      }`}
+                    />
+                  </div>
+                  <div
+                    className={`center h-full flex-1 transition-all ${
+                      tradeItem?.action === "sell"
+                        ? "bg-red-600/90 text-white shadow-md backdrop-blur-md"
+                        : "bg-white/10 text-white/90 shadow-md backdrop-blur-md hover:bg-white/15"
                     }`}
-                  />
+                    onClick={() => {
+                      setTradeItem({
+                        assetId: tradeItem?.assetId ?? outcomeAssets[0],
+                        action: "sell",
+                      });
+                      if (open && tradeItem?.action === "sell") {
+                        setOpen(false);
+                      } else {
+                        setOpen(true);
+                      }
+                    }}
+                  >
+                    Sell
+                    <X
+                      className={`ml-1.5 h-5 w-0 transition-all ${
+                        open && tradeItem?.action === "sell" && "w-5"
+                      }`}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="center h-full w-full bg-white/10 text-white/60 shadow-md backdrop-blur-md">
+                  Trading unavailable - No liquidity pool
                 </div>
-                <div
-                  className={`center h-full flex-1 transition-all ${
-                    tradeItem?.action === "sell"
-                      ? "bg-gradient-to-r from-sky-400/80 to-sky-500/80 text-white shadow-md backdrop-blur-md"
-                      : "bg-white/95 text-sky-900 backdrop-blur-md"
-                  }`}
-                  onClick={() => {
-                    setTradeItem({
-                      assetId: tradeItem?.assetId ?? outcomeAssets[0],
-                      action: "sell",
-                    });
-                    if (open && tradeItem?.action === "sell") {
-                      setOpen(false);
-                    } else {
-                      setOpen(true);
-                    }
-                  }}
-                >
-                  Sell
-                  <X
-                    className={`center h-full w-0 transition-all  ${
-                      open && tradeItem?.action === "sell" && "w-6"
-                    }`}
-                  />
-                </div>
-              </>
+              )
             ) : market?.status === MarketStatus.Closed && canReport ? (
               <>
                 <div
                   className={`center h-full flex-1 transition-all ${
                     !open
-                      ? "bg-gradient-to-r from-purple-400/80 to-purple-500/80 text-white shadow-md backdrop-blur-md"
-                      : "bg-white/95 text-sky-900 backdrop-blur-md"
+                      ? "bg-ztg-green-600/90 text-white shadow-md backdrop-blur-md"
+                      : "bg-white/10 text-white/90 backdrop-blur-md hover:bg-white/15"
                   }`}
                   onClick={() => setOpen(!open)}
                 >
-                  {open ? <X /> : "Report"}
+                  {open ? <X className="h-5 w-5" /> : "Report"}
                 </div>
               </>
             ) : market?.status === MarketStatus.Reported ? (
               <div
                 className={`center h-full flex-1 transition-all ${
                   !open
-                    ? "bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white shadow-md backdrop-blur-md"
-                    : "bg-white/95 text-sky-900 backdrop-blur-md"
+                    ? "bg-orange-600/90 text-white shadow-md backdrop-blur-md"
+                    : "bg-white/10 text-white/90 shadow-md backdrop-blur-md hover:bg-white/15"
                 }`}
                 onClick={() => setOpen(!open)}
               >
-                {open ? <X /> : "Dispute"}
+                {open ? <X className="h-5 w-5" /> : "Dispute"}
               </div>
             ) : (
               <></>
@@ -1074,18 +1097,18 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
                 className={`relative z-20 flex w-full items-center rounded-lg px-5 py-3 transition-all ${
                   !open
                     ? "bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white shadow-md backdrop-blur-md"
-                    : "border border-sky-200/30 bg-white/80 text-sky-800 backdrop-blur-md"
+                    : "border-2 border-ztg-primary-200/30 bg-white/80 text-ztg-primary-800 shadow-md backdrop-blur-md"
                 }`}
               >
                 <h3
                   className={`flex-1 text-left text-base font-semibold ${
-                    open ? "text-sky-900" : "text-white"
+                    open ? "text-ztg-primary-900" : "text-white"
                   }`}
                 >
                   {open ? "Close" : "Market can be disputed"}
                 </h3>
                 {open ? (
-                  <X className="text-sky-900" size={18} />
+                  <X className="text-ztg-primary-900" size={18} />
                 ) : (
                   <FaChevronUp
                     size={18}
@@ -1100,7 +1123,7 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
                 leave="transition duration-75 ease-out"
                 leaveFrom="transform scale-100 opacity-100"
                 leaveTo="transform scale-95 opacity-0"
-                className="relative z-10 -mt-[8px] rounded-b-lg bg-white/60 px-5 pb-10 pt-12 backdrop-blur-sm"
+                className="relative z-10 -mt-[8px] rounded-b-lg bg-white/60 px-5 pb-10 pt-12 shadow-md backdrop-blur-sm"
               >
                 <Disclosure.Panel>
                   {isMarketCategoricalOutcome(reportedOutcome) ? (
@@ -1143,26 +1166,26 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
   return !userCanReport ? (
     <></>
   ) : (
-    <div className="rounded-lg bg-white/60 px-5 py-10 shadow-sm backdrop-blur-sm">
+    <div className="p-3 sm:p-4 md:p-5">
       {reportedOutcome ? (
         <ReportResult market={market} outcome={reportedOutcome} />
       ) : (
         <>
-          <h4 className="mb-4 flex items-center gap-2 text-sky-800">
+          <h4 className="mb-4 flex items-center gap-2 text-white">
             <AiOutlineFileAdd size={20} />
             <span className="font-semibold">Report Market Outcome</span>
           </h4>
 
-          <p className="mb-6 text-sm text-gray-700">
+          <p className="mb-6 text-sm text-white/90">
             Market has closed and the outcome can now be reported.
           </p>
 
           {stage?.type === "OpenReportingPeriod" && (
             <>
-              <p className="-mt-3 mb-6 text-sm italic text-gray-600">
+              <p className="-mt-3 mb-6 text-sm italic text-white/80">
                 Oracle failed to report. Reporting is now open to all.
               </p>
-              <p className="mb-6 text-sm text-gray-700">
+              <p className="mb-6 text-sm text-white/90">
                 Bond cost: {chainConstants?.markets.outsiderBond}{" "}
                 {chainConstants?.tokenSymbol}
               </p>
@@ -1192,13 +1215,13 @@ const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
   const router = useRouter();
 
   return (
-    <div className="rounded-lg bg-white/60 px-5 py-8 shadow-sm backdrop-blur-sm">
-      <h4 className="mb-3 flex items-center gap-2 font-semibold text-sky-800">
+    <div className="p-3 sm:p-4 md:p-5">
+      <h4 className="mb-3 flex items-center gap-2 font-semibold text-white">
         <Image width={22} height={22} src="/icons/court.svg" alt="court" />
         <span>Market Court Case</span>
       </h4>
 
-      <p className="mb-5 text-sm text-gray-700">
+      <p className="mb-5 text-sm text-white/90">
         Market has been disputed and is awaiting a ruling in court.
       </p>
 
@@ -1206,7 +1229,7 @@ const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
         disabled={!isFetched}
         onClick={() => router.push(`/court/${caseId}`)}
         onMouseEnter={() => router.prefetch(`/court/${caseId}`)}
-        className={`ztg-transition h-[56px] w-full rounded-full bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white shadow-md backdrop-blur-md transition-all hover:from-orange-500/80 hover:to-orange-600/80 hover:shadow-lg focus:outline-none disabled:cursor-default disabled:bg-sky-200/60 disabled:backdrop-blur-sm`}
+        className={`ztg-transition h-[56px] w-full rounded-full bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white shadow-md backdrop-blur-md transition-all hover:from-orange-500/80 hover:to-orange-600/80 hover:shadow-lg focus:outline-none disabled:cursor-default disabled:bg-ztg-primary-200/60 disabled:backdrop-blur-sm`}
       >
         View Case
       </button>

@@ -9,6 +9,7 @@ import {
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
+import GlassSlider from "components/ui/GlassSlider";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
 import {
@@ -34,7 +35,7 @@ import { formatNumberCompact } from "lib/util/format-compact";
 import { selectOrdersForMarketSell } from "lib/util/order-selection";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { perbillToNumber } from "lib/util/perbill-to-number";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { isCombinatorialToken } from "lib/types/combinatorial";
 import { sortAssetsByMarketOrder } from "lib/util/sort-assets-by-market";
@@ -83,7 +84,10 @@ const SellForm = ({
       percentage: "0",
     },
   });
+
   const [sdk] = useSdkv2();
+  const percentageValue = watch("percentage");
+  const isUpdatingRef = useRef(false);
   const notificationStore = useNotifications();
   const { data: market } = useMarket(poolData ? undefined : { marketId });
   const wallet = useWallet();
@@ -140,7 +144,7 @@ const SellForm = ({
 
   const formAmount = watch("amount");
 
-  const amountIn = new Decimal(formAmount && formAmount !== "" ? formAmount : 0)
+  const amountIn = new Decimal(formAmount && formAmount !== 0 ? formAmount : 0)
     .mul(ZTG)
     .abs();
   const assetReserve = poolData?.reserves
@@ -218,7 +222,7 @@ const SellForm = ({
         !isRpcSdk(sdk) ||
         !effectivePoolId ||
         !amount ||
-        amount === "" ||
+        amount === 0 ||
         categoryCount == null ||
         !selectedAsset ||
         (isCombinatorialToken(selectedAsset) &&
@@ -299,38 +303,45 @@ const SellForm = ({
 
       if (
         !changedByUser ||
+        isUpdatingRef.current ||
         !selectedAssetBalance ||
         selectedAssetBalance.eq(0) ||
         !maxAmountIn
       )
         return;
 
-      if (name === "percentage") {
-        const max = selectedAssetBalance.greaterThan(maxAmountIn)
-          ? maxAmountIn
-          : selectedAssetBalance;
-        setValue(
-          "amount",
-          Number(
-            max
-              .mul(value.percentage)
-              .abs()
-              .div(100)
-              .div(ZTG)
-              .toFixed(3, Decimal.ROUND_DOWN),
-          ),
-        );
-      } else if (name === "amount" && value.amount !== "") {
-        setValue(
-          "percentage",
-          new Decimal(value.amount)
-            .mul(ZTG)
-            .div(selectedAssetBalance)
-            .mul(100)
-            .toString(),
-        );
+      isUpdatingRef.current = true;
+
+      try {
+        if (name === "percentage" && value.percentage != null) {
+          const max = selectedAssetBalance.greaterThan(maxAmountIn)
+            ? maxAmountIn
+            : selectedAssetBalance;
+          setValue(
+            "amount",
+            Number(
+              max
+                .mul(Number(value.percentage))
+                .abs()
+                .div(100)
+                .div(ZTG)
+                .toFixed(3, Decimal.ROUND_DOWN),
+            ),
+          );
+        } else if (name === "amount" && value.amount != null && value.amount !== 0) {
+          setValue(
+            "percentage",
+            new Decimal(value.amount)
+              .mul(ZTG)
+              .div(selectedAssetBalance)
+              .mul(100)
+              .toString(),
+          );
+        }
+        trigger("amount");
+      } finally {
+        isUpdatingRef.current = false;
       }
-      trigger("amount");
     });
     return () => subscription.unsubscribe();
   }, [watch, selectedAssetBalance, maxAmountIn]);
@@ -339,84 +350,84 @@ const SellForm = ({
     send();
   };
   return (
-    <div className="flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
+    <div className="flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold text-white">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex w-full flex-col items-center gap-y-4"
       >
-        <div className="flex w-full items-center gap-3">
-          <div className="center relative h-[56px] flex-1 rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-sm">
-            <Input
-              type="number"
-              className="w-full bg-transparent text-center text-lg font-semibold text-sky-900 outline-none"
-              step="any"
-              {...register("amount", {
-                required: {
-                  value: true,
-                  message: "Value is required",
-                },
-                validate: (value) => {
-                  if (
-                    value > (selectedAssetBalance?.div(ZTG).toNumber() ?? 0)
-                  ) {
-                    return `Insufficient balance. Current balance: ${selectedAssetBalance
-                      ?.div(ZTG)
-                      .toFixed(3)}`;
-                  } else if (value <= 0) {
-                    return "Value cannot be zero or less";
-                  } else if (maxAmountIn?.div(ZTG)?.lessThanOrEqualTo(value)) {
-                    return `Maximum amount that can be traded is ${maxAmountIn
-                      .div(ZTG)
-                      .toFixed(3)}`;
-                  } else if (validSell?.isValid === false) {
-                    return validSell.message;
-                  }
-                },
-              })}
-            />
-          </div>
+        <div className="flex w-full items-center gap-4">
           {(market || poolData) && selectedAsset && (
-            <MarketContextActionOutcomeSelector
-              market={market ?? undefined}
-              selected={selectedAsset}
-              options={outcomeAssets}
-              outcomeCombinations={outcomeCombinations}
-              onChange={(assetId) => {
-                setSelectedAsset(assetId);
-                trigger();
-              }}
-            />
+            <div className="flex-1">
+              <MarketContextActionOutcomeSelector
+                market={market ?? undefined}
+                selected={selectedAsset}
+                options={outcomeAssets}
+                outcomeCombinations={outcomeCombinations}
+                onChange={(assetId) => {
+                  setSelectedAsset(assetId);
+                  trigger();
+                }}
+              />
+            </div>
           )}
-        </div>
-        <div className="center h-[56px] w-full rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-sm">
-          <div className="text-lg font-semibold text-sky-900">
+          <div className="flex h-[56px] flex-1 items-center justify-center rounded-lg bg-white/10 px-4 text-xl font-bold text-white shadow-md backdrop-blur-sm">
             {amountOut.div(ZTG).abs().toFixed(3)} {baseSymbol}
           </div>
         </div>
-        <input
+        <div className="relative w-full">
+          <Input
+            type="number"
+            className="h-[56px] w-full rounded-lg bg-white/10 px-4 text-center text-xl font-bold text-white shadow-md placeholder:text-white/50 focus:bg-white/15"
+            step="any"
+            {...register("amount", {
+              required: {
+                value: true,
+                message: "Value is required",
+              },
+              validate: (value) => {
+                if (
+                  value > (selectedAssetBalance?.div(ZTG).toNumber() ?? 0)
+                ) {
+                  return `Insufficient balance. Current balance: ${selectedAssetBalance
+                    ?.div(ZTG)
+                    .toFixed(3)}`;
+                } else if (value <= 0) {
+                  return "Value cannot be zero or less";
+                } else if (maxAmountIn?.div(ZTG)?.lessThanOrEqualTo(value)) {
+                  return `Maximum amount that can be traded is ${maxAmountIn
+                    .div(ZTG)
+                    .toFixed(3)}`;
+                } else if (validSell?.isValid === false) {
+                  return validSell.message;
+                }
+              },
+            })}
+          />
+        </div>
+        <GlassSlider
           className="mb-[10px] mt-[30px] w-full"
-          type="range"
           min="0"
           max="100"
           step="1"
+          value={percentageValue}
           disabled={
             !selectedAssetBalance || selectedAssetBalance.lessThanOrEqualTo(0)
           }
           {...register("percentage")}
         />
-        <div className="mb-[10px] flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600">
-          <div className="h-[16px] text-xs text-vermilion">
+        <div className="mb-4 flex w-full flex-col items-center gap-3 rounded-lg bg-white/5 p-4 text-sm font-medium">
+          <div className="h-4 text-xs font-semibold text-ztg-red-400">
             {formState.errors["amount"]?.message?.toString()}
           </div>
           <div className="flex w-full justify-between">
-            <div>Price after trade:</div>
-            <div className="text-sky-900">
+            <div className="text-white/80">Price after trade:</div>
+            <div className="font-semibold text-white">
               {newSpotPrice?.toFixed(2)} ({priceImpact?.toFixed(2)}%)
             </div>
           </div>
           <div className="flex w-full justify-between">
-            <div>Current shares:</div>
-            <div className="text-sky-900">
+            <div className="text-white/80">Current shares:</div>
+            <div className="font-semibold text-white">
               {selectedAssetBalance?.div(ZTG).toFixed(3, Decimal.ROUND_DOWN) ??
                 "0.000"}
             </div>
@@ -427,6 +438,7 @@ const SellForm = ({
           disabled={formState.isValid === false || isLoading}
           disableFeeCheck={true}
           loading={isLoading}
+          variant="red"
         >
           <div>
             <div className="center h-[20px] font-normal">Sell</div>

@@ -1,5 +1,6 @@
-import Image from "next/image";
 import { useRouter } from "next/router";
+import Link from "next/link";
+import { AlertCircle } from "react-feather";
 
 const NotFoundPage = ({
   backText,
@@ -9,28 +10,55 @@ const NotFoundPage = ({
   backLink?: string;
 }) => {
   const router = useRouter();
-  const src = "/light-404.png";
 
   const handleClick = () => {
-    if (backLink) router.push(backLink);
+    if (backLink) {
+      router.push(backLink);
+    } else {
+      router.push("/");
+    }
   };
 
   return (
-    <>
-      <Image src={src} height={1080} width={1920} alt="404 Page" />
-      {backText && backLink ? (
-        <div className="mb-ztg-40 flex items-center justify-center">
+    <div className="container-fluid flex min-h-[60vh] items-center justify-center py-16">
+      <div className="flex w-full max-w-2xl flex-col items-center justify-center gap-6 rounded-lg border border-ztg-primary-200/30 bg-white/10 p-12 shadow-lg backdrop-blur-md">
+        <div className="flex h-24 w-24 items-center justify-center rounded-full border border-ztg-primary-200/20 bg-ztg-primary-900/30 backdrop-blur-sm">
+          <AlertCircle className="text-white/60" size={48} strokeWidth={1.5} />
+        </div>
+        <div className="text-center">
+          <h1 className="mb-3 text-4xl font-bold text-white">404</h1>
+          <h2 className="mb-3 text-2xl font-semibold text-white">
+            Page Not Found
+          </h2>
+          <p className="text-sm text-white/70">
+            The page you're looking for doesn't exist or has been moved.
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          {backText && backLink ? (
+            <button
+              onClick={handleClick}
+              className="rounded-md bg-ztg-green-600/80 px-6 py-2.5 text-sm font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md"
+            >
+              {backText}
+            </button>
+          ) : (
+            <Link
+              href="/"
+              className="rounded-md bg-ztg-green-600/80 px-6 py-2.5 text-center text-sm font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md"
+            >
+              Go Home
+            </Link>
+          )}
           <button
-            onClick={handleClick}
-            className=" rounded-ztg-10 border border-sky-600 px-ztg-50 py-ztg-7 font-bold text-sky-600"
+            onClick={() => router.back()}
+            className="rounded-md border border-ztg-primary-200/30 bg-white/5 px-6 py-2.5 text-sm font-semibold text-white/90 backdrop-blur-sm transition-all hover:bg-white/10 hover:text-white"
           >
-            {backText}
+            Go Back
           </button>
         </div>
-      ) : (
-        <></>
-      )}
-    </>
+      </div>
+    </div>
   );
 };
 

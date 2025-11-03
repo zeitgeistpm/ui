@@ -328,7 +328,7 @@ const DepositPage: NextPage = () => {
           disabled={["usdt"]}
           className="h-36"
           itemClassName="flex flex-col sm:flex-row gap-3 items-center center outline-none rounded-lg bg-white"
-          disabledItemClassName="!bg-misty-harbor text-sky-600"
+          disabledItemClassName="!bg-misty-harbor text-ztg-primary-600"
           selectedItemClassName="!bg-ice-hush"
         />
         {method === "buy" && (

@@ -1,8 +1,9 @@
-import { Dialog, Tab } from "@headlessui/react";
+import { Tab } from "@headlessui/react";
 import Modal from "components/ui/Modal";
+import { ModalPanel } from "components/ui/ModalPanel";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { useWallet } from "lib/state/wallet";
-import React, { Fragment } from "react";
+import React from "react";
 import AcccountSettingsForm from "./AccountSettingsForm";
 import FeePayingAssetSelect from "./FeePayingAssetSelect";
 import OtherSettingsForm from "./OtherSettingsForm";
@@ -28,21 +29,21 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Dialog.Panel className="w-full max-w-[600px] rounded-lg border border-sky-200/30 bg-white/95 p-6 shadow-xl backdrop-blur-md">
-        <h3 className="mb-6 text-center text-2xl font-bold text-sky-900">
+      <ModalPanel maxWidth="2xl" className="p-6">
+        <h3 className="mb-6 text-center text-2xl font-bold text-white">
           Settings
         </h3>
         <Tab.Group
           onChange={(index) => setTabSelection(index)}
           defaultIndex={tabSelection}
         >
-          <Tab.List className="mb-6 flex gap-2 rounded-lg bg-sky-50/50 p-1 backdrop-blur-sm">
+          <Tab.List className="mb-6 flex gap-2 rounded-lg bg-white/10 p-1 backdrop-blur-sm">
             <Tab
               className={({ selected }) =>
                 `flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all focus:outline-none ${
                   selected
-                    ? "bg-white text-sky-900 shadow-sm"
-                    : "text-sky-700 hover:bg-white/60 hover:text-sky-900"
+                    ? "bg-white/10 text-white shadow-sm"
+                    : "text-white/70 hover:bg-white/10 hover:text-white/90"
                 }`
               }
             >
@@ -52,8 +53,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               className={({ selected }) =>
                 `flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all focus:outline-none ${
                   selected
-                    ? "bg-white text-sky-900 shadow-sm"
-                    : "text-sky-700 hover:bg-white/60 hover:text-sky-900"
+                    ? "bg-white/10 text-white shadow-sm"
+                    : "text-white/70 hover:bg-white/10 hover:text-white/90"
                 }`
               }
             >
@@ -63,8 +64,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               className={({ selected }) =>
                 `flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all focus:outline-none ${
                   selected
-                    ? "bg-white text-sky-900 shadow-sm"
-                    : "text-sky-700 hover:bg-white/60 hover:text-sky-900"
+                    ? "bg-white/10 text-white shadow-sm"
+                    : "text-white/70 hover:bg-white/10 hover:text-white/90"
                 }`
               }
             >
@@ -83,7 +84,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             [TabSelection.Fees]: <FeePayingAssetSelect />,
           }[tabSelection]
         }
-      </Dialog.Panel>
+      </ModalPanel>
     </Modal>
   );
 };

@@ -158,7 +158,7 @@ export const CategoricalAnswersInput = ({
           {!disabled && (
             <button
               type="button"
-              className="rounded-full border-2 border-sky-200/30 bg-white/80 px-4 py-2 text-xs font-medium backdrop-blur-md transition-all hover:bg-sky-100/80 active:scale-95"
+              className="rounded-lg bg-white/10 px-4 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/30 active:scale-95"
               onClick={handleAddOptionClick}
             >
               + Add Option
@@ -210,7 +210,7 @@ const AnswerInput = ({
     return (
       <div
         style={style}
-        className="rounded-full border-2 border-sky-200/30 bg-white/80 px-5 py-2.5 text-sm font-medium text-sky-900 shadow-sm backdrop-blur-md"
+        className="rounded-lg bg-white/10 px-4 py-3 text-sm font-semibold text-white shadow-sm backdrop-blur-sm"
       >
         {value}
       </div>
@@ -220,11 +220,11 @@ const AnswerInput = ({
   return (
     <div
       style={style}
-      className="group relative flex min-w-[140px] items-center rounded-lg border border-sky-200/30 bg-white/80 px-3 py-2 shadow-sm backdrop-blur-md transition-all hover:shadow-md"
+      className="group relative flex min-w-[140px] items-center rounded-lg bg-white/10 px-4 py-3 shadow-sm backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/15"
     >
       <Input
         disabled={disabled}
-        className="!m-0 h-full flex-1 bg-transparent !p-0 pr-16 text-sm text-sky-900 outline-none placeholder:text-sky-600"
+        className="!m-0 h-full flex-1 bg-transparent !p-0 pr-16 text-sm text-white outline-none placeholder:text-white/50"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onBlur={(event) => onBlur(event.target.value)}
@@ -236,7 +236,7 @@ const AnswerInput = ({
         <div className="absolute right-8 top-[50%] z-10 flex translate-y-[-50%] gap-1 opacity-0 transition-opacity group-hover:opacity-100">
           <button
             type="button"
-            className="rounded-md bg-red-50 px-1.5 py-0.5 text-xs font-medium text-red-600 transition-all hover:bg-red-100 active:scale-95"
+            className="rounded-md bg-ztg-red-500/20 border-2 border-ztg-red-500/60 px-1.5 py-0.5 text-xs font-medium text-ztg-red-400 transition-all hover:bg-ztg-red-500/30 active:scale-95"
             onClick={onClear}
           >
             ✕
@@ -244,7 +244,7 @@ const AnswerInput = ({
         </div>
       )}
       <div
-        className={`absolute right-2 top-[50%] z-10 flex translate-y-[-50%] gap-2 text-sky-400 transition-opacity duration-300 ${
+        className={`absolute right-2 top-[50%] z-10 flex translate-y-[-50%] gap-2 text-white/60 transition-opacity duration-300 ${
           draggingDisabled && "cursor-not-allowed opacity-25"
         }`}
         ref={setNodeRef}

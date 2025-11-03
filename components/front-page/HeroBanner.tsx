@@ -27,23 +27,23 @@ export const HeroBanner = ({
     <div className="main-container md:mt-18 z-2 relative mb-14 mt-12">
       <div className="relative flex flex-col-reverse md:flex-row md:gap-8">
         <div className="md:w-[890px] md:pt-8 lg:w-[690px]">
-          <h1 className="mb-8 text-5xl leading-tight">
+          <h1 className="mb-8 text-5xl leading-tight text-white">
             Welcome to the Future of Betting
           </h1>
-          <h2 className="mb-8 text-xl leading-6">
+          <h2 className="mb-8 text-xl leading-6 text-white/90">
             Zeitgeist is an innovative platform for predicting future events
           </h2>
           <div className="mb-14 flex gap-4">
             <Link
               href="https://zeitgeist.pm/"
               target="_blank"
-              className="flex-1 rounded-md border-2 border-vermilion bg-vermilion px-6 py-3 text-white sm:flex-none"
+              className="flex-1 rounded-md bg-ztg-green-600 px-6 py-3 text-white transition-all hover:bg-ztg-green-500 sm:flex-none"
             >
               Learn More
             </Link>
             <Link
               href="/create-account"
-              className="flex-1 rounded-md border-2 border-black bg-transparent px-6 py-3 text-black sm:flex-none"
+              className="flex-1 rounded-md bg-white/10 px-6 py-3 text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 sm:flex-none"
             >
               Get Started
             </Link>
@@ -53,16 +53,15 @@ export const HeroBanner = ({
             target="_blank"
           >
             <div
-              className="flex w-full gap-2 rounded-md px-4 py-3"
-              style={{ backgroundColor: "rgba(28, 100, 242, 0.2)" }}
+              className="flex w-full gap-2 rounded-md bg-white/10 px-4 py-3 backdrop-blur-sm"
             >
               <div className="flex w-1/3 items-center justify-start gap-3">
                 <div>
                   <ZeitgeistIcon variant="blue" height={32} width={32} />
                 </div>
                 <div>
-                  <div className="text-lg font-medium">Zeitgeist</div>
-                  <div className="text-sm">
+                  <div className="text-lg font-medium text-white/90">Zeitgeist</div>
+                  <div className="text-sm text-white/70">
                     {chainProperties.tokenSymbol.toString()}
                   </div>
                 </div>
@@ -87,10 +86,10 @@ export const HeroBanner = ({
               {latestPrice && (
                 <div className="flex flex-1 items-center justify-end gap-2">
                   <div>
-                    <div className="text-md text-center font-semibold">
+                    <div className="text-md text-center font-semibold text-white/90">
                       ${latestPrice.toFixed(3)}
                     </div>
-                    <div className="text-center text-sm">
+                    <div className="text-center text-sm text-white/70">
                       {!isNaN(prctChange) ? prctChange.toFixed(1) : 0}%
                     </div>
                   </div>

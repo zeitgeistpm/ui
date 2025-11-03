@@ -7,13 +7,15 @@ import FilterDetails from "./FilterDetails";
 
 const TRANSITION_DURATION = 300;
 
-import { MarketType } from "lib/types/market-filter";
+import { MarketType, MarketsOrderBy } from "lib/types/market-filter";
 
 export type MobileDialogProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   marketType?: MarketType;
   onMarketTypeChange?: (type: MarketType) => void;
+  ordering?: MarketsOrderBy;
+  onOrderingChange?: (ordering: MarketsOrderBy) => void;
 };
 
 const MobileDialog = ({
@@ -21,6 +23,8 @@ const MobileDialog = ({
   setOpen,
   marketType,
   onMarketTypeChange,
+  ordering,
+  onOrderingChange,
 }: MobileDialogProps) => {
   const [showTransition, setShowTransition] = useState(open);
   const [currentSelection, setCurrentSelection] =
@@ -63,22 +67,20 @@ const MobileDialog = ({
         className="absolute left-0 top-0 h-full w-full bg-white"
         appear={true}
       >
-        <Dialog.Panel className="h-full w-full bg-gradient-to-b from-white via-sky-50/20 to-white">
-          <div className="flex h-16 items-center border-b border-sky-200 bg-white px-6 py-3 shadow-sm">
-            <div className="text-lg font-semibold text-gray-900">Filters</div>
-            <div className="ml-auto">
-              <button
-                onClick={close}
-                tabIndex={1}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-sky-50 hover:text-sky-700"
-              >
-                <X size={20} />
-              </button>
-            </div>
+        <Dialog.Panel className="h-full w-full bg-ztg-primary-500">
+          <div className="flex h-14 items-center justify-between border-b-2 border-white/10 bg-white/15 px-4 py-3 shadow-md backdrop-blur-md">
+            <div className="text-base font-semibold text-white">Filters</div>
+            <button
+              onClick={close}
+              tabIndex={1}
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-white/70 transition-all active:scale-95 hover:bg-white/20 hover:text-white touch-manipulation"
+            >
+              <X size={20} />
+            </button>
           </div>
           <div
-            className="flex h-full flex-col px-6 py-4"
-            style={{ height: "calc(100vh - 64px)" }}
+            className="flex h-full flex-col overflow-y-auto px-4 py-5"
+            style={{ height: "calc(100vh - 56px)" }}
           >
             {
               {
@@ -91,6 +93,8 @@ const MobileDialog = ({
                     close={close}
                     marketType={marketType}
                     onMarketTypeChange={onMarketTypeChange}
+                    ordering={ordering}
+                    onOrderingChange={onOrderingChange}
                   />
                 ),
                 1: (

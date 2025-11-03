@@ -86,59 +86,68 @@ export const ScalarAnswersInput = ({
     };
 
   return (
-    <div className="flex flex-wrap flex-col md:flex-row items-center gap-2">
+    <div className="space-y-3">
       {/* Toggle */}
-      <div className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-sky-200/30 bg-white/80 px-3 py-1.5 shadow-sm backdrop-blur-md">
-        <div className="text-xs font-medium text-sky-900">Numbers</div>
-        <Toggle
-          checked={value?.numberType === "date"}
-          activeClassName="bg-sky-600"
-          onChange={handleNumberTypeChange}
-        />
-        <div className="text-xs font-medium text-sky-900">Dates</div>
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-medium text-white/70">Type:</span>
+        <div className="flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-2 backdrop-blur-sm">
+          <span className="text-xs font-medium text-white">Numbers</span>
+          <Toggle
+            checked={value?.numberType === "date"}
+            activeClassName="bg-ztg-green-600"
+            onChange={handleNumberTypeChange}
+          />
+          <span className="text-xs font-medium text-white">Dates</span>
+        </div>
       </div>
 
-      {/* Range Inputs - Column on mobile, Row on desktop */}
-      <div className="flex min-w-0 flex-1 flex-col items-stretch gap-2 md:flex-row md:items-center">
-        <div className="flex w-full flex-1 items-center gap-1.5 md:min-w-[120px]">
-          <span className="flex-shrink-0 text-xs font-medium text-sky-700">Short:</span>
+      {/* Range Inputs */}
+      <div className="flex flex-col gap-2">
+        <div className="flex w-full items-center gap-2">
+          <span className="flex-shrink-0 text-xs font-medium text-white/70">Short:</span>
           {value?.numberType === "date" ? (
-            <DateTimePicker
-              name="lower-bound"
-              className="flex-1 rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-md"
-              value={new Date(value?.answers[0]).toString()}
-              onChange={handleDateChange(0, onChange)}
-              onBlur={handleDateChange(0, onBlur)}
-            />
+            <div className="flex-1">
+              <DateTimePicker
+                name="lower-bound"
+                className="w-full"
+                value={new Date(value?.answers[0]).toString()}
+                onChange={handleDateChange(0, onChange)}
+                onBlur={handleDateChange(0, onBlur)}
+              />
+            </div>
           ) : (
             <Input
               type="number"
               inputMode="numeric"
-              className="w-full flex-1 rounded-lg border border-sky-200/30 bg-white/80 px-3 py-1.5 text-sm text-sky-900 shadow-sm outline-none backdrop-blur-md transition-shadow focus:shadow-md"
+              className="flex-1 rounded-lg bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none backdrop-blur-sm transition-all hover:border-white/30"
               value={value?.answers[0]}
               onChange={handleNumberChange(0, onChange)}
               onBlur={handleNumberChange(0, onBlur)}
+              placeholder="Minimum value"
             />
           )}
         </div>
-        <div className="flex w-full flex-1 items-center gap-1.5 md:min-w-[120px]">
-          <span className="flex-shrink-0 text-xs font-medium text-sky-700">Long:</span>
+        <div className="flex w-full items-center gap-2">
+          <span className="flex-shrink-0 text-xs font-medium text-white/70">Long:</span>
           {value?.numberType === "date" ? (
-            <DateTimePicker
-              className="flex-1 rounded-lg border border-sky-200/30 bg-white/80 shadow-sm backdrop-blur-md"
-              name="upper-bound"
-              value={new Date(value?.answers[1]).toString()}
-              onChange={handleDateChange(1, onChange)}
-              onBlur={handleDateChange(1, onBlur)}
-            />
+            <div className="flex-1">
+              <DateTimePicker
+                className="w-full"
+                name="upper-bound"
+                value={new Date(value?.answers[1]).toString()}
+                onChange={handleDateChange(1, onChange)}
+                onBlur={handleDateChange(1, onBlur)}
+              />
+            </div>
           ) : (
             <Input
               type="number"
               inputMode="numeric"
-              className="w-full flex-1 rounded-lg border border-sky-200/30 bg-white/80 px-3 py-1.5 text-sm text-sky-900 shadow-sm outline-none backdrop-blur-md transition-shadow focus:shadow-md"
+              className="flex-1 rounded-lg bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none backdrop-blur-sm transition-all hover:border-white/30"
               value={value?.answers[1]}
               onChange={handleNumberChange(1, onChange)}
               onBlur={handleNumberChange(1, onBlur)}
+              placeholder="Maximum value"
             />
           )}
         </div>

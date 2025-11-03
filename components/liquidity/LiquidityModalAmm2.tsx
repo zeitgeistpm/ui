@@ -1,10 +1,11 @@
-import { Dialog, Tab } from "@headlessui/react";
+import { Tab } from "@headlessui/react";
 import {
   IOMarketOutcomeAssetId,
   getIndexOf,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import Modal from "components/ui/Modal";
+import { ModalPanel } from "components/ui/ModalPanel";
 import Decimal from "decimal.js";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
@@ -52,18 +53,18 @@ const LiquidityModalAmm2 = ({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Dialog.Panel className="w-full max-w-[564px] overflow-hidden rounded-xl border border-sky-200/30 bg-white/95 shadow-2xl backdrop-blur-lg">
+      <ModalPanel maxWidth="md" className="overflow-hidden">
         <Tab.Group>
-          <Tab.List className="flex h-[71px] border-b border-sky-200/30 text-center text-lg font-semibold">
-            <Tab className="w-1/2 border-r border-sky-200/30 bg-sky-50/50 text-sky-700 transition-all hover:bg-white/80 ui-selected:bg-white/95 ui-selected:text-sky-900 ui-selected:shadow-sm">
+          <Tab.List className="flex h-12 border-b-2 border-white/10 text-center text-sm font-semibold">
+            <Tab className="w-1/2 border-r-2 border-white/10 bg-white/5 text-white/80 transition-all hover:bg-white/10 hover:text-white ui-selected:bg-white/10 ui-selected:font-bold ui-selected:text-white ui-selected:shadow-sm ui-selected:backdrop-blur-sm">
               Join Pool
             </Tab>
-            <Tab className="w-1/2 bg-sky-50/50 text-sky-700 transition-all hover:bg-white/80 ui-selected:bg-white/95 ui-selected:text-sky-900 ui-selected:shadow-sm">
+            <Tab className="w-1/2 bg-white/5 text-white/80 transition-all hover:bg-white/10 hover:text-white ui-selected:bg-white/10 ui-selected:font-bold ui-selected:text-white ui-selected:shadow-sm ui-selected:backdrop-blur-sm">
               Exit Pool
             </Tab>
           </Tab.List>
 
-          <Tab.Panels className="p-8">
+          <Tab.Panels className="p-5">
             <Tab.Panel>
               {pool && (
                 <JoinPoolFormAmm2
@@ -88,7 +89,7 @@ const LiquidityModalAmm2 = ({
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
-      </Dialog.Panel>
+      </ModalPanel>
     </Modal>
   );
 };

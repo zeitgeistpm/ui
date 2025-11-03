@@ -1,7 +1,6 @@
 import React from "react";
 
 export type MarketFormSectionProps = {
-  wizard?: boolean;
   isCurrent: boolean;
   onClickNext?: () => void;
   onClickBack?: () => void;
@@ -12,7 +11,6 @@ export type MarketFormSectionProps = {
 };
 
 export const MarketFormSection = ({
-  wizard,
   isCurrent,
   children,
   onClickNext,
@@ -23,8 +21,8 @@ export const MarketFormSection = ({
 }: MarketFormSectionProps) => {
   return (
     <div
-      className={`mb-12 rounded-ztg-12 border border-sky-200/30 bg-white/80 p-6 shadow-lg backdrop-blur-md md:p-8 ${
-        isCurrent || !wizard ? "block" : "hidden"
+      className={`mb-8 rounded-lg bg-white/10 p-6 shadow-lg backdrop-blur-md transition-all md:mb-10 md:p-8 ${
+        isCurrent ? "block" : "hidden"
       } ${className}`}
     >
       {disabled ? <></> : children}

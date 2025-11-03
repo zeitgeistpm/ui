@@ -1,9 +1,8 @@
 import Skeleton from "components/ui/Skeleton";
 import { Decimal } from "decimal.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CartesianGrid,
-  Label,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -33,6 +32,17 @@ export interface ChartData {
 }
 
 const ChartToolTip = (props) => {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const items = props.series
     ?.map((s, index) => ({
       color: s.color,
@@ -40,15 +50,15 @@ const ChartToolTip = (props) => {
       value: new Decimal(props.payload[index]?.value ?? 0),
     }))
     .sort((a, b) => b.value.minus(a.value).toNumber());
-
+  
   return (
     <>
       {props.label !== undefined &&
       props.label !== -Infinity &&
       props.label !== Infinity ? (
-        <div className="rounded-lg bg-gradient-to-br from-sky-50 to-blue-50 px-3 py-3 shadow-xl backdrop-blur-sm">
-          <div className="text-xs">
-            <div className="mb-2 flex items-center gap-2 border-b border-sky-200/50 pb-2">
+        <div className={`rounded-lg bg-gradient-to-br from-ztg-primary-50 to-blue-50 shadow-xl backdrop-blur-sm ${isMobile ? "px-2 py-2" : "px-3 py-3"}`}>
+          <div className={isMobile ? "text-[10px]" : "text-xs"}>
+            <div className={`mb-1.5 flex items-center gap-1.5 border-b-2 border-ztg-primary-200/50 ${isMobile ? "pb-1.5" : "mb-2 gap-2 pb-2"}`}>
               <span className="font-semibold text-gray-700">
                 {new Intl.DateTimeFormat("default", {
                   dateStyle: "short",
@@ -61,22 +71,22 @@ const ChartToolTip = (props) => {
                 }).format(new Date(props.label))}
               </span>
             </div>
-            <div className="space-y-2">
+            <div className={isMobile ? "space-y-1.5" : "space-y-2"}>
               {items?.map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between gap-4"
+                  className={`flex items-center justify-between ${isMobile ? "gap-2" : "gap-4"}`}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className={`flex items-center ${isMobile ? "gap-1.5" : "gap-2"}`}>
                     <div
-                      className="h-2 w-2 rounded-full"
+                      className={`rounded-full ${isMobile ? "h-1.5 w-1.5" : "h-2 w-2"}`}
                       style={{ backgroundColor: item.color }}
                     ></div>
-                    <div className="font-semibold capitalize text-gray-700">
+                    <div className={`font-semibold capitalize text-gray-700 ${isMobile ? "text-[10px]" : ""}`}>
                       {item.label}
                     </div>
                   </div>
-                  <div className="font-bold text-gray-900">{`${item.value.toFixed(3)} ${props.yUnits}`}</div>
+                  <div className={`font-bold text-gray-900 ${isMobile ? "text-[10px]" : ""}`}>{`${item.value.toFixed(isMobile ? 2 : 3)} ${props.yUnits}`}</div>
                 </div>
               ))}
             </div>
@@ -99,6 +109,16 @@ const TimeSeriesChart = ({
   const [leftX, setLeftX] = useState("dataMin");
   const [rightX, setRightX] = useState("dataMax");
   const [mouseInside, setMouseInside] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const roundingThreshold = 0.3;
 
@@ -118,7 +138,7 @@ const TimeSeriesChart = ({
   return (
     <div
       className="relative"
-      style={{ width: "100%", height: 300 }}
+      style={{ width: "100%", height: isMobile ? 220 : 300 }}
       onMouseMove={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -133,8 +153,13 @@ const TimeSeriesChart = ({
       onMouseLeave={handleMouseLeave}
     >
       {isLoading === false ? (
-        <ResponsiveContainer width="99%">
-          <LineChart width={500} height={300} data={data}>
+        <ResponsiveContainer width="100%">
+          <LineChart 
+            width={500} 
+            height={isMobile ? 220 : 300} 
+            data={data}
+            margin={{ top: 5, right: 5, left: isMobile ? -25 : -20, bottom: isMobile ? -5 : 0 }}
+          >
             <CartesianGrid
               strokeDasharray="3 3"
               strokeWidth={1}
@@ -144,14 +169,14 @@ const TimeSeriesChart = ({
             <XAxis
               dataKey="t"
               domain={[leftX, rightX]}
-              tickCount={5}
+              tickCount={isMobile ? 4 : 5}
               tick={{
-                fontSize: "10px",
+                fontSize: isMobile ? "9px" : "10px",
                 stroke: "#6B7280",
                 strokeWidth: 1,
                 fontWeight: 100,
               }}
-              tickMargin={10}
+              tickMargin={isMobile ? 5 : 10}
               type="number"
               stroke="#BAE6FD"
               tickLine={true}
@@ -174,12 +199,13 @@ const TimeSeriesChart = ({
             />
             <YAxis
               tick={{
-                fontSize: "10px",
+                fontSize: isMobile ? "9px" : "10px",
                 stroke: "#6B7280",
                 strokeWidth: 1,
                 fontWeight: 100,
               }}
               tickLine={false}
+              width={isMobile ? 30 : 45}
               domain={
                 yDomain ?? [
                   (dataMin: number) => {
@@ -196,17 +222,8 @@ const TimeSeriesChart = ({
               }
               stroke="#BAE6FD"
               strokeWidth={2}
-              tickFormatter={(val) => `${+val.toFixed(2)}`}
-            >
-              <Label
-                fontSize={10}
-                stroke="#6B7280"
-                value={yUnits}
-                offset={15}
-                position="insideLeft"
-                angle={-90}
-              />
-            </YAxis>
+              tickFormatter={(val) => `${+val.toFixed(isMobile ? 1 : 2)}`}
+            />
 
             <Tooltip
               animationEasing={"linear"}
@@ -220,7 +237,7 @@ const TimeSeriesChart = ({
             {series.map((s, index) => (
               <Line
                 key={index}
-                strokeWidth={mouseInside ? 3 : 2}
+                strokeWidth={mouseInside ? (isMobile ? 2.5 : 3) : (isMobile ? 1.5 : 2)}
                 type="linear"
                 dataKey={s.accessor}
                 dot={false}
@@ -230,7 +247,7 @@ const TimeSeriesChart = ({
           </LineChart>
         </ResponsiveContainer>
       ) : (
-        <Skeleton className="ml-ztg-20" height={350} />
+        <Skeleton className="ml-4 sm:ml-ztg-20" height={isMobile ? 220 : 350} />
       )}
     </div>
   );

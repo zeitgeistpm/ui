@@ -1,4 +1,5 @@
 import "react-datetime/css/react-datetime.css";
+import "rc-slider/assets/index.css";
 import "styles/index.css";
 
 import { Hydrate, QueryClientProvider } from "@tanstack/react-query";

@@ -194,6 +194,51 @@ module.exports = {
         "560px": "560px",
       },
       colors: {
+        // New Zeitgeist Navy Color System (Dark Theme Base)
+        // Base color: #1a1e3b (RGB: 26, 30, 59)
+        "ztg-primary": {
+          50: "#E8E9ED",   // Very light navy tint
+          100: "#C4C6D2",  // Light navy tint
+          200: "#989CB5",  // Lighter navy tint
+          300: "#6C7195",  // Medium light navy
+          400: "#454A75",  // Medium navy
+          500: "#1a1e3b",  // PRIMARY BASE - NAVY (#1a1e3b)
+          600: "#16192F",  // Slightly darker navy
+          700: "#121524",  // Dark navy
+          800: "#0E1019",  // Darker navy
+          900: "#0A0C12",  // Very dark navy
+          950: "#050608",  // Almost black navy
+        },
+        // Secondary Bright Green Accent System (for UI accents, highlights, success)
+        // Base color: #2ccc30 (RGB: 44, 204, 48)
+        "ztg-green": {
+          50: "#E8FBE9",   // Very light green tint
+          100: "#C1F5C3",  // Light green tint
+          200: "#8FEB91",  // Lighter green
+          300: "#5DE361",  // Medium light green
+          400: "#3DD941",  // Medium bright green
+          500: "#2ccc30",  // BASE GREEN - BRIGHT (#2ccc30)
+          600: "#24A327",  // Medium dark green
+          700: "#1B7A1E",  // Dark green
+          800: "#135215",  // Darker green
+          900: "#0B290D",  // Very dark green
+          950: "#051406",  // Almost black green
+        },
+        // Error/Danger Red System (for errors, warnings, destructive actions)
+        // Base color: #EF4444 (RGB: 239, 68, 68) - Balanced red with good contrast on dark backgrounds
+        "ztg-red": {
+          50: "#FEF2F2",   // Very light red tint
+          100: "#FEE2E2",  // Light red tint
+          200: "#FECACA",  // Lighter red
+          300: "#FCA5A5",  // Medium light red
+          400: "#F87171",  // Medium red
+          500: "#EF4444",  // BASE RED - PRIMARY (#EF4444)
+          600: "#DC2626",  // Medium dark red
+          700: "#B91C1C",  // Dark red
+          800: "#991B1B",  // Darker red
+          900: "#7F1D1D",  // Very dark red
+          950: "#450A0A",  // Almost black red
+        },
         success: "#E8FFE4",
         info: "#E4F5FF",
         error: "#FFE6E4",
@@ -266,8 +311,8 @@ module.exports = {
         powderblue: "#ECFAFF",
         discord: "#5364E6",
         twitter: "#479BE9",
-        "scalar-bar": "#CCF994",
-        "scalar-text": "#0C5F0B",
+        "scalar-bar": "#2ccc30",
+        "scalar-text": "#ffffff",
         "ice-hush": "#B6F2FF",
         "misty-harbor": "#D8E1E7",
         purple: {
@@ -281,8 +326,8 @@ module.exports = {
           dark: "#1E429F",
         },
         red: {
-          light: "#FEE1E1",
-          DEFAULT: "#E90303",
+          light: "#FEE2E2",
+          DEFAULT: "#EF4444",  // Standardized to ztg-red-500
         },
         green: {
           lighter: "#EAF8DF",

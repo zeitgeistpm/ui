@@ -316,7 +316,7 @@ const LimitOrderForm = ({
       >
         <div>
           <div className="mb-1 text-sm">Amount</div>
-          <div className="flex w-full items-center justify-center rounded-md bg-white pr-2">
+          <div className="flex w-full items-center justify-center rounded-md bg-white/10 backdrop-blur-sm pr-2">
             <Input
               type="number"
               className="w-full bg-transparent outline-none"
@@ -354,7 +354,7 @@ const LimitOrderForm = ({
         </div>
         <div>
           <div className="mb-1 text-sm">Price</div>
-          <div className="center relative h-[56px] w-full rounded-md bg-white text-ztg-18-150 font-normal">
+            <div className="center relative h-[56px] w-full rounded-md bg-white/10 backdrop-blur-sm text-ztg-18-150 font-normal text-white/90">
             <Input
               type="number"
               className="w-full bg-transparent font-mono outline-none"
@@ -383,20 +383,20 @@ const LimitOrderForm = ({
           type="range"
           {...register("percentage", { value: "0" })}
         />
-        <div className="flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600 ">
-          <div className="h-[16px] text-xs text-vermilion">
+        <div className="flex w-full flex-col items-center gap-2 text-xs font-normal text-white/90 ">
+          <div className="h-[16px] text-xs text-ztg-red-400">
             <>{Object.values(formState.errors)[0]?.message}</>
           </div>
           <div className="flex w-full justify-between">
             <div>Total:</div>
-            <div className="text-black">
+            <div className="text-white/90">
               {total.toFixed(2)} {baseSymbol}
             </div>
           </div>
           {side === "buy" && (
             <div className="flex w-full justify-between">
               <div>Max Profit:</div>
-              <div className="text-black">
+              <div className="text-white/90">
                 {maxProfit.toFixed(2)} {baseSymbol}
               </div>
             </div>
@@ -408,6 +408,7 @@ const LimitOrderForm = ({
             className="w-full max-w-[250px]"
             disabled={formState.isValid === false || isLoading}
             disableFeeCheck={true}
+            variant={side === "sell" ? "red" : "green"}
           >
             <div>
               <div className="center h-[20px] font-normal">

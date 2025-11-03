@@ -63,7 +63,7 @@ const CourtRewardsTable = ({ address }: { address: string }) => {
             )}{" "}
             <b>{constants?.tokenSymbol}</b>
           </div>
-          <div className="text-gray-400">
+          <div className="text-white/70">
             ${" "}
             {formatNumberLocalized(
               ztgPrice
@@ -94,7 +94,7 @@ const CourtRewardsTable = ({ address }: { address: string }) => {
     isPayoutEligible(courtPayout)
       ? {
           timestamp: (
-            <span className="flex items-center gap-2 text-gray-400">
+            <span className="flex items-center gap-2 text-white/70">
               {new Intl.DateTimeFormat("default", {
                 dateStyle: "medium",
                 timeStyle: "medium",
@@ -104,7 +104,7 @@ const CourtRewardsTable = ({ address }: { address: string }) => {
               </span>
             </span>
           ),
-          amount: <div className="text-gray-300">--</div>,
+          amount: <div className="text-white/70">--</div>,
           subscan: (
             <div className="center text-center">
               <InfoPopover
@@ -131,8 +131,12 @@ const CourtRewardsTable = ({ address }: { address: string }) => {
           buttonLink="/court"
         />
       ) : (
-        <div className="rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
-          <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
+        <div className="rounded-lg border border-ztg-primary-200/30 bg-white/10 shadow-lg backdrop-blur-md">
+          <div className="mb-4 flex items-center gap-2 border-b border-ztg-primary-200/20 px-4 pb-3 pt-4">
+            <span className="h-1 w-6 rounded-full bg-ztg-green-500"></span>
+            <h2 className="text-base font-semibold text-white">Court Rewards</h2>
+          </div>
+          <div className="px-4 pb-4">
             <Table columns={columns} data={tableData} />
           </div>
         </div>

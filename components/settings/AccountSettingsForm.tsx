@@ -109,7 +109,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
     >
       <label
         htmlFor="displayName"
-        className="mb-2 text-sm font-semibold text-sky-900"
+        className="mb-2 text-sm font-semibold text-white/90"
       >
         Display Name
       </label>
@@ -118,16 +118,16 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         id="displayName"
         {...register("displayName", { required: true })}
         className={
-          "mb-4 h-12 rounded-md border px-3 text-sm text-sky-900 outline-none transition-all focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 " +
+          "mb-4 h-12 rounded-md px-3 text-sm text-white/90 placeholder:text-white/60 outline-none transition-all backdrop-blur-sm focus:bg-white/15 " +
           (errors?.displayName
-            ? "border-red-500 bg-red-50/50"
-            : "border-sky-200/30 bg-sky-50/30")
+            ? "bg-red-500/20"
+            : "bg-white/10 hover:bg-white/15")
         }
       />
 
       <label
         htmlFor="discord"
-        className="mb-2 text-sm font-semibold text-sky-900"
+        className="mb-2 text-sm font-semibold text-white/90"
       >
         Discord
       </label>
@@ -137,16 +137,16 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         id="discord"
         {...register("discord")}
         className={
-          "mb-4 h-12 rounded-md border px-3 text-sm text-sky-900 outline-none transition-all focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 " +
+          "mb-4 h-12 rounded-md px-3 text-sm text-white/90 placeholder:text-white/60 outline-none transition-all backdrop-blur-sm focus:bg-white/15 " +
           (errors?.discord
-            ? "border-red-500 bg-red-50/50"
-            : "border-sky-200/30 bg-sky-50/30")
+            ? "bg-red-500/20"
+            : "bg-white/10 hover:bg-white/15")
         }
       />
 
       <label
         htmlFor="twitter"
-        className="mb-2 text-sm font-semibold text-sky-900"
+        className="mb-2 text-sm font-semibold text-white/90"
       >
         Twitter
       </label>
@@ -156,14 +156,14 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         id="twitter"
         {...register("twitter")}
         className={
-          "mb-4 h-12 rounded-md border px-3 text-sm text-sky-900 outline-none transition-all focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 " +
+          "mb-4 h-12 rounded-md px-3 text-sm text-white/90 placeholder:text-white/60 outline-none transition-all backdrop-blur-sm focus:bg-white/15 " +
           (errors?.twitter
-            ? "border-red-500 bg-red-50/50"
-            : "border-sky-200/30 bg-sky-50/30")
+            ? "bg-red-500/20"
+            : "bg-white/10 hover:bg-white/15")
         }
       />
 
-      <div className="mb-5 rounded-md border border-sky-200/30 bg-sky-50/50 p-4 text-sm text-sky-700 backdrop-blur-sm">
+      <div className="mb-5 rounded-md bg-white/10 p-4 text-sm text-white/80 backdrop-blur-md">
         Setting an identity requires a deposit of up to {indetityCost}{" "}
         {constants?.tokenSymbol}. This deposit can be retrieved by clearing your
         identity.
@@ -177,7 +177,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
       </FormTransactionButton>
       <button
         type="button"
-        className="mt-2 text-sm text-sky-600 focus:outline-none"
+        className="mt-2 text-sm text-white/90 hover:text-ztg-green-400 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={isUpdating || isClearing || isCleared}
         onClick={() => clearIdentity()}
       >

@@ -135,7 +135,7 @@ const CourtPage: NextPage = ({
               voting rights to active jurors.
             </p>
 
-            <div className="mb-4 inline-block w-full rounded-md bg-slate-200 bg-opacity-50 px-6 py-5 backdrop-blur-[2px] md:w-auto lg:min-w-[580px]">
+            <div className="mb-4 inline-block w-full rounded-md bg-ztg-primary-200 bg-opacity-50 px-6 py-5 backdrop-blur-[2px] md:w-auto lg:min-w-[580px]">
               <div className="flex">
                 <h3 className="mb-1 flex-1 text-lg text-gray-800">My Stake</h3>
                 {connectedParticipant && (
@@ -176,7 +176,7 @@ const CourtPage: NextPage = ({
                             .toNumber(),
                         )}
                     </div>
-                    <div className="center gap-1 rounded-md bg-slate-200 bg-opacity-20 p-1 text-xs text-gray-600 ">
+                    <div className="center gap-1 rounded-md bg-ztg-primary-200 bg-opacity-20 p-1 text-xs text-gray-600 ">
                       <InfoPopover
                         overlay={false}
                         position="top-end"
@@ -275,7 +275,7 @@ const CourtPage: NextPage = ({
         </div>
 
         <div className="mt-4 hidden h-full min-w-[420px] lg:mt-0 lg:flex lg:flex-col xl:min-w-[560px]">
-          <h3 className="lg:text-md mb-3 text-sm text-slate-600">Statistics</h3>
+          <h3 className="lg:text-md mb-3 text-sm text-ztg-primary-600">Statistics</h3>
           <Stats />
         </div>
 
@@ -306,7 +306,7 @@ const CourtPage: NextPage = ({
                     className={`${
                       selected
                         ? "font-semibold text-black transition-all"
-                        : "text-sky-600 transition-all"
+                        : "text-ztg-primary-600 transition-all"
                     } ${index === 0 ? "px-0 pr-4" : "px-4"}`}
                   >
                     {title}
@@ -575,7 +575,7 @@ const Stats = () => {
                 %
               </div>
               <InfoPopover
-                className="text-slate-500"
+                className="text-ztg-primary-500"
                 overlay={false}
                 position="top"
               >
@@ -604,7 +604,7 @@ const Stats = () => {
                 {constants?.tokenSymbol}
               </div>
               <InfoPopover
-                className="text-slate-500"
+                className="text-ztg-primary-500"
                 overlay={false}
                 position="top-start"
                 popoverCss="ml-12"

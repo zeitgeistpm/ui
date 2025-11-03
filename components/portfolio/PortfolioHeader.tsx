@@ -57,9 +57,9 @@ const PortfolioHeader = (props: PortfolioHeaderProps) => {
 
   return (
     <>
-      <div className="mb-6 rounded-lg border border-sky-200/30 bg-white/80 p-3 shadow-md backdrop-blur-md transition-all md:p-4">
+      <div className="mb-6 rounded-lg border border-ztg-primary-200/30 bg-white/10 p-3 shadow-lg backdrop-blur-md transition-all md:p-4">
         {/* Identity Section */}
-        <div className="mb-3 flex flex-col gap-3 border-b border-sky-200/30 pb-3 sm:flex-row sm:items-start">
+        <div className="mb-4 flex flex-col gap-3 border-b-2 border-ztg-green-500/40 pb-4 sm:flex-row sm:items-start">
           <div className="shrink-0">
             <Avatar address={address} size={56} />
           </div>
@@ -68,23 +68,23 @@ const PortfolioHeader = (props: PortfolioHeaderProps) => {
             <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex-1">
                 {isOwned && !hasIdentity && (
-                  <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-sky-600">
+                  <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-ztg-green-400">
                     Wallet Name
                   </div>
                 )}
                 {isOwned && hasIdentity && (
-                  <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-sky-600">
+                  <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-ztg-green-400">
                     On-Chain Identity
                   </div>
                 )}
-                <h1 className="text-xl font-bold text-sky-900 sm:text-2xl">
+                <h1 className="text-xl font-bold text-white sm:text-2xl">
                   {name}
                 </h1>
               </div>
 
               {isOwned && !hasIdentity && (
                 <button
-                  className="flex items-center gap-1.5 rounded-md bg-sky-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-sky-700 hover:shadow-md"
+                  className="flex items-center gap-1.5 rounded-md bg-ztg-green-600/80 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md"
                   onClick={() => setShowSettingsModal(true)}
                 >
                   <FaUserCheck size={14} />
@@ -95,7 +95,7 @@ const PortfolioHeader = (props: PortfolioHeaderProps) => {
 
             {/* Address */}
             <Link
-              className="flex items-center gap-1 text-xs text-sky-700 transition-all hover:text-sky-900"
+              className="flex items-center gap-1 text-xs text-white/70 transition-all hover:text-white/90"
               href={`https://zeitgeist.subscan.io/account/${address}`}
               target="_blank"
             >
@@ -217,18 +217,18 @@ const StatCard = ({
   changePercentage,
 }: StatCardProps) => {
   return (
-    <div className="rounded-lg bg-sky-50/50 p-2 backdrop-blur-sm transition-all hover:bg-sky-50/80">
-      <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-sky-600">
+    <div className="rounded-lg border border-ztg-primary-200/20 bg-ztg-primary-900/50 p-3 backdrop-blur-sm transition-all hover:border-ztg-green-500/40 hover:bg-ztg-primary-900/70 hover:shadow-md">
+      <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-white/80">
         {title}
       </h3>
       <div className="mb-0.5 flex items-baseline gap-1.5">
-        <div className="text-base font-bold text-sky-900 sm:text-lg">
+        <div className="text-base font-bold text-white sm:text-lg">
           {formatNumberLocalized(value.div(ZTG).toNumber())}
         </div>
-        <div className="text-xs font-semibold text-sky-700">ZTG</div>
+        <div className="text-xs font-semibold text-white/90">ZTG</div>
       </div>
       <div className="flex items-center justify-between gap-1">
-        <div className="text-xs text-sky-600">
+        <div className="text-xs text-white/90">
           $
           {formatNumberLocalized(
             usdZtgPrice?.mul(value.div(ZTG)).toNumber() ?? 0,
@@ -237,7 +237,7 @@ const StatCard = ({
         {changePercentage !== 0 && (
           <div
             className={`text-xs font-semibold ${
-              changePercentage < 0 ? "text-red-600" : "text-green-600"
+              changePercentage < 0 ? "text-ztg-red-400" : "text-ztg-green-400"
             }`}
           >
             {changePercentage > 0 ? "+" : ""}
@@ -260,7 +260,7 @@ const StatSkeleton = () => {
   );
 
   return (
-    <div className="rounded-lg bg-sky-50/50 p-2">
+    <div className="rounded-md bg-ztg-primary-600/20 p-4">
       <div className="mb-1">
         <Skeleton width={dimensions.title} height={14} />
       </div>

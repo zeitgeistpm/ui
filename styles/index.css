@@ -11,11 +11,13 @@ html {
   -webkit-tap-highlight-color: transparent;
   width: 100%;
   min-width: 100vw;
+  overflow-x: hidden;
 }
 
 body {
   width: 100%;
   min-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* prevents styles injected by headless ui */
@@ -224,8 +226,24 @@ h6 {
 @import "./quill.css";
 @import "./range-component.css";
 
+/* Container System - Consistent spacing and max-width across the app */
 .container-fluid {
-  @apply mx-auto w-full max-w-screen-xl px-4 md:px-6 lg:px-8;
+  @apply mx-auto w-full max-w-screen-xl px-4;
+}
+
+/* Container without padding - use when you need full-width content within a container-fluid parent */
+.container-fluid-no-padding {
+  @apply mx-auto w-full max-w-screen-xl;
+}
+
+/* Container content - standard content wrapper with consistent padding */
+.container-content {
+  @apply w-full px-4;
+}
+
+/* Full-width container - removes max-width constraint */
+.container-full {
+  @apply w-full px-4;
 }
 
 .carousel__slide--visible {
@@ -302,7 +320,13 @@ tr td:first-child {
 
 /* Scroll */
 
+.no-scroll-bar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
 .no-scroll-bar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
   width: 0;
   height: 0;
 }
@@ -349,7 +373,7 @@ tr td:first-child {
   background: linear-gradient(
     90deg,
     transparent,
-    #1d2533,
+    rgba(26, 30, 59, 0.4),
     transparent
   ) !important;
 }
@@ -363,7 +387,7 @@ tr td:first-child {
   background: linear-gradient(
     90deg,
     transparent,
-    #d9e3ee,
+    rgba(44, 204, 48, 0.2),
     transparent
   ) !important;
 }
@@ -673,44 +697,44 @@ tr td:first-child {
 @keyframes border-flicker {
   0% {
     opacity: 0.1;
-    -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
+    -webkit-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    -moz-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
   }
 
   2% {
     opacity: 1;
-    -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
+    -webkit-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    -moz-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
   }
 
   4% {
     opacity: 0.1;
-    -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
+    -webkit-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    -moz-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
   }
 
   8% {
     opacity: 1;
-    -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
+    -webkit-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    -moz-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
   }
 
   70% {
     opacity: 0.7;
-    -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
+    -webkit-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    -moz-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
   }
 
   100% {
     opacity: 1;
-    -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
+    -webkit-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    -moz-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
   }
 }
 

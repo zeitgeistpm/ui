@@ -13,6 +13,7 @@ export type DateTimePickerProps = {
   onBlur: (event: FormEvent<string>) => void;
   placeholder?: string;
   isValid?: boolean;
+  hasValue?: boolean;
   className?: string;
 };
 
@@ -24,6 +25,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   onBlur,
   placeholder,
   isValid,
+  hasValue,
   className,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -58,14 +60,10 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
     <>
       {isFirefox ? (
         <div
-          className={`center flex overflow-hidden rounded-md border backdrop-blur-md transition-all ${
-            isValid
-              ? "border-sky-200/30 bg-white/80"
-              : "border-vermilion/50 bg-sky-50/50"
-          } ${className}`}
+          className={`flex w-full items-center overflow-hidden rounded-lg border-2 border-white/20 backdrop-blur-sm transition-all h-12 bg-white/10 hover:border-white/30 ${className}`}
         >
           <Input
-            className="rounded-md bg-transparent px-3 py-1.5 text-xs"
+            className="w-full rounded-lg bg-transparent px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none h-full"
             ref={inputRef}
             name={name}
             type="datetime-local"
@@ -81,20 +79,16 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       ) : (
         <button
           type="button"
-          className={`center flex rounded-md border backdrop-blur-md transition-all active:scale-95 ${
-            isValid
-              ? "border-sky-200/30 bg-white/80 hover:bg-sky-100/80"
-              : "border-vermilion/50 bg-sky-50/50"
-          } ${className}`}
+          className={`flex w-full items-center rounded-lg border-2 border-white/20 backdrop-blur-sm transition-all active:scale-95 h-12 bg-white/10 px-4 py-3 text-sm text-white hover:border-white/30 hover:bg-white/15 ${className}`}
           onClick={() => {
             inputRef.current?.focus();
             inputRef.current?.showPicker();
           }}
         >
-          <div className="relative px-3 py-1.5">
-            <div className="text-xs text-sky-900">
+          <div className="relative w-full text-left">
+            <div className="text-sm text-white placeholder:text-white/50">
               {!value
-                ? (placeholder ?? "Set Date")
+                ? (placeholder ?? "Select end date and time")
                 : momentFn(value).format("MMM D, YYYY, h:mm A")}
             </div>
             <Input

@@ -52,8 +52,8 @@ const BondsTable = ({ address }: { address: string }) => {
                 question={market.question}
                 baseAsset={market.baseAsset}
               />
-              <div className="rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
-                <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
+              <div className="rounded-lg bg-white/10 shadow-lg backdrop-blur-md">
+                <div className="px-4 pb-4 pt-4">
                   <Table
                     columns={columns}
                     data={[

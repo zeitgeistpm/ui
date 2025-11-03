@@ -77,7 +77,7 @@ const PriceSetter = ({
     <div className="flex items-center gap-1.5">
       <div className="flex flex-col">
         <Input
-          className={`h-7 w-20 rounded-md bg-sky-50/50 px-2 text-right text-xs focus:outline-none ${
+          className={`h-7 w-20 rounded-md bg-ztg-primary-50/50 px-2 text-right text-xs focus:outline-none ${
             disabled && "!bg-transparent"
           }`}
           value={price}
@@ -85,13 +85,13 @@ const PriceSetter = ({
           disabled={disabled}
           onChange={handlePriceChange}
         />
-        <div className="h-3 text-[9px] text-vermilion">
+        <div className="h-3 text-[9px] text-ztg-red-400">
           {priceDecimal.greaterThanOrEqualTo(0.99) && <>Max 0.99</>}
           {priceDecimal.lessThanOrEqualTo(0.01) && <>Min 0.01</>}
         </div>
       </div>
       <button
-        className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-sky-50/50 transition-all hover:bg-sky-100/80"
+        className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-ztg-primary-50/50 transition-all hover:bg-ztg-primary-100/80"
         onClick={handleLockClick}
         disabled={disabled}
       >
@@ -113,6 +113,7 @@ const PoolSettings: FC<{
   onFeeChange?: (data: Decimal) => void;
   noDataMessage?: string | ReactNode;
   baseAssetPrice?: Decimal;
+  hideBaseLiquidity?: boolean;
 }> = ({
   data,
   onChange,
@@ -121,6 +122,7 @@ const PoolSettings: FC<{
   baseAssetSymbol,
   noDataMessage,
   baseAssetPrice,
+  hideBaseLiquidity = false,
 }) => {
   const handleBaseAmountChange = (amount: string) => {
     onChange(
@@ -210,42 +212,44 @@ const PoolSettings: FC<{
 
   return (
     <div className="w-full">
-      <div className="mb-3">
-        <label className="mb-1.5 flex items-center gap-1 text-xs font-medium text-sky-900">
-          Base Liquidity
-          <Tooltip
-            content={`Amount of ${baseAssetSymbol} provided for trading. Subject to impermanent loss. Excludes bond & tx fees.`}
-          />
-        </label>
-        <div className="relative w-48">
-          <Input
-            type="number"
-            className="h-9 w-full rounded-md border border-sky-200/30 bg-sky-50/50 py-2 pl-3 pr-20 text-right text-sm outline-none focus:border-sky-400"
-            value={`${parseFloat(baseAssetAmount)}`}
-            onChange={(event) => {
-              const value = parseFloat(event.target.value);
-              if (!isNaN(value)) {
-                handleBaseAmountChange(`${value}`);
-              } else {
-                handleBaseAmountChange("");
-              }
-            }}
-          />
-          <div className="pointer-events-none absolute right-0 top-0 flex h-9 items-center gap-1.5 rounded-r-md border-l border-sky-200/30 bg-white/80 px-2.5 text-xs text-sky-900">
-            {baseAssetSymbol}
-            <div className="relative h-3.5 w-3.5">
-              {currencyImage && (
-                <Image
-                  alt="Currency token logo"
-                  fill
-                  sizes="100vw"
-                  src={currencyImage}
-                />
-              )}
+      {!hideBaseLiquidity && (
+        <div className="mb-3">
+          <label className="mb-1.5 flex items-center gap-1 text-xs font-medium text-ztg-primary-900">
+            Base Liquidity
+            <Tooltip
+              content={`Amount of ${baseAssetSymbol} provided for trading. Subject to impermanent loss. Excludes bond & tx fees.`}
+            />
+          </label>
+          <div className="relative w-48">
+            <Input
+              type="number"
+              className="h-9 w-full rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-50/50 py-2 pl-3 pr-20 text-right text-sm outline-none focus:border-ztg-primary-400"
+              value={`${parseFloat(baseAssetAmount)}`}
+              onChange={(event) => {
+                const value = parseFloat(event.target.value);
+                if (!isNaN(value)) {
+                  handleBaseAmountChange(`${value}`);
+                } else {
+                  handleBaseAmountChange("");
+                }
+              }}
+            />
+            <div className="pointer-events-none absolute right-0 top-0 flex h-9 items-center gap-1.5 rounded-r-md border-l-2 border-ztg-primary-200/30 bg-white/80 px-2.5 text-xs text-ztg-primary-900">
+              {baseAssetSymbol}
+              <div className="relative h-3.5 w-3.5">
+                {currencyImage && (
+                  <Image
+                    alt="Currency token logo"
+                    fill
+                    sizes="100vw"
+                    src={currencyImage}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="w-full overflow-x-auto">
         <Table

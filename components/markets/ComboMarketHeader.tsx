@@ -31,7 +31,7 @@ const OutcomeBalance = ({
   const balanceDisplay = balance?.div(ZTG).toFixed(2) || "0.00";
 
   return (
-    <div className="flex items-center justify-between rounded-md bg-white/50 px-2 py-1.5 text-xs">
+    <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/10 px-2 py-1.5 text-xs shadow-md backdrop-blur-sm">
       <div className="flex items-center gap-2">
         {color && (
           <div
@@ -39,9 +39,9 @@ const OutcomeBalance = ({
             style={{ backgroundColor: color }}
           />
         )}
-        <span className="font-medium text-gray-700">{outcomeName}</span>
+        <span className="font-medium text-white/90">{outcomeName}</span>
       </div>
-      <span className="font-bold text-gray-900">{balanceDisplay}</span>
+      <span className="font-bold text-white">{balanceDisplay}</span>
     </div>
   );
 };
@@ -53,15 +53,17 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
   const [showBalances, setShowBalances] = useState(false);
 
   return (
-    <div className="mb-4 flex flex-col gap-3 lg:flex-row">
+    <div className="mb-3 flex flex-col gap-2 lg:flex-row">
       {sourceMarketStages.map((item, index) => {
         const roleLabel = index === 0 ? "Assume" : "Then";
-        const roleColor =
-          index === 0
-            ? "bg-blue-100 text-blue-700"
-            : "bg-green-100 text-green-700";
         const pillColor =
-          index === 0 ? "bg-blue-500 text-white" : "bg-green-500 text-white";
+          index === 0
+            ? "bg-blue-500/80 text-white border-blue-400/40"
+            : "bg-ztg-green-500/80 text-white border-ztg-green-400/40";
+        const borderColor =
+          index === 0
+            ? "border-blue-500/40"
+            : "border-ztg-green-500/40";
         const roleDescription =
           index === 0
             ? "The condition/assumption market (i.e. event market)"
@@ -70,37 +72,33 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
         return (
           <div
             key={item.market?.marketId}
-            className={`flex-1 rounded-lg shadow-lg ${
-              index === 0
-                ? "bg-gradient-to-br from-blue-50 to-blue-100/50"
-                : "bg-gradient-to-br from-green-50 to-green-100/50"
-            } p-4`}
+            className={`flex-1 rounded-lg border ${borderColor} bg-white/15 shadow-lg backdrop-blur-md p-3 sm:p-4`}
           >
             {/* Header with pill, tooltip, and Trade Market button */}
-            <div className={`mb-3 flex items-center gap-2 `}>
+            <div className={`mb-2 flex items-center gap-2`}>
               <div
-                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${pillColor}`}
+                className={`flex items-center gap-1.5 rounded-lg border px-3 py-1 text-xs font-semibold shadow-sm backdrop-blur-sm ${pillColor}`}
               >
                 <span>{roleLabel}</span>
                 <div className="group relative">
-                  <Info size={14} className="cursor-help" />
-                  <div className="pointer-events-none absolute bottom-full left-0 z-10 mb-2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                  <Info size={14} className="cursor-help text-white/90" />
+                  <div className="pointer-events-none absolute bottom-full left-0 z-10 mb-2 w-64 rounded-lg border border-white/20 bg-ztg-primary-900/95 px-3 py-2 text-xs text-white shadow-xl backdrop-blur-lg opacity-0 transition-opacity group-hover:opacity-100">
                     {roleDescription}
                     <div className="absolute left-2 top-full">
-                      <div className="border-4 border-transparent border-t-gray-900"></div>
+                      <div className="h-2 w-2 rotate-45 bg-ztg-primary-900/95 border-l border-t border-white/20"></div>
                     </div>
                   </div>
                 </div>
               </div>
-              <span className="text-xs font-medium text-gray-600">
+              <span className="text-xs font-medium text-white/80">
                 {item.market?.status}
               </span>
               <Link
                 href={`/markets/${item.market?.marketId}`}
-                className={`ml-auto flex items-center rounded-lg px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:shadow-md ${
+                className={`ml-auto flex items-center rounded-lg border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-md ${
                   index === 0
-                    ? "bg-blue-500 hover:bg-blue-600"
-                    : "bg-green-500 hover:bg-green-600"
+                    ? "hover:border-blue-400/40"
+                    : "hover:border-ztg-green-400/40"
                 }`}
               >
                 Trade Market <ExternalLink size={12} className="ml-1" />
@@ -108,7 +106,7 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
             </div>
 
             {/* Question */}
-            <h3 className="mb-3 line-clamp-2 min-h-12 text-base font-semibold leading-snug text-gray-900">
+            <h3 className="mb-2 line-clamp-2 min-h-10 text-base font-semibold leading-snug text-white sm:text-lg">
               {item.market?.question}
             </h3>
 
@@ -121,20 +119,20 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
 
             {/* Token balances section */}
             {walletAddress && item.market?.categories && (
-              <div className="mt-3 rounded-lg bg-white/60 shadow-md backdrop-blur-sm">
+              <div className="mt-3 rounded-lg border border-white/10 bg-white/10 shadow-md backdrop-blur-sm">
                 <button
                   onClick={() => setShowBalances(!showBalances)}
-                  className="flex w-full items-center justify-between px-3 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-white/80"
+                  className="flex w-full items-center justify-between px-3 py-2 text-xs font-semibold text-white/90 transition-colors hover:bg-white/20"
                 >
                   <span>Outcome Balances</span>
                   {showBalances ? (
-                    <ChevronUp size={14} />
+                    <ChevronUp size={14} className="text-white/80" />
                   ) : (
-                    <ChevronDown size={14} />
+                    <ChevronDown size={14} className="text-white/80" />
                   )}
                 </button>
                 {showBalances && (
-                  <div className="border-t border-gray-200/50 p-3">
+                  <div className="border-t border-white/10 p-3">
                     <div className="space-y-2">
                       {item.market.outcomeAssets?.map(
                         (assetString, outcomeIndex) => {

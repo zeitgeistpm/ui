@@ -109,7 +109,7 @@ const ScalarReportBox = ({
           />
         </div>
       ) : (
-        <div className="overflow-hidden rounded-md bg-gray-50 sm:flex md:block lg:flex">
+        <div className="overflow-hidden rounded-md bg-white/10 backdrop-blur-sm sm:flex md:block lg:flex">
           <Input
             type="number"
             value={scalarReportValue}
@@ -169,7 +169,7 @@ const ScalarReportBox = ({
         </div>
       )}
       <TransactionButton
-        className="mt-4 shadow-ztg-2"
+        className="mt-4"
         onClick={handleSignTransaction}
         disabled={reportDisabled}
         loading={isBroadcasting}

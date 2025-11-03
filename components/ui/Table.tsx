@@ -6,7 +6,7 @@ import { formatNumberLocalized } from "lib/util";
 import { range } from "lodash";
 import { useInView } from "react-intersection-observer";
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { ArrowDown } from "react-feather";
+import { ArrowDown, Inbox } from "react-feather";
 import { useTable } from "react-table";
 import Avatar from "./Avatar";
 import Paginator from "./Paginator";
@@ -127,7 +127,7 @@ const Cell = ({
     isLoadingError: ztgIsLoadingError,
   } = useZtgPrice();
 
-  const base = `dark:text-white px-4 h-16 ${
+  const base = `text-white px-4 h-16 ${
     onClick ? "cursor-pointer" : ""
   } ${className}`;
   const style = { height: `${rowHeight}px` };
@@ -214,7 +214,7 @@ const Cell = ({
             <div className="mb-0.5 text-sm">
               {formatNumberLocalized(value.value)}
             </div>
-            <div className="text-xs font-light text-sky-600">
+            <div className="text-xs font-light text-white">
               $
               {(
                 value.usdValue ?? (ztgPrice?.toNumber() ?? 0) * value.value
@@ -258,7 +258,7 @@ const Cell = ({
                 src={value.url}
                 loading="lazy"
               />
-              <span className="text-xxs font-semibold uppercase text-sky-600">
+              <span className="text-xxs font-semibold uppercase text-white">
                 {value.label}
               </span>
             </div>
@@ -395,7 +395,7 @@ const Table = ({
       ) : (
         <>
           <table
-            className="w-full border-separate overflow-hidden rounded-lg"
+            className="w-full border-separate overflow-hidden rounded-lg shadow-md"
             ref={tableRef}
             style={
               isOverflowing === true
@@ -408,11 +408,11 @@ const Table = ({
             }
           >
             <thead>
-              <tr className="h-12 bg-gradient-to-r from-sky-50 to-blue-50">
+              <tr className="h-12 bg-white/10 shadow-md backdrop-blur-md">
                 {renderColumns.map((column, index) => (
                   <th
                     key={index}
-                    className={`${getHeaderClass(column)} border-b border-sky-200/50 ${
+                    className={`${getHeaderClass(column)} border-b border-white/10 text-white/90 ${
                       index == 0 ? "rounded-tl-lg" : ""
                     } ${index == columns.length - 1 ? "rounded-tr-lg" : ""}
                     ${column.hideMobile ? "hidden sm:table-cell" : ""}
@@ -472,16 +472,15 @@ const Table = ({
                     key={row.id}
                     className={`
                       group
-                      border-t-1 border-sky-100
-                      transition-colors duration-100 ease-in-out
+                      bg-white/5
+                      transition-all duration-150 ease-in-out
                       ${
                         showHighlight === true
-                          ? " hover:border-sky-300 hover:bg-sky-50/30 "
+                          ? " hover:bg-white/15 hover:shadow-sm "
                           : ""
                       }
                     ${rowColorClass}
-                    ${onRowClick ? "cursor-pointer" : ""} mx-1
-
+                    ${onRowClick ? "cursor-pointer" : ""}
                     `}
                     onClick={() => handleRowClick(row)}
                   >
@@ -521,8 +520,13 @@ const Table = ({
           </div>
 
           {!loadingMore && rows.length === 0 ? (
-            <div className="flex w-full justify-center">
-              <div className="my-8 font-bold">{noDataMessage}</div>
+            <div className="flex w-full flex-col items-center justify-center py-12">
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-ztg-primary-200/20 bg-ztg-primary-900/30 backdrop-blur-sm">
+                <Inbox className="text-white/60" size={24} strokeWidth={1.5} />
+              </div>
+              <div className="text-sm font-medium text-white/80">
+                {noDataMessage}
+              </div>
             </div>
           ) : (
             <></>
@@ -533,7 +537,7 @@ const Table = ({
           {onLoadMore && !hideLoadMore && (
             <div className="mb-5 mt-4 flex justify-center">
               <div
-                className="cursor-pointer rounded-full bg-sky-600 px-4 py-2 text-xs font-bold uppercase text-white transition-colors hover:bg-sky-700"
+                className="cursor-pointer rounded-full bg-ztg-green-600/80 px-4 py-2 text-xs font-bold uppercase text-white backdrop-blur-sm transition-colors hover:bg-ztg-green-600"
                 role="button"
                 onClick={handleLoadMore}
               >

@@ -10,7 +10,7 @@ import { ZTG } from "lib/constants";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import Link from "next/link";
-import { BarChart2, Droplet, Users } from "react-feather";
+import { ArrowDown, BarChart2, Droplet, Users } from "react-feather";
 import { parseAssetId } from "@zeitgeistpm/sdk";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import SimpleImage from "components/ui/SimpleImage";
@@ -18,10 +18,99 @@ import dynamic from "next/dynamic";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 import { createVirtualComboMarket } from "lib/utils/createVirtualComboMarket";
+import { useMarketImage } from "lib/hooks/useMarketImage";
+import { MarketBasicData } from "lib/gql/combo-pools";
 
 const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
   ssr: false,
 });
+
+// Component for individual market row in combo card (allows proper hook usage)
+const ComboMarketRow = ({
+  market,
+  roleLabel,
+  isAssume,
+}: {
+  market: MarketBasicData;
+  roleLabel: string;
+  isAssume: boolean;
+}) => {
+  const { data: marketImage } = useMarketImage(market);
+
+  return (
+    <div className="flex w-full items-center gap-2 rounded-lg bg-white/5 px-2.5 py-1.5 backdrop-blur-sm">
+      {/* Icon inside the glass container */}
+      <div className="relative h-10 w-10 shrink-0 rounded-lg bg-white/5 backdrop-blur-sm">
+        <SimpleImage
+          alt={`${roleLabel} market image`}
+          src={marketImage}
+          fill
+          className="overflow-hidden rounded-lg"
+          style={{
+            objectFit: "cover",
+            objectPosition: "50% 50%",
+          }}
+        />
+      </div>
+      <span
+        className={`inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-xs font-semibold ${
+          isAssume
+            ? "bg-blue-500/80 text-white"
+            : "bg-ztg-green-500/80 text-white"
+        }`}
+      >
+        {roleLabel}
+      </span>
+      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90">
+        {market.question}
+      </span>
+    </div>
+  );
+};
+
+// Simplified inline version for unified container (no separate glass container)
+const ComboMarketRowInline = ({
+  market,
+  roleLabel,
+  isAssume,
+}: {
+  market: MarketBasicData;
+  roleLabel: string;
+  isAssume: boolean;
+}) => {
+  const { data: marketImage } = useMarketImage(market);
+
+  return (
+    <div className="flex w-full items-center gap-2">
+      {/* Icon */}
+      <div className="relative h-8 w-8 shrink-0 rounded-lg bg-white/5 backdrop-blur-sm">
+        <SimpleImage
+          alt={`${roleLabel} market image`}
+          src={marketImage}
+          fill
+          className="overflow-hidden rounded-lg"
+          style={{
+            objectFit: "cover",
+            objectPosition: "50% 50%",
+          }}
+        />
+      </div>
+      {/* Badge and question */}
+      <span
+        className={`inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-xs font-semibold ${
+          isAssume
+            ? "bg-blue-500/80 text-white"
+            : "bg-ztg-green-500/80 text-white"
+        }`}
+      >
+        {roleLabel}
+      </span>
+      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90">
+        {market.question}
+      </span>
+    </div>
+  );
+};
 
 export interface MarketOrComboCardProps {
   item: MarketOrComboItem;
@@ -103,10 +192,6 @@ const ComboPoolCard = ({
   const assetId = parseAssetId(baseAsset).unwrap();
   const imagePath = lookupAssetImagePath(assetId);
 
-  // Create a truncated question for display
-  const displayQuestion =
-    question.length > 100 ? `${question.substring(0, 100)}...` : question;
-
   // Calculate total outcomes from all associated markets
   const totalOutcomes = sortedMarkets.reduce((total, market) => {
     return total + (market.categories?.length || 0);
@@ -116,7 +201,7 @@ const ComboPoolCard = ({
     <div
       data-testid={`comboPoolCard-${pool.poolId}`}
       className={`ztg-transition group relative flex min-w-full flex-col
-      rounded-lg bg-white p-4 shadow-md transition-all hover:shadow-lg md:min-w-[calc(50%-8px)] md:hover:scale-[1.01] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+      rounded-lg bg-white/10 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg md:min-w-[calc(50%-8px)] md:hover:scale-[1.01] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
     >
       <Link
         href={item.link}
@@ -126,37 +211,37 @@ const ComboPoolCard = ({
             return;
           }
         }}
-        className={`flex flex-1 flex-col gap-3 ${
-          disableLink && "cursor-default"
-        }`}
+      className={`flex flex-1 flex-col gap-3 ${
+        disableLink && "cursor-default"
+      }`}
       >
-        {/* Market roles section - now in rows */}
-        <div className="flex flex-col gap-2">
+        <div className="absolute right-4 top-4">
+          {/* Note: Favorite toggle not implemented for combo pools yet */}
+        </div>
+
+        {/* Header section with assume/then markets, unified in a single container */}
+        <div className="flex min-w-0 flex-1 flex-col rounded-lg bg-white/5 p-2.5 backdrop-blur-sm">
           {sortedMarkets.map((market, index) => {
             const roleLabel = index === 0 ? "Assume" : "Then";
-            const roleColor =
-              index === 0
-                ? "bg-blue-500 text-white"
-                : "bg-green-500 text-white";
-            const bgColor =
-              index === 0
-                ? "bg-gradient-to-br from-blue-50 to-blue-100/50"
-                : "bg-gradient-to-br from-green-50 to-green-100/50";
+            const isAssume = index === 0;
+            const isLast = index === sortedMarkets.length - 1;
+
             return (
-              <div
-                key={market.marketId}
-                className={`rounded-lg ${bgColor} h-12 p-2 shadow-sm`}
-              >
-                <div className="flex items-start gap-2">
-                  <span
-                    className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold shadow-sm ${roleColor}`}
-                  >
-                    {roleLabel}
-                  </span>
-                  <span className="line-clamp-2 flex-1 text-sm font-semibold leading-tight text-sky-900">
-                    {market.question}
-                  </span>
-                </div>
+              <div key={market.marketId} className="flex flex-col">
+                <ComboMarketRowInline
+                  market={market}
+                  roleLabel={roleLabel}
+                  isAssume={isAssume}
+                />
+                {/* Subtle divider between markets with arrow connector */}
+                {!isLast && (
+                  <div className="relative my-1.5 flex items-center justify-center">
+                    <div className="h-px w-full bg-white/10" />
+                    <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 p-0.5 backdrop-blur-sm">
+                      <ArrowDown size={10} className="text-white/60" />
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -169,7 +254,7 @@ const ComboPoolCard = ({
           />
         </div>
 
-        <div className="mt-auto flex w-full items-center text-xs text-sky-900">
+        <div className="mt-auto flex w-full items-center text-xs text-white/90">
           <div>
             <span className="font-semibold">
               {earliestEndDate &&
@@ -180,22 +265,24 @@ const ComboPoolCard = ({
                   day: "numeric",
                 })}`}
             </span>
-            {isEnding() && <span className="ml-1 text-red">Ends Soon</span>}
-            <span className="ml-1 border-l-1 border-l-black pl-1 ">
-              {totalOutcomes} outcomes
+            {isEnding() && (
+              <span className="ml-1 font-semibold text-ztg-red-400">Ends Soon</span>
+            )}
+            <span className="ml-1 border-l-1 border-l-ztg-green-500/40 pl-1">
+              {totalOutcomes} outcomes{" "}
             </span>
           </div>
           <div className="ml-auto flex items-center justify-center gap-1.5">
             {stats.participants != undefined && baseAsset ? (
               <div className="flex items-center gap-0.5">
-                <Users size={12} className="text-sky-900" />
+                <Users size={12} className="text-white/90" />
                 <span>{formatNumberCompact(stats.participants, 2)}</span>
               </div>
             ) : (
               <Skeleton width={30} height={12} />
             )}
             <div className="flex items-center gap-1">
-              <BarChart2 size={12} className="text-sky-900" />
+              <BarChart2 size={12} className="text-white/90" />
               <span>
                 {formatNumberCompact(
                   new Decimal(stats.volume).div(ZTG).toNumber(),
@@ -205,7 +292,7 @@ const ComboPoolCard = ({
             </div>
             {stats.liquidity != undefined && baseAsset ? (
               <div className="flex items-center gap-1">
-                <Droplet size={12} className="text-sky-900" />
+                <Droplet size={12} className="text-white/90" />
                 <span>
                   {formatNumberCompact(
                     new Decimal(stats.liquidity).div(ZTG).toNumber(),
@@ -252,10 +339,10 @@ const ComboPoolPredictionBar = ({
     return (
       <>
         <div className="mb-1 flex justify-between text-xs">
-          <span className="text-gray-500">No liquidity in this pool</span>
-          <span className="text-gray-500">0%</span>
+          <span className="text-white/70">No liquidity in this pool</span>
+          <span className="text-white/70">0%</span>
         </div>
-        <div className="h-2 w-full rounded-lg bg-gray-100"></div>
+        <div className="h-2 w-full rounded-lg bg-ztg-primary-600/20"></div>
       </>
     );
   }
@@ -291,18 +378,18 @@ const ComboPoolPredictionBar = ({
 
   return (
     <div
-      className={`relative h-8 w-full overflow-hidden rounded-lg bg-gradient-to-r from-sky-50 to-sky-100 shadow-sm transition-all`}
+      className={`relative h-6 w-full overflow-hidden rounded-lg bg-white/10 shadow-md backdrop-blur-sm transition-all sm:h-[30px]`}
     >
       <div className="absolute flex h-full w-full items-center justify-between px-3 text-sm">
-        <span className="line-clamp-1 font-semibold text-sky-700">
+        <span className="line-clamp-1 font-semibold text-white/90">
           {leadingOutcomeName}
         </span>
-        <span className="font-bold text-sky-700 transition-all">
+        <span className="font-bold text-white/90 transition-all">
           {highestPercentage}%
         </span>
       </div>
       <div
-        className={`h-full bg-gradient-to-r from-sky-200 to-sky-300`}
+        className={`h-full bg-gradient-to-r from-ztg-green-500/60 to-ztg-green-400/70`}
         style={{
           width: `${isNaN(highestPercentage) ? 0 : highestPercentage}%`,
         }}

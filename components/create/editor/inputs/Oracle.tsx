@@ -77,89 +77,55 @@ export const OracleInput = forwardRef(
         : (wallet.activeAccount?.name ?? "Account");
 
     return (
-      <div className={`relative ${className}`}>
-        <Input
-          value={value}
-          spellCheck={false}
-          className={`mb-1.5 h-8 w-full rounded-md border px-2.5 text-center text-xs backdrop-blur-md transition-all
-                  ${
-                    !fieldState.isTouched || !fieldState.isValid
-                      ? "border-sky-200/30 bg-sky-50/50"
-                      : "border-sky-200/30 bg-white/80"
-                  }`}
-          placeholder="0x..."
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
+      <div className={`flex w-full items-center gap-2 ${className}`}>
+        <div className="w-1/2">
+          <Input
+            value={value}
+            spellCheck={false}
+            className="w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 py-3 text-left text-sm text-white backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30"
+            placeholder="0x..."
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+        </div>
         {wallet?.activeAccount?.address ? (
-          <div className="center">
-            <div className="relative flex items-center justify-center">
-              <button
-                type="button"
-                onClick={handleUseConnectedAccount}
-                className={`relative flex items-center justify-center rounded-full border text-xs backdrop-blur-md transition-all duration-200 ease-in-out active:scale-95 ${
-                  !isSelectedAccount
-                    ? "border-orange-300/50 bg-orange-50/50 hover:bg-orange-100/50"
-                    : "border-sky-200/30 bg-white/80"
-                }`}
-              >
-                <div
-                  className={`relative h-full flex-1 px-3 py-1.5 transition-all duration-300 ease-[cubic-bezier(.57,.42,.25,1.57)] ${
-                    isSelectedAccount ? "w-[100px]" : "w-[160px]"
-                  }`}
-                >
-                  <div
-                    className={`absolute left-0 top-[50%] translate-y-[-50%] font-medium ${
-                      !isSelectedAccount
-                        ? "min-w-[160px] text-orange-500"
-                        : "min-w-[100px] text-sky-900"
-                    }`}
-                  >
-                    {!isSelectedAccount ? "Use connected" : "Connected"}
+          <div className="w-1/2">
+            <button
+              type="button"
+              onClick={handleUseConnectedAccount}
+              className={`flex w-full items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
+                !isSelectedAccount
+                  ? "border-orange-500/60 bg-orange-500/10 text-orange-400 hover:border-orange-500/80 hover:bg-orange-500/20"
+                  : "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
+              }`}
+            >
+              {wallet.realAddress && (
+                <>
+                  <div className="pointer-events-none">
+                    <Avatar address={wallet.realAddress} size={16} />
                   </div>
-                </div>
-
-                <div
-                  className={`center gap-1.5 rounded-full px-2.5 py-1.5 ${
-                    isSelectedAccount
-                      ? "bg-sky-600/90 text-white"
-                      : "bg-orange-500/90 text-white"
-                  }`}
-                >
-                  {wallet.realAddress && (
-                    <>
-                      <div className="pointer-events-none">
-                        <Avatar address={wallet.realAddress} size={16} />
-                      </div>
-                      <span className="center gap-2 text-xs font-semibold">
-                        {accountname ? (
-                          <>
-                            {accountname}{" "}
-                            {shortenAddress(wallet.realAddress, 0, 5)}
-                          </>
-                        ) : (
-                          <>{shortenAddress(wallet.realAddress, 5, 5)}</>
-                        )}
-                      </span>
-                    </>
-                  )}
-                </div>
-              </button>
-            </div>
+                  <span className="truncate">
+                    {!isSelectedAccount ? (
+                      "Use connected"
+                    ) : (
+                      <>
+                        {accountname && `${accountname} `}
+                        {shortenAddress(wallet.realAddress, 0, 5)}
+                      </>
+                    )}
+                  </span>
+                </>
+              )}
+            </button>
           </div>
         ) : (
-          <div className="center">
+          <div className="w-1/2">
             <button
               type="button"
               onClick={() => accountModals.openWalletSelect()}
-              className="flex rounded-full border border-sky-200/30 bg-white/80 text-xs backdrop-blur-md transition-all hover:bg-sky-100/80 active:scale-95"
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/30 active:scale-95"
             >
-              <div className="px-3 py-1.5 font-medium text-sky-900">
-                Connect to use wallet account
-              </div>
-              <div className="rounded-full bg-orange-500 px-3 py-1.5 font-semibold text-white">
-                Connect
-              </div>
+              Connect Wallet
             </button>
           </div>
         )}

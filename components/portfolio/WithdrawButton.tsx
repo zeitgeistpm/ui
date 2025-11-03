@@ -296,10 +296,10 @@ const WithdrawModal = ({
             type="range"
             {...register("percentage", { value: "0" })}
           />
-          <div className="my-[4px] h-[16px] text-ztg-12-120 text-vermilion">
+          <div className="my-[4px] h-[16px] text-ztg-12-120 text-ztg-red-400">
             {formState.errors["amount"]?.message?.toString()}
           </div>
-          <div className="center mb-[16px] text-ztg-12-120 font-normal text-sky-600">
+          <div className="center mb-[16px] text-ztg-12-120 font-normal text-ztg-primary-600">
             Zeitgeist fee:
             {fee && (
               <span className="ml-1 text-black">
@@ -308,7 +308,7 @@ const WithdrawModal = ({
               </span>
             )}
           </div>
-          <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
+          <div className="center mb-[10px] text-ztg-12-120 font-normal text-ztg-primary-600">
             {toChain} fee:
             <span className="ml-1 text-black">{chain?.withdrawFee}</span>
           </div>

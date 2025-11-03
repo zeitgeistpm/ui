@@ -39,7 +39,7 @@ const MarketPositionHeader = ({
     return (
       <Link
         href={href}
-        className="group flex flex-col gap-3 border-b border-sky-200/30 pb-3 transition-all"
+        className="group flex flex-col gap-3 border-b-2 border-ztg-primary-200/20 pb-3 transition-all"
       >
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -51,11 +51,11 @@ const MarketPositionHeader = ({
               alt="Currency token logo"
               className="h-4 w-4 rounded-full"
             />
-            <span className="text-xs font-semibold text-sky-700">
+            <span className="text-xs font-semibold text-ztg-green-400">
               Multi-Market Position
             </span>
           </div>
-          <span className="text-xs font-medium text-sky-600 transition-all group-hover:text-sky-700">
+          <span className="text-xs font-medium text-ztg-green-400 transition-all group-hover:text-ztg-green-300">
             View Details →
           </span>
         </div>
@@ -63,21 +63,21 @@ const MarketPositionHeader = ({
         {/* Market roles section */}
         <div className="flex flex-col gap-2">
           {/* Assume market */}
-          <div className="flex items-start gap-2 rounded-md bg-blue-50/60 p-2.5 backdrop-blur-sm">
+          <div className="flex items-start gap-2 rounded-md bg-ztg-primary-600/60 p-2.5 backdrop-blur-sm">
             <span className="inline-flex shrink-0 items-center rounded bg-blue-600 px-2 py-0.5 text-xs font-semibold text-white">
               Assume
             </span>
-            <span className="flex-1 text-sm font-medium leading-tight text-sky-900">
+            <span className="flex-1 text-sm font-medium leading-tight text-white">
               {market1.question}
             </span>
           </div>
 
           {/* Then market */}
-          <div className="flex items-start gap-2 rounded-md bg-green-50/60 p-2.5 backdrop-blur-sm">
-            <span className="inline-flex shrink-0 items-center rounded bg-green-600 px-2 py-0.5 text-xs font-semibold text-white">
+          <div className="flex items-start gap-2 rounded-md bg-ztg-primary-600/60 p-2.5 backdrop-blur-sm">
+            <span className="inline-flex shrink-0 items-center rounded bg-ztg-green-600 px-2 py-0.5 text-xs font-semibold text-white">
               Then
             </span>
-            <span className="flex-1 text-sm font-medium leading-tight text-sky-900">
+            <span className="flex-1 text-sm font-medium leading-tight text-white">
               {market2.question}
             </span>
           </div>
@@ -90,7 +90,7 @@ const MarketPositionHeader = ({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 border-b border-sky-200/30 pb-3 transition-all"
+      className="group flex items-center gap-3 border-b-2 border-ztg-primary-200/20 pb-3 transition-all"
     >
       <div className="flex min-w-0 flex-1 items-center gap-2.5">
         <Image
@@ -100,11 +100,11 @@ const MarketPositionHeader = ({
           alt="Currency token logo"
           className="h-4 w-4 shrink-0 rounded-full"
         />
-        <h3 className="truncate text-base font-semibold text-sky-900 transition-colors group-hover:text-sky-700">
+        <h3 className="truncate text-base font-semibold text-white transition-colors group-hover:text-ztg-green-300">
           {question}
         </h3>
       </div>
-      <span className="shrink-0 text-xs font-medium text-sky-600 transition-all group-hover:text-sky-700">
+      <span className="shrink-0 text-xs font-medium text-ztg-green-400 transition-all group-hover:text-ztg-green-300">
         View →
       </span>
     </Link>

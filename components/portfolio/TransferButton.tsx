@@ -291,7 +291,7 @@ const TransferModal = ({
           }}
         />
         <div className="mb-3 text-center text-sm">
-          <span className="text-sky-600">
+          <span className="text-ztg-primary-600">
             Transfer Fee:{" "}
             {fee
               ? `${formatNumberCompact(fee.toNumber())} ${feeRaw?.symbol}`

@@ -194,10 +194,10 @@ const JoinPoolForm = ({
 
   return (
     <form
-      className="flex flex-col gap-y-4 md:gap-y-6"
+      className="flex flex-col gap-y-3"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="flex max-h-[250px] flex-col gap-y-6 overflow-y-auto py-5 md:max-h-[400px]">
+      <div className="flex max-h-[220px] flex-col gap-y-3 overflow-y-auto py-2 md:max-h-[300px]">
         {activeMarket &&
           pool?.assetIds.map((assetId, index) => {
             const assetName = virtualMarket
@@ -208,17 +208,17 @@ const JoinPoolForm = ({
             return (
               <div
                 key={index}
-                className="relative h-[62px] w-full text-base font-semibold"
+                className="relative h-[52px] w-full text-sm font-semibold"
               >
-                <div className="absolute left-4 top-[18px] z-10 w-[40%] truncate capitalize text-sky-900">
+                <div className="absolute left-3 top-[14px] z-10 w-[40%] truncate capitalize text-white/90">
                   {assetName}
                 </div>
                 <Input
-                  className={`h-[56px] w-full rounded-lg border px-4 text-right font-medium shadow-sm backdrop-blur-sm transition-all focus:shadow-md focus:outline-none
+                  className={`h-11 w-full rounded-lg border-2 px-3 text-right text-sm font-medium text-white shadow-sm backdrop-blur-sm transition-all focus:shadow-md focus:outline-none
                             ${
                               formState.errors[index.toString()]?.message
-                                ? "border-red-300 bg-red-50/80 text-red-600 focus:border-red-400"
-                                : "border-sky-200/30 bg-white/60 text-sky-900 hover:bg-white/80 focus:border-sky-400"
+                                ? "border-ztg-red-500/60 bg-ztg-red-900/30 text-ztg-red-400 focus:border-ztg-red-500/80"
+                                : "border-white/10 bg-white/10 text-white/90 hover:bg-white/15 focus:bg-white/15 focus:border-white/20 focus:ring-2 focus:ring-white/10"
                             }
               `}
                   key={index}
@@ -241,7 +241,7 @@ const JoinPoolForm = ({
                     },
                   })}
                 />
-                <div className="mt-1 text-xs text-red-600">
+                <div className="mt-1 text-xs font-medium text-ztg-red-400">
                   <>{formState.errors[index.toString()]?.message}</>
                 </div>
               </div>
@@ -249,33 +249,33 @@ const JoinPoolForm = ({
           })}
       </div>
       <input
-        className="my-5 w-full cursor-pointer accent-sky-600 disabled:cursor-not-allowed disabled:opacity-50"
+        className="my-3 w-full cursor-pointer accent-white/80 disabled:cursor-not-allowed disabled:opacity-50"
         type="range"
         disabled={!allBalancesLoaded}
         {...register("percentage", { min: 0, max: 100, value: "0" })}
       />
       {activeMarket?.status !== "Active" && (
-        <div className="rounded-lg border border-orange-200/30 bg-orange-50/80 p-4 text-sm text-orange-900 shadow-sm backdrop-blur-sm">
+        <div className="rounded-lg border-2 border-orange-500/40 bg-orange-900/30 p-3 text-xs text-orange-400 shadow-sm backdrop-blur-sm">
           Liquidity cannot be provided to a closed market
         </div>
       )}
       {hasInsufficientBalance && activeMarket?.status === "Active" && (
-        <div className="rounded-lg border border-orange-200/30 bg-orange-50/80 p-4 shadow-sm backdrop-blur-sm">
-          <div className="mb-2 font-semibold text-orange-900">
+        <div className="rounded-lg border-2 border-orange-500/40 bg-orange-900/30 p-3 shadow-sm backdrop-blur-sm">
+          <div className="mb-1.5 text-xs font-semibold text-orange-400">
             Missing Required Assets
           </div>
-          <div className="text-sm text-orange-800">
+          <div className="text-xs text-orange-300">
             You must hold a balance in <strong>all</strong> pool assets to
             provide liquidity. Please acquire the missing tokens before joining
             the pool.
           </div>
         </div>
       )}
-      <div className="flex items-center justify-between rounded-lg border border-sky-200/30 bg-sky-50/50 p-4 shadow-sm backdrop-blur-sm">
-        <label className="text-sm font-semibold text-sky-900">
+      <div className="flex items-center justify-between rounded-lg border-2 border-white/10 bg-white/10 p-3 shadow-sm backdrop-blur-sm">
+        <label className="text-xs font-semibold text-white/90">
           Expected Pool Ownership
         </label>
-        <span className="text-base font-bold text-sky-900">
+        <span className="text-sm font-bold text-white">
           {prctSharesToReceive?.toFixed(1) ?? "0.0"}%
         </span>
       </div>

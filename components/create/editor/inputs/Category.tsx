@@ -33,21 +33,22 @@ export const CategorySelect = forwardRef(
         {defaultTags.map((tag, index) => {
           const isSelected = value?.includes(tag);
           return (
-            <div
+            <button
+              type="button"
               key={tag}
               className={`
-                center relative flex h-full cursor-pointer gap-1.5 rounded-full px-3 py-1.5 text-sm backdrop-blur-md transition-all
-                duration-200 ease-in-out active:scale-95
+                center relative flex cursor-pointer gap-1.5 rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all
+                duration-200 ease-in-out active:scale-95 touch-manipulation
                 ${
                   isSelected
-                    ? "border-2 border-sky-600/50 bg-sky-600/90 text-white shadow-md"
-                    : "border-2 border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
+                    ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
+                    : "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:border-white/30"
                 }
               `}
               onClick={handleSelect(tag)}
             >
               <div>{tag}</div>
-            </div>
+            </button>
           );
         })}
       </div>

@@ -22,8 +22,8 @@ const AssetInput: React.FC<AssetInputProps> = ({
   return (
     <div
       className={
-        "relative mb-5 h-14 w-full rounded-md border-1 border-transparent bg-anti-flash-white " +
-        (error ? "border-vermilion" : "")
+        "relative mb-5 h-14 w-full rounded-md border-2 border-t-2ransparent bg-anti-flash-white " +
+        (error ? "border-ztg-red-500" : "")
       }
     >
       <AssetSelect
@@ -43,7 +43,7 @@ const AssetInput: React.FC<AssetInputProps> = ({
         className="absolute right-4 top-[50%] translate-y-[-50%] bg-transparent !px-0 text-right text-lg"
       />
       {error && (
-        <div className="text-right text-sm text-vermilion">{error}</div>
+        <div className="text-right text-sm text-ztg-red-400">{error}</div>
       )}
     </div>
   );

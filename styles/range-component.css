@@ -1,44 +1,266 @@
-input[type="range"] {
-  -webkit-appearance: none;
-  height: 2px;
-  border-radius: 5px;
-  background: black;
-  background-size: 70% 100%;
-  background-repeat: no-repeat;
+/* Native Range Input - Glass Morphism Styles */
+
+/* Base slider container */
+.ztg-glass-slider {
+  position: relative;
+  width: 100%;
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
 }
 
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  display: block;
+.ztg-glass-slider .ztg-range-input {
+  position: relative;
+  width: 100%;
   height: 20px;
-  width: 40px;
-  @apply rounded-[30px];
-  @apply border-[2px] border-solid border-black;
-  background: white;
-  cursor: ew-resize;
-  box-shadow: 0 0 2px 0 #555;
-}
-
-input[type="range"]::-moz-range-thumb {
-  display: block;
-  height: 20px;
-  width: 40px;
-  @apply rounded-[30px];
-  @apply border-[2px] border-solid border-black;
-  background: white;
-  cursor: ew-resize;
-  box-shadow: 0 0 2px 0 #555;
-}
-
-input[type="range"]::-webkit-slider-runnable-track {
+  cursor: pointer;
   -webkit-appearance: none;
-  box-shadow: none;
-  border: none;
+  appearance: none;
   background: transparent;
+  outline: none;
+  margin: 0;
+  padding: 0;
+  z-index: 10;
 }
 
-input[type="range"]::-moz-range-track {
-  box-shadow: none;
-  border: none;
+/* Webkit Track (Chrome, Safari, Edge) - Make transparent to show custom fill */
+.ztg-glass-slider .ztg-range-input::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
   background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Webkit Thumb (Handle) */
+.ztg-glass-slider .ztg-range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 40px;
+  height: 22px;
+  margin-top: -8px;
+  border-radius: 11px;
+  cursor: ew-resize;
+  cursor: -webkit-grab;
+  cursor: grab;
+  border: 2px solid rgba(44, 204, 48, 0.8);
+  background: linear-gradient(135deg, rgba(44, 204, 48, 0.7) 0%, rgba(44, 204, 48, 0.6) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 12px rgba(44, 204, 48, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.ztg-glass-slider .ztg-range-input::-webkit-slider-thumb:hover {
+  border-color: rgba(44, 204, 48, 0.9);
+  background: linear-gradient(135deg, rgba(44, 204, 48, 0.8) 0%, rgba(44, 204, 48, 0.7) 100%);
+  box-shadow:
+    0 0 15px rgba(44, 204, 48, 0.6),
+    0 6px 12px rgba(0, 0, 0, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+  transform: scale(1.08);
+}
+
+.ztg-glass-slider .ztg-range-input::-webkit-slider-thumb:active {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+  border-color: rgba(44, 204, 48, 1);
+  background: linear-gradient(135deg, rgba(44, 204, 48, 0.85) 0%, rgba(44, 204, 48, 0.75) 100%);
+  box-shadow:
+    0 0 18px rgba(44, 204, 48, 0.7),
+    0 8px 16px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+  transform: scale(1.12);
+}
+
+.ztg-glass-slider .ztg-range-input::-webkit-slider-thumb:focus {
+  outline: none;
+  border-color: rgba(44, 204, 48, 0.9);
+  box-shadow:
+    0 0 15px rgba(44, 204, 48, 0.6),
+    0 6px 12px rgba(0, 0, 0, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Firefox Track - Make transparent to show custom fill */
+.ztg-glass-slider .ztg-range-input::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Firefox Progress (filled portion) */
+.ztg-glass-slider .ztg-range-input::-moz-range-progress {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg,
+    rgba(44, 204, 48, 0.95) 0%,
+    rgba(44, 204, 48, 0.85) 50%,
+    rgba(44, 204, 48, 0.9) 100%);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(44, 204, 48, 0.4);
+  box-shadow:
+    0 0 15px rgba(44, 204, 48, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+/* Firefox Thumb (Handle) */
+.ztg-glass-slider .ztg-range-input::-moz-range-thumb {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  cursor: grab;
+  border: 2px solid rgba(44, 204, 48, 0.8);
+  background: linear-gradient(135deg, rgba(44, 204, 48, 0.7) 0%, rgba(44, 204, 48, 0.6) 100%);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 12px rgba(44, 204, 48, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.ztg-glass-slider .ztg-range-input::-moz-range-thumb:hover {
+  border-color: rgba(44, 204, 48, 0.9);
+  background: linear-gradient(135deg, rgba(44, 204, 48, 0.8) 0%, rgba(44, 204, 48, 0.7) 100%);
+  box-shadow:
+    0 0 15px rgba(44, 204, 48, 0.6),
+    0 6px 12px rgba(0, 0, 0, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+  transform: scale(1.08);
+}
+
+.ztg-glass-slider .ztg-range-input::-moz-range-thumb:active {
+  cursor: grabbing;
+  border-color: rgba(44, 204, 48, 1);
+  background: linear-gradient(135deg, rgba(44, 204, 48, 0.85) 0%, rgba(44, 204, 48, 0.75) 100%);
+  box-shadow:
+    0 0 18px rgba(44, 204, 48, 0.7),
+    0 8px 16px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+  transform: scale(1.12);
+}
+
+.ztg-glass-slider .ztg-range-input::-moz-range-thumb:focus {
+  outline: none;
+  border-color: rgba(44, 204, 48, 0.9);
+  box-shadow:
+    0 0 15px rgba(44, 204, 48, 0.6),
+    0 6px 12px rgba(0, 0, 0, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Disabled state */
+.ztg-glass-slider .ztg-range-input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ztg-glass-slider .ztg-range-input:disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.ztg-glass-slider .ztg-range-input:disabled::-webkit-slider-thumb:hover {
+  transform: scale(1);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ztg-glass-slider .ztg-range-input:disabled::-moz-range-thumb {
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+}
+
+.ztg-glass-slider .ztg-range-input:disabled::-moz-range-thumb:hover {
+  transform: scale(1);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ztg-glass-slider .ztg-range-input:disabled::-webkit-slider-runnable-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ztg-glass-slider .ztg-range-input:disabled::-moz-range-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ztg-glass-slider .ztg-range-input:disabled::-moz-range-progress {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+}
+
+/* Background rail - unfilled portion */
+.ztg-glass-slider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Custom track fill - filled portion (green liquid glass) */
+.ztg-glass-slider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 6px;
+  width: calc(var(--track-fill, 0) / 100 * (100% - 40px));
+  border-radius: 3px;
+  background: linear-gradient(90deg,
+    rgba(44, 204, 48, 0.95) 0%,
+    rgba(44, 204, 48, 0.85) 50%,
+    rgba(44, 204, 48, 0.9) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(44, 204, 48, 0.4);
+  box-shadow:
+    0 0 15px rgba(44, 204, 48, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateY(-50%) translateX(-100%);
+  }
+  100% {
+    transform: translateY(-50%) translateX(200%);
+  }
 }

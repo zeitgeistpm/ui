@@ -131,21 +131,21 @@ const Amm2TradeForm = ({
         >
           <div className="flex">
             <Tab.List
-              className={`h-[51px] w-full text-center text-ztg-18-150 font-medium ${
+              className={`h-[56px] w-full text-center text-base md:text-lg font-semibold ${
                 showTabs ? "flex" : "hidden"
               }`}
             >
               <Tab
                 as={TradeTab}
                 selected={tabType === TradeTabType.Buy}
-                className="rounded-tl-[10px]"
+                className="rounded-tl-lg"
               >
                 Buy
               </Tab>
               <Tab
                 as={TradeTab}
                 selected={tabType === TradeTabType.Sell}
-                className="rounded-tr-[10px]"
+                className="rounded-tr-lg"
               >
                 Sell
               </Tab>
@@ -158,7 +158,7 @@ const Amm2TradeForm = ({
               value={orderType}
             /> */}
           </div>
-          <Tab.Panels className="p-[30px]">
+          <Tab.Panels className="p-6 md:p-8">
             {/* Limit orders disabled - only show market order forms */}
             <Tab.Panel>
               <BuyForm
@@ -258,14 +258,14 @@ const Amm2TradeForm = ({
 //           className="absolute top-[52px] flex w-32 flex-col gap-y-3 rounded-lg bg-white p-4 shadow-[0px_4px_20px_0px_#00000040]">
 //           <button
 //             className={`${
-//               value === "market" ? "font-medium text-black" : "text-sky-600"
+//               value === "market" ? "font-medium text-black" : "text-ztg-primary-600"
 //             } `}
 //             onClick={() => handleTypeClick("market")}>
 //             Market
 //           </button>
 //           <button
 //             className={`${
-//               value === "limit" ? "font-medium text-black" : "text-sky-600"
+//               value === "limit" ? "font-medium text-black" : "text-ztg-primary-600"
 //             } `}
 //             onClick={() => handleTypeClick("limit")}>
 //             Limit

@@ -39,73 +39,130 @@ export const AnswersInput = ({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      {/* Type Selector - Horizontal Row */}
-      <div className="flex flex-shrink-0 items-center gap-2">
-        <button
-          type="button"
-          className={`rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur-md transition-all active:scale-95 ${
-            value?.type === "yes/no"
-              ? "border-2 border-sky-600/50 bg-sky-600/90 text-white shadow-md"
-              : "border-2 border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
-          }`}
-          onClick={handleSelectType("yes/no")}
-        >
-          Yes/No
-        </button>
+    <div className="space-y-4">
+      {/* Type Selector - Improved Layout */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            className={`rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
+              value?.type === "yes/no"
+                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
+                : "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:border-white/30"
+            }`}
+            onClick={handleSelectType("yes/no")}
+          >
+            Yes/No
+          </button>
 
-        <button
-          type="button"
-          className={`rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur-md transition-all active:scale-95 ${
-            value?.type === "categorical"
-              ? "border-2 border-sky-600/50 bg-sky-600/90 text-white shadow-md"
-              : "border-2 border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
-          }`}
-          onClick={handleSelectType("categorical")}
-        >
-          Categorical
-        </button>
+          <button
+            type="button"
+            className={`rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
+              value?.type === "categorical"
+                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
+                : "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:border-white/30"
+            }`}
+            onClick={handleSelectType("categorical")}
+          >
+            Categorical
+          </button>
 
-        <button
-          type="button"
-          className={`rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur-md transition-all active:scale-95 ${
-            value?.type === "scalar"
-              ? "border-2 border-sky-600/50 bg-sky-600/90 text-white shadow-md"
-              : "border-2 border-sky-200/30 bg-white/80 text-sky-900 hover:bg-sky-100/80"
-          }`}
-          onClick={handleSelectType("scalar")}
-        >
-          Scalar
-        </button>
+          <button
+            type="button"
+            className={`rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
+              value?.type === "scalar"
+                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
+                : "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:border-white/30"
+            }`}
+            onClick={handleSelectType("scalar")}
+          >
+            Scalar
+          </button>
+        </div>
       </div>
 
-      {/* Vertical Divider */}
-      <div className="h-8 w-px flex-shrink-0 bg-gradient-to-b from-transparent via-sky-200/50 to-transparent" />
-
-      {/* Answer Inputs - Inline on same row */}
-      <div className="min-w-0 flex-1">
+      {/* Answer Inputs - Full Width Below */}
+      <div className="w-full">
         {value?.type === "categorical" && (
-          <CategoricalAnswersInput
-            name="categorical-answers"
-            value={value}
-            onBlur={handleBlur}
-            onChange={handleChange}
-          />
+          <div className="space-y-3">
+            <CategoricalAnswersInput
+              name="categorical-answers"
+              value={value}
+              onBlur={handleBlur}
+              onChange={handleChange}
+            />
+            {/* Preview of how answers will appear */}
+            {value.answers && value.answers.length > 0 && value.answers.some(a => a.trim() !== "") && (
+              <div className="rounded-lg bg-white/5 p-3">
+                <p className="mb-2 text-xs font-medium text-white/70">
+                  Preview: How your answers will appear
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {value.answers
+                    .filter(a => a.trim() !== "")
+                    .map((answer, idx) => (
+                      <div
+                        key={idx}
+                        className="rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm"
+                      >
+                        {answer}
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
         )}
         {value?.type === "scalar" && (
-          <ScalarAnswersInput
-            name="scalar-answers"
-            value={value}
-            onBlur={handleBlur}
-            onChange={handleChange}
-          />
+          <div className="space-y-3">
+            <ScalarAnswersInput
+              name="scalar-answers"
+              value={value}
+              onBlur={handleBlur}
+              onChange={handleChange}
+            />
+            {/* Preview for scalar range */}
+            {value.answers && value.answers.length >= 2 && (
+              <div className="rounded-lg bg-white/5 p-3">
+                <p className="mb-2 text-xs font-medium text-white/70">
+                  Preview: Range
+                </p>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="rounded-lg bg-white/10 px-3 py-2 font-medium text-white backdrop-blur-sm">
+                    {value.numberType === "date"
+                      ? new Date(value.answers[0]).toLocaleDateString()
+                      : value.answers[0]}
+                  </span>
+                  <span className="text-white/70">→</span>
+                  <span className="rounded-lg bg-white/10 px-3 py-2 font-medium text-white backdrop-blur-sm">
+                    {value.numberType === "date"
+                      ? new Date(value.answers[1]).toLocaleDateString()
+                      : value.answers[1]}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
         )}
         {value?.type === "yes/no" && (
-          <CategoricalAnswersInput
-            name="categorical-answers"
-            disabled={true}
-            value={value}
-          />
+          <div className="space-y-3">
+            {/* Preview of how answers will appear */}
+            <div className="rounded-lg bg-white/5 p-3">
+              <p className="mb-2 text-xs font-medium text-white/70">
+                Preview: How your answers will appear
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {value.answers && value.answers.map((answer, idx) => (
+                  <div
+                    key={idx}
+                    className="rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm"
+                  >
+                    {answer}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

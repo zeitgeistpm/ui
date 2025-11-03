@@ -507,7 +507,7 @@ const Inner = ({
         />
       ) : (
         <form
-          className="relative rounded-[10px] border border-sky-200/30 bg-white/80 shadow-md backdrop-blur-md"
+          className="relative rounded-[10px] bg-white/10 shadow-md backdrop-blur-md"
           onSubmit={(e) => {
             e.preventDefault();
             swapTx();
@@ -535,7 +535,7 @@ const Inner = ({
               }}
               selectedIndex={tabIndex}
             >
-              <Tab.List className="flex h-[60px] justify-between rounded-xl text-center sm:h-[71px]">
+              <Tab.List className="flex h-[64px] justify-between rounded-xl text-center sm:h-[72px]">
                 <Tab
                   as={TradeTab}
                   selected={type === "buy"}
@@ -589,7 +589,7 @@ const Inner = ({
                 />
               )}
             </div>
-            <div className="center relative mb-[20px] h-[56px] rounded-lg border border-sky-200/30 bg-sky-50/50 text-ztg-18-150 shadow-sm backdrop-blur-sm">
+            <div className="center relative mb-[20px] h-[56px] rounded-lg bg-white/10 text-ztg-18-150 shadow-sm backdrop-blur-sm">
               <Input
                 type="number"
                 {...register("baseAmount", {
@@ -606,7 +606,7 @@ const Inner = ({
                 step="any"
                 className="w-full bg-transparent text-center"
               />
-              <div className="absolute right-2 mr-[10px] text-sky-700">
+              <div className="absolute right-2 mr-[10px] text-white/70">
                 {baseSymbol}
               </div>
             </div>
@@ -629,18 +629,18 @@ const Inner = ({
               {...register("percentage")}
             />
             <div className="mb-4 text-center">
-              <div className="text-ztg-12-150 sm:text-ztg-14-150">
+              <div className="text-ztg-12-150 sm:text-ztg-14-150 text-white/90">
                 <div className="mb-[10px]">
-                  <span className="text-sky-600">Average Price: </span>
+                  <span className="text-white/70">Average Price: </span>
                   {averagePrice} {baseSymbol}
                 </div>
                 <div className="mb-[10px]">
-                  <span className="text-sky-600">Prediction After Trade: </span>
+                  <span className="text-white/70">Prediction After Trade: </span>
                   {predictionAfterTrade.toFixed(2)} {baseSymbol} (
                   {predictionAfterTrade.mul(100).toFixed(0)}%)
                 </div>
                 <div className="mb-[10px]">
-                  <span className="text-sky-600">Price impact: </span>
+                  <span className="text-white/70">Price impact: </span>
                   {priceImpact}%
                 </div>
               </div>

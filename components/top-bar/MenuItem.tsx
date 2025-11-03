@@ -34,7 +34,7 @@ export const MenuItem: FC<PropsWithChildren<MenuItemProps>> = ({
   return (
     <WrapComponent href={href}>
       <button
-        className={`group flex w-[68px] rounded-full border-2 border-black bg-black p-5 text-white transition-all duration-300 hover:border-sunglow-2 hover:bg-black hover:text-sunglow-2 focus:border-ztg-blue focus:bg-ztg-blue focus:text-white ${
+        className={`group flex w-[68px] rounded-full border-2 border-b-2lack bg-black p-5 text-white transition-all duration-300 hover:border-sunglow-2 hover:bg-black hover:text-sunglow-2 focus:border-ztg-blue focus:bg-ztg-blue focus:text-white ${
           active && "border-ztg-blue bg-ztg-blue"
         }`}
       >

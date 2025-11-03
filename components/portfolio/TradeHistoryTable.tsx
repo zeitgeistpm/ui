@@ -48,7 +48,7 @@ const TradeHistoryTable = ({ address }: { address: string }) => {
       question: (
         <Link
           href={`/markets/${trade?.marketId}`}
-          className="line-clamp-1 text-[14px]"
+          className="line-clamp-1 text-[14px] text-white transition-colors hover:text-ztg-green-400"
         >
           {trade?.question}
         </Link>
@@ -93,8 +93,12 @@ const TradeHistoryTable = ({ address }: { address: string }) => {
           buttonLink="/markets"
         />
       ) : (
-        <div className="rounded-lg bg-gradient-to-br from-sky-50/30 to-blue-50/30 p-4 shadow-lg">
-          <div className="overflow-hidden rounded-lg bg-white/60 backdrop-blur-sm">
+        <div className="rounded-lg border border-ztg-primary-200/30 bg-white/10 shadow-lg backdrop-blur-md">
+          <div className="mb-4 flex items-center gap-2 border-b border-ztg-primary-200/20 px-4 pb-3 pt-4">
+            <span className="h-1 w-6 rounded-full bg-ztg-green-500"></span>
+            <h2 className="text-base font-semibold text-white">Trade History</h2>
+          </div>
+          <div className="px-4 pb-4">
             <Table columns={columns} data={tableData} />
           </div>
         </div>

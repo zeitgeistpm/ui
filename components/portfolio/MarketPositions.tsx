@@ -176,9 +176,9 @@ export const MarketPositions = ({
   // if (positions.some(displayBalance)) {
   return (
     <div
-      className={`${className} rounded-lg border border-sky-200/30 bg-white/80 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg`}
+      className={`${className} rounded-lg border border-ztg-primary-200/30 bg-white/10 shadow-lg backdrop-blur-md`}
     >
-      <div className="mb-4">
+      <div className="mb-4 p-4 pb-2">
         <MarketPositionHeader
           marketId={market.marketId}
           question={market.question ?? undefined}
@@ -187,7 +187,7 @@ export const MarketPositions = ({
           poolId={positions[0]?.poolId}
         />
       </div>
-      <div className="overflow-hidden rounded-md bg-sky-50/30 backdrop-blur-sm">
+      <div className="px-4 pb-4">
         <Table
           showHighlight={false}
           columns={isLiquidityMarket ? COLUMNS_LIQUIDITY : COLUMNS}
@@ -321,10 +321,10 @@ export const MarketPositionsSkeleton = ({
 }) => {
   return (
     <div
-      className={`${className} rounded-lg border border-sky-200/30 bg-white/80 p-4 shadow-md backdrop-blur-md`}
+      className={`${className} rounded-lg border border-ztg-primary-200/30 bg-white/10 p-4 shadow-lg backdrop-blur-md`}
     >
       <Skeleton className="mb-4" height={24} width="70%" />
-      <div className="rounded-md bg-sky-50/30 p-4">
+      <div className="rounded-md bg-ztg-primary-600/20 p-4">
         <Skeleton className="mb-2" height={40} width={"100%"} />
         <Skeleton className="mb-2" height={60} width={"100%"} />
         <Skeleton height={60} width={"100%"} />

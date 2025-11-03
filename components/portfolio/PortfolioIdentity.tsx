@@ -38,8 +38,8 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
 
   return (
     <>
-      <div className="mb-4 rounded-lg bg-gradient-to-br from-sky-50 to-blue-50 p-3 shadow-lg">
-        <div className="overflow-hidden rounded-lg bg-white/60 p-4 backdrop-blur-sm">
+      <div className="mb-4 rounded-lg bg-white/10 p-3 shadow-lg backdrop-blur-md">
+        <div className="overflow-hidden rounded-lg p-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="shrink-0">
               {address && <Avatar address={address} size={64} />}
@@ -48,16 +48,16 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
               <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   {isOwned && !hasIdentity && (
-                    <div className="mb-0.5 text-xxs font-semibold uppercase tracking-wide text-sky-600">
+                    <div className="mb-0.5 text-xxs font-semibold uppercase tracking-wide text-ztg-green-400">
                       Wallet Name
                     </div>
                   )}
                   {isOwned && hasIdentity && (
-                    <div className="mb-0.5 text-xxs font-semibold uppercase tracking-wide text-sky-600">
+                    <div className="mb-0.5 text-xxs font-semibold uppercase tracking-wide text-ztg-green-400">
                       On-Chain Identity
                     </div>
                   )}
-                  <div className="text-xl font-bold text-sky-900 sm:text-2xl">
+                  <div className="text-xl font-bold text-white sm:text-2xl">
                     {name}
                   </div>
                 </div>
@@ -65,7 +65,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
                 {isOwned && !hasIdentity && (
                   <div className="flex items-center">
                     <button
-                      className="flex items-center gap-1.5 rounded-md bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-sky-700"
+                      className="flex items-center gap-1.5 rounded-md bg-ztg-green-600/80 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600"
                       onClick={() => setShowSettingsModal(true)}
                     >
                       <FaUserCheck size={14} />
@@ -76,9 +76,9 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
               </div>
 
               {/* Address - Desktop */}
-              <div className="mb-2 hidden text-xs text-sky-700 sm:block">
+              <div className="mb-2 hidden text-xs text-white/70 sm:block">
                 <Link
-                  className="flex items-center gap-1.5 transition-all hover:text-sky-900"
+                  className="flex items-center gap-1.5 transition-all hover:text-white/90"
                   href={`https://zeitgeist.subscan.io/account/${address}`}
                   target="_blank"
                 >
@@ -88,9 +88,9 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
               </div>
 
               {/* Address - Mobile */}
-              <div className="mb-2 text-xs text-sky-700 sm:hidden">
+              <div className="mb-2 text-xs text-white/70 sm:hidden">
                 <Link
-                  className="flex items-center gap-1.5 transition-all hover:text-sky-900"
+                  className="flex items-center gap-1.5 transition-all hover:text-white/90"
                   href={`https://zeitgeist.subscan.io/account/${address}`}
                   target="_blank"
                 >

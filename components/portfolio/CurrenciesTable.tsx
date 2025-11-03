@@ -20,6 +20,7 @@ import { isWSX } from "lib/constants";
 import { useMemo } from "react";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
+import EmptyPortfolio from "./EmptyPortfolio";
 
 const columns: TableColumn[] = [
   {
@@ -65,7 +66,7 @@ const ImageAndText = ({
           />
         )}
       </div>
-      <div className="text-sm font-medium text-sky-900 md:text-base">
+      <div className="text-sm font-medium text-white/90 md:text-base">
         {name}
       </div>
     </div>
@@ -181,7 +182,7 @@ const CurrenciesTable = ({ address }: { address: string }) => {
             />
           ),
           balance: (
-            <span className="text-sm font-medium text-sky-900">
+            <span className="text-sm font-medium text-white/90">
               {amount.div(ZTG).toFixed(3)}
             </span>
           ),
@@ -204,12 +205,29 @@ const CurrenciesTable = ({ address }: { address: string }) => {
       });
   }, [constants, balances, sorting]);
 
+  const hasBalances = tableData && tableData.length > 0;
+  const isFetchedNoData = isFetched && !hasBalances;
+
+  if (isFetchedNoData) {
+    return (
+      <EmptyPortfolio
+        headerText="No Cross-Chain Balances"
+        bodyText="You don't have any assets across chains yet. Deposit tokens to get started."
+        buttonText="View Markets"
+        buttonLink="/markets"
+      />
+    );
+  }
+
   return (
-    <div className="rounded-lg border border-sky-200/30 bg-white/80 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg">
-      <h2 className="mb-4 border-b border-sky-200/30 pb-3 text-base font-semibold text-sky-900">
-        Cross-Chain Balances
-      </h2>
-      <div className="overflow-hidden rounded-md bg-sky-50/30 backdrop-blur-sm">
+    <div className="rounded-lg border border-ztg-primary-200/30 bg-white/10 shadow-lg backdrop-blur-md">
+      <div className="mb-4 flex items-center gap-2 border-b border-ztg-primary-200/20 p-4 pb-3">
+        <span className="h-1 w-6 rounded-full bg-ztg-green-500"></span>
+        <h2 className="text-base font-semibold text-white">
+          Cross-Chain Balances
+        </h2>
+      </div>
+      <div className="px-4 pb-4">
         <Table data={tableData} columns={columns} showHighlight={false} />
       </div>
     </div>

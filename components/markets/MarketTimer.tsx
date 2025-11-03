@@ -21,46 +21,46 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
   return (
     <div className="inline-block w-full">
       {!isInfinity(stage.remainingTime) ? (
-        <div className="relative h-8 w-full overflow-hidden rounded-lg border border-sky-200/30 bg-sky-50/50 shadow-md backdrop-blur-sm">
+        <div className="relative h-8 w-full overflow-hidden rounded-lg bg-white/10 shadow-md backdrop-blur-sm sm:h-10">
           <div
             className={`h-full rounded-lg transition-all ${
               copy[stage.type].color
             }`}
             style={{ width: `${percentage}%` }}
           />
-          <div className="absolute inset-0 flex items-center justify-between px-3">
-            <div className="flex items-center gap-1 text-xs">
-              <span className="font-semibold text-sky-950">
+          <div className="absolute inset-0 flex items-center justify-between px-2.5 sm:px-4">
+            <div className="flex flex-wrap items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
+              <span className="font-bold text-white">
                 {copy[stage.type].title}:
               </span>
-              <span className="lowercase text-sky-950">
+              <span className="lowercase font-medium text-white/80">
                 {copy[stage.type].description}
               </span>
               {!isInfinite(stage) && (
-                <span className="whitespace-nowrap text-sky-950">
+                <span className="whitespace-nowrap font-medium text-white/70">
                   - {timeUntilStageEnds.humanize()} left
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-3 text-xs">
-              <span className="font-semibold text-sky-950">
+            <div className="flex items-center gap-2 text-xs sm:gap-3 sm:text-sm">
+              <span className="font-bold text-white">
                 {percentage.toFixed(0)}%
               </span>
             </div>
           </div>
         </div>
       ) : (
-        <div className="relative h-8 w-full overflow-hidden rounded-lg border border-sky-200/30 bg-sky-50/50 shadow-md backdrop-blur-sm">
+        <div className="relative h-8 w-full overflow-hidden rounded-lg bg-white/10 shadow-md backdrop-blur-sm sm:h-10">
           <div
             className={`h-full rounded-lg ${copy[stage.type].color}`}
             style={{ width: "100%" }}
           />
-          <div className="absolute inset-0 flex items-center justify-between px-3">
-            <div className="flex items-center gap-2 text-xs">
-              <span className="font-semibold text-sky-950">
+          <div className="absolute inset-0 flex items-center justify-between px-2.5 sm:px-4">
+            <div className="flex flex-wrap items-center gap-1 text-xs sm:gap-2 sm:text-sm">
+              <span className="font-bold text-white">
                 {copy[stage.type].title}:
               </span>
-              <span className="lowercase text-sky-950">
+              <span className="lowercase font-medium text-white/80">
                 {copy[stage.type].description}
               </span>
             </div>
@@ -74,17 +74,17 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
 export const MarketTimerSkeleton = () => {
   return (
     <div className="inline-block w-full">
-      <div className="relative h-8 w-full overflow-hidden rounded-lg border border-sky-200/30 bg-sky-50/50 shadow-md backdrop-blur-sm">
+      <div className="relative h-8 w-full overflow-hidden rounded-lg bg-white/10 shadow-md backdrop-blur-sm sm:h-10">
         <div
-          className="h-full rounded-lg bg-sky-200/50 transition-all"
+          className="h-full rounded-lg bg-ztg-green-500/30 transition-all"
           style={{ width: "15%" }}
         />
-        <div className="absolute inset-0 flex items-center justify-between px-3">
-          <div className="flex items-center gap-2">
-            <Skeleton width={120} height={12} />
-            <Skeleton width={100} height={12} />
+        <div className="absolute inset-0 flex items-center justify-between px-2.5 sm:px-3">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <Skeleton width={80} height={10} className="sm:w-[120px] sm:h-3" />
+            <Skeleton width={70} height={10} className="sm:w-[100px] sm:h-3" />
           </div>
-          <Skeleton width={30} height={12} />
+          <Skeleton width={24} height={10} className="sm:w-[30px] sm:h-3" />
         </div>
       </div>
     </div>
@@ -103,17 +103,17 @@ const copy: Record<
   Trading: {
     title: "Live",
     description: "Trading",
-    color: "bg-gradient-to-r from-sky-400/80 to-sky-500/80",
+    color: "bg-gradient-to-r from-ztg-green-500/80 to-ztg-green-600/80",
   },
   GracePeriod: {
     title: "Grace Period",
     description: "Pre-reporting",
-    color: "bg-gradient-to-r from-sky-400/80 to-sky-500/80",
+    color: "bg-gradient-to-r from-ztg-green-500/80 to-ztg-green-600/80",
   },
   OracleReportingPeriod: {
     title: "Ended",
     description: "Oracle pending",
-    color: "bg-gradient-to-r from-sky-400/80 to-sky-500/80",
+    color: "bg-gradient-to-r from-ztg-green-500/80 to-ztg-green-600/80",
   },
   OpenReportingPeriod: {
     title: "Oracle Failed",

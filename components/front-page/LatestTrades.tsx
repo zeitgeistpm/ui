@@ -95,9 +95,9 @@ const LatestTrades = ({
       outcome: trade.outcomeName,
       trade:
         trade.type === "buy" ? (
-          <span className="font-semibold text-green-600">Buy</span>
+          <span className="font-semibold text-ztg-green-400">Buy</span>
         ) : (
-          <span className="font-semibold text-red-600">Sell</span>
+          <span className="font-semibold text-red-400">Sell</span>
         ),
       cost: `${formatNumberLocalized(trade.cost.div(ZTG).toNumber())} ${trade.costSymbol}`,
       price: formatNumberLocalized(trade.outcomePrice.toNumber()),

@@ -23,16 +23,16 @@ export const Loader = ({
   // Dotted line loader
   if (type === "dots") {
     const color = variant === "Success"
-      ? "#31C48D"
+      ? "#2ccc30"
       : variant === "Error"
       ? "#C43131"
       : variant === "Info"
-      ? "#31A1C4"
-      : "#0ea5e9"; // Default sky-600
+      ? "#2ccc30"
+      : "#2ccc30"; // Default green
 
     return (
       <div
-        className={`flex items-center justify-center rounded-lg border border-sky-200/30 bg-white/80 p-3 shadow-sm backdrop-blur-md ${className}`}
+        className={`flex items-center justify-center rounded-lg bg-white/10 p-3 shadow-sm backdrop-blur-md ${className}`}
       >
         <BeatLoader
           loading={loading}
@@ -54,18 +54,18 @@ export const Loader = ({
         }`}
         style={{
           background: `linear-gradient(218deg, ${
-            gradient?.[0] ?? "rgba(0,0,0,0.2)"
-          } 35%, ${gradient?.[1] ?? "rgba(0,0,0,0.1)"} 100%)`,
+            gradient?.[0] ?? "rgba(44, 204, 48, 0.6)"
+          } 35%, ${gradient?.[1] ?? "rgba(44, 204, 48, 0.8)"} 100%)`,
         }}
       ></div>
       <div className="center absolute left-0 top-0 z-20 h-full w-full scale-[0.84] rounded-full bg-inherit">
         {lineThrough && (
           <div
-            className="absolute, left-0 top-0 h-[102%] w-[6%] rotate-45 bg-red"
+            className="absolute, left-0 top-0 h-[102%] w-[6%] rotate-45"
             style={{
               background: `linear-gradient(218deg, ${
-                gradient?.[0] ?? "rgba(0,0,0,0.2)"
-              } 35%, ${gradient?.[1] ?? "rgba(0,0,0,0.1)"} 100%)`,
+                gradient?.[0] ?? "rgba(44, 204, 48, 0.6)"
+              } 35%, ${gradient?.[1] ?? "rgba(44, 204, 48, 0.8)"} 100%)`,
             }}
           ></div>
         )}
@@ -77,12 +77,12 @@ export const Loader = ({
 const getGradient = (type: LoaderVariant): [string, string] => {
   switch (type) {
     case "Success":
-      return ["#31C48D", "#ADFF00"];
+      return ["rgba(44, 204, 48, 0.6)", "rgba(44, 204, 48, 0.8)"]; // ztg-green-500/60 to ztg-green-500/80
     case "Info":
-      return ["#31A1C4", "#00F0FF"];
+      return ["rgba(44, 204, 48, 0.6)", "rgba(44, 204, 48, 0.8)"]; // ztg-green-500/60 to ztg-green-500/80
     case "Error":
       return ["#C43131", "#FF6B00"];
     case "Dark":
-      return ["rgb(10,10,10, 0.35)", "rgba(10,10,10, 0.85)"];
+      return ["rgba(26, 30, 59, 0.35)", "rgba(26, 30, 59, 0.85)"]; // ztg-primary-500 with opacity
   }
 };
