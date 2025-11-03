@@ -18,9 +18,7 @@ const EmptyPortfolio = ({
         <Inbox className="text-white/60" size={40} strokeWidth={1.5} />
       </div>
       <div className="text-center">
-        <h3 className="mb-2 text-xl font-semibold text-white">
-          {headerText}
-        </h3>
+        <h3 className="mb-2 text-xl font-semibold text-white">{headerText}</h3>
         <p className="text-sm text-white/70">{bodyText}</p>
       </div>
       {buttonText && buttonLink && (

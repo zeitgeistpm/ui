@@ -26,9 +26,7 @@ export const ProgressBar = <T extends WizardStep<any>>({
             <span className="font-bold text-white">
               Step {stepNumber} of {totalSteps}:
             </span>
-            <span className="font-medium text-white/80">
-              {current.label}
-            </span>
+            <span className="font-medium text-white/80">{current.label}</span>
           </div>
           <div className="flex items-center gap-2 text-xs sm:gap-3 sm:text-sm">
             <span className="font-bold text-white">
@@ -42,4 +40,3 @@ export const ProgressBar = <T extends WizardStep<any>>({
 };
 
 export default ProgressBar;
-

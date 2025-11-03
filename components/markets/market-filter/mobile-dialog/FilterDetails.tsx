@@ -30,7 +30,7 @@ const FilterToggle = ({ option }: { option: MarketFilter }) => {
   return (
     <button
       onClick={toggle}
-      className={`mb-3 mr-3 flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium shadow-md transition-all active:scale-[0.98] backdrop-blur-sm touch-manipulation ${
+      className={`mb-3 mr-3 flex touch-manipulation items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium shadow-md backdrop-blur-sm transition-all active:scale-[0.98] ${
         isActive
           ? "bg-ztg-green-600/80 text-white"
           : "bg-white/15 text-white hover:bg-white/20 hover:shadow-lg"
@@ -46,7 +46,7 @@ const FilterDetails = ({ back, menu }: FilterDetailsProps) => {
   return (
     <>
       <button
-        className="mb-5 flex items-center gap-2 text-sm font-semibold text-ztg-green-400 transition-all active:scale-95 hover:text-ztg-green-300 touch-manipulation"
+        className="mb-5 flex touch-manipulation items-center gap-2 text-sm font-semibold text-ztg-green-400 transition-all hover:text-ztg-green-300 active:scale-95"
         onClick={back}
       >
         <ChevronLeft size={18} />
@@ -81,7 +81,7 @@ const FilterDetails = ({ back, menu }: FilterDetailsProps) => {
         }
       </div>
       <button
-        className="sticky bottom-0 mt-auto h-12 rounded-lg bg-ztg-green-600/80 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all active:scale-[0.98] hover:bg-ztg-green-600 touch-manipulation"
+        className="sticky bottom-0 mt-auto h-12 touch-manipulation rounded-lg bg-ztg-green-600/80 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 active:scale-[0.98]"
         onClick={back}
       >
         Apply Filters

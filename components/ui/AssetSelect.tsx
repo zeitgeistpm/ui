@@ -116,7 +116,7 @@ const MenuList = (props: MenuListProps<AssetOption, false>) => {
   return (
     <components.MenuList
       {...props}
-      className="mt-1 !w-full rounded-md bg-white/10 backdrop-blur-md shadow-xl pt-1"
+      className="mt-1 !w-full rounded-md bg-white/10 pt-1 shadow-xl backdrop-blur-md"
     >
       {props.children}
     </components.MenuList>

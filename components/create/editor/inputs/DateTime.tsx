@@ -60,10 +60,10 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
     <>
       {isFirefox ? (
         <div
-          className={`flex w-full items-center overflow-hidden rounded-lg border-2 border-white/20 backdrop-blur-sm transition-all h-12 bg-white/10 hover:border-white/30 ${className}`}
+          className={`flex h-12 w-full items-center overflow-hidden rounded-lg border-2 border-white/20 bg-white/10 backdrop-blur-sm transition-all hover:border-white/30 ${className}`}
         >
           <Input
-            className="w-full rounded-lg bg-transparent px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none h-full"
+            className="h-full w-full rounded-lg bg-transparent px-4 py-3 text-sm text-white outline-none placeholder:text-white/50"
             ref={inputRef}
             name={name}
             type="datetime-local"
@@ -79,7 +79,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       ) : (
         <button
           type="button"
-          className={`flex w-full items-center rounded-lg border-2 border-white/20 backdrop-blur-sm transition-all active:scale-95 h-12 bg-white/10 px-4 py-3 text-sm text-white hover:border-white/30 hover:bg-white/15 ${className}`}
+          className={`flex h-12 w-full items-center rounded-lg border-2 border-white/20 bg-white/10 px-4 py-3 text-sm text-white backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/15 active:scale-95 ${className}`}
           onClick={() => {
             inputRef.current?.focus();
             inputRef.current?.showPicker();

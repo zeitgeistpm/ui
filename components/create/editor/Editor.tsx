@@ -223,9 +223,11 @@ export const MarketEditor = () => {
                   autoComplete="off"
                   className={`mb-4 h-12 w-full rounded-md border-2 px-4 py-7 text-center backdrop-blur-md md:w-2/3
                   ${
-                    !fieldsState.question.isValid && fieldsState.question.isTouched
+                    !fieldsState.question.isValid &&
+                    fieldsState.question.isTouched
                       ? "border-ztg-red-500 bg-ztg-primary-50/50"
-                      : fieldsState.question.isValid && fieldsState.question.isTouched
+                      : fieldsState.question.isValid &&
+                          fieldsState.question.isTouched
                         ? "border-ztg-green-500/80 bg-ztg-primary-900/50"
                         : "border-ztg-primary-200/30 bg-ztg-primary-900/50"
                   }
@@ -581,7 +583,9 @@ export const MarketEditor = () => {
             {form.currency && (
               <div className="flex flex-col items-center">
                 <div className="mb-2 flex items-center gap-2 text-center md:mb-4">
-                  <h2 className="mb-0 text-base text-ztg-primary-100">Creator Fee</h2>
+                  <h2 className="mb-0 text-base text-ztg-primary-100">
+                    Creator Fee
+                  </h2>
                   <InfoPopover>
                     <p>
                       Creators will be paid a fee based on trading volume.

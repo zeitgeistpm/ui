@@ -76,9 +76,7 @@ const SourceMarketCard = ({
       ? "bg-blue-500/80 text-white border-blue-400/40"
       : "bg-ztg-green-500/80 text-white border-ztg-green-400/40";
   const borderColor =
-    roleLabel === "Assume"
-      ? "border-blue-500/40"
-      : "border-ztg-green-500/40";
+    roleLabel === "Assume" ? "border-blue-500/40" : "border-ztg-green-500/40";
   const hoverBorderColor =
     roleLabel === "Assume"
       ? "hover:border-blue-400/60"
@@ -92,7 +90,7 @@ const SourceMarketCard = ({
         >
           {/* Collapsible Header - Always Visible */}
           <Disclosure.Button className="w-full">
-            <div className="flex items-start gap-2 p-2.5 sm:gap-2.5 sm:p-3 text-left">
+            <div className="flex items-start gap-2 p-2.5 text-left sm:gap-2.5 sm:p-3">
               {/* Badge */}
               <div
                 className={`flex-shrink-0 rounded-lg border px-2 py-0.5 text-xs font-semibold shadow-sm backdrop-blur-sm ${pillColor}`}
@@ -174,7 +172,9 @@ const SourceMarketCard = ({
                           {market.outcomeAssets?.map(
                             (assetString, outcomeIndex) => {
                               const assetId =
-                                parseAssetIdStringWithCombinatorial(assetString);
+                                parseAssetIdStringWithCombinatorial(
+                                  assetString,
+                                );
                               return assetId ? (
                                 <OutcomeBalance
                                   key={outcomeIndex}
@@ -232,18 +232,19 @@ const ComboMarketHeaderUnified: FC<ComboMarketHeaderUnifiedProps> = ({
   // Determine combo market status from source markets
   // If both are Active, combo is Active. If both are Resolved, combo is Resolved.
   // Otherwise, use the most restrictive status
-  const comboStatus: MarketStatus =
-    sourceMarketStages.every((item) => item.market.status === MarketStatus.Active)
-      ? MarketStatus.Active
-      : sourceMarketStages.every(
+  const comboStatus: MarketStatus = sourceMarketStages.every(
+    (item) => item.market.status === MarketStatus.Active,
+  )
+    ? MarketStatus.Active
+    : sourceMarketStages.every(
           (item) => item.market.status === MarketStatus.Resolved,
         )
-        ? MarketStatus.Resolved
-        : sourceMarketStages.some(
+      ? MarketStatus.Resolved
+      : sourceMarketStages.some(
             (item) => item.market.status === MarketStatus.Resolved,
           )
-          ? MarketStatus.Closed
-          : sourceMarketStages[0].market.status;
+        ? MarketStatus.Closed
+        : sourceMarketStages[0].market.status;
 
   // Estimate resolution date
   const gracePeriodMS =
@@ -276,7 +277,7 @@ const ComboMarketHeaderUnified: FC<ComboMarketHeaderUnifiedProps> = ({
             sourceMarketStages[1].stage.totalTime,
           ),
         }
-      : sourceMarketStages[0]?.stage ?? sourceMarketStages[1]?.stage ?? null;
+      : (sourceMarketStages[0]?.stage ?? sourceMarketStages[1]?.stage ?? null);
 
   return (
     <div className="space-y-6">
@@ -290,10 +291,12 @@ const ComboMarketHeaderUnified: FC<ComboMarketHeaderUnifiedProps> = ({
             walletAddress={walletAddress}
           />
         </div>
-        
+
         {/* Arrow indicator */}
-        <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center self-center rounded-full bg-white/10 shadow-md backdrop-blur-sm sm:h-7 sm:w-7 lg:self-start lg:mt-3">
-          <span className="text-xs font-medium text-white/60 sm:text-sm">→</span>
+        <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center self-center rounded-full bg-white/10 shadow-md backdrop-blur-sm sm:h-7 sm:w-7 lg:mt-3 lg:self-start">
+          <span className="text-xs font-medium text-white/60 sm:text-sm">
+            →
+          </span>
         </div>
 
         <div className="flex-1">
@@ -333,4 +336,3 @@ const ComboMarketHeaderUnified: FC<ComboMarketHeaderUnifiedProps> = ({
 };
 
 export default ComboMarketHeaderUnified;
-

@@ -12,11 +12,18 @@ import {
 } from "lib/state/alerts";
 import { useWallet } from "lib/state/wallet";
 import { useRouter } from "next/router";
-import { Fragment, PropsWithChildren, useEffect, useState } from "react";
+import {
+  Fragment,
+  PropsWithChildren,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import { AiOutlineEye, AiOutlineFileAdd } from "react-icons/ai";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { LuClipboardCheck, LuVote } from "react-icons/lu";
+import { alertsButtonRef } from "./alertsRef";
 
 export const Alerts = () => {
   const wallet = useWallet();
@@ -25,6 +32,7 @@ export const Alerts = () => {
   const hasNotifications = alerts.length > 0;
 
   const [hoveringMenu, setHoveringMenu] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const mouseEnterMenuHandler = () => {
     setHoveringMenu(true);
@@ -33,6 +41,18 @@ export const Alerts = () => {
     setHoveringMenu(false);
   };
 
+  // Set the ref so AccountButton can trigger it
+  useEffect(() => {
+    if (buttonRef.current) {
+      alertsButtonRef.current = buttonRef.current;
+    }
+    return () => {
+      if (alertsButtonRef.current === buttonRef.current) {
+        alertsButtonRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <Menu as="div" className="relative">
       {({ open, close }) => {
@@ -40,6 +60,7 @@ export const Alerts = () => {
           <>
             <div className="flex gap-2">
               <Menu.Button
+                ref={buttonRef}
                 disabled={alerts.length === 0}
                 className="center relative flex gap-2 rounded-lg bg-white/10 px-2 py-1 font-light text-white/90 backdrop-blur-sm transition-all hover:bg-white/20"
               >

@@ -168,7 +168,9 @@ export const useLatestTrades = (
         if (isComboMarket) {
           // Build set of exact token hex values for this pool for client-side filtering
           const exactTokenHexSet = new Set(
-            comboAssetsForProcessing.map(asset => asset.CombinatorialToken.toLowerCase())
+            comboAssetsForProcessing.map((asset) =>
+              asset.CombinatorialToken.toLowerCase(),
+            ),
           );
 
           // Handle combinatorial token trades

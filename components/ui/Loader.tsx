@@ -22,13 +22,14 @@ export const Loader = ({
 
   // Dotted line loader
   if (type === "dots") {
-    const color = variant === "Success"
-      ? "#2ccc30"
-      : variant === "Error"
-      ? "#C43131"
-      : variant === "Info"
-      ? "#2ccc30"
-      : "#2ccc30"; // Default green
+    const color =
+      variant === "Success"
+        ? "#2ccc30"
+        : variant === "Error"
+          ? "#C43131"
+          : variant === "Info"
+            ? "#2ccc30"
+            : "#2ccc30"; // Default green
 
     return (
       <div

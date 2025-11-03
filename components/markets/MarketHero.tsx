@@ -47,9 +47,11 @@ export const MarketHero: FC<MarketHeroProps> = ({
         <div className="flex min-h-[60px] flex-1 flex-col justify-between">
           {/* Title section - takes up 2/3 */}
           <div className="flex-[2]">
-            <h1 className="text-2xl font-bold leading-tight text-white md:text-4xl">{question}</h1>
+            <h1 className="text-2xl font-bold leading-tight text-white md:text-4xl">
+              {question}
+            </h1>
             {rejectReason && rejectReason.length > 0 && (
-              <div className="mt-1 rounded-md border-2 border-r-2ed-500/40 bg-red-900/30 px-3 py-1.5 text-sm text-red-400 backdrop-blur-sm">
+              <div className="border-r-2ed-500/40 mt-1 rounded-md border-2 bg-red-900/30 px-3 py-1.5 text-sm text-red-400 backdrop-blur-sm">
                 Market rejected: {rejectReason}
               </div>
             )}

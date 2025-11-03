@@ -8,6 +8,17 @@ export default function Document() {
   return (
     <Html>
       <Head>
+        {/* Mobile optimization meta tags */}
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="theme-color" content="#1a1e3b" />
+
         {useAnalytics && (
           <Script id="google-analytics" strategy="afterInteractive">
             {`

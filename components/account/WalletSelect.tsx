@@ -55,7 +55,14 @@ const WalletSelect = () => {
       accountModals.closeWalletSelect();
     }
     // If there are errors but we're not connected, keep modal open
-  }, [wasConnected, connected, accounts.length, walletId, errors, accountModals]);
+  }, [
+    wasConnected,
+    connected,
+    accounts.length,
+    walletId,
+    errors,
+    accountModals,
+  ]);
 
   const isMobileDevice =
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -73,7 +80,7 @@ const WalletSelect = () => {
     );
 
   const hasInstalledWallets = supportedWallets.some(
-    (w) => w.extensionName !== "web3auth" && w.installed
+    (w) => w.extensionName !== "web3auth" && w.installed,
   );
 
   return (
@@ -150,7 +157,9 @@ const WalletSelect = () => {
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold text-white/70">
                     4
                   </span>
-                  <span>Press "Connect Wallet" and allow access when prompted</span>
+                  <span>
+                    Press "Connect Wallet" and allow access when prompted
+                  </span>
                 </li>
               </ol>
             </div>
@@ -180,7 +189,7 @@ const WalletSelect = () => {
               })}
           </div>
         )}
-        
+
         {/* Error Display */}
         {errors.length > 0 && (
           <div className="mt-4 space-y-2">
@@ -189,9 +198,15 @@ const WalletSelect = () => {
                 key={index}
                 className="flex items-start gap-2.5 rounded-lg border border-ztg-red-500/40 bg-ztg-red-900/20 p-3 backdrop-blur-sm"
               >
-                <AlertCircle className="mt-0.5 shrink-0 text-ztg-red-400" size={16} strokeWidth={2} />
+                <AlertCircle
+                  className="mt-0.5 shrink-0 text-ztg-red-400"
+                  size={16}
+                  strokeWidth={2}
+                />
                 <div className="flex-1">
-                  <div className="text-xs font-semibold text-ztg-red-300">{error.extensionName}</div>
+                  <div className="text-xs font-semibold text-ztg-red-300">
+                    {error.extensionName}
+                  </div>
                   <div className="mt-1 text-xs text-ztg-red-400/80">
                     {error.type === "NoAccounts" &&
                       "No accounts found. Please add an account in your wallet extension."}

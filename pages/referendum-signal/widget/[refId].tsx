@@ -79,7 +79,7 @@ const ReferendumSignalWidget = () => {
     return (
       <div className="rounded-xl border-2 border-gray-200 bg-white p-4 shadow-sm">
         <div className="items-top mb-3 flex flex-col justify-center gap-2 sm:flex-row">
-          <div className="flex-1 rounded border-2 border-b-2lue-200 bg-blue-50 p-2">
+          <div className="border-b-2lue-200 flex-1 rounded border-2 bg-blue-50 p-2">
             <div className="mb-1 inline-block rounded bg-blue-100 px-1.5 py-0.5 text-xxs font-semibold text-blue-800">
               Assume
             </div>
@@ -193,7 +193,7 @@ const ReferendumSignalWidget = () => {
               href={market.market_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded border-2 border-gray-200 bg-gray-50 p-3 transition-colors hover:border-b-2lue-300 hover:bg-blue-50"
+              className="hover:border-b-2lue-300 block rounded border-2 border-gray-200 bg-gray-50 p-3 transition-colors hover:bg-blue-50"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">

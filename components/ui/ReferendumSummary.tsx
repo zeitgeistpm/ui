@@ -118,7 +118,9 @@ const ReferendumSummary = ({
 
           {/* Total Votes Display */}
           <div className="flex items-center justify-center gap-2 rounded-lg border-2 border-ztg-primary-200/30 bg-ztg-primary-50/50 py-2 text-center backdrop-blur-sm">
-            <span className="text-sm font-semibold text-ztg-primary-700">Total:</span>
+            <span className="text-sm font-semibold text-ztg-primary-700">
+              Total:
+            </span>
             <span className="text-sm font-bold text-ztg-primary-900">
               {formatVoteAmount(referendum.ayes.plus(referendum.nays))} DOT
             </span>

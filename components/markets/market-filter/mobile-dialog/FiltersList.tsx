@@ -15,7 +15,11 @@ import {
 import MarketActiveFilters from "../MarketActiveFilters";
 import MarketFiltersCheckboxes from "../MarketFiltersCheckboxes";
 import { SelectedMenu } from "../MarketFiltersContainer";
-import { MarketType, MarketsOrderBy, MarketOrderByOption } from "lib/types/market-filter";
+import {
+  MarketType,
+  MarketsOrderBy,
+  MarketOrderByOption,
+} from "lib/types/market-filter";
 import { marketsOrderByOptions } from "lib/constants/market-filter";
 
 const MobileSortSelect = ({
@@ -26,14 +30,20 @@ const MobileSortSelect = ({
   onChange: (ordering: MarketsOrderBy) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const selectedOption = marketsOrderByOptions.find((opt) => opt.value === value);
-  
+  const selectedOption = marketsOrderByOptions.find(
+    (opt) => opt.value === value,
+  );
+
   const isTimeBased =
     value === MarketsOrderBy.Newest || value === MarketsOrderBy.Oldest;
   const isVolumeBased =
     value === MarketsOrderBy.MostVolume || value === MarketsOrderBy.LeastVolume;
-  
-  let Icon: typeof Clock | typeof BarChart2 | typeof TrendingUp | typeof TrendingDown = BarChart2;
+
+  let Icon:
+    | typeof Clock
+    | typeof BarChart2
+    | typeof TrendingUp
+    | typeof TrendingDown = BarChart2;
   if (isTimeBased) {
     Icon = Clock;
   } else if (value === MarketsOrderBy.MostVolume) {
@@ -46,18 +56,20 @@ const MobileSortSelect = ({
     <div className="relative w-full">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between rounded-lg bg-white/15 px-4 py-2.5 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all active:scale-[0.98] hover:bg-white/20 touch-manipulation"
+        className="flex min-h-[48px] w-full touch-manipulation items-center justify-between rounded-lg bg-white/15 px-4 py-3 text-base font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-white/20 active:scale-[0.98]"
       >
-        <div className="flex items-center gap-2">
-          <Icon size={16} className="text-white/70" />
-          <span>{isVolumeBased ? "Volume" : selectedOption?.label || "Sort"}</span>
+        <div className="flex items-center gap-3">
+          <Icon size={20} className="text-white/70" />
+          <span>
+            {isVolumeBased ? "Volume" : selectedOption?.label || "Sort"}
+          </span>
         </div>
         <ChevronDown
-          size={16}
+          size={20}
           className={`text-white/70 transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
-      
+
       {isOpen && (
         <>
           <div
@@ -73,8 +85,12 @@ const MobileSortSelect = ({
                 const isVolumeBasedOption =
                   option.value === MarketsOrderBy.MostVolume ||
                   option.value === MarketsOrderBy.LeastVolume;
-                
-                let OptionIcon: typeof Clock | typeof BarChart2 | typeof TrendingUp | typeof TrendingDown = BarChart2;
+
+                let OptionIcon:
+                  | typeof Clock
+                  | typeof BarChart2
+                  | typeof TrendingUp
+                  | typeof TrendingDown = BarChart2;
                 if (isTimeBasedOption) {
                   OptionIcon = Clock;
                 } else if (option.value === MarketsOrderBy.MostVolume) {
@@ -82,7 +98,7 @@ const MobileSortSelect = ({
                 } else if (option.value === MarketsOrderBy.LeastVolume) {
                   OptionIcon = TrendingDown;
                 }
-                
+
                 const isSelected = value === option.value;
                 return (
                   <button
@@ -91,13 +107,16 @@ const MobileSortSelect = ({
                       onChange(option.value);
                       setIsOpen(false);
                     }}
-                    className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold shadow-md backdrop-blur-sm transition-all active:scale-[0.98] touch-manipulation ${
+                    className={`flex min-h-[44px] touch-manipulation items-center gap-3 rounded-lg px-4 py-3 text-base font-semibold shadow-md backdrop-blur-sm transition-all active:scale-[0.98] ${
                       isSelected
                         ? "bg-ztg-green-600/80 text-white ring-2 ring-ztg-green-500/50"
                         : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white hover:shadow-lg"
                     }`}
                   >
-                    <OptionIcon size={14} className={isSelected ? "text-white" : "text-white/70"} />
+                    <OptionIcon
+                      size={18}
+                      className={isSelected ? "text-white" : "text-white/70"}
+                    />
                     <span>{isVolumeBasedOption ? "Volume" : option.label}</span>
                   </button>
                 );
@@ -125,13 +144,15 @@ const FilterButton = ({
   return (
     <button
       className={
-        "mb-2.5 flex h-12 w-full items-center rounded-lg bg-white/15 px-4 text-left shadow-md backdrop-blur-sm transition-all active:scale-[0.98] hover:bg-white/20 hover:shadow-lg touch-manipulation " +
+        "mb-2.5 flex min-h-[48px] w-full touch-manipulation items-center rounded-lg bg-white/15 px-4 py-3 text-left shadow-md backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-lg active:scale-[0.98] " +
         className
       }
       onClick={onClick}
     >
-      <div className="text-sm font-semibold text-white">{children}</div>
-      {RightIcon && <RightIcon className="ml-auto text-ztg-green-400" size={20} />}
+      <div className="text-base font-semibold text-white">{children}</div>
+      {RightIcon && (
+        <RightIcon className="ml-auto text-ztg-green-400" size={20} />
+      )}
     </button>
   );
 };
@@ -164,13 +185,16 @@ const MobileMarketTypeToggle = ({
           <button
             key={option.value}
             onClick={() => onChange(option.value)}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold shadow-md backdrop-blur-sm transition-all active:scale-[0.98] touch-manipulation ${
+            className={`flex min-h-[48px] flex-1 touch-manipulation items-center justify-center gap-3 rounded-lg px-4 py-3 text-base font-semibold shadow-md backdrop-blur-sm transition-all active:scale-[0.98] ${
               isSelected
                 ? "bg-ztg-green-600/80 text-white ring-2 ring-ztg-green-500/50"
                 : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white hover:shadow-lg"
             }`}
           >
-            <Icon size={16} className={isSelected ? "text-white" : "text-white/70"} />
+            <Icon
+              size={20}
+              className={isSelected ? "text-white" : "text-white/70"}
+            />
             <span>{option.label}</span>
           </button>
         );
@@ -255,7 +279,7 @@ const FiltersList = ({
 
       {/* Show Markets Button */}
       <button
-        className="sticky bottom-0 mt-auto h-12 rounded-lg bg-ztg-green-600/80 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all active:scale-[0.98] hover:bg-ztg-green-600 touch-manipulation"
+        className="sticky bottom-0 mt-auto min-h-[48px] touch-manipulation rounded-lg bg-ztg-green-600/80 px-4 py-3 text-base font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 active:scale-[0.98]"
         onClick={close}
       >
         Show Markets

@@ -158,7 +158,7 @@ export const CategoricalAnswersInput = ({
           {!disabled && (
             <button
               type="button"
-              className="rounded-lg bg-white/10 px-4 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/30 active:scale-95"
+              className="rounded-lg bg-white/10 px-4 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20 active:scale-95"
               onClick={handleAddOptionClick}
             >
               + Add Option
@@ -236,7 +236,7 @@ const AnswerInput = ({
         <div className="absolute right-8 top-[50%] z-10 flex translate-y-[-50%] gap-1 opacity-0 transition-opacity group-hover:opacity-100">
           <button
             type="button"
-            className="rounded-md bg-ztg-red-500/20 border-2 border-ztg-red-500/60 px-1.5 py-0.5 text-xs font-medium text-ztg-red-400 transition-all hover:bg-ztg-red-500/30 active:scale-95"
+            className="rounded-md border-2 border-ztg-red-500/60 bg-ztg-red-500/20 px-1.5 py-0.5 text-xs font-medium text-ztg-red-400 transition-all hover:bg-ztg-red-500/30 active:scale-95"
             onClick={onClear}
           >
             ✕

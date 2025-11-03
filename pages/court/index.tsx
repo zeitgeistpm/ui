@@ -275,7 +275,9 @@ const CourtPage: NextPage = ({
         </div>
 
         <div className="mt-4 hidden h-full min-w-[420px] lg:mt-0 lg:flex lg:flex-col xl:min-w-[560px]">
-          <h3 className="lg:text-md mb-3 text-sm text-ztg-primary-600">Statistics</h3>
+          <h3 className="lg:text-md mb-3 text-sm text-ztg-primary-600">
+            Statistics
+          </h3>
           <Stats />
         </div>
 

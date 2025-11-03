@@ -96,7 +96,7 @@ export const OracleInput = forwardRef(
               className={`flex w-full items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
                 !isSelectedAccount
                   ? "border-orange-500/60 bg-orange-500/10 text-orange-400 hover:border-orange-500/80 hover:bg-orange-500/20"
-                  : "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
+                  : "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
               }`}
             >
               {wallet.realAddress && (
@@ -123,7 +123,7 @@ export const OracleInput = forwardRef(
             <button
               type="button"
               onClick={() => accountModals.openWalletSelect()}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/30 active:scale-95"
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20 active:scale-95"
             >
               Connect Wallet
             </button>

@@ -67,7 +67,9 @@ const ScalarDisputeBox = ({
 
       {bondAmount !== disputeBond && bondAmount !== undefined && (
         <div className="item-center flex flex-col text-center">
-          <span className="text-[14px] text-ztg-primary-600">Previous Bond:</span>
+          <span className="text-[14px] text-ztg-primary-600">
+            Previous Bond:
+          </span>
           <span className="">{bondAmount}</span>
         </div>
       )}

@@ -12,7 +12,10 @@ const GlassSlider = forwardRef<HTMLInputElement, GlassSliderProps>(
     useEffect(() => {
       if (containerRef.current) {
         const percentValue = parseFloat(String(value || "0"));
-        containerRef.current.style.setProperty('--track-fill', String(percentValue));
+        containerRef.current.style.setProperty(
+          "--track-fill",
+          String(percentValue),
+        );
       }
     }, [value]);
 
@@ -20,7 +23,11 @@ const GlassSlider = forwardRef<HTMLInputElement, GlassSliderProps>(
       <div
         ref={containerRef}
         className={`ztg-glass-slider ${className}`}
-        style={{ '--track-fill': String(parseFloat(String(value || "0"))) } as React.CSSProperties}
+        style={
+          {
+            "--track-fill": String(parseFloat(String(value || "0"))),
+          } as React.CSSProperties
+        }
       >
         <input
           ref={ref}
@@ -31,7 +38,7 @@ const GlassSlider = forwardRef<HTMLInputElement, GlassSliderProps>(
         />
       </div>
     );
-  }
+  },
 );
 
 GlassSlider.displayName = "GlassSlider";

@@ -147,9 +147,7 @@ const TextSection = ({
           {rightButton && (
             <button
               className={`w-full rounded-[100px] bg-ztg-green-600/80 text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md ${
-                rightButton.disabled === true
-                  ? "cursor-default opacity-50"
-                  : ""
+                rightButton.disabled === true ? "cursor-default opacity-50" : ""
               }`}
               onClick={rightButton.onClick}
             >

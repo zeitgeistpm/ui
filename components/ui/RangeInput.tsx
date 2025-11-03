@@ -40,7 +40,10 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(
     const componentRef = useRef<HTMLDivElement | null>(null);
 
     // Parse values safely
-    const parseValue = (val: number | string, defaultVal: number = 0): number => {
+    const parseValue = (
+      val: number | string,
+      defaultVal: number = 0,
+    ): number => {
       if (typeof val === "number") return val;
       const parsed = parseFloat(val);
       return isNaN(parsed) ? defaultVal : parsed;
@@ -51,7 +54,8 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(
     const stepNum = parseValue(step, 1);
     const valueNum = parseValue(value, 0);
 
-    const rawPercentage = (maxNum - minNum) > 0 ? (valueNum - minNum) / (maxNum - minNum) : 0;
+    const rawPercentage =
+      maxNum - minNum > 0 ? (valueNum - minNum) / (maxNum - minNum) : 0;
     const percentage = Math.max(0, Math.min(1, rawPercentage));
 
     const width = componentRef?.current?.clientWidth ?? 0;
@@ -62,7 +66,10 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(
     // Update CSS custom property for track fill
     useEffect(() => {
       if (componentRef.current) {
-        componentRef.current.style.setProperty('--track-fill', `${percentage * 100}%`);
+        componentRef.current.style.setProperty(
+          "--track-fill",
+          `${percentage * 100}%`,
+        );
       }
     }, [percentage]);
 
@@ -82,10 +89,14 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(
       // Update track fill immediately on change
       if (componentRef.current) {
         const newValue = parseFloat(e.target.value);
-        const newPercentage = (maxNum - minNum) > 0 
-          ? Math.max(0, Math.min(1, (newValue - minNum) / (maxNum - minNum)))
-          : 0;
-        componentRef.current.style.setProperty('--track-fill', `${newPercentage * 100}%`);
+        const newPercentage =
+          maxNum - minNum > 0
+            ? Math.max(0, Math.min(1, (newValue - minNum) / (maxNum - minNum)))
+            : 0;
+        componentRef.current.style.setProperty(
+          "--track-fill",
+          `${newPercentage * 100}%`,
+        );
       }
     };
 
@@ -93,10 +104,15 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(
       <div
         className={`ztg-glass-slider relative w-full ${className}`}
         ref={componentRef}
-        style={{ '--track-fill': `${percentage * 100}%` } as React.CSSProperties}
+        style={
+          { "--track-fill": `${percentage * 100}%` } as React.CSSProperties
+        }
       >
         {/* Native input styled with glass morphism */}
-        <div className="h-[20px] flex items-center" style={{ position: 'relative', zIndex: 10 }}>
+        <div
+          className="flex h-[20px] items-center"
+          style={{ position: "relative", zIndex: 10 }}
+        >
           <input
             ref={ref}
             type="range"

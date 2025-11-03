@@ -22,7 +22,7 @@ const AssetInput: React.FC<AssetInputProps> = ({
   return (
     <div
       className={
-        "relative mb-5 h-14 w-full rounded-md border-2 border-t-2ransparent bg-anti-flash-white " +
+        "border-t-2ransparent relative mb-5 h-14 w-full rounded-md border-2 bg-anti-flash-white " +
         (error ? "border-ztg-red-500" : "")
       }
     >

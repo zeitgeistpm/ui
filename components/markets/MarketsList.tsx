@@ -52,7 +52,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
   const marketItems = marketsPages?.pages.flatMap((page) => page.data) ?? [];
 
   const count = marketItems?.length ?? 0;
-  
+
   // Determine loading states
   const isInitialLoading = isLoading && count === 0;
   const isFetchingMore = isFetchingMarkets && count > 0;
@@ -80,21 +80,23 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
               );
             })}
           </div>
-          
+
           {/* Pagination loader - at bottom when fetching more */}
           {isFetchingMore && (
             <div className="mt-[78px] flex w-full justify-center">
               <Loader className="w-32" type="dots" />
             </div>
           )}
-          
+
           {/* Empty state - only show when not loading and no data */}
           {!isInitialLoading && !isFetchingMore && count === 0 && (
-            <div className="mt-[78px] text-center text-white/70">No results!</div>
+            <div className="mt-[78px] text-center text-white/70">
+              No results!
+            </div>
           )}
         </>
       )}
-      
+
       {/* Infinite scroll trigger */}
       <div
         className="h-0 w-full"

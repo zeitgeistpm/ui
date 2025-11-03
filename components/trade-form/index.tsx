@@ -629,13 +629,15 @@ const Inner = ({
               {...register("percentage")}
             />
             <div className="mb-4 text-center">
-              <div className="text-ztg-12-150 sm:text-ztg-14-150 text-white/90">
+              <div className="text-ztg-12-150 text-white/90 sm:text-ztg-14-150">
                 <div className="mb-[10px]">
                   <span className="text-white/70">Average Price: </span>
                   {averagePrice} {baseSymbol}
                 </div>
                 <div className="mb-[10px]">
-                  <span className="text-white/70">Prediction After Trade: </span>
+                  <span className="text-white/70">
+                    Prediction After Trade:{" "}
+                  </span>
                   {predictionAfterTrade.toFixed(2)} {baseSymbol} (
                   {predictionAfterTrade.mul(100).toFixed(0)}%)
                 </div>

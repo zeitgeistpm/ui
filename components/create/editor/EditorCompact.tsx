@@ -152,15 +152,15 @@ export const MarketEditorCompact = () => {
           <div className="container-fluid">
             <div className="py-2">
               <div className="flex items-center gap-4 rounded-lg bg-white/10 p-3 backdrop-blur-md md:p-4">
-                <div className="flex-1 flex items-center">
+                <div className="flex flex-1 items-center">
                   <ProgressBar steps={steps} current={currentStep} />
                 </div>
 
                 {/* Navigation buttons */}
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex shrink-0 items-center gap-2">
                   {prevStepFrom(steps, currentStep) && (
                     <button
-                      className="h-8 rounded-lg bg-white/10 px-4 text-xs font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/30 active:scale-95 sm:h-10 sm:px-5 sm:text-sm"
+                      className="h-8 rounded-lg bg-white/10 px-4 text-xs font-semibold text-white backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20 active:scale-95 sm:h-10 sm:px-5 sm:text-sm"
                       onClick={back}
                       type="button"
                     >
@@ -206,7 +206,7 @@ export const MarketEditorCompact = () => {
                             !fieldsState.liquidity.isValid ||
                             !fieldsState.answers.isValid))
                           ? "cursor-not-allowed border-white/20 bg-white/5 text-white/40"
-                          : "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
+                          : "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
                       }`}
                       type="button"
                       onClick={next}
@@ -239,81 +239,102 @@ export const MarketEditorCompact = () => {
                     Start with Your Question
                   </h2>
                   <p className="text-sm text-white/70">
-                    Create a clear, specific question that can be definitively answered
+                    Create a clear, specific question that can be definitively
+                    answered
                   </p>
                 </div>
 
                 {/* Market Question - Card */}
-                <div className={`space-y-3 rounded-lg bg-white/5 p-4 border-2 transition-all ${
-                  !fieldsState.question.isValid && fieldsState.question.isTouched
-                    ? "border-ztg-red-500/60"
-                    : fieldsState.question.isValid && fieldsState.question.isTouched
-                      ? "border-ztg-green-500/80"
-                      : "border-transparent"
-                }`}>
+                <div
+                  className={`space-y-3 rounded-lg border-2 bg-white/5 p-4 transition-all ${
+                    !fieldsState.question.isValid &&
+                    fieldsState.question.isTouched
+                      ? "border-ztg-red-500/60"
+                      : fieldsState.question.isValid &&
+                          fieldsState.question.isTouched
+                        ? "border-ztg-green-500/80"
+                        : "border-transparent"
+                  }`}
+                >
                   <label className="flex items-center gap-2 text-sm font-semibold text-white">
                     Market Question <span className="text-ztg-red-400">*</span>
                     <Tooltip content="Make it specific with a clear timeframe and resolution criteria. Example: 'Will Bitcoin reach $100k by Dec 31, 2024?'" />
                   </label>
                   <Input
                     autoComplete="off"
-                    className="h-12 w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 text-sm text-white placeholder:text-white/50 backdrop-blur-sm transition-all hover:border-white/30"
+                    className="h-12 w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 text-sm text-white backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30"
                     placeholder="e.g., Will Bitcoin reach $100k by Dec 31, 2024?"
                     {...input("question", { type: "text" })}
                   />
-                  {!fieldsState.question.isValid && fieldsState.question.isTouched && (
-                    <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
-                      <LuFileWarning size={14} className="mt-0.5 shrink-0" />
-                      <ErrorMessage field={fieldsState.question} />
-                    </div>
-                  )}
+                  {!fieldsState.question.isValid &&
+                    fieldsState.question.isTouched && (
+                      <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
+                        <LuFileWarning size={14} className="mt-0.5 shrink-0" />
+                        <ErrorMessage field={fieldsState.question} />
+                      </div>
+                    )}
                 </div>
 
                 {/* Answer Options + Categories - Side by Side */}
                 <div className="grid gap-6 lg:grid-cols-2">
                   {/* Answer Options - Card */}
-                  <div className={`space-y-3 rounded-lg bg-white/5 p-4 border-2 transition-all ${
-                    !fieldsState.answers.isValid && fieldsState.answers.isTouched
-                      ? "border-ztg-red-500/60"
-                      : fieldsState.answers.isValid && fieldsState.answers.isTouched
-                        ? "border-ztg-green-500/80"
-                        : "border-transparent"
-                  }`}>
+                  <div
+                    className={`space-y-3 rounded-lg border-2 bg-white/5 p-4 transition-all ${
+                      !fieldsState.answers.isValid &&
+                      fieldsState.answers.isTouched
+                        ? "border-ztg-red-500/60"
+                        : fieldsState.answers.isValid &&
+                            fieldsState.answers.isTouched
+                          ? "border-ztg-green-500/80"
+                          : "border-transparent"
+                    }`}
+                  >
                     <label className="flex items-center gap-2 text-sm font-semibold text-white">
-                      Outcome Selection <span className="text-ztg-red-400">*</span>
+                      Outcome Selection{" "}
+                      <span className="text-ztg-red-400">*</span>
                       <Tooltip content="Categorical: Multiple choice options | Scalar: Number or date range | Yes/No: Simple binary question" />
                     </label>
                     <AnswersInput
                       {...input("answers", { mode: "onChange" })}
                       fieldState={fieldsState.answers}
                     />
-                    {!fieldsState.answers.isValid && fieldsState.answers.isTouched && (
-                      <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
-                        <LuFileWarning size={14} className="mt-0.5 shrink-0" />
-                        <ErrorMessage field={fieldsState.answers} />
-                      </div>
-                    )}
+                    {!fieldsState.answers.isValid &&
+                      fieldsState.answers.isTouched && (
+                        <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
+                          <LuFileWarning
+                            size={14}
+                            className="mt-0.5 shrink-0"
+                          />
+                          <ErrorMessage field={fieldsState.answers} />
+                        </div>
+                      )}
                   </div>
 
                   {/* Categories - Card */}
-                  <div className={`space-y-3 rounded-lg bg-white/5 p-4 border-2 transition-all ${
-                    !fieldsState.tags.isValid && fieldsState.tags.isTouched
-                      ? "border-ztg-red-500/60"
-                      : fieldsState.tags.isValid && fieldsState.tags.isTouched
-                        ? "border-ztg-green-500/80"
-                        : "border-transparent"
-                  }`}>
+                  <div
+                    className={`space-y-3 rounded-lg border-2 bg-white/5 p-4 transition-all ${
+                      !fieldsState.tags.isValid && fieldsState.tags.isTouched
+                        ? "border-ztg-red-500/60"
+                        : fieldsState.tags.isValid && fieldsState.tags.isTouched
+                          ? "border-ztg-green-500/80"
+                          : "border-transparent"
+                    }`}
+                  >
                     <label className="flex items-center gap-2 text-sm font-semibold text-white">
                       Categories <span className="text-ztg-red-400">*</span>
                       <Tooltip content="Select one or more categories to help traders find your market" />
                     </label>
                     <CategorySelect {...input("tags")} />
-                    {!fieldsState.tags.isValid && fieldsState.tags.isTouched && (
-                      <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
-                        <LuFileWarning size={14} className="mt-0.5 shrink-0" />
-                        <ErrorMessage field={fieldsState.tags} />
-                      </div>
-                    )}
+                    {!fieldsState.tags.isValid &&
+                      fieldsState.tags.isTouched && (
+                        <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
+                          <LuFileWarning
+                            size={14}
+                            className="mt-0.5 shrink-0"
+                          />
+                          <ErrorMessage field={fieldsState.tags} />
+                        </div>
+                      )}
                   </div>
                 </div>
 
@@ -374,15 +395,20 @@ export const MarketEditorCompact = () => {
                 {/* Row: Market End Date (1 col) + Resolution Timeline (2 cols) */}
                 <div className="grid gap-6 lg:grid-cols-3">
                   {/* Market End Date - 1 Column */}
-                  <div className={`space-y-3 rounded-lg bg-white/5 p-4 border-2 transition-all ${
-                    !fieldsState.endDate.isValid && fieldsState.endDate.isTouched
-                      ? "border-ztg-red-500/60"
-                      : fieldsState.endDate.isValid && fieldsState.endDate.isTouched
-                        ? "border-ztg-green-500/80"
-                        : "border-transparent"
-                  }`}>
+                  <div
+                    className={`space-y-3 rounded-lg border-2 bg-white/5 p-4 transition-all ${
+                      !fieldsState.endDate.isValid &&
+                      fieldsState.endDate.isTouched
+                        ? "border-ztg-red-500/60"
+                        : fieldsState.endDate.isValid &&
+                            fieldsState.endDate.isTouched
+                          ? "border-ztg-green-500/80"
+                          : "border-transparent"
+                    }`}
+                  >
                     <label className="flex items-center gap-2 text-sm font-semibold text-white">
-                      Market End Date <span className="text-ztg-red-400">*</span>
+                      Market End Date{" "}
+                      <span className="text-ztg-red-400">*</span>
                       <Tooltip content="When trading stops and the market closes. Oracle must report outcome after this date." />
                     </label>
                     <div className="grid grid-cols-1 gap-3">
@@ -397,43 +423,55 @@ export const MarketEditorCompact = () => {
                         />
                       </div>
                       <div className="w-full">
-                        <TimezoneSelect 
+                        <TimezoneSelect
                           {...input("timeZone")}
                           hasValue={!!form?.timeZone}
                         />
                       </div>
                     </div>
-                    {!fieldsState.endDate.isValid && fieldsState.endDate.isTouched && (
-                      <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
-                        <LuFileWarning size={14} className="mt-0.5 shrink-0" />
-                        <ErrorMessage field={fieldsState.endDate} />
-                      </div>
-                    )}
+                    {!fieldsState.endDate.isValid &&
+                      fieldsState.endDate.isTouched && (
+                        <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
+                          <LuFileWarning
+                            size={14}
+                            className="mt-0.5 shrink-0"
+                          />
+                          <ErrorMessage field={fieldsState.endDate} />
+                        </div>
+                      )}
                   </div>
 
                   {/* Resolution Timeline - 2 Columns */}
-                  <div className={`space-y-3 rounded-lg bg-white/5 p-4 lg:col-span-2 border-2 transition-all ${
-                    (!fieldsState.reportingPeriod.isValid && fieldsState.reportingPeriod.isTouched) ||
-                    (!fieldsState.disputePeriod.isValid && fieldsState.disputePeriod.isTouched)
-                      ? "border-ztg-red-500/60"
-                      : (fieldsState.reportingPeriod.isValid && fieldsState.reportingPeriod.isTouched) &&
-                        (fieldsState.disputePeriod.isValid && fieldsState.disputePeriod.isTouched)
-                        ? "border-ztg-green-500/80"
-                        : "border-transparent"
-                  }`}>
+                  <div
+                    className={`space-y-3 rounded-lg border-2 bg-white/5 p-4 transition-all lg:col-span-2 ${
+                      (!fieldsState.reportingPeriod.isValid &&
+                        fieldsState.reportingPeriod.isTouched) ||
+                      (!fieldsState.disputePeriod.isValid &&
+                        fieldsState.disputePeriod.isTouched)
+                        ? "border-ztg-red-500/60"
+                        : fieldsState.reportingPeriod.isValid &&
+                            fieldsState.reportingPeriod.isTouched &&
+                            fieldsState.disputePeriod.isValid &&
+                            fieldsState.disputePeriod.isTouched
+                          ? "border-ztg-green-500/80"
+                          : "border-transparent"
+                    }`}
+                  >
                     <div className="mb-2">
                       <h3 className="text-sm font-semibold text-white">
                         Resolution Timeline
                       </h3>
                       <p className="mt-1 text-xs text-white/70">
-                        How long after the market ends for reporting and disputes
+                        How long after the market ends for reporting and
+                        disputes
                       </p>
                     </div>
                     <div className="grid gap-4 md:grid-cols-2">
                       {/* Reporting Period */}
                       <div className="space-y-2">
                         <label className="flex items-center gap-2 text-xs font-semibold text-white">
-                          Reporting Window <span className="text-ztg-red-400">*</span>
+                          Reporting Window{" "}
+                          <span className="text-ztg-red-400">*</span>
                           <Tooltip content="How long the oracle has to submit the outcome after the market ends. Recommended: 1-2 weeks for most markets." />
                         </label>
                         <BlockPeriodPicker
@@ -443,23 +481,32 @@ export const MarketEditorCompact = () => {
                           chainTime={chainTime ?? undefined}
                           {...input("reportingPeriod", { mode: "all" })}
                         />
-                        {!fieldsState.reportingPeriod.isValid && fieldsState.reportingPeriod.isTouched && (
-                          <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
-                            <LuFileWarning size={14} className="mt-0.5 shrink-0" />
-                            <ErrorMessage field={fieldsState.reportingPeriod} />
-                          </div>
-                        )}
-                        {fieldsState.endDate.isValid && !fieldsState.reportingPeriod.isTouched && (
-                          <p className="text-xs text-white/60">
-                            💡 Tip: Give your oracle enough time to gather data and report accurately
-                          </p>
-                        )}
+                        {!fieldsState.reportingPeriod.isValid &&
+                          fieldsState.reportingPeriod.isTouched && (
+                            <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
+                              <LuFileWarning
+                                size={14}
+                                className="mt-0.5 shrink-0"
+                              />
+                              <ErrorMessage
+                                field={fieldsState.reportingPeriod}
+                              />
+                            </div>
+                          )}
+                        {fieldsState.endDate.isValid &&
+                          !fieldsState.reportingPeriod.isTouched && (
+                            <p className="text-xs text-white/60">
+                              💡 Tip: Give your oracle enough time to gather
+                              data and report accurately
+                            </p>
+                          )}
                       </div>
 
                       {/* Dispute Period */}
                       <div className="space-y-2">
                         <label className="flex items-center gap-2 text-xs font-semibold text-white">
-                          Dispute Window <span className="text-ztg-red-400">*</span>
+                          Dispute Window{" "}
+                          <span className="text-ztg-red-400">*</span>
                           <Tooltip content="How long outcomes can be disputed before finalization. Recommended: 3-7 days to allow for corrections." />
                         </label>
                         <BlockPeriodPicker
@@ -469,30 +516,39 @@ export const MarketEditorCompact = () => {
                           chainTime={chainTime ?? undefined}
                           {...input("disputePeriod", { mode: "all" })}
                         />
-                        {!fieldsState.disputePeriod.isValid && fieldsState.disputePeriod.isTouched && (
-                          <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
-                            <LuFileWarning size={14} className="mt-0.5 shrink-0" />
-                            <ErrorMessage field={fieldsState.disputePeriod} />
-                          </div>
-                        )}
-                        {fieldsState.endDate.isValid && !fieldsState.disputePeriod.isTouched && (
-                          <p className="text-xs text-white/60">
-                            💡 Tip: A dispute period protects against incorrect outcomes
-                          </p>
-                        )}
+                        {!fieldsState.disputePeriod.isValid &&
+                          fieldsState.disputePeriod.isTouched && (
+                            <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
+                              <LuFileWarning
+                                size={14}
+                                className="mt-0.5 shrink-0"
+                              />
+                              <ErrorMessage field={fieldsState.disputePeriod} />
+                            </div>
+                          )}
+                        {fieldsState.endDate.isValid &&
+                          !fieldsState.disputePeriod.isTouched && (
+                            <p className="text-xs text-white/60">
+                              💡 Tip: A dispute period protects against
+                              incorrect outcomes
+                            </p>
+                          )}
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Oracle Account - Full Width Card */}
-                <div className={`space-y-3 rounded-lg bg-white/5 p-4 border-2 transition-all ${
-                  !fieldsState.oracle.isValid && fieldsState.oracle.isTouched
-                    ? "border-ztg-red-500/60"
-                    : fieldsState.oracle.isValid && fieldsState.oracle.isTouched
-                      ? "border-ztg-green-500/80"
-                      : "border-transparent"
-                }`}>
+                <div
+                  className={`space-y-3 rounded-lg border-2 bg-white/5 p-4 transition-all ${
+                    !fieldsState.oracle.isValid && fieldsState.oracle.isTouched
+                      ? "border-ztg-red-500/60"
+                      : fieldsState.oracle.isValid &&
+                          fieldsState.oracle.isTouched
+                        ? "border-ztg-green-500/80"
+                        : "border-transparent"
+                  }`}
+                >
                   <label className="flex items-center gap-2 text-sm font-semibold text-white">
                     Oracle Account <span className="text-ztg-red-400">*</span>
                     <Tooltip
@@ -500,15 +556,17 @@ export const MarketEditorCompact = () => {
                     />
                   </label>
                   <OracleInput {...input("oracle", { mode: "all" })} />
-                  {!fieldsState.oracle.isValid && fieldsState.oracle.isTouched && (
-                    <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
-                      <LuFileWarning size={14} className="mt-0.5 shrink-0" />
-                      <ErrorMessage field={fieldsState.oracle} />
-                    </div>
-                  )}
+                  {!fieldsState.oracle.isValid &&
+                    fieldsState.oracle.isTouched && (
+                      <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
+                        <LuFileWarning size={14} className="mt-0.5 shrink-0" />
+                        <ErrorMessage field={fieldsState.oracle} />
+                      </div>
+                    )}
                   {wallet.realAddress && !form.oracle && (
                     <p className="text-xs text-white/60">
-                      💡 Tip: Click "Use connected" to quickly set your account as the oracle
+                      💡 Tip: Click "Use connected" to quickly set your account
+                      as the oracle
                     </p>
                   )}
                 </div>
@@ -542,13 +600,17 @@ export const MarketEditorCompact = () => {
                 {/* Currency, Market Type & Creator Fee - One Row */}
                 <div className="grid gap-6 lg:grid-cols-3">
                   {/* Currency */}
-                  <div className={`space-y-3 rounded-lg bg-white/5 p-4 border-2 transition-all ${
-                    !fieldsState.currency.isValid && fieldsState.currency.isTouched
-                      ? "border-ztg-red-500/60"
-                      : fieldsState.currency.isValid && fieldsState.currency.isTouched
-                        ? "border-ztg-green-500/80"
-                        : "border-transparent"
-                  }`}>
+                  <div
+                    className={`space-y-3 rounded-lg border-2 bg-white/5 p-4 transition-all ${
+                      !fieldsState.currency.isValid &&
+                      fieldsState.currency.isTouched
+                        ? "border-ztg-red-500/60"
+                        : fieldsState.currency.isValid &&
+                            fieldsState.currency.isTouched
+                          ? "border-ztg-green-500/80"
+                          : "border-transparent"
+                    }`}
+                  >
                     <label className="flex items-center gap-2 text-sm font-semibold text-white">
                       Currency <span className="text-ztg-red-400">*</span>
                       <Tooltip content="The token used for trading in this market" />
@@ -559,22 +621,30 @@ export const MarketEditorCompact = () => {
                       )}
                       {...input("currency")}
                     />
-                    {!fieldsState.currency.isValid && fieldsState.currency.isTouched && (
-                      <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
-                        <LuFileWarning size={14} className="mt-0.5 shrink-0" />
-                        <ErrorMessage field={fieldsState.currency} />
-                      </div>
-                    )}
+                    {!fieldsState.currency.isValid &&
+                      fieldsState.currency.isTouched && (
+                        <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
+                          <LuFileWarning
+                            size={14}
+                            className="mt-0.5 shrink-0"
+                          />
+                          <ErrorMessage field={fieldsState.currency} />
+                        </div>
+                      )}
                   </div>
 
                   {/* Market Type */}
-                  <div className={`space-y-3 rounded-lg bg-white/5 p-4 border-2 transition-all ${
-                    !fieldsState.moderation.isValid && fieldsState.moderation.isTouched
-                      ? "border-ztg-red-500/60"
-                      : fieldsState.moderation.isValid && fieldsState.moderation.isTouched
-                        ? "border-ztg-green-500/80"
-                        : "border-transparent"
-                  }`}>
+                  <div
+                    className={`space-y-3 rounded-lg border-2 bg-white/5 p-4 transition-all ${
+                      !fieldsState.moderation.isValid &&
+                      fieldsState.moderation.isTouched
+                        ? "border-ztg-red-500/60"
+                        : fieldsState.moderation.isValid &&
+                            fieldsState.moderation.isTouched
+                          ? "border-ztg-green-500/80"
+                          : "border-transparent"
+                    }`}
+                  >
                     <label className="flex items-center gap-2 text-sm font-semibold text-white">
                       Market Type <span className="text-ztg-red-400">*</span>
                       <Tooltip content="Permissionless: Goes live immediately | Advised: Requires committee approval" />
@@ -593,22 +663,30 @@ export const MarketEditorCompact = () => {
                         });
                       }}
                     />
-                    {!fieldsState.moderation.isValid && fieldsState.moderation.isTouched && (
-                      <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
-                        <LuFileWarning size={14} className="mt-0.5 shrink-0" />
-                        <ErrorMessage field={fieldsState.moderation} />
-                      </div>
-                    )}
+                    {!fieldsState.moderation.isValid &&
+                      fieldsState.moderation.isTouched && (
+                        <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
+                          <LuFileWarning
+                            size={14}
+                            className="mt-0.5 shrink-0"
+                          />
+                          <ErrorMessage field={fieldsState.moderation} />
+                        </div>
+                      )}
                   </div>
 
                   {/* Creator Fee */}
-                  <div className={`space-y-3 rounded-lg bg-white/5 p-4 border-2 transition-all ${
-                    !fieldsState.creatorFee.isValid && fieldsState.creatorFee.isTouched
-                      ? "border-ztg-red-500/60"
-                      : fieldsState.creatorFee.isValid && fieldsState.creatorFee.isTouched
-                        ? "border-ztg-green-500/80"
-                        : "border-transparent"
-                  }`}>
+                  <div
+                    className={`space-y-3 rounded-lg border-2 bg-white/5 p-4 transition-all ${
+                      !fieldsState.creatorFee.isValid &&
+                      fieldsState.creatorFee.isTouched
+                        ? "border-ztg-red-500/60"
+                        : fieldsState.creatorFee.isValid &&
+                            fieldsState.creatorFee.isTouched
+                          ? "border-ztg-green-500/80"
+                          : "border-transparent"
+                    }`}
+                  >
                     <label className="flex items-center gap-2 text-sm font-semibold text-white">
                       Creator Fee <span className="text-ztg-red-400">*</span>
                       <Tooltip content="Percentage fee you earn from all trading volume. Set to 0% if you don't want fees." />
@@ -623,12 +701,16 @@ export const MarketEditorCompact = () => {
                       ]}
                       isValid={fieldsState.creatorFee?.isValid}
                     />
-                    {!fieldsState.creatorFee.isValid && fieldsState.creatorFee.isTouched && (
-                      <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
-                        <LuFileWarning size={14} className="mt-0.5 shrink-0" />
-                        <ErrorMessage field={fieldsState.creatorFee} />
-                      </div>
-                    )}
+                    {!fieldsState.creatorFee.isValid &&
+                      fieldsState.creatorFee.isTouched && (
+                        <div className="flex items-start gap-1.5 text-xs text-ztg-red-400">
+                          <LuFileWarning
+                            size={14}
+                            className="mt-0.5 shrink-0"
+                          />
+                          <ErrorMessage field={fieldsState.creatorFee} />
+                        </div>
+                      )}
                   </div>
                 </div>
 
@@ -644,8 +726,8 @@ export const MarketEditorCompact = () => {
                         Requires Approval
                       </p>
                       <p className="mt-1 text-xs leading-relaxed text-white/90">
-                        {constants?.markets.advisoryBondSlashPercentage}% slash if
-                        rejected. Add liquidity after approval.
+                        {constants?.markets.advisoryBondSlashPercentage}% slash
+                        if rejected. Add liquidity after approval.
                       </p>
                     </div>
                   </div>
@@ -653,17 +735,21 @@ export const MarketEditorCompact = () => {
 
                 {/* Liquidity Pool Section - Clearly Optional */}
                 {form.currency && form.moderation === "Permissionless" && (
-                  <div className={`space-y-3 rounded-lg bg-white/5 p-4 border-2 transition-all ${
-                    form?.liquidity?.deploy 
-                      ? (
-                          (!fieldsState.liquidity.isValid || !fieldsState.answers.isValid) && fieldsState.liquidity.isTouched
-                            ? "border-ztg-red-500/60"
-                            : (fieldsState.liquidity.isValid && fieldsState.answers.isValid && fieldsState.liquidity.isTouched)
-                              ? "border-ztg-green-500/80"
-                              : "border-transparent"
-                        )
-                      : "border-transparent"
-                  }`}>
+                  <div
+                    className={`space-y-3 rounded-lg border-2 bg-white/5 p-4 transition-all ${
+                      form?.liquidity?.deploy
+                        ? (!fieldsState.liquidity.isValid ||
+                            !fieldsState.answers.isValid) &&
+                          fieldsState.liquidity.isTouched
+                          ? "border-ztg-red-500/60"
+                          : fieldsState.liquidity.isValid &&
+                              fieldsState.answers.isValid &&
+                              fieldsState.liquidity.isTouched
+                            ? "border-ztg-green-500/80"
+                            : "border-transparent"
+                        : "border-transparent"
+                    }`}
+                  >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
@@ -676,7 +762,8 @@ export const MarketEditorCompact = () => {
                           </span>
                         </div>
                         <p className="mt-1 text-xs text-white/70">
-                          Provide initial liquidity to make your market immediately tradeable
+                          Provide initial liquidity to make your market
+                          immediately tradeable
                         </p>
                       </div>
                       <Toggle
@@ -692,7 +779,9 @@ export const MarketEditorCompact = () => {
                         {!fieldsState.answers.isValid ? (
                           <div className="flex items-center gap-2 rounded-lg border-2 border-ztg-red-500/60 bg-ztg-red-500/10 px-3 py-2.5 text-sm text-ztg-red-400">
                             <LuFileWarning size={16} className="shrink-0" />
-                            <span>Complete answer options first to set up liquidity</span>
+                            <span>
+                              Complete answer options first to set up liquidity
+                            </span>
                           </div>
                         ) : (
                           <LiquidityUnified
@@ -706,31 +795,39 @@ export const MarketEditorCompact = () => {
                             fieldsState={fieldsState.liquidity}
                           />
                         )}
-                        {!fieldsState.liquidity.isValid && fieldsState.liquidity.isTouched && (
-                          <div className="mt-3 flex items-start gap-1.5 text-xs text-ztg-red-400">
-                            <LuFileWarning size={14} className="mt-0.5 shrink-0" />
-                            <ErrorMessage field={fieldsState.liquidity} />
-                          </div>
-                        )}
+                        {!fieldsState.liquidity.isValid &&
+                          fieldsState.liquidity.isTouched && (
+                            <div className="mt-3 flex items-start gap-1.5 text-xs text-ztg-red-400">
+                              <LuFileWarning
+                                size={14}
+                                className="mt-0.5 shrink-0"
+                              />
+                              <ErrorMessage field={fieldsState.liquidity} />
+                            </div>
+                          )}
                       </div>
                     )}
                   </div>
                 )}
 
                 {/* Skip Liquidity Message - When Toggle is Off */}
-                {form.currency && form.moderation === "Permissionless" && !form?.liquidity?.deploy && (
-                  <div className="flex items-start gap-2.5 rounded-lg bg-white/5 p-4">
-                    <span className="text-lg">💡</span>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-white">
-                        Liquidity can be added later
-                      </p>
-                      <p className="mt-1 text-xs leading-relaxed text-white/70">
-                        Your market will be created but won't be tradeable until liquidity is added. You can add it from the market page after creation.
-                      </p>
+                {form.currency &&
+                  form.moderation === "Permissionless" &&
+                  !form?.liquidity?.deploy && (
+                    <div className="flex items-start gap-2.5 rounded-lg bg-white/5 p-4">
+                      <span className="text-lg">💡</span>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-white">
+                          Liquidity can be added later
+                        </p>
+                        <p className="mt-1 text-xs leading-relaxed text-white/70">
+                          Your market will be created but won't be tradeable
+                          until liquidity is added. You can add it from the
+                          market page after creation.
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             </MarketFormSection>
 
@@ -759,7 +856,9 @@ export const MarketEditorCompact = () => {
                     </label>
                     <p className="text-sm font-medium text-white">
                       {form?.question || (
-                        <span className="text-orange-400">No question given</span>
+                        <span className="text-orange-400">
+                          No question given
+                        </span>
                       )}
                     </p>
                   </div>
@@ -776,28 +875,34 @@ export const MarketEditorCompact = () => {
                       </label>
                       {form.answers.type === "categorical" && (
                         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                          {(form.answers.answers as string[]).map((answer, idx) => (
-                            <div
-                              key={idx}
-                              className="rounded-lg bg-white/5 px-3 py-2"
-                            >
-                              <div className="text-xs font-medium text-white/70 uppercase">
-                                {answer}
+                          {(form.answers.answers as string[]).map(
+                            (answer, idx) => (
+                              <div
+                                key={idx}
+                                className="rounded-lg bg-white/5 px-3 py-2"
+                              >
+                                <div className="text-xs font-medium uppercase text-white/70">
+                                  {answer}
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            ),
+                          )}
                         </div>
                       )}
                       {form.answers.type === "scalar" && (
                         <div className="grid gap-3 sm:grid-cols-2">
                           <div className="rounded-lg bg-white/5 px-3 py-2">
-                            <div className="text-xs text-white/70">Short (Lower)</div>
+                            <div className="text-xs text-white/70">
+                              Short (Lower)
+                            </div>
                             <div className="text-xs font-medium text-white">
                               {(form.answers.answers as number[])[0]}
                             </div>
                           </div>
                           <div className="rounded-lg bg-white/5 px-3 py-2">
-                            <div className="text-xs text-white/70">Long (Upper)</div>
+                            <div className="text-xs text-white/70">
+                              Long (Upper)
+                            </div>
                             <div className="text-xs font-medium text-white">
                               {(form.answers.answers as number[])[1]}
                             </div>
@@ -807,12 +912,12 @@ export const MarketEditorCompact = () => {
                       {form.answers.type === "yes/no" && (
                         <div className="grid gap-3 sm:grid-cols-2">
                           <div className="rounded-lg border-2 border-white/20 bg-white/5 px-3 py-2">
-                            <div className="text-xs font-medium text-white uppercase">
+                            <div className="text-xs font-medium uppercase text-white">
                               Yes
                             </div>
                           </div>
                           <div className="rounded-lg border-2 border-white/20 bg-white/5 px-3 py-2">
-                            <div className="text-xs font-medium text-white uppercase">
+                            <div className="text-xs font-medium uppercase text-white">
                               No
                             </div>
                           </div>
@@ -870,7 +975,9 @@ export const MarketEditorCompact = () => {
                           <span className="text-white/70">Reporting:</span>
                           <span className="font-medium text-white">
                             {timeline?.report?.period
-                              ? blocksAsDuration(timeline.report.period).humanize()
+                              ? blocksAsDuration(
+                                  timeline.report.period,
+                                ).humanize()
                               : "--"}
                           </span>
                         </div>
@@ -878,7 +985,9 @@ export const MarketEditorCompact = () => {
                           <span className="text-white/70">Dispute:</span>
                           <span className="font-medium text-white">
                             {timeline?.dispute?.period
-                              ? blocksAsDuration(timeline.dispute.period).humanize()
+                              ? blocksAsDuration(
+                                  timeline.dispute.period,
+                                ).humanize()
                               : "--"}
                           </span>
                         </div>
@@ -893,7 +1002,7 @@ export const MarketEditorCompact = () => {
                       <label className="flex items-center gap-2 text-sm font-semibold text-white">
                         Oracle Account
                       </label>
-                      <p className="text-xs font-mono font-medium text-white">
+                      <p className="font-mono text-xs font-medium text-white">
                         {form?.oracle
                           ? shortenAddress(form.oracle, 8, 8)
                           : "--"}
@@ -970,7 +1079,7 @@ export const MarketEditorCompact = () => {
             </MarketFormSection>
           </form>
         </div>
-        
+
         {/* Always-Visible Cost Calculator - Sticky Bottom Bar */}
         {isLoaded && (
           <CostCalculator

@@ -87,7 +87,9 @@ export const CostCalculator = ({
 
   const { data: rawAssetPrice } = useAssetUsdPrice(baseCurrency?.assetId);
   // Hardcode stablecoins to $1 USD
-  const isStablecoin = editor.form.currency === "USDC.wh";
+  // DISABLED: USDC.wh temporarily disabled
+  // const isStablecoin = editor.form.currency === "USDC.wh";
+  const isStablecoin = false; // editor.form.currency === "USDC.wh";
   const baseAssetPrice = isStablecoin ? new Decimal(1) : rawAssetPrice;
 
   const bondCost =

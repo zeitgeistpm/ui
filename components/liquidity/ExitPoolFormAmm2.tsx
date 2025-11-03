@@ -216,7 +216,7 @@ const ExitPoolForm = ({
               ${
                 formState.errors[index.toString()]?.message
                   ? "border-ztg-red-500/60 bg-ztg-red-900/30 text-ztg-red-400 focus:border-ztg-red-500/80"
-                  : "border-white/10 bg-white/10 text-white/90 hover:bg-white/15 focus:bg-white/15 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                  : "border-white/10 bg-white/10 text-white/90 hover:bg-white/15 focus:border-white/20 focus:bg-white/15 focus:ring-2 focus:ring-white/10"
               }
               `}
                   key={index}

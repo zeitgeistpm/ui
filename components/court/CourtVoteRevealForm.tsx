@@ -165,7 +165,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
 
         {commitmentHashMatches || matchingOutcome ? (
           <div
-            className="relative mb-6 w-full resize-none rounded-md border-b-2lack border-opacity-30 bg-transparent text-center font-semibold"
+            className="border-b-2lack relative mb-6 w-full resize-none rounded-md border-opacity-30 bg-transparent text-center font-semibold"
             onDragOver={onCourtSaltBackupDragOver}
             onDrop={onCourtSaltBackupDrop}
           >

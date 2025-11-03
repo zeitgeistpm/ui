@@ -1,5 +1,9 @@
 import Decimal from "decimal.js";
-import { CurrencyTag, Liquidity, Answers } from "lib/state/market-creation/types/form";
+import {
+  CurrencyTag,
+  Liquidity,
+  Answers,
+} from "lib/state/market-creation/types/form";
 import { FormEvent } from "../types";
 import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
@@ -35,12 +39,15 @@ export const LiquidityUnified = ({
 }: LiquidityUnifiedProps) => {
   const currencyMetadata = getMetadataForCurrency(currency);
   const { data: rawAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
-  
+
   // Hardcode stablecoins to $1 USD
-  const isStablecoin = currency === "USDC.wh";
+  // DISABLED: USDC.wh temporarily disabled
+  // const isStablecoin = currency === "USDC.wh";
+  const isStablecoin = false; // currency === "USDC.wh";
   const baseAssetPrice = isStablecoin ? new Decimal(1) : rawAssetPrice;
 
-  const numOutcomes = answers?.type === "scalar" ? 2 : answers?.answers?.length || 0;
+  const numOutcomes =
+    answers?.type === "scalar" ? 2 : answers?.answers?.length || 0;
   const ratio = numOutcomes > 0 ? 1 / numOutcomes : 0;
 
   const handleAmountChange = (amount: string) => {
@@ -91,12 +98,15 @@ export const LiquidityUnified = ({
     : new Decimal(0);
 
   // Check if distribution has been customized (not evenly distributed)
-  const isCustomized = value?.rows && value.rows.length > 0 && (() => {
-    const firstPrice = value.rows[0]?.price?.price;
-    return !value.rows.every(
-      (row) => row.price?.price?.toString() === firstPrice?.toString()
-    );
-  })();
+  const isCustomized =
+    value?.rows &&
+    value.rows.length > 0 &&
+    (() => {
+      const firstPrice = value.rows[0]?.price?.price;
+      return !value.rows.every(
+        (row) => row.price?.price?.toString() === firstPrice?.toString(),
+      );
+    })();
 
   return (
     <div className="space-y-4">
@@ -134,7 +144,7 @@ export const LiquidityUnified = ({
                 },
               });
             }}
-            className="h-12 w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 text-sm text-white placeholder:text-white/50 backdrop-blur-sm transition-all hover:border-white/30 focus:border-white/40"
+            className="h-12 w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 text-sm text-white backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30 focus:border-white/40"
             placeholder="e.g., 1000"
           />
           {totalValue && totalValue.gt(0) && (
@@ -143,7 +153,8 @@ export const LiquidityUnified = ({
             </p>
           )}
           <p className="text-xs text-white/60">
-            💡 This amount will be evenly distributed across all {numOutcomes} outcomes
+            💡 This amount will be evenly distributed across all {numOutcomes}{" "}
+            outcomes
           </p>
         </div>
 
@@ -202,4 +213,3 @@ export const LiquidityUnified = ({
     </div>
   );
 };
-

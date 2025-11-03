@@ -23,12 +23,7 @@ const Skeleton: React.FC<SkeletonProps> = ({
         className={`flex items-center justify-center rounded-lg bg-white/10 p-3 shadow-sm backdrop-blur-md ${className}`}
         style={{ width, height: height || "auto" }}
       >
-        <BeatLoader
-          color="#2ccc30"
-          size={8}
-          margin={4}
-          speedMultiplier={0.8}
-        />
+        <BeatLoader color="#2ccc30" size={8} margin={4} speedMultiplier={0.8} />
       </div>
     );
   }
@@ -36,7 +31,9 @@ const Skeleton: React.FC<SkeletonProps> = ({
   // Traditional skeleton placeholder (default)
   return (
     <div
-      className={"h-4 w-full animate-pulse rounded bg-ztg-primary-600/20 " + className}
+      className={
+        "h-4 w-full animate-pulse rounded bg-ztg-primary-600/20 " + className
+      }
       style={{ width, height }}
     ></div>
   );

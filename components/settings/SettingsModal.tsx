@@ -27,15 +27,25 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
 
   const { data: identity } = useIdentity(address);
 
+  const getModalSize = () => {
+    if (
+      tabSelection === TabSelection.Proxy ||
+      tabSelection === TabSelection.Fees
+    ) {
+      return "md";
+    }
+    return "2xl";
+  };
+
   return (
     <Modal open={open} onClose={onClose}>
-      <ModalPanel maxWidth="2xl" className="p-6">
+      <ModalPanel maxWidth={getModalSize()} className="p-6">
         <h3 className="mb-6 text-center text-2xl font-bold text-white">
           Settings
         </h3>
         <Tab.Group
+          selectedIndex={tabSelection}
           onChange={(index) => setTabSelection(index)}
-          defaultIndex={tabSelection}
         >
           <Tab.List className="mb-6 flex gap-2 rounded-lg bg-white/10 p-1 backdrop-blur-sm">
             <Tab

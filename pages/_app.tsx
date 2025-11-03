@@ -70,6 +70,32 @@ const MyApp = ({ Component, pageProps }) => {
     init();
   }, []);
 
+  // Safety: Ensure body scroll is enabled on mount
+  // This prevents issues where scroll might be locked from previous sessions
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // Reset any locked scroll states on mount
+    const body = document.body;
+    const html = document.documentElement;
+
+    // Only reset if body is currently locked
+    if (body.style.position === "fixed") {
+      const scrollY = parseInt(body.style.top || "0", 10) * -1;
+
+      body.style.overflow = "";
+      body.style.position = "";
+      body.style.top = "";
+      body.style.width = "";
+      html.style.overflow = "";
+
+      // Restore scroll position if we have one
+      if (scrollY > 0) {
+        window.scrollTo(0, scrollY);
+      }
+    }
+  }, []);
+
   return (
     <div
       className={`${inter.variable} ${kanit.variable} ${roboto_mono.variable} w-full min-w-full font-sans`}

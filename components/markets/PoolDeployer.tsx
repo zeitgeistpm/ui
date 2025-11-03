@@ -196,23 +196,29 @@ const PoolDeployer = ({
             <div className="flex h-12 w-12 items-center justify-center">
               <Loader variant="Info" loading className="h-12 w-12" />
             </div>
-            <h4 className="text-sm font-semibold text-white/90">Deploying pool...</h4>
+            <h4 className="text-sm font-semibold text-white/90">
+              Deploying pool...
+            </h4>
           </div>
         </div>
       ) : poolId == null ? (
         liquidity ? (
           <div className="space-y-6 py-6">
             <div>
-              <h4 className="mb-2 text-lg font-bold text-white md:text-xl">Deploy Pool</h4>
+              <h4 className="mb-2 text-lg font-bold text-white md:text-xl">
+                Deploy Pool
+              </h4>
               <p className="text-sm text-white/70">
                 Configure liquidity settings for this market
               </p>
             </div>
-            <div className={`space-y-4 rounded-lg bg-white/5 p-4 border-2 shadow-md transition-all ${
-              !fieldState.isValid && fieldState.isTouched
-                ? "border-red-500/60"
-                : "border-transparent"
-            }`}>
+            <div
+              className={`space-y-4 rounded-lg border-2 bg-white/5 p-4 shadow-md transition-all ${
+                !fieldState.isValid && fieldState.isTouched
+                  ? "border-red-500/60"
+                  : "border-transparent"
+              }`}
+            >
               <LiquidityInput
                 name="poolDeployer"
                 value={liquidity ?? undefined}
@@ -230,7 +236,7 @@ const PoolDeployer = ({
             </div>
             <div className="flex flex-col items-center gap-4">
               <TransactionButton
-                  className="w-full rounded-lg bg-white/10 px-6 py-3 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed md:w-auto md:px-8 md:py-3 md:text-base"
+                className="w-full rounded-lg bg-white/10 px-6 py-3 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto md:px-8 md:py-3 md:text-base"
                 onClick={() => deployAmm2Pool()}
                 disabled={!fieldState.isValid || isLoading}
               >
@@ -238,9 +244,12 @@ const PoolDeployer = ({
               </TransactionButton>
 
               <div className="text-center">
-                <span className="text-xs font-medium text-white/70">Total Cost: </span>
+                <span className="text-xs font-medium text-white/70">
+                  Total Cost:{" "}
+                </span>
                 <span className="text-sm font-semibold text-white">
-                  {poolCost} {currencyMetadata?.name || constants?.tokenSymbol || "ZTG"}
+                  {poolCost}{" "}
+                  {currencyMetadata?.name || constants?.tokenSymbol || "ZTG"}
                 </span>
               </div>
             </div>
@@ -250,7 +259,7 @@ const PoolDeployer = ({
             {market?.status === "Active" && (
               <div className="flex items-center justify-center py-6">
                 <button
-                  className="rounded-lg border-2 border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/30 hover:shadow-lg active:scale-95 md:px-8 md:py-3 md:text-base"
+                  className="rounded-lg border-2 border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20 hover:shadow-lg active:scale-95 md:px-8 md:py-3 md:text-base"
                   data-test="deployLiquidityButton"
                   onClick={handleDeployClick}
                 >

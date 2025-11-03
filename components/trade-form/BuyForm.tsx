@@ -387,11 +387,7 @@ const BuyForm = ({
             : maxSpendableBalance;
           setValue(
             "percentage",
-            new Decimal(value.amount)
-              .mul(ZTG)
-              .div(max)
-              .mul(100)
-              .toString(),
+            new Decimal(value.amount).mul(ZTG).div(max).mul(100).toString(),
           );
         }
         trigger("amount");
@@ -407,12 +403,12 @@ const BuyForm = ({
   };
 
   return (
-    <div className="flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold text-white">
+    <div className="flex w-full flex-col items-center gap-6 px-2 text-ztg-18-150 font-semibold text-white md:px-0">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex w-full flex-col items-center gap-y-4"
       >
-        <div className="flex w-full items-center gap-4">
+        <div className="flex w-full items-center gap-3 md:gap-4">
           {(market || poolData) && selectedAsset && (
             <div className="flex-1">
               <MarketContextActionOutcomeSelector
@@ -427,14 +423,14 @@ const BuyForm = ({
               />
             </div>
           )}
-          <div className="flex h-[56px] flex-1 items-center justify-center rounded-lg bg-white/10 px-4 text-xl font-bold text-white shadow-md backdrop-blur-sm">
+          <div className="flex h-[56px] flex-1 items-center justify-center rounded-lg border border-white/10 bg-white/10 px-4 text-xl font-bold text-white shadow-lg shadow-black/20 backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/15">
             {amountOut.div(ZTG).abs().toFixed(3)}
           </div>
         </div>
         <div className="relative w-full">
           <Input
             type="number"
-            className="h-[56px] w-full rounded-lg bg-white/10 px-4 text-center text-xl font-bold text-white shadow-md placeholder:text-white/50 focus:bg-white/15"
+            className="h-[56px] w-full rounded-lg border border-white/10 bg-white/10 px-4 text-center text-xl font-bold text-white shadow-lg shadow-black/20 backdrop-blur-sm transition-all placeholder:text-white/50 focus:border-ztg-green-500/40 focus:bg-white/15 focus:shadow-lg focus:shadow-ztg-green-500/10 focus:outline-none"
             step="any"
             {...register("amount", {
               required: {
@@ -473,7 +469,7 @@ const BuyForm = ({
           }
           {...register("percentage")}
         />
-        <div className="mb-4 flex w-full flex-col items-center gap-3 rounded-lg bg-white/5 p-4 text-sm font-medium">
+        <div className="mb-4 flex w-full flex-col items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-4 text-sm font-medium shadow-md shadow-black/10 backdrop-blur-sm">
           <div className="h-4 text-xs font-semibold text-ztg-red-400">
             {formState.errors["amount"]?.message?.toString()}
           </div>

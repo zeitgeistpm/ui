@@ -54,7 +54,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
       if (topBarElement) {
         const height = topBarElement.offsetHeight;
         setTopBarHeight(height);
-        
+
         // Set CSS variable for other components to use
         document.documentElement.style.setProperty(
           "--top-bar-total-height",
@@ -81,29 +81,27 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
       const resizeObserver = new ResizeObserver(() => {
         measureTopBarHeight();
       });
-      
+
       resizeObserver.observe(topBarElement);
-      
+
       return () => {
-        timers.forEach(timer => clearTimeout(timer));
+        timers.forEach((timer) => clearTimeout(timer));
         resizeObserver.disconnect();
       };
     }
 
     return () => {
-      timers.forEach(timer => clearTimeout(timer));
+      timers.forEach((timer) => clearTimeout(timer));
     };
   }, [router.pathname]);
 
   return (
-    <div
-      className="relative flex min-h-screen w-full max-w-full flex-col overflow-x-hidden bg-ztg-primary-500"
-    >
+    <div className="relative flex min-h-screen w-full max-w-full flex-col overflow-x-hidden bg-ztg-primary-500">
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
         <div ref={contentRef} className="flex flex-1 flex-col">
           <TopBar />
           <main
-            className="container-fluid mb-10 flex-1 w-full"
+            className="container-fluid w-full flex-1"
             style={{ marginTop: `${topBarHeight}px` }}
             ref={mainRef}
           >

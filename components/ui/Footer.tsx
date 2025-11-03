@@ -40,7 +40,7 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
       <div className="mb-auto flex h-10 w-full items-center gap-3">
         <Input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-          className={`h-full grow rounded-md bg-white/10 p-2 text-ztg-12-120 text-white/90 placeholder:text-white/60 backdrop-blur-sm focus:outline-none focus:bg-white/15 ${
+          className={`h-full grow rounded-md bg-white/10 p-2 text-ztg-12-120 text-white/90 backdrop-blur-sm placeholder:text-white/60 focus:bg-white/15 focus:outline-none ${
             invalid ? "border-r-2ed-500/60" : ""
           }`}
           type="email"
@@ -97,7 +97,6 @@ const Footer = () => {
       href: `https://polkadot.js.org/apps/?rpc=${endpointOptions[0].value}`,
       external: true,
     },
-    { text: "Website", href: "https://zeitgeist.pm", external: true },
     { text: "Docs", href: "https://docs.zeitgeist.pm", external: true },
     { text: "Github", href: "https://github.com/zeitgeistpm", external: true },
     { text: "Discord", href: "https://discord.gg/xv8HuA4s8v", external: true },
@@ -110,16 +109,16 @@ const Footer = () => {
   ];
 
   return (
-    <div className="mt-auto w-full border-t-2 border-white/10 bg-ztg-primary-500 py-6 shadow-lg backdrop-blur-md">
+    <div className="mt-auto w-full border-t-2 border-white/10 bg-ztg-primary-500 py-4 shadow-lg backdrop-blur-md">
       <div className="container-fluid">
         {/* Main Footer Row */}
-        <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           {/* Powered by */}
           <div className="flex items-center gap-2">
             <span className="text-xs text-white/70">Powered by</span>
-            <Link 
+            <Link
               href="/"
-              className="group flex items-center gap-1.5 cursor-pointer transition-colors"
+              className="group flex cursor-pointer items-center gap-1.5 transition-colors"
             >
               <div className="scale-75 [&_svg_path]:transition-colors group-hover:[&_svg_path]:fill-ztg-green-500">
                 <Logo variant={"light"} width={20} height={20} />
@@ -131,7 +130,7 @@ const Footer = () => {
           </div>
 
           {/* Links */}
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
             {footerLinks.map((link, idx) => (
               <Link
                 key={idx}

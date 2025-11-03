@@ -10,7 +10,14 @@ import ReactSelect, {
   ValueContainerProps,
 } from "react-select";
 import { useMarketFiltersContext } from "./MarketFiltersContainer";
-import { ChevronDown, ChevronUp, BarChart2, Clock, TrendingUp, TrendingDown } from "react-feather";
+import {
+  ChevronDown,
+  ChevronUp,
+  BarChart2,
+  Clock,
+  TrendingUp,
+  TrendingDown,
+} from "react-feather";
 
 type MarketFilterSortProps = {
   className?: string;
@@ -32,8 +39,12 @@ const Control = ({
   const isVolumeBased =
     selectedOption?.value === MarketsOrderBy.MostVolume ||
     selectedOption?.value === MarketsOrderBy.LeastVolume;
-  
-  let Icon: typeof Clock | typeof BarChart2 | typeof TrendingUp | typeof TrendingDown = BarChart2;
+
+  let Icon:
+    | typeof Clock
+    | typeof BarChart2
+    | typeof TrendingUp
+    | typeof TrendingDown = BarChart2;
   if (isTimeBased) {
     Icon = Clock;
   } else if (selectedOption?.value === MarketsOrderBy.MostVolume) {
@@ -56,10 +67,10 @@ const Control = ({
         className={
           "flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-2.5 sm:text-sm md:px-3 " +
           (menuIsOpen
-            ? "text-white bg-white/15"
+            ? "bg-white/15 text-white"
             : selectedOption
-            ? "text-ztg-green-400 bg-white/15 hover:bg-white/20 hover:text-white"
-            : "text-white/90 bg-white/15 hover:bg-white/20 hover:text-white")
+              ? "bg-white/15 text-ztg-green-400 hover:bg-white/20 hover:text-white"
+              : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white")
         }
         onClick={onClick}
       >
@@ -67,8 +78,13 @@ const Control = ({
         <span className="cursor-pointer">
           {isVolumeBased ? "Volume" : selectedOption?.label || "Sort"}
         </span>
-        <Chevron size={14} className="cursor-pointer transition-transform sm:h-4 sm:w-4" />
-        <div className="!absolute !opacity-0 !pointer-events-none !w-0 !h-0 !m-0 !p-0">{children}</div>
+        <Chevron
+          size={14}
+          className="cursor-pointer transition-transform sm:h-4 sm:w-4"
+        />
+        <div className="!pointer-events-none !absolute !m-0 !h-0 !w-0 !p-0 !opacity-0">
+          {children}
+        </div>
       </div>
     </components.Control>
   );
@@ -87,8 +103,12 @@ const Option = ({
   const isVolumeBased =
     data.value === MarketsOrderBy.MostVolume ||
     data.value === MarketsOrderBy.LeastVolume;
-  
-  let Icon: typeof Clock | typeof BarChart2 | typeof TrendingUp | typeof TrendingDown = BarChart2;
+
+  let Icon:
+    | typeof Clock
+    | typeof BarChart2
+    | typeof TrendingUp
+    | typeof TrendingDown = BarChart2;
   if (isTimeBased) {
     Icon = Clock;
   } else if (data.value === MarketsOrderBy.MostVolume) {
@@ -103,10 +123,10 @@ const Option = ({
         className={
           "center h-full cursor-pointer rounded-md px-2 py-1.5 transition-all " +
           (isSelected
-            ? "text-ztg-green-400 bg-ztg-green-500/20"
+            ? "bg-ztg-green-500/20 text-ztg-green-400"
             : isFocused
-            ? "text-white bg-white/10"
-            : "text-white/90 hover:bg-white/10 hover:text-white")
+              ? "bg-white/10 text-white"
+              : "text-white/90 hover:bg-white/10 hover:text-white")
         }
       >
         <Icon size={13} className={isSelected ? "text-ztg-green-400" : ""} />
@@ -131,9 +151,7 @@ const Option = ({
 const MenuList = ({ children, ...props }: MenuListProps) => {
   return (
     <components.MenuList {...props}>
-      <div className="mx-auto flex flex-row flex-wrap gap-1.5">
-        {children}
-      </div>
+      <div className="mx-auto flex flex-row flex-wrap gap-1.5">{children}</div>
     </components.MenuList>
   );
 };
@@ -142,18 +160,36 @@ const Input = (props: InputProps<MarketOrderByOption, false>) => {
   return (
     <components.Input
       {...props}
-      className="!absolute !opacity-0 !pointer-events-none !w-0 !h-0 !m-0 !p-0"
-      style={{ position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0, margin: 0, padding: 0 }}
+      className="!pointer-events-none !absolute !m-0 !h-0 !w-0 !p-0 !opacity-0"
+      style={{
+        position: "absolute",
+        opacity: 0,
+        pointerEvents: "none",
+        width: 0,
+        height: 0,
+        margin: 0,
+        padding: 0,
+      }}
     />
   );
 };
 
-const ValueContainer = (props: ValueContainerProps<MarketOrderByOption, false>) => {
+const ValueContainer = (
+  props: ValueContainerProps<MarketOrderByOption, false>,
+) => {
   return (
     <components.ValueContainer
       {...props}
-      className="!absolute !opacity-0 !pointer-events-none !w-0 !h-0 !m-0 !p-0"
-      style={{ position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0, margin: 0, padding: 0 }}
+      className="!pointer-events-none !absolute !m-0 !h-0 !w-0 !p-0 !opacity-0"
+      style={{
+        position: "absolute",
+        opacity: 0,
+        pointerEvents: "none",
+        width: 0,
+        height: 0,
+        margin: 0,
+        padding: 0,
+      }}
     />
   );
 };
@@ -252,17 +288,17 @@ const MarketFilterSort: React.FC<MarketFilterSortProps> = ({
           }
         }}
         captureMenuScroll={false}
-      components={{
-        Control,
-        Input,
-        ValueContainer,
-        SingleValue,
-        IndicatorSeparator,
-        DropdownIndicator,
-        Placeholder,
-        Option,
-        MenuList,
-      }}
+        components={{
+          Control,
+          Input,
+          ValueContainer,
+          SingleValue,
+          IndicatorSeparator,
+          DropdownIndicator,
+          Placeholder,
+          Option,
+          MenuList,
+        }}
       />
     </div>
   );

@@ -104,7 +104,9 @@ export const ScalarAnswersInput = ({
       {/* Range Inputs */}
       <div className="flex flex-col gap-2">
         <div className="flex w-full items-center gap-2">
-          <span className="flex-shrink-0 text-xs font-medium text-white/70">Short:</span>
+          <span className="flex-shrink-0 text-xs font-medium text-white/70">
+            Short:
+          </span>
           {value?.numberType === "date" ? (
             <div className="flex-1">
               <DateTimePicker
@@ -119,7 +121,7 @@ export const ScalarAnswersInput = ({
             <Input
               type="number"
               inputMode="numeric"
-              className="flex-1 rounded-lg bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none backdrop-blur-sm transition-all hover:border-white/30"
+              className="flex-1 rounded-lg bg-white/10 px-4 py-3 text-sm text-white outline-none backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30"
               value={value?.answers[0]}
               onChange={handleNumberChange(0, onChange)}
               onBlur={handleNumberChange(0, onBlur)}
@@ -128,7 +130,9 @@ export const ScalarAnswersInput = ({
           )}
         </div>
         <div className="flex w-full items-center gap-2">
-          <span className="flex-shrink-0 text-xs font-medium text-white/70">Long:</span>
+          <span className="flex-shrink-0 text-xs font-medium text-white/70">
+            Long:
+          </span>
           {value?.numberType === "date" ? (
             <div className="flex-1">
               <DateTimePicker
@@ -143,7 +147,7 @@ export const ScalarAnswersInput = ({
             <Input
               type="number"
               inputMode="numeric"
-              className="flex-1 rounded-lg bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none backdrop-blur-sm transition-all hover:border-white/30"
+              className="flex-1 rounded-lg bg-white/10 px-4 py-3 text-sm text-white outline-none backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30"
               value={value?.answers[1]}
               onChange={handleNumberChange(1, onChange)}
               onBlur={handleNumberChange(1, onBlur)}

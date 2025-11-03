@@ -94,7 +94,9 @@ export const MarketSummary = ({
           <div className="flex items-center gap-1.5">
             {form.currency ? (
               <>
-                <span className="font-medium text-ztg-primary-100">{form.currency}</span>
+                <span className="font-medium text-ztg-primary-100">
+                  {form.currency}
+                </span>
                 <div className="relative h-4 w-4">
                   <Image
                     alt="Currency token logo"
@@ -115,11 +117,15 @@ export const MarketSummary = ({
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <span className="text-ztg-primary-200">Base Amount:</span>{" "}
-                <span className="font-medium text-ztg-primary-100">{baseAmount ?? "--"}</span>
+                <span className="font-medium text-ztg-primary-100">
+                  {baseAmount ?? "--"}
+                </span>
               </div>
               <div>
                 <span className="text-ztg-primary-200">Swap Fee:</span>{" "}
-                <span className="font-medium text-ztg-primary-100">{form.liquidity?.swapFee?.value ?? "--"}%</span>
+                <span className="font-medium text-ztg-primary-100">
+                  {form.liquidity?.swapFee?.value ?? "--"}%
+                </span>
               </div>
             </div>
             <div className="text-sm">
@@ -133,7 +139,8 @@ export const MarketSummary = ({
               </span>
             </div>
           </div>
-        ) : !form?.liquidity?.deploy && form?.moderation === "Permissionless" ? (
+        ) : !form?.liquidity?.deploy &&
+          form?.moderation === "Permissionless" ? (
           <div className="border-t-2 border-ztg-primary-200/30 pt-3">
             <div className="mb-2 flex items-center justify-center text-orange-500">
               <LuFileWarning size={18} />

@@ -31,8 +31,7 @@ const QuickNav = () => {
       href: "/markets?status=Active&ordering=Newest&liquidityOnly=true",
       icon: <TrendingUp size={14} />,
       isActive:
-        router.query.status === "Active" &&
-        router.query.ordering === "Newest",
+        router.query.status === "Active" && router.query.ordering === "Newest",
     },
     {
       label: "Trending",

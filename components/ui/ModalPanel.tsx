@@ -26,9 +26,7 @@ export const ModalPanel = ({
   const maxWidthClass = maxWidthClasses[maxWidth];
 
   return (
-    <Dialog.Panel
-      className={`${baseClasses} ${maxWidthClass} ${className}`}
-    >
+    <Dialog.Panel className={`${baseClasses} ${maxWidthClass} ${className}`}>
       {children}
     </Dialog.Panel>
   );

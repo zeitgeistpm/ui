@@ -211,9 +211,9 @@ const ComboPoolCard = ({
             return;
           }
         }}
-      className={`flex flex-1 flex-col gap-3 ${
-        disableLink && "cursor-default"
-      }`}
+        className={`flex flex-1 flex-col gap-3 ${
+          disableLink && "cursor-default"
+        }`}
       >
         <div className="absolute right-4 top-4">
           {/* Note: Favorite toggle not implemented for combo pools yet */}
@@ -266,7 +266,9 @@ const ComboPoolCard = ({
                 })}`}
             </span>
             {isEnding() && (
-              <span className="ml-1 font-semibold text-ztg-red-400">Ends Soon</span>
+              <span className="ml-1 font-semibold text-ztg-red-400">
+                Ends Soon
+              </span>
             )}
             <span className="ml-1 border-l-1 border-l-ztg-green-500/40 pl-1">
               {totalOutcomes} outcomes{" "}

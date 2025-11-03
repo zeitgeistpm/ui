@@ -126,7 +126,9 @@ const BuyFullSetForm = ({
   return (
     <div className="flex w-full flex-col gap-y-4">
       <div className="flex items-center justify-between rounded-lg border-2 border-ztg-primary-200/30 bg-ztg-primary-50/50 p-4 shadow-sm backdrop-blur-sm">
-        <span className="text-sm font-semibold text-ztg-primary-700">Your Balance</span>
+        <span className="text-sm font-semibold text-ztg-primary-700">
+          Your Balance
+        </span>
         <div className="flex items-center gap-2">
           {imagePath && (
             <Image

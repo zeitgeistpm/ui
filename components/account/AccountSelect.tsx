@@ -51,7 +51,7 @@ const IndicatorSeparator = () => {
 
 const MenuList = (props: MenuListProps<AccountOption, false>) => {
   return (
-    <div className="rounded-lg border-2 border-white/10 bg-ztg-primary-700/95 p-2 shadow-lg backdrop-blur-lg ring-2 ring-white/5">
+    <div className="rounded-lg border-2 border-white/10 bg-ztg-primary-700/95 p-2 shadow-lg ring-2 ring-white/5 backdrop-blur-lg">
       <components.MenuList {...props}>{props.children}</components.MenuList>
     </div>
   );

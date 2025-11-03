@@ -76,7 +76,9 @@ const MarketSelect: React.FC<MarketSelectProps> = ({
     Option: ({ children, ...props }: any) => (
       <components.Option {...props}>
         <div>
-          <div className="text-sm font-medium text-ztg-primary-100">{children}</div>
+          <div className="text-sm font-medium text-ztg-primary-100">
+            {children}
+          </div>
           <div className="mt-1 text-xs text-ztg-primary-200">
             {props.data.description}
           </div>
@@ -546,8 +548,8 @@ const ComboMarketEditor: React.FC = () => {
                     <strong className="text-blue-300">Assume:</strong>{" "}
                     "Referendum #1764 passes",{" "}
                     <strong className="text-blue-300">No</strong> <br />
-                    <strong className="text-ztg-green-400">THEN:</strong> "Ecosystem
-                    gains 100k new users",
+                    <strong className="text-ztg-green-400">THEN:</strong>{" "}
+                    "Ecosystem gains 100k new users",
                     <strong className="text-ztg-green-400"> Short</strong>
                   </p>
                 </div>
@@ -559,8 +561,8 @@ const ComboMarketEditor: React.FC = () => {
                     <strong className="text-blue-300">Assume:</strong> "Lakers
                     win championship",{" "}
                     <strong className="text-blue-300">Yes</strong> <br />
-                    <strong className="text-ztg-green-400">THEN:</strong> "Bitcoin
-                    reaches $100k",{" "}
+                    <strong className="text-ztg-green-400">THEN:</strong>{" "}
+                    "Bitcoin reaches $100k",{" "}
                     <strong className="text-ztg-green-400">Long</strong>
                   </p>
                 </div>
@@ -641,7 +643,10 @@ const ComboMarketEditor: React.FC = () => {
         {duplicatePool && !errors.markets && (
           <div className="mt-4 rounded-lg border-2 border-orange-500/60 bg-white/10 p-4 backdrop-blur-lg">
             <div className="flex items-start gap-2">
-              <BsExclamationTriangle className="mt-0.5 flex-shrink-0 text-orange-400" size={18} />
+              <BsExclamationTriangle
+                className="mt-0.5 flex-shrink-0 text-orange-400"
+                size={18}
+              />
               <div>
                 <p className="text-sm font-semibold text-white">
                   Duplicate Markets Detected
@@ -707,9 +712,10 @@ const ComboMarketEditor: React.FC = () => {
           </h2>
           {/* Helpful tip */}
           <div className="my-3 rounded-md bg-white/10 p-3 text-xs text-white/90 backdrop-blur-lg">
-            💡 <strong className="text-ztg-green-400">Tip:</strong> These combinations show how traders will
-            interpret your market. Make sure the logic flows naturally from the
-            "Assume" condition to the "Then" outcome.
+            💡 <strong className="text-ztg-green-400">Tip:</strong> These
+            combinations show how traders will interpret your market. Make sure
+            the logic flows naturally from the "Assume" condition to the "Then"
+            outcome.
           </div>
           <div className="space-y-4">
             {outcomeCombinations.map((combination, index) => {
@@ -794,7 +800,9 @@ const ComboMarketEditor: React.FC = () => {
 
             {/* Price Summary */}
             <div className="flex items-center justify-between rounded-lg bg-white/10 p-4 backdrop-blur-lg">
-              <span className="font-semibold text-white">Total Probability</span>
+              <span className="font-semibold text-white">
+                Total Probability
+              </span>
               <div className="text-right">
                 <div className="text-lg font-bold text-white">
                   {form.spotPrices
@@ -832,7 +840,10 @@ const ComboMarketEditor: React.FC = () => {
 
           {errors.spotPrices && (
             <div className="mt-2 flex items-start gap-2 text-sm text-ztg-red-500">
-              <BsExclamationTriangle className="mt-0.5 flex-shrink-0" size={16} />
+              <BsExclamationTriangle
+                className="mt-0.5 flex-shrink-0"
+                size={16}
+              />
               <span>{errors.spotPrices}</span>
             </div>
           )}
@@ -867,7 +878,10 @@ const ComboMarketEditor: React.FC = () => {
             </div>
             {errors.liquidityAmount && (
               <div className="flex items-start gap-2 text-sm text-ztg-red-500">
-                <BsExclamationTriangle className="mt-0.5 flex-shrink-0" size={16} />
+                <BsExclamationTriangle
+                  className="mt-0.5 flex-shrink-0"
+                  size={16}
+                />
                 <span>{errors.liquidityAmount}</span>
               </div>
             )}
@@ -898,7 +912,8 @@ const ComboMarketEditor: React.FC = () => {
             <p className="mt-3 text-sm text-white/90">
               Estimated transaction fee:{" "}
               <span className="font-semibold text-white">
-                {formatNumberCompact(fee.amount.div(ZTG).toNumber())} {fee.symbol}
+                {formatNumberCompact(fee.amount.div(ZTG).toNumber())}{" "}
+                {fee.symbol}
               </span>
             </p>
           )}
@@ -910,7 +925,7 @@ const ComboMarketEditor: React.FC = () => {
           )}
 
           {duplicatePool && (
-            <div className="mt-3 rounded-md border-2 border-r-2ed-500/60 bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-lg">
+            <div className="border-r-2ed-500/60 mt-3 rounded-md border-2 bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-lg">
               Cannot deploy: A combo with these markets already exists as{" "}
               <a
                 href={`/multi-market/${duplicatePool.poolId}`}

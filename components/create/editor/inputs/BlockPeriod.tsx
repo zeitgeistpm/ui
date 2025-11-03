@@ -128,8 +128,8 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
           type="button"
           className={`shrink-0 rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
             value?.type === "duration" && value?.preset === option.preset
-              ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
-              : "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:border-white/30"
+              ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
+              : "border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/20"
           }`}
           onClick={() => handleOnClickOption(option)}
         >
@@ -139,7 +139,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
 
       {hasCustomDurationOption && value?.type === "duration" && (
         <DurationInput
-          className="flex-1 min-w-[200px]"
+          className="min-w-[200px] flex-1"
           value={value}
           onChange={handleDurationChange}
           onBlur={handleDurationBlur}
@@ -265,7 +265,11 @@ const DurationInput = ({
             value={value?.unit}
           >
             {["days", "hours"].map((unit) => (
-              <option key={unit} className="bg-ztg-primary-600 text-white" value={unit}>
+              <option
+                key={unit}
+                className="bg-ztg-primary-600 text-white"
+                value={unit}
+              >
                 {value && value?.value <= 1 ? unit.replace("s", "") : unit}
               </option>
             ))}

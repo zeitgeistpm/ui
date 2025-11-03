@@ -63,9 +63,7 @@ const FeeSelect = ({
         },
       });
     } else {
-      const preset = presets.find(
-        (p) => p.value.toString() === selectedValue
-      );
+      const preset = presets.find((p) => p.value.toString() === selectedValue);
       if (preset) {
         onChange({
           type: "change",
@@ -108,11 +106,11 @@ const FeeSelect = ({
   return (
     <div className="flex items-center gap-2">
       <div
-        className={`flex items-center rounded-lg border-2 border-white/20 backdrop-blur-sm transition-all h-12 bg-white/10 hover:border-white/30 ${value?.type === "custom" ? "flex-1" : "w-full"}`}
+        className={`flex h-12 items-center rounded-lg border-2 border-white/20 bg-white/10 backdrop-blur-sm transition-all hover:border-white/30 ${value?.type === "custom" ? "flex-1" : "w-full"}`}
       >
         <select
           value={displayValue}
-          className="w-full h-full bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50"
+          className="h-full w-full bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50"
           onChange={handleSelectChange}
         >
           <option value="" className="bg-ztg-primary-600 text-white">
@@ -133,7 +131,7 @@ const FeeSelect = ({
         </select>
       </div>
       {value?.type === "custom" && (
-        <div className="flex h-12 overflow-hidden rounded-lg bg-white/10 backdrop-blur-sm transition-all flex-1">
+        <div className="flex h-12 flex-1 overflow-hidden rounded-lg bg-white/10 backdrop-blur-sm transition-all">
           <Input
             type="number"
             min={0}
@@ -152,7 +150,7 @@ const FeeSelect = ({
             }}
             placeholder="Enter fee"
           />
-          <div className="flex items-center  bg-white/5 px-3 text-xs font-medium text-white/70 shrink-0">
+          <div className="flex shrink-0  items-center bg-white/5 px-3 text-xs font-medium text-white/70">
             {label}
           </div>
         </div>

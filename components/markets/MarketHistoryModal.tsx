@@ -80,7 +80,10 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
             {/* Market Opened */}
             <div className="relative flex gap-4">
               <div className="absolute -left-8 flex h-6 w-6 items-center justify-center rounded-full border-2 border-ztg-primary-300 bg-white shadow-sm">
-                <MdOutlinePlayArrow className="text-ztg-primary-600" size={14} />
+                <MdOutlinePlayArrow
+                  className="text-ztg-primary-600"
+                  size={14}
+                />
               </div>
               <div className="flex-1">
                 <div className="mb-1 font-semibold text-ztg-primary-900">

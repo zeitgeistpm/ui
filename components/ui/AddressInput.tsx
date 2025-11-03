@@ -66,7 +66,7 @@ const MenuList = (props: MenuListProps<AddressOption, false>) => {
   return (
     <components.MenuList
       {...props}
-      className="!absolute mt-1 !w-full rounded-md bg-white/10 backdrop-blur-md shadow-xl"
+      className="!absolute mt-1 !w-full rounded-md bg-white/10 shadow-xl backdrop-blur-md"
     >
       {props.children}
     </components.MenuList>
@@ -186,7 +186,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
   return (
     <div
       className={
-        "relative mb-5 h-14 w-full rounded-md border-2 border-t-2ransparent bg-anti-flash-white " +
+        "relative mb-5 h-14 w-full rounded-md border-2 border-transparent bg-anti-flash-white " +
         (error ? "border-ztg-red-500" : "")
       }
     >

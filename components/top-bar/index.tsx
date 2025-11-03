@@ -17,6 +17,7 @@ import {
   Users,
   ChevronDown,
   TrendingUp,
+  User,
 } from "react-feather";
 import {
   FiArrowLeft,
@@ -38,6 +39,24 @@ import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { MdFavoriteBorder } from "react-icons/md";
 import { useRouter } from "next/router";
+import { useIdentity } from "lib/hooks/queries/useIdentity";
+import { useBalance } from "lib/hooks/queries/useBalance";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useAccountModals } from "lib/state/account";
+import { useAlerts } from "lib/state/alerts";
+import Avatar from "components/ui/Avatar";
+import { formatNumberLocalized, shortenAddress } from "lib/util";
+import { ZTG } from "@zeitgeistpm/sdk";
+import Decimal from "decimal.js";
+import { ArrowRight, BarChart, Bell, Settings, LogOut } from "react-feather";
+import CopyIcon from "components/ui/CopyIcon";
+import SettingsModal from "components/settings/SettingsModal";
+import { NotificationsPanel } from "components/account/NotificationsPanel";
+import {
+  useMobileViewport,
+  useBodyScrollLock,
+} from "lib/hooks/useMobileViewport";
+import { useHapticFeedback } from "lib/hooks/useHapticFeedback";
 
 const AccountButton = dynamic(
   async () => {
@@ -65,11 +84,258 @@ const MarketFilterSelection = dynamic(
   },
 );
 
+// Balance Row Component
+const BalanceRow = ({
+  imgPath,
+  balance,
+  units,
+  className,
+}: {
+  imgPath: string;
+  units?: string;
+  balance?: Decimal;
+  className?: string;
+}) => {
+  return (
+    <div className="flex items-center gap-3 rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm transition-all hover:bg-white/15 md:gap-3 md:px-3 md:py-2.5">
+      <img
+        src={imgPath}
+        className="h-8 w-8 shrink-0 rounded-full ring-2 ring-white/10 md:h-7 md:w-7"
+      />
+      <div
+        className={`flex w-full items-center text-base font-semibold text-white/90 md:text-sm ${className}`}
+      >
+        {balance &&
+          `${formatNumberLocalized(balance?.div(ZTG).abs().toNumber())} ${
+            units ?? ""
+          }`}
+        {!balance && <span className="text-white/50">---</span>}
+      </div>
+    </div>
+  );
+};
+
+// Mobile Account View Component
+const MobileAccountView = ({
+  onNavigate,
+  onShowNotifications,
+}: {
+  onNavigate: () => void;
+  onShowNotifications: () => void;
+}) => {
+  const {
+    connected,
+    activeAccount,
+    disconnectWallet,
+    isNovaWallet,
+    realAddress,
+    walletId,
+  } = useWallet();
+  const accountModals = useAccountModals();
+  const { data: identity } = useIdentity(realAddress);
+  const { data: activeBalance } = useZtgBalance(activeAccount?.address);
+  const { data: polkadotBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: 0,
+  });
+  const { data: usdcAssetHubBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: 4,
+  });
+  const { data: usdcMoonbeamBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: 1,
+  });
+  const { data: constants } = useChainConstants();
+  const { alerts } = useAlerts(realAddress);
+  const hasNotifications = alerts.length > 0;
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+
+  // Get display name: identity > wallet name > shortened address
+  const displayName =
+    identity?.displayName ||
+    activeAccount?.name ||
+    (activeAccount?.address ? shortenAddress(activeAccount.address, 6, 4) : "");
+
+  const fullAddress = activeAccount?.address || "";
+
+  if (!connected || !activeAccount) {
+    return (
+      <div className="flex flex-col items-center justify-center py-8">
+        <p className="text-base text-white/70">Not connected</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-4 overflow-y-auto">
+      {/* Wallet Name and Address Header */}
+      <div className="flex flex-col gap-3 border-b-2 border-white/10 pb-4">
+        <div className="flex items-center gap-3">
+          {activeAccount?.address && (
+            <Avatar zoomed address={activeAccount.address} />
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="text-lg font-semibold text-white">
+              {displayName}
+            </div>
+            <div className="mt-1 flex items-center gap-2">
+              <span className="text-base text-white/70">
+                {shortenAddress(fullAddress, 8, 8)}
+              </span>
+              <CopyIcon copyText={fullAddress} size={16} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Balances */}
+      <div className="flex flex-col gap-2 border-b-2 border-white/10 pb-4">
+        <BalanceRow
+          imgPath="/currencies/ztg.jpg"
+          units={constants?.tokenSymbol}
+          balance={activeBalance}
+        />
+        <div className="flex flex-col gap-1">
+            <BalanceRow
+            imgPath="/currencies/usdc.svg"
+            units="USDC"
+            balance={usdcAssetHubBalance}
+            className="text-sm"
+          />
+          {/* DISABLED: USDC.wh temporarily disabled */}
+          {/* <BalanceRow
+            imgPath="/currencies/usdc.svg"
+            units="USDC.wh"
+            balance={usdcMoonbeamBalance}
+            className="text-sm"
+          /> */}
+          <BalanceRow
+            imgPath="/currencies/dot.png"
+            units="DOT"
+            balance={polkadotBalance}
+            className="text-sm"
+          />
+        </div>
+        <Link
+          href={`/portfolio/${realAddress}?mainTab=Balances`}
+          onClick={onNavigate}
+        >
+          <div className="group flex min-h-[48px] cursor-pointer items-center justify-between rounded-lg bg-white/10 px-4 py-3 transition-all hover:bg-white/20">
+            <span className="text-base font-semibold text-white/90">
+              View All Balances
+            </span>
+            <ArrowRight
+              size={18}
+              className="text-ztg-green-400 transition-transform group-hover:translate-x-1"
+            />
+          </div>
+        </Link>
+      </div>
+
+      {/* Menu Items */}
+      <div className="flex flex-col gap-2">
+        {/* Notifications */}
+        <button
+          onClick={() => {
+            onShowNotifications();
+            onNavigate();
+          }}
+          className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg bg-white/10 px-4 py-3 text-left transition-all hover:bg-white/20"
+        >
+          <div className="relative">
+            <Bell className="text-ztg-green-400 transition-colors" size={20} />
+            {hasNotifications && (
+              <div className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-ztg-green-500"></div>
+            )}
+          </div>
+          <span className="flex-1 text-base font-medium">Notifications</span>
+          {hasNotifications && (
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ztg-green-500/20 text-base font-semibold text-ztg-green-400">
+              {alerts.length}
+            </span>
+          )}
+        </button>
+
+        {/* Select Account */}
+        {isNovaWallet !== true && (
+          <button
+            onClick={() => {
+              walletId === "web3auth"
+                ? accountModals.openWalletSelect()
+                : accountModals.openAccountSelect();
+              onNavigate();
+            }}
+            className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg bg-white/10 px-4 py-3 text-left transition-all hover:bg-white/20"
+          >
+            <User className="text-ztg-green-400 transition-colors" size={20} />
+            <span className="flex-1 text-base font-medium">Select Account</span>
+          </button>
+        )}
+
+        {/* Portfolio */}
+        <Link href={`/portfolio/${realAddress}`} onClick={onNavigate}>
+          <div className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg bg-white/10 px-4 py-3 transition-all hover:bg-white/20">
+            <BarChart
+              className="text-ztg-green-400 transition-colors"
+              size={20}
+            />
+            <span className="flex-1 text-base font-medium">Portfolio</span>
+          </div>
+        </Link>
+
+        {/* Settings */}
+        <button
+          onClick={() => {
+            setShowSettingsModal(true);
+            onNavigate();
+          }}
+          className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg bg-white/10 px-4 py-3 text-left transition-all hover:bg-white/20"
+        >
+          <Settings
+            className="text-ztg-green-400 transition-colors"
+            size={20}
+          />
+          <span className="flex-1 text-base font-medium">Settings</span>
+        </button>
+
+        {/* Divider */}
+        <div className="my-1.5 border-t-2 border-white/10"></div>
+
+        {/* Disconnect */}
+        <button
+          onClick={() => {
+            disconnectWallet();
+            onNavigate();
+          }}
+          className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg border-2 border-ztg-red-500/40 bg-ztg-red-900/30 px-4 py-3 text-left backdrop-blur-sm transition-all hover:border-ztg-red-500/60 hover:bg-ztg-red-900/50"
+        >
+          <LogOut className="text-ztg-red-400 transition-colors" size={20}           />
+          <span className="flex-1 text-base font-medium">Disconnect</span>
+        </button>
+      </div>
+
+      {/* Modals */}
+      <SettingsModal
+        open={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+      />
+    </div>
+  );
+};
+
 const TopBar = () => {
   const router = useRouter();
   const topBarRef = useRef<HTMLDivElement>(null);
   const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileMenuView, setMobileMenuView] = useState<
+    "navigation" | "account"
+  >("navigation");
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  // Initialize mobile viewport handling
+  useMobileViewport();
+
+  // Initialize haptic feedback
+  const { withHapticFeedback } = useHapticFeedback();
 
   // Hide QuickNav on markets list pages (they have their own filter system)
   const hideQuickNavOnPages = ["/markets", "/markets/favorites"];
@@ -87,34 +353,11 @@ const TopBar = () => {
   }, []);
 
   // Lock body scroll when menus are open on mobile
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    
-    const hasOpenMenu = hamburgerMenuOpen;
-    
-    if (hasOpenMenu && isMobile) {
-      const originalOverflow = document.body.style.overflow;
-      const originalPosition = document.body.style.position;
-      const scrollY = window.scrollY;
-      
-      document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
-      
-      return () => {
-        document.body.style.overflow = originalOverflow;
-        document.body.style.position = originalPosition;
-        document.body.style.top = "";
-        document.body.style.width = "";
-        window.scrollTo(0, scrollY);
-      };
-    }
-  }, [hamburgerMenuOpen, isMobile]);
+  useBodyScrollLock(hamburgerMenuOpen && isMobile);
 
   // Set CSS variable for top-bar height so mobile menus can position correctly
   const mainTopBarRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     const updateTopBarHeight = () => {
       // For mobile hamburger menu, only use main top bar height (not including filters)
@@ -140,12 +383,15 @@ const TopBar = () => {
       className={`fixed top-0 z-50 w-full shadow-lg transition-all duration-300`}
     >
       {/* Main TopBar */}
-      <div ref={mainTopBarRef} className="relative bg-ztg-primary-500 py-2.5 backdrop-blur-md md:py-3">
+      <div
+        ref={mainTopBarRef}
+        className="relative bg-ztg-primary-500 py-2.5 backdrop-blur-md md:py-3"
+      >
         <div className="container-fluid relative flex h-full items-center justify-between">
-          <div className="hidden h-full items-center justify-center md:flex overflow-visible">
-            <Link 
-              href="/" 
-              className="relative z-10 inline-flex cursor-pointer transition-opacity focus:outline-none overflow-visible"
+          <div className="hidden h-full items-center justify-center overflow-visible md:flex">
+            <Link
+              href="/"
+              className="relative z-10 inline-flex cursor-pointer overflow-visible transition-opacity focus:outline-none"
               onClick={(e) => {
                 // Ensure navigation happens
                 e.stopPropagation();
@@ -155,10 +401,10 @@ const TopBar = () => {
             </Link>
           </div>
           {/* Mobile: Logo, Search, Hamburger Menu */}
-          <div className="flex flex-1 items-center gap-2 md:hidden min-w-0 w-full">
-            <Link 
-              href="/" 
-              className="relative z-10 inline-flex shrink-0 cursor-pointer transition-opacity focus:outline-none max-w-[36px]"
+          <div className="flex w-full min-w-0 flex-1 items-center gap-2 md:hidden">
+            <Link
+              href="/"
+              className="relative z-10 inline-flex max-w-[36px] shrink-0 cursor-pointer transition-opacity focus:outline-none"
               onClick={(e) => {
                 // Ensure navigation happens
                 e.stopPropagation();
@@ -166,179 +412,220 @@ const TopBar = () => {
             >
               <MenuLogo />
             </Link>
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <MarketSearch />
             </div>
             <div className="shrink-0">
-            <Menu
-              as="div"
-              className="relative inline-block text-left"
-            >
-              {({ open, close }) => {
-                // Track menu open state
-                useEffect(() => {
-                  setHamburgerMenuOpen(open);
-                }, [open]);
+              <Menu as="div" className="relative inline-block text-left">
+                {({ open, close }) => {
+                  // Track menu open state
+                  useEffect(() => {
+                    setHamburgerMenuOpen(open);
+                    // Reset to navigation view when menu closes
+                    if (!open) {
+                      setMobileMenuView("navigation");
+                    }
+                  }, [open]);
 
-                return (
-                  <>
-                    <Menu.Button className={`relative flex h-9 items-center justify-center rounded-lg border-2 px-3 text-white/90 shadow-md backdrop-blur-sm transition-all active:scale-95 touch-manipulation ${
-                      open
-                        ? "border-white/30 bg-white/20 hover:border-white/40 hover:bg-white/30"
-                        : "border-white/10 bg-white/10 hover:border-white/20 hover:bg-white/20"
-                    }`}>
-                      {open ? (
-                        <XIcon className="h-4.5 w-4.5 text-white transition-transform" />
-                      ) : (
-                        <MenuIcon className="h-4.5 w-4.5 text-white/90 transition-transform" />
-                      )}
-                    </Menu.Button>
-                    <Transition
-                      as={Fragment}
-                      enter="transition ease-out duration-200"
-                      enterFrom="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
-                      enterTo="transform opacity-100 translate-y-0 md:scale-100"
-                      leave="transition ease-in duration-150"
-                      leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
-                      leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
-                    >
-                      <Menu.Items
-                        className="fixed left-0 right-0 z-[60] w-screen origin-top-right overflow-y-auto border-t-2 border-white/10 px-4 py-4 text-white shadow-2xl backdrop-blur-lg focus:outline-none md:absolute md:inset-auto md:left-auto md:right-0 md:top-auto md:mt-2 md:h-auto md:w-80 md:rounded-lg md:border-2 md:border-white/10 md:bg-ztg-primary-700/95 md:px-5 md:py-3 md:ring-2 md:ring-white/5"
-                        style={{
-                          top: "var(--top-bar-height, 50px)",
-                          height: "calc(100vh - var(--top-bar-height, 50px))",
-                          backgroundColor: "#1a1e3b",
-                        }}
+                  return (
+                    <>
+                      <Menu.Button
+                        className={`relative flex h-11 min-w-[44px] touch-manipulation items-center justify-center rounded-lg border-2 px-3 text-white/90 shadow-md backdrop-blur-sm transition-all active:scale-95 ${
+                          open
+                            ? "border-white/30 bg-white/20 hover:border-white/40 hover:bg-white/30"
+                            : "border-white/10 bg-white/10 hover:border-white/20 hover:bg-white/20"
+                        }`}
+                        aria-label={
+                          open
+                            ? "Close navigation menu"
+                            : "Open navigation menu"
+                        }
+                        aria-expanded={open}
+                        aria-haspopup="true"
                       >
-                        {/* Account Button in Hamburger Menu - Mobile Only */}
-                        <div className="mb-4 md:hidden">
-                          <AccountButton />
-                        </div>
-                        <div className="mb-3 border-b-2 border-white/10 md:hidden"></div>
-                        
-                        <div className="flex flex-col gap-1 md:gap-1.5">
-                          <Menu.Item>
-                            {({ active, close }) => (
-                              <Link
-                                href="/markets?status=Active&ordering=Newest&liquidityOnly=true"
-                                onClick={close}
-                              >
-                                <button
-                                  className={`group flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-white transition-all hover:bg-white/20 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
-                                    active ? "bg-white/20" : ""
-                                  }`}
+                        {open ? (
+                          <XIcon className="h-5 w-5 text-white transition-transform" />
+                        ) : (
+                          <MenuIcon className="h-5 w-5 text-white/90 transition-transform" />
+                        )}
+                      </Menu.Button>
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-200"
+                        enterFrom="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
+                        enterTo="transform opacity-100 translate-y-0 md:scale-100"
+                        leave="transition ease-in duration-150"
+                        leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
+                        leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
+                      >
+                        <Menu.Items
+                          className="fixed left-0 right-0 z-[60] w-screen origin-top-right overflow-y-auto border-t-2 border-white/10 px-4 py-4 text-white shadow-2xl backdrop-blur-lg focus:outline-none md:absolute md:inset-auto md:left-auto md:right-0 md:top-auto md:mt-2 md:h-auto md:w-80 md:rounded-lg md:border-2 md:border-white/10 md:bg-ztg-primary-700/95 md:px-5 md:py-3 md:ring-2 md:ring-white/5"
+                          style={{
+                            top: "var(--top-bar-height, 50px)",
+                            height:
+                              "calc(var(--vh, 1vh) * 100 - var(--top-bar-height, 50px))",
+                            backgroundColor: "#1a1e3b",
+                            WebkitOverflowScrolling: "touch",
+                            paddingBottom: "env(safe-area-inset-bottom, 20px)",
+                            transform: "translateZ(0)", // Force hardware acceleration
+                            willChange: "transform, opacity", // Optimize for animations
+                          }}
+                        >
+                          {/* Toggle between Navigation and Account - Mobile Only */}
+                          <div
+                            className="mb-4 flex gap-2 border-b-2 border-white/10 pb-3 md:hidden"
+                            role="tablist"
+                          >
+                            <button
+                              onClick={() => setMobileMenuView("navigation")}
+                              className={`min-h-[48px] flex-1 rounded-lg px-4 py-3 text-base font-semibold transition-all ${
+                                mobileMenuView === "navigation"
+                                  ? "bg-ztg-green-600 text-white"
+                                  : "bg-white/10 text-white/70 hover:bg-white/20"
+                              }`}
+                              role="tab"
+                              aria-selected={mobileMenuView === "navigation"}
+                              aria-controls="navigation-panel"
+                              id="navigation-tab"
+                            >
+                              Navigation
+                            </button>
+                            <button
+                              onClick={() => setMobileMenuView("account")}
+                              className={`min-h-[48px] flex-1 rounded-lg px-4 py-3 text-base font-semibold transition-all ${
+                                mobileMenuView === "account"
+                                  ? "bg-ztg-green-600 text-white"
+                                  : "bg-white/10 text-white/70 hover:bg-white/20"
+                              }`}
+                              role="tab"
+                              aria-selected={mobileMenuView === "account"}
+                              aria-controls="account-panel"
+                              id="account-tab"
+                            >
+                              Account
+                            </button>
+                          </div>
+
+                          {/* Navigation View - Always show on desktop, conditionally on mobile */}
+                          <div
+                            className={`flex flex-col gap-1 md:gap-1.5 ${isMobile && mobileMenuView !== "navigation" ? "hidden" : ""}`}
+                            role="tabpanel"
+                            id="navigation-panel"
+                            aria-labelledby="navigation-tab"
+                          >
+                            <Menu.Item>
+                              {({ active, close }) => (
+                                <Link
+                                  href="/markets?status=Active&ordering=Newest&liquidityOnly=true"
+                                  onClick={close}
                                 >
-                                  <div className="relative h-4 w-4 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
-                                    <FiGrid size={"100%"} />
-                                  </div>
-                                  <h3 className="text-xs font-semibold text-white md:text-sm">
-                                    All Markets
-                                  </h3>
-                                </button>
-                              </Link>
-                            )}
-                          </Menu.Item>
+                                  <button
+                                    className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
+                                      active ? "bg-white/20" : ""
+                                    }`}
+                                  >
+                                    <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+                                      <FiGrid size={"100%"} />
+                                    </div>
+                                    <h3 className="text-base font-semibold text-white md:text-sm">
+                                      All Markets
+                                    </h3>
+                                  </button>
+                                </Link>
+                              )}
+                            </Menu.Item>
 
-                          <div className="my-0.5 border-b-2 border-white/10 md:my-1"></div>
+                            <div className="my-0.5 border-b-2 border-white/10 md:my-1"></div>
 
-                          <CreateMarketMenuItem onSelect={close} />
+                            <CreateMarketMenuItem onSelect={close} />
 
-                          <div className="my-0.5 border-b-2 border-white/10 md:my-1"></div>
+                            <div className="my-0.5 border-b-2 border-white/10 md:my-1"></div>
 
-                          <Menu.Item>
-                            {({ active, close }) => (
-                              <Link
-                                href="/markets?status=Active&ordering=Most%20Volume&liquidityOnly=true"
-                                onClick={close}
-                              >
-                                <button
-                                  className={`group flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-white transition-all hover:bg-white/20 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
-                                    active ? "bg-white/20" : ""
-                                  }`}
+                            <Menu.Item>
+                              {({ active, close }) => (
+                                <Link
+                                  href="/markets?status=Active&ordering=Most%20Volume&liquidityOnly=true"
+                                  onClick={close}
                                 >
-                                  <div className="relative h-4 w-4 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
-                                    <FiStar size={"100%"} />
-                                  </div>
-                                  <h3 className="text-xs font-semibold text-white md:text-sm">
-                                    Popular Markets
-                                  </h3>
-                                </button>
-                              </Link>
+                                  <button
+                                    className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
+                                      active ? "bg-white/20" : ""
+                                    }`}
+                                  >
+                                    <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+                                      <FiStar size={"100%"} />
+                                    </div>
+                                    <h3 className="text-base font-semibold text-white md:text-sm">
+                                      Popular Markets
+                                    </h3>
+                                  </button>
+                                </Link>
+                              )}
+                            </Menu.Item>
+
+                            <Menu.Item>
+                              {({ active, close }) => (
+                                <Link href="/markets/favorites" onClick={close}>
+                                  <button
+                                    className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
+                                      active ? "bg-white/20" : ""
+                                    }`}
+                                  >
+                                    <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+                                      <MdFavoriteBorder size={"100%"} />
+                                    </div>
+                                    <h3 className="text-base font-semibold text-white md:text-sm">
+                                      Favorites
+                                    </h3>
+                                  </button>
+                                </Link>
+                              )}
+                            </Menu.Item>
+
+                            <div className="my-0.5 border-b-2 border-white/10 md:my-1"></div>
+
+                            <CategoriesMenuItem onSelect={close} />
+
+                            {process.env.NEXT_PUBLIC_SHOW_COURT === "true" && (
+                              <>
+                                <div className="my-0.5 border-b-2 border-white/10 md:my-1"></div>
+                                <Menu.Item>
+                                  {({ active, close }) => (
+                                    <Link href="/court" onClick={close}>
+                                      <button
+                                        className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
+                                          active ? "bg-white/20" : ""
+                                        }`}
+                                      >
+                                        <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+                                          <Users size={"100%"} />
+                                        </div>
+                                        <h3 className="text-base font-semibold text-white md:text-sm">
+                                          Court
+                                        </h3>
+                                      </button>
+                                    </Link>
+                                  )}
+                                </Menu.Item>
+                              </>
                             )}
-                          </Menu.Item>
+                          </div>
 
-                          <Menu.Item>
-                            {({ active, close }) => (
-                              <Link href="/markets/favorites" onClick={close}>
-                                <button
-                                  className={`group flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-white transition-all hover:bg-white/20 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
-                                    active ? "bg-white/20" : ""
-                                  }`}
-                                >
-                                  <div className="relative h-4 w-4 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
-                                    <MdFavoriteBorder size={"100%"} />
-                                  </div>
-                                  <h3 className="text-xs font-semibold text-white md:text-sm">
-                                    Favorites
-                                  </h3>
-                                </button>
-                              </Link>
-                            )}
-                          </Menu.Item>
-
-                          <div className="my-0.5 border-b-2 border-white/10 md:my-1"></div>
-
-                          <CategoriesMenuItem onSelect={close} />
-
-                          {process.env.NEXT_PUBLIC_SHOW_COURT === "true" && (
-                            <>
-                              <div className="my-0.5 border-b-2 border-white/10 md:my-1"></div>
-                              <Menu.Item>
-                                {({ active, close }) => (
-                                  <Link href="/court" onClick={close}>
-                                    <button
-                                      className={`group flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-white transition-all hover:bg-white/20 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
-                                        active ? "bg-white/20" : ""
-                                      }`}
-                                    >
-                                      <div className="relative h-4 w-4 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
-                                        <Users size={"100%"} />
-                                      </div>
-                                      <h3 className="text-xs font-semibold text-white md:text-sm">
-                                        Court
-                                      </h3>
-                                    </button>
-                                  </Link>
-                                )}
-                              </Menu.Item>
-                            </>
+                          {/* Account View - Mobile Only */}
+                          {isMobile && mobileMenuView === "account" && (
+                            <MobileAccountView
+                              onNavigate={close}
+                              onShowNotifications={() =>
+                                setShowNotifications(true)
+                              }
+                            />
                           )}
-                        </div>
-
-                        {/* <div className="block md:hidden">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <Link href="/leaderboard/year" onClick={close}>
-                              <button
-                                className={`group mb-4 flex w-full  items-center gap-3 px-2 py-2 text-sm`}
-                              >
-                                <div className="relative h-6 w-6">
-                                  <FiAward size={"100%"} />
-                                </div>
-                                <h3 className="text-sm font-semibold">
-                                  Leaderboard
-                                </h3>
-                              </button>
-                            </Link>
-                          )}
-                        </Menu.Item>
-                      </div> */}
-                      </Menu.Items>
-                    </Transition>
-                  </>
-                );
-              }}
-            </Menu>
+                        </Menu.Items>
+                      </Transition>
+                    </>
+                  );
+                }}
+              </Menu>
             </div>
 
             {/* Create Market Button - Removed (now in QuickNav) */}
@@ -354,10 +641,9 @@ const TopBar = () => {
           </Link> */}
           </div>
           {/* Desktop: Layout */}
-          <div className="hidden items-center justify-center gap-3 md:flex md:absolute md:left-0 md:right-0 md:w-full md:max-w-screen-xl md:mx-auto">
+          <div className="hidden items-center justify-center gap-3 md:absolute md:left-0 md:right-0 md:mx-auto md:flex md:w-full md:max-w-screen-xl">
             {/* Desktop: Search in TopBar - Centered */}
-            {/* 50% width smaller at md (905px) until lg (1240px) */}
-            <div className="w-full max-w-xl md:max-w-[288px] lg:max-w-xl">
+            <div className="w-full max-w-sm md:max-w-md lg:max-w-xl">
               <MarketSearch />
             </div>
           </div>
@@ -372,7 +658,7 @@ const TopBar = () => {
       {showQuickNav && (
         <div className="relative -z-10 w-full border-t-2 border-white/5 bg-ztg-primary-500 shadow-md backdrop-blur-md">
           <div className="container-fluid w-full">
-            <div className="relative flex items-center gap-1.5 overflow-x-auto py-2.5 sm:gap-2 md:gap-3 md:py-3 md:px-0">
+            <div className="relative flex items-center gap-1.5 overflow-x-auto py-2.5 sm:gap-2 md:gap-3 md:px-0 md:py-3">
               <Link
                 href="/markets"
                 className={`group flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-3 sm:text-sm md:px-4 ${
@@ -440,7 +726,9 @@ const TopBar = () => {
                           size={14}
                           className="hidden shrink-0 sm:inline sm:h-4 sm:w-4"
                         />
-                        <span className="whitespace-nowrap font-bold">Create Market</span>
+                        <span className="whitespace-nowrap font-bold">
+                          Create Market
+                        </span>
                         <ChevronDown
                           size={12}
                           className={`ml-0.5 shrink-0 transition-transform sm:h-3.5 sm:w-3.5 ${open ? "rotate-180" : ""}`}
@@ -456,7 +744,7 @@ const TopBar = () => {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border-2 border-white/10 bg-ztg-primary-700/95 shadow-xl backdrop-blur-lg ring-2 ring-white/5 focus:outline-none">
+                        <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border-2 border-white/10 bg-ztg-primary-700/95 shadow-xl ring-2 ring-white/5 backdrop-blur-lg focus:outline-none">
                           <div className="p-1">
                             <Menu.Item>
                               {({ active }) => (
@@ -526,6 +814,12 @@ const TopBar = () => {
           <MarketFilterSelectionWrapper />
         </Suspense>
       )}
+
+      {/* Notifications Panel - rendered outside menus for proper mobile support */}
+      <NotificationsPanel
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
     </div>
   );
 };
@@ -633,9 +927,9 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
           key={index}
           onClick={onSelect}
           href={`/markets?status=Active&tag=${category.name}&ordering=Newest&liquidityOnly=true`}
-          className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-white transition-all hover:bg-white/20 md:gap-3 md:px-3 md:py-2.5 md:pb-0"
+          className="flex min-h-[48px] items-center gap-3 rounded-lg px-4 py-3 text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:pb-0"
         >
-          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-2 ring-white/10 md:h-10 md:w-10">
+          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-2 ring-white/10 md:h-10 md:w-10">
             <Image
               src={category.imagePath}
               fill
@@ -644,8 +938,10 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
             />
           </div>
           <div className="flex flex-col">
-            <div className="text-xs font-semibold text-white md:text-sm">{category.name}</div>
-            <div className="h-[14px] text-[10px] font-light text-white/80 md:h-[16px] md:text-xs">
+            <div className="text-base font-semibold text-white md:text-sm">
+              {category.name}
+            </div>
+            <div className="h-[18px] text-sm font-light text-white/80 md:h-[16px] md:text-xs">
               {category.count}
             </div>
           </div>
@@ -661,27 +957,31 @@ const CreateMarketMenu = ({ onSelect }: { onSelect: () => void }) => {
       <Link
         onClick={onSelect}
         href="/create"
-        className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-white transition-all hover:bg-white/20 md:gap-3 md:px-3 md:py-2.5"
+        className="flex min-h-[48px] items-center gap-3 rounded-lg px-4 py-3 text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5"
       >
-        <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-ztg-green-400 md:h-10 md:w-10">
-          <MdShowChart size={18} className="md:h-5 md:w-5" />
+        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-ztg-green-400 md:h-10 md:w-10">
+          <MdShowChart size={20} className="md:h-5 md:w-5" />
         </div>
         <div className="flex flex-col">
-          <div className="text-xs font-semibold text-white md:text-sm">Single Market</div>
+          <div className="text-base font-semibold text-white md:text-sm">
+            Single Market
+          </div>
         </div>
       </Link>
 
       <Link
         onClick={onSelect}
         href="/create-combo"
-        className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-white transition-all hover:bg-white/20 md:gap-3 md:px-3 md:py-2.5"
+        className="flex min-h-[48px] items-center gap-3 rounded-lg px-4 py-3 text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5"
       >
-        <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-ztg-green-400 md:h-10 md:w-10">
-          <MdStackedLineChart size={18} className="md:h-5 md:w-5" />
+        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-ztg-green-400 md:h-10 md:w-10">
+          <MdStackedLineChart size={20} className="md:h-5 md:w-5" />
         </div>
         <div className="flex flex-col">
-          <div className="text-xs font-semibold text-white md:text-sm">Combinatorial Market</div>
-          <div className="text-[10px] font-light text-white/80 md:text-xs">
+          <div className="text-base font-semibold text-white md:text-sm">
+            Combinatorial Market
+          </div>
+          <div className="text-sm font-light text-white/80 md:text-xs">
             Create a complex multi-outcome market
           </div>
         </div>
@@ -704,35 +1004,14 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
   }, []);
 
   // Lock body scroll when categories submenu is open on mobile
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    
-    if (categoriesOpen && isMobile) {
-      const originalOverflow = document.body.style.overflow;
-      const originalPosition = document.body.style.position;
-      const scrollY = window.scrollY;
-      
-      document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
-      
-      return () => {
-        document.body.style.overflow = originalOverflow;
-        document.body.style.position = originalPosition;
-        document.body.style.top = "";
-        document.body.style.width = "";
-        window.scrollTo(0, scrollY);
-      };
-    }
-  }, [categoriesOpen, isMobile]);
+  useBodyScrollLock(categoriesOpen && isMobile);
 
   return (
     <>
       <Menu.Item>
         {({ active }) => (
           <button
-            className={`group flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-white transition-all hover:bg-white/20 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
+            className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
               active ? "bg-white/20" : ""
             }`}
             onClick={(event) => {
@@ -741,13 +1020,16 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
               setCategoriesOpen(!categoriesOpen);
             }}
           >
-            <div className="relative h-4 w-4 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+            <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
               <FiList size={"100%"} />
             </div>
-            <h3 className="flex-1 text-left text-xs font-semibold text-white md:text-sm">
+            <h3 className="flex-1 text-left text-base font-semibold text-white md:text-sm">
               Categories
             </h3>
-            <FiArrowRight size={16} className="shrink-0 text-white md:h-[18px] md:w-[18px]" />
+            <FiArrowRight
+              size={20}
+              className="shrink-0 text-white md:h-[18px] md:w-[18px]"
+            />
           </button>
         )}
       </Menu.Item>
@@ -766,16 +1048,23 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
           className="fixed bottom-0 left-0 right-0 z-[130] w-screen origin-top-right overflow-y-auto border-t-2 border-white/10 px-4 py-4 shadow-2xl backdrop-blur-lg focus:outline-none md:absolute md:inset-auto md:-right-4 md:left-auto md:ml-4 md:h-auto md:w-[600px] md:translate-x-[100%] md:rounded-lg md:border-2 md:border-white/10 md:bg-ztg-primary-700/95 md:px-5 md:py-3 md:ring-2 md:ring-white/5"
           style={{
             top: "calc(var(--top-bar-height, 50px) + 20px)",
-            height: "calc(100vh - var(--top-bar-height, 50px) - 20px)",
+            height:
+              "calc(var(--vh, 1vh) * 100 - var(--top-bar-height, 50px) - 20px)",
             backgroundColor: "#1a1e3b",
+            WebkitOverflowScrolling: "touch",
+            paddingBottom: "env(safe-area-inset-bottom, 20px)",
+            transform: "translateZ(0)", // Force hardware acceleration
+            willChange: "transform, opacity", // Optimize for animations
           }}
         >
           <div
-            className="mb-3 flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 transition-all hover:bg-white/20 md:hidden"
+            className="mb-3 flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-white/20 md:hidden"
             onClick={() => setCategoriesOpen(false)}
           >
-            <FiArrowLeft size={18} className="text-white" />
-            <span className="text-xs font-semibold text-white">Back to Menu</span>
+            <FiArrowLeft size={20} className="text-white" />
+            <span className="text-base font-semibold text-white">
+              Back to Menu
+            </span>
           </div>
           <CategoriesMenu onSelect={onSelect} />
         </div>
@@ -798,35 +1087,14 @@ const CreateMarketMenuItem = ({ onSelect }: { onSelect: () => void }) => {
   }, []);
 
   // Lock body scroll when create market submenu is open on mobile
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    
-    if (createMarketOpen && isMobile) {
-      const originalOverflow = document.body.style.overflow;
-      const originalPosition = document.body.style.position;
-      const scrollY = window.scrollY;
-      
-      document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
-      
-      return () => {
-        document.body.style.overflow = originalOverflow;
-        document.body.style.position = originalPosition;
-        document.body.style.top = "";
-        document.body.style.width = "";
-        window.scrollTo(0, scrollY);
-      };
-    }
-  }, [createMarketOpen, isMobile]);
+  useBodyScrollLock(createMarketOpen && isMobile);
 
   return (
     <>
       <Menu.Item>
         {({ active }) => (
           <button
-            className={`group flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-white transition-all hover:bg-white/20 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
+            className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
               active ? "bg-white/20" : ""
             }`}
             onClick={(event) => {
@@ -835,13 +1103,16 @@ const CreateMarketMenuItem = ({ onSelect }: { onSelect: () => void }) => {
               setCreateMarketOpen(!createMarketOpen);
             }}
           >
-            <div className="relative h-4 w-4 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+            <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
               <FiPlusSquare size={"100%"} />
             </div>
-            <h3 className="flex-1 text-left text-xs font-semibold text-white md:text-sm">
+            <h3 className="flex-1 text-left text-base font-semibold text-white md:text-sm">
               Create Market
             </h3>
-            <FiArrowRight size={16} className="shrink-0 text-white md:h-[18px] md:w-[18px]" />
+            <FiArrowRight
+              size={20}
+              className="shrink-0 text-white md:h-[18px] md:w-[18px]"
+            />
           </button>
         )}
       </Menu.Item>
@@ -860,16 +1131,23 @@ const CreateMarketMenuItem = ({ onSelect }: { onSelect: () => void }) => {
           className="fixed bottom-0 left-0 right-0 z-[130] w-screen origin-top-right overflow-y-auto border-t-2 border-white/10 px-4 py-4 shadow-2xl backdrop-blur-lg focus:outline-none md:absolute md:inset-auto md:-right-4 md:left-auto md:ml-4 md:h-auto md:w-[400px] md:translate-x-[100%] md:rounded-lg md:border-2 md:border-white/10 md:bg-ztg-primary-700/95 md:px-5 md:py-3 md:ring-2 md:ring-white/5"
           style={{
             top: "calc(var(--top-bar-height, 50px) + 20px)",
-            height: "calc(100vh - var(--top-bar-height, 50px) - 20px)",
+            height:
+              "calc(var(--vh, 1vh) * 100 - var(--top-bar-height, 50px) - 20px)",
             backgroundColor: "#1a1e3b",
+            WebkitOverflowScrolling: "touch",
+            paddingBottom: "env(safe-area-inset-bottom, 20px)",
+            transform: "translateZ(0)", // Force hardware acceleration
+            willChange: "transform, opacity", // Optimize for animations
           }}
         >
           <div
-            className="mb-3 flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 transition-all hover:bg-white/20 md:hidden"
+            className="mb-3 flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-white/20 md:hidden"
             onClick={() => setCreateMarketOpen(false)}
           >
-            <FiArrowLeft size={18} className="text-white" />
-            <span className="text-xs font-semibold text-white">Back to Menu</span>
+            <FiArrowLeft size={20} className="text-white" />
+            <span className="text-base font-semibold text-white">
+              Back to Menu
+            </span>
           </div>
           <CreateMarketMenu onSelect={onSelect} />
         </div>

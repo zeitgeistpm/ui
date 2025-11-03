@@ -165,7 +165,9 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
                   <FaArrowRight size={12} />
                   {commitmentHash && u8aToHex(commitmentHash)}
                 </div>
-                <h3 className="mb-2 text-base text-white/90">Salt Seed Backup</h3>
+                <h3 className="mb-2 text-base text-white/90">
+                  Salt Seed Backup
+                </h3>
                 <p className="mb-3 text-sm text-white/80">
                   This is the content of the downloadable backup file, and the
                   data used to generate the commitment hash.

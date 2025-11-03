@@ -118,7 +118,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         id="displayName"
         {...register("displayName", { required: true })}
         className={
-          "mb-4 h-12 rounded-md px-3 text-sm text-white/90 placeholder:text-white/60 outline-none transition-all backdrop-blur-sm focus:bg-white/15 " +
+          "mb-4 h-12 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/60 focus:bg-white/15 " +
           (errors?.displayName
             ? "bg-red-500/20"
             : "bg-white/10 hover:bg-white/15")
@@ -137,10 +137,8 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         id="discord"
         {...register("discord")}
         className={
-          "mb-4 h-12 rounded-md px-3 text-sm text-white/90 placeholder:text-white/60 outline-none transition-all backdrop-blur-sm focus:bg-white/15 " +
-          (errors?.discord
-            ? "bg-red-500/20"
-            : "bg-white/10 hover:bg-white/15")
+          "mb-4 h-12 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/60 focus:bg-white/15 " +
+          (errors?.discord ? "bg-red-500/20" : "bg-white/10 hover:bg-white/15")
         }
       />
 
@@ -156,10 +154,8 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         id="twitter"
         {...register("twitter")}
         className={
-          "mb-4 h-12 rounded-md px-3 text-sm text-white/90 placeholder:text-white/60 outline-none transition-all backdrop-blur-sm focus:bg-white/15 " +
-          (errors?.twitter
-            ? "bg-red-500/20"
-            : "bg-white/10 hover:bg-white/15")
+          "mb-4 h-12 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/60 focus:bg-white/15 " +
+          (errors?.twitter ? "bg-red-500/20" : "bg-white/10 hover:bg-white/15")
         }
       />
 
@@ -177,7 +173,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
       </FormTransactionButton>
       <button
         type="button"
-        className="mt-2 text-sm text-white/90 hover:text-ztg-green-400 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-2 text-sm text-white/90 transition-colors hover:text-ztg-green-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         disabled={isUpdating || isClearing || isCleared}
         onClick={() => clearIdentity()}
       >

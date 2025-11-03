@@ -52,15 +52,15 @@ export const HeroBanner = ({
             href="https://www.coingecko.com/en/coins/zeitgeist"
             target="_blank"
           >
-            <div
-              className="flex w-full gap-2 rounded-md bg-white/10 px-4 py-3 backdrop-blur-sm"
-            >
+            <div className="flex w-full gap-2 rounded-md bg-white/10 px-4 py-3 backdrop-blur-sm">
               <div className="flex w-1/3 items-center justify-start gap-3">
                 <div>
                   <ZeitgeistIcon variant="blue" height={32} width={32} />
                 </div>
                 <div>
-                  <div className="text-lg font-medium text-white/90">Zeitgeist</div>
+                  <div className="text-lg font-medium text-white/90">
+                    Zeitgeist
+                  </div>
                   <div className="text-sm text-white/70">
                     {chainProperties.tokenSymbol.toString()}
                   </div>

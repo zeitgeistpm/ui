@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
-import { CurrencyTag, Liquidity, Answers } from "lib/state/market-creation/types/form";
+import {
+  CurrencyTag,
+  Liquidity,
+  Answers,
+} from "lib/state/market-creation/types/form";
 import { LiquidityInput } from "./Liquidity";
 import { LiquiditySimple } from "./LiquiditySimple";
 import { FormEvent } from "../types";
@@ -36,7 +40,7 @@ export const LiquidityModeToggle = ({
       // Check if rows are evenly distributed (simple mode characteristic)
       const firstPrice = value.rows[0]?.price?.price;
       const isEvenlyDistributed = value.rows.every(
-        (row) => row.price?.price?.toString() === firstPrice?.toString()
+        (row) => row.price?.price?.toString() === firstPrice?.toString(),
       );
       if (!isEvenlyDistributed) {
         setIsSimple(false);
@@ -102,11 +106,11 @@ export const LiquidityModeToggle = ({
             fieldState={fieldsState}
           />
           <p className="mt-2 text-xs text-white/60">
-            💡 Advanced mode lets you set custom prices and amounts for each outcome
+            💡 Advanced mode lets you set custom prices and amounts for each
+            outcome
           </p>
         </div>
       )}
     </div>
   );
 };
-

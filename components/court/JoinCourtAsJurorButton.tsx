@@ -187,7 +187,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
               />
 
               {connectedParticipant?.type === "Juror" && (
-                <div className="relative mb-5 mt-4 w-full rounded-lg bg-white/10 p-5 text-sm font-normal backdrop-blur-sm text-white/90">
+                <div className="relative mb-5 mt-4 w-full rounded-lg bg-white/10 p-5 text-sm font-normal text-white/90 backdrop-blur-sm">
                   This will set the new staked amount.
                 </div>
               )}
@@ -197,7 +197,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
               </div>
 
               {connectedParticipant?.type === "Delegator" && (
-                <div className="relative mb-5 w-full rounded-lg border-2 border-orange-500/40 bg-orange-900/30 p-5 text-sm font-normal backdrop-blur-sm text-white/90">
+                <div className="relative mb-5 w-full rounded-lg border-2 border-orange-500/40 bg-orange-900/30 p-5 text-sm font-normal text-white/90 backdrop-blur-sm">
                   You are currently delegating to other jurors. If you join the
                   court as a juror, your delegations will be removed and stake
                   will be moved to your personal stake.

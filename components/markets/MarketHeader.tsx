@@ -143,9 +143,11 @@ const MarketHeader: FC<{
           {/* Title + Badges */}
           <div className="flex min-h-[56px] flex-1 flex-col justify-between sm:min-h-[60px]">
             <div className="flex-[2]">
-              <h1 className="text-xl font-bold leading-tight text-white sm:text-2xl md:text-4xl">{market.question}</h1>
+              <h1 className="text-xl font-bold leading-tight text-white sm:text-2xl md:text-4xl">
+                {market.question}
+              </h1>
               {rejectReason && rejectReason.length > 0 && (
-                <div className="mt-1 rounded-md border-2 border-r-2ed-500/40 bg-red-900/30 px-2.5 py-1 text-xs text-red-400 backdrop-blur-sm sm:px-3 sm:py-1.5 sm:text-sm">
+                <div className="border-r-2ed-500/40 mt-1 rounded-md border-2 bg-red-900/30 px-2.5 py-1 text-xs text-red-400 backdrop-blur-sm sm:px-3 sm:py-1.5 sm:text-sm">
                   Market rejected: {rejectReason}
                 </div>
               )}
@@ -181,7 +183,9 @@ const MarketHeader: FC<{
         <div className="flex w-full flex-col gap-1.5 sm:gap-2">
           {marketStage?.type === "Court" ? (
             <div className="w-full">
-              <h3 className="mb-1.5 text-xs text-white/70 sm:mb-2 sm:text-sm">Market is in court</h3>
+              <h3 className="mb-1.5 text-xs text-white/70 sm:mb-2 sm:text-sm">
+                Market is in court
+              </h3>
               {caseId != null ? (
                 <CourtStageTimer caseId={caseId} />
               ) : (

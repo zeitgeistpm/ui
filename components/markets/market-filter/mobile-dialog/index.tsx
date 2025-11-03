@@ -73,7 +73,7 @@ const MobileDialog = ({
             <button
               onClick={close}
               tabIndex={1}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-white/70 transition-all active:scale-95 hover:bg-white/20 hover:text-white touch-manipulation"
+              className="flex h-9 w-9 touch-manipulation items-center justify-center rounded-lg text-white/70 transition-all hover:bg-white/20 hover:text-white active:scale-95"
             >
               <X size={20} />
             </button>

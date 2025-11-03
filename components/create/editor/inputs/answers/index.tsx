@@ -47,8 +47,8 @@ export const AnswersInput = ({
             type="button"
             className={`rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
               value?.type === "yes/no"
-                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
-                : "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:border-white/30"
+                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
+                : "border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/20"
             }`}
             onClick={handleSelectType("yes/no")}
           >
@@ -59,8 +59,8 @@ export const AnswersInput = ({
             type="button"
             className={`rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
               value?.type === "categorical"
-                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
-                : "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:border-white/30"
+                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
+                : "border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/20"
             }`}
             onClick={handleSelectType("categorical")}
           >
@@ -71,8 +71,8 @@ export const AnswersInput = ({
             type="button"
             className={`rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
               value?.type === "scalar"
-                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
-                : "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:border-white/30"
+                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
+                : "border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/20"
             }`}
             onClick={handleSelectType("scalar")}
           >
@@ -92,25 +92,27 @@ export const AnswersInput = ({
               onChange={handleChange}
             />
             {/* Preview of how answers will appear */}
-            {value.answers && value.answers.length > 0 && value.answers.some(a => a.trim() !== "") && (
-              <div className="rounded-lg bg-white/5 p-3">
-                <p className="mb-2 text-xs font-medium text-white/70">
-                  Preview: How your answers will appear
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {value.answers
-                    .filter(a => a.trim() !== "")
-                    .map((answer, idx) => (
-                      <div
-                        key={idx}
-                        className="rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm"
-                      >
-                        {answer}
-                      </div>
-                    ))}
+            {value.answers &&
+              value.answers.length > 0 &&
+              value.answers.some((a) => a.trim() !== "") && (
+                <div className="rounded-lg bg-white/5 p-3">
+                  <p className="mb-2 text-xs font-medium text-white/70">
+                    Preview: How your answers will appear
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {value.answers
+                      .filter((a) => a.trim() !== "")
+                      .map((answer, idx) => (
+                        <div
+                          key={idx}
+                          className="rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm"
+                        >
+                          {answer}
+                        </div>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         )}
         {value?.type === "scalar" && (
@@ -152,14 +154,15 @@ export const AnswersInput = ({
                 Preview: How your answers will appear
               </p>
               <div className="flex flex-wrap gap-2">
-                {value.answers && value.answers.map((answer, idx) => (
-                  <div
-                    key={idx}
-                    className="rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm"
-                  >
-                    {answer}
-                  </div>
-                ))}
+                {value.answers &&
+                  value.answers.map((answer, idx) => (
+                    <div
+                      key={idx}
+                      className="rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm"
+                    >
+                      {answer}
+                    </div>
+                  ))}
               </div>
             </div>
           </div>

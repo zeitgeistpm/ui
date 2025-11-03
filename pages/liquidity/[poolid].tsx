@@ -74,7 +74,9 @@ const PoolDetail = ({
           </div>
         </div>
         <div className="font-mono text-ztg-14-150 font-bold">{middle}</div>
-        <div className="font-mono text-ztg-12-150 text-ztg-primary-600">{bottom}</div>
+        <div className="font-mono text-ztg-12-150 text-ztg-primary-600">
+          {bottom}
+        </div>
       </div>
     </>
   );

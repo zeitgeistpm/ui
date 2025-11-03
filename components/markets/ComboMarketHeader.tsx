@@ -61,9 +61,7 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
             ? "bg-blue-500/80 text-white border-blue-400/40"
             : "bg-ztg-green-500/80 text-white border-ztg-green-400/40";
         const borderColor =
-          index === 0
-            ? "border-blue-500/40"
-            : "border-ztg-green-500/40";
+          index === 0 ? "border-blue-500/40" : "border-ztg-green-500/40";
         const roleDescription =
           index === 0
             ? "The condition/assumption market (i.e. event market)"
@@ -72,7 +70,7 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
         return (
           <div
             key={item.market?.marketId}
-            className={`flex-1 rounded-lg border ${borderColor} bg-white/15 shadow-lg backdrop-blur-md p-3 sm:p-4`}
+            className={`flex-1 rounded-lg border ${borderColor} bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4`}
           >
             {/* Header with pill, tooltip, and Trade Market button */}
             <div className={`mb-2 flex items-center gap-2`}>
@@ -82,10 +80,10 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
                 <span>{roleLabel}</span>
                 <div className="group relative">
                   <Info size={14} className="cursor-help text-white/90" />
-                  <div className="pointer-events-none absolute bottom-full left-0 z-10 mb-2 w-64 rounded-lg border border-white/20 bg-ztg-primary-900/95 px-3 py-2 text-xs text-white shadow-xl backdrop-blur-lg opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="pointer-events-none absolute bottom-full left-0 z-10 mb-2 w-64 rounded-lg border border-white/20 bg-ztg-primary-900/95 px-3 py-2 text-xs text-white opacity-0 shadow-xl backdrop-blur-lg transition-opacity group-hover:opacity-100">
                     {roleDescription}
                     <div className="absolute left-2 top-full">
-                      <div className="h-2 w-2 rotate-45 bg-ztg-primary-900/95 border-l border-t border-white/20"></div>
+                      <div className="h-2 w-2 rotate-45 border-l border-t border-white/20 bg-ztg-primary-900/95"></div>
                     </div>
                   </div>
                 </div>

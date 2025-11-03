@@ -37,12 +37,12 @@ export const CategorySelect = forwardRef(
               type="button"
               key={tag}
               className={`
-                center relative flex cursor-pointer gap-1.5 rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all
-                duration-200 ease-in-out active:scale-95 touch-manipulation
+                center relative flex cursor-pointer touch-manipulation gap-1.5 rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm
+                transition-all duration-200 ease-in-out active:scale-95
                 ${
                   isSelected
-                    ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:bg-ztg-green-600 hover:border-ztg-green-500"
-                    : "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:border-white/30"
+                    ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
+                    : "border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/20"
                 }
               `}
               onClick={handleSelect(tag)}

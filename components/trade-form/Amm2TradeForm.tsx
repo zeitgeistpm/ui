@@ -131,7 +131,7 @@ const Amm2TradeForm = ({
         >
           <div className="flex">
             <Tab.List
-              className={`h-[56px] w-full text-center text-base md:text-lg font-semibold ${
+              className={`h-[56px] w-full border-b-2 border-white/10 text-center text-base font-semibold md:text-lg ${
                 showTabs ? "flex" : "hidden"
               }`}
             >

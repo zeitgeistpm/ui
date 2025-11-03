@@ -193,10 +193,7 @@ const JoinPoolForm = ({
   }, [userAssetBalances, allBalancesLoaded]);
 
   return (
-    <form
-      className="flex flex-col gap-y-3"
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <form className="flex flex-col gap-y-3" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex max-h-[220px] flex-col gap-y-3 overflow-y-auto py-2 md:max-h-[300px]">
         {activeMarket &&
           pool?.assetIds.map((assetId, index) => {
@@ -218,7 +215,7 @@ const JoinPoolForm = ({
                             ${
                               formState.errors[index.toString()]?.message
                                 ? "border-ztg-red-500/60 bg-ztg-red-900/30 text-ztg-red-400 focus:border-ztg-red-500/80"
-                                : "border-white/10 bg-white/10 text-white/90 hover:bg-white/15 focus:bg-white/15 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                                : "border-white/10 bg-white/10 text-white/90 hover:bg-white/15 focus:border-white/20 focus:bg-white/15 focus:ring-2 focus:ring-white/10"
                             }
               `}
                   key={index}

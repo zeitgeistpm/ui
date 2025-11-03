@@ -75,7 +75,9 @@ const rdtpInput = (
   const { className, ...restProps } = props;
   return (
     <div
-      className={"flex rounded-ztg-5 bg-white/10 shadow-md backdrop-blur-sm " + className}
+      className={
+        "flex rounded-ztg-5 bg-white/10 shadow-md backdrop-blur-sm " + className
+      }
     >
       <Input
         {...restProps}

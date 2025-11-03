@@ -33,7 +33,7 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
               <span className="font-bold text-white">
                 {copy[stage.type].title}:
               </span>
-              <span className="lowercase font-medium text-white/80">
+              <span className="font-medium lowercase text-white/80">
                 {copy[stage.type].description}
               </span>
               {!isInfinite(stage) && (
@@ -60,7 +60,7 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
               <span className="font-bold text-white">
                 {copy[stage.type].title}:
               </span>
-              <span className="lowercase font-medium text-white/80">
+              <span className="font-medium lowercase text-white/80">
                 {copy[stage.type].description}
               </span>
             </div>
@@ -81,10 +81,10 @@ export const MarketTimerSkeleton = () => {
         />
         <div className="absolute inset-0 flex items-center justify-between px-2.5 sm:px-3">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <Skeleton width={80} height={10} className="sm:w-[120px] sm:h-3" />
-            <Skeleton width={70} height={10} className="sm:w-[100px] sm:h-3" />
+            <Skeleton width={80} height={10} className="sm:h-3 sm:w-[120px]" />
+            <Skeleton width={70} height={10} className="sm:h-3 sm:w-[100px]" />
           </div>
-          <Skeleton width={24} height={10} className="sm:w-[30px] sm:h-3" />
+          <Skeleton width={24} height={10} className="sm:h-3 sm:w-[30px]" />
         </div>
       </div>
     </div>

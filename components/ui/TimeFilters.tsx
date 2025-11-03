@@ -50,8 +50,8 @@ const TimeFilters = ({
         <button
           key={index}
           className={`flex flex-1 items-center justify-center rounded-md px-2 py-1.5 text-xs font-semibold transition-all active:scale-95 sm:px-3 sm:py-2 sm:text-sm ${
-            filter.label === value.label 
-              ? "bg-ztg-green-600/90 text-white shadow-md backdrop-blur-sm" 
+            filter.label === value.label
+              ? "bg-ztg-green-600/90 text-white shadow-md backdrop-blur-sm"
               : "text-white/70 hover:bg-white/20 hover:text-white"
           }`}
           onClick={() => onClick(filter)}

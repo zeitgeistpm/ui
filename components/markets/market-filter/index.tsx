@@ -208,11 +208,14 @@ const MarketFilterSelection = ({
         ordering={queryState?.ordering}
         onOrderingChange={updateOrdering}
       ></MobileDialog>
-      <div className="relative w-full -z-10 border-b-2 border-white/10 bg-ztg-primary-500 shadow-md backdrop-blur-md" id="market-filters-container">
+      <div
+        className="relative -z-10 w-full border-b-2 border-white/10 bg-ztg-primary-500 shadow-md backdrop-blur-md"
+        id="market-filters-container"
+      >
         <div className="container-fluid w-full">
           {portalRef.current ? (
             <>
-              <div className="relative hidden flex-wrap items-center gap-1.5 py-1 sm:gap-2 sm:py-2 md:gap-3 md:flex">
+              <div className="relative hidden flex-wrap items-center gap-1.5 py-1 sm:gap-2 sm:py-2 md:flex md:gap-3">
                 <MarketTypeToggle
                   value={queryState.marketType}
                   onChange={updateMarketType}
@@ -224,87 +227,87 @@ const MarketFilterSelection = ({
                 <div className="h-5 w-px shrink-0 bg-ztg-green-500/40"></div>
                 <MarketFiltersCheckboxes className="shrink-0"></MarketFiltersCheckboxes>
                 {/* Spacer that grows to push action items right, but doesn't affect wrapped rows */}
-                <div className="flex-grow shrink-0 basis-0 min-w-0"></div>
+                <div className="min-w-0 shrink-0 flex-grow basis-0"></div>
                 <div className="flex shrink-0 items-center gap-1.5 sm:gap-2 md:gap-3">
                   <MarketActiveFilters className="shrink-0" />
                   <Menu as="div" className="relative">
-                  {({ open }) => (
-                    <>
-                      <Menu.Button className="flex min-h-[44px] items-center gap-1.5 rounded-md bg-ztg-green-600/80 px-2 py-2 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-sm">
-                        <FiPlusSquare
-                          size={16}
-                          className="hidden sm:inline sm:h-3.5 sm:w-3.5"
-                        />
-                        <span>Create Market</span>
-                        <ChevronDown
-                          size={16}
-                          className={`ml-0.5 transition-transform sm:h-3.5 sm:w-3.5 ${open ? "rotate-180" : ""}`}
-                        />
-                      </Menu.Button>
+                    {({ open }) => (
+                      <>
+                        <Menu.Button className="flex min-h-[44px] items-center gap-1.5 rounded-md bg-ztg-green-600/80 px-2 py-2 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-sm">
+                          <FiPlusSquare
+                            size={16}
+                            className="hidden sm:inline sm:h-3.5 sm:w-3.5"
+                          />
+                          <span>Create Market</span>
+                          <ChevronDown
+                            size={16}
+                            className={`ml-0.5 transition-transform sm:h-3.5 sm:w-3.5 ${open ? "rotate-180" : ""}`}
+                          />
+                        </Menu.Button>
 
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-lg bg-ztg-primary-700/85 shadow-xl backdrop-blur-lg focus:outline-none">
-                          <div className="p-1">
-                            <Menu.Item>
-                              {({ active }) => (
-                                <Link href="/create">
-                                  <button
-                                    className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all ${
-                                      active ? "bg-white/20" : ""
-                                    }`}
-                                  >
-                                    <MdShowChart
-                                      size={18}
-                                      className="text-ztg-green-400"
-                                    />
-                                    <div className="flex flex-col items-start">
-                                      <span className="font-semibold text-white/90">
-                                        Single Market
-                                      </span>
-                                    </div>
-                                  </button>
-                                </Link>
-                              )}
-                            </Menu.Item>
+                        <Transition
+                          as={Fragment}
+                          enter="transition ease-out duration-100"
+                          enterFrom="transform opacity-0 scale-95"
+                          enterTo="transform opacity-100 scale-100"
+                          leave="transition ease-in duration-75"
+                          leaveFrom="transform opacity-100 scale-100"
+                          leaveTo="transform opacity-0 scale-95"
+                        >
+                          <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-lg bg-ztg-primary-700/85 shadow-xl backdrop-blur-lg focus:outline-none">
+                            <div className="p-1">
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <Link href="/create">
+                                    <button
+                                      className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all ${
+                                        active ? "bg-white/20" : ""
+                                      }`}
+                                    >
+                                      <MdShowChart
+                                        size={18}
+                                        className="text-ztg-green-400"
+                                      />
+                                      <div className="flex flex-col items-start">
+                                        <span className="font-semibold text-white/90">
+                                          Single Market
+                                        </span>
+                                      </div>
+                                    </button>
+                                  </Link>
+                                )}
+                              </Menu.Item>
 
-                            <Menu.Item>
-                              {({ active }) => (
-                                <Link href="/create-combo">
-                                  <button
-                                    className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all ${
-                                      active ? "bg-white/20" : ""
-                                    }`}
-                                  >
-                                    <MdStackedLineChart
-                                      size={18}
-                                      className="text-ztg-green-400"
-                                    />
-                                    <div className="flex flex-col items-start">
-                                      <span className="font-semibold text-white/90">
-                                        Combinatorial Market
-                                      </span>
-                                      <span className="text-xs text-white/70">
-                                        Multi-market combinations
-                                      </span>
-                                    </div>
-                                  </button>
-                                </Link>
-                              )}
-                            </Menu.Item>
-                          </div>
-                        </Menu.Items>
-                      </Transition>
-                    </>
-                  )}
-                </Menu>
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <Link href="/create-combo">
+                                    <button
+                                      className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all ${
+                                        active ? "bg-white/20" : ""
+                                      }`}
+                                    >
+                                      <MdStackedLineChart
+                                        size={18}
+                                        className="text-ztg-green-400"
+                                      />
+                                      <div className="flex flex-col items-start">
+                                        <span className="font-semibold text-white/90">
+                                          Combinatorial Market
+                                        </span>
+                                        <span className="text-xs text-white/70">
+                                          Multi-market combinations
+                                        </span>
+                                      </div>
+                                    </button>
+                                  </Link>
+                                )}
+                              </Menu.Item>
+                            </div>
+                          </Menu.Items>
+                        </Transition>
+                      </>
+                    )}
+                  </Menu>
                 </div>
               </div>
             </>
@@ -318,11 +321,14 @@ const MarketFilterSelection = ({
           ></div>
         </div>
         <button
-          className="flex w-full items-center justify-center gap-1.5 border-t-2 border-white/10 bg-white/15 px-4 py-2 text-xs font-semibold text-white/90 shadow-md backdrop-blur-sm transition-all active:scale-95 hover:bg-white/20 touch-manipulation sm:gap-2 sm:px-4 sm:text-sm md:hidden"
+          className="flex min-h-[48px] w-full touch-manipulation items-center justify-center gap-3 border-t-2 border-white/10 bg-white/15 px-4 py-3 text-base font-semibold text-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white/20 active:scale-95 md:hidden"
           onClick={() => setMobileDialogOpen(true)}
         >
           <span className="whitespace-nowrap">Filter & Sort Markets</span>
-          <ChevronDown size={14} className="shrink-0 text-white/70 transition-transform sm:h-4 sm:w-4" />
+          <ChevronDown
+            size={20}
+            className="shrink-0 text-white/70 transition-transform"
+          />
         </button>
       </div>
     </MarketFiltersContainer>

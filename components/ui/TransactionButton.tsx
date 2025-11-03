@@ -103,10 +103,11 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
 
   const colorClass = useMemo(() => {
     // Determine base color based on variant
-    const baseColor = variant === "red" 
-      ? "bg-ztg-red-600/80 hover:bg-ztg-red-600"
-      : "bg-ztg-green-600/80 hover:bg-ztg-green-600 backdrop-blur-sm";
-    
+    const baseColor =
+      variant === "red"
+        ? "bg-ztg-red-600/80 hover:bg-ztg-red-600"
+        : "bg-ztg-green-600/80 hover:bg-ztg-green-600 backdrop-blur-sm";
+
     // During SSR, use safe default color
     if (!mounted) {
       return baseColor;
@@ -122,7 +123,13 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
     return locationAllowed !== true || insufficientFeeBalance
       ? "bg-ztg-red-600/80 hover:bg-ztg-red-600"
       : baseColor;
-  }, [mounted, locationLoading, locationAllowed, insufficientFeeBalance, variant]);
+  }, [
+    mounted,
+    locationLoading,
+    locationAllowed,
+    insufficientFeeBalance,
+    variant,
+  ]);
 
   const getButtonChildren = () => {
     // Always wrap content in consistent structure for hydration
@@ -157,9 +164,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
     })();
 
     // Always wrap in consistent div structure for hydration consistency
-    return (
-      <div className="center w-full">{content}</div>
-    );
+    return <div className="center w-full">{content}</div>;
   };
 
   return (
@@ -167,7 +172,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
       type={type}
       className={`ztg-transition h-[56px] w-full rounded-full font-bold text-white shadow-lg
         transition-all duration-200 focus:outline-none disabled:cursor-default ${
-          !isDisabled && "active:scale-[0.97] hover:shadow-xl"
+          !isDisabled && "hover:shadow-xl active:scale-[0.97]"
         } ${colorClass} ${className} disabled:!bg-ztg-primary-300`}
       onClick={(e) => click(e)}
       disabled={isDisabled}

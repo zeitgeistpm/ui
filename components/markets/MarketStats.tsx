@@ -80,7 +80,9 @@ export const MarketStats: FC<MarketStatsProps> = ({
 
       {status === "Proposed" && (
         <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white/15 sm:px-3 sm:py-2">
-          <div className="text-[10px] font-medium text-white/70 sm:text-xs">Reports Open</div>
+          <div className="text-[10px] font-medium text-white/70 sm:text-xs">
+            Reports Open
+          </div>
           <div className="text-xs font-bold leading-tight text-white/90 sm:text-sm">
             {new Intl.DateTimeFormat("default", {
               month: "short",
@@ -93,7 +95,9 @@ export const MarketStats: FC<MarketStatsProps> = ({
 
       {token ? (
         <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white/15 sm:px-3 sm:py-2">
-          <div className="text-[10px] font-medium text-white/70 sm:text-xs">Volume</div>
+          <div className="text-[10px] font-medium text-white/70 sm:text-xs">
+            Volume
+          </div>
           <div className="text-xs font-bold leading-tight text-white/90 sm:text-sm">
             {formatNumberCompact(volume)} {token}
           </div>
@@ -106,7 +110,9 @@ export const MarketStats: FC<MarketStatsProps> = ({
 
       {isStatsLoading === false && token ? (
         <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white/15 sm:px-3 sm:py-2">
-          <div className="text-[10px] font-medium text-white/70 sm:text-xs">Liquidity</div>
+          <div className="text-[10px] font-medium text-white/70 sm:text-xs">
+            Liquidity
+          </div>
           <div className="text-xs font-bold leading-tight text-white/90 sm:text-sm">
             {formatNumberCompact(
               new Decimal(liquidity ?? 0)?.div(ZTG).toNumber(),
@@ -122,7 +128,9 @@ export const MarketStats: FC<MarketStatsProps> = ({
 
       {isStatsLoading === false && token ? (
         <div className="rounded-lg bg-white/10 px-2.5 py-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white/15 sm:px-3 sm:py-2">
-          <div className="text-[10px] font-medium text-white/70 sm:text-xs">Traders</div>
+          <div className="text-[10px] font-medium text-white/70 sm:text-xs">
+            Traders
+          </div>
           <div className="text-xs font-bold leading-tight text-white/90 sm:text-sm">
             {formatNumberCompact(participants ?? 0)}
           </div>

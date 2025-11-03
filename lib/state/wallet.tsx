@@ -176,19 +176,21 @@ export const userConfigAtom = persistentAtom<WalletUserConfig>({
        * Migrate existing localStorage values to new atom state.
        * So existing users don't have to reselect their wallet and address.
        */
-      
+
       // Only validate and reset if state exists but is clearly corrupted
       // A valid state should have at least __version or be empty
       if (state && typeof state === "object") {
-        const hasValidKeys = 
-          "__version" in state || 
-          "walletId" in state || 
-          "selectedAddress" in state || 
+        const hasValidKeys =
+          "__version" in state ||
+          "walletId" in state ||
+          "selectedAddress" in state ||
           "proxyFor" in state;
-        
+
         // If state exists but has no valid keys and has other keys, it's corrupted
         if (!hasValidKeys && Object.keys(state).length > 0) {
-          console.warn("Invalid wallet config state detected, resetting to default");
+          console.warn(
+            "Invalid wallet config state detected, resetting to default",
+          );
           // Clear potentially corrupted localStorage entry
           try {
             globalThis.localStorage?.removeItem("wallet-user-config");
@@ -199,7 +201,10 @@ export const userConfigAtom = persistentAtom<WalletUserConfig>({
         }
       }
 
-      if (!state || (typeof state === "object" && Object.keys(state).length === 0)) {
+      if (
+        !state ||
+        (typeof state === "object" && Object.keys(state).length === 0)
+      ) {
         const walletId = globalThis.localStorage?.getItem("walletId");
         let selectedAddress =
           globalThis.localStorage?.getItem("accountAddress");
@@ -231,7 +236,10 @@ export const userConfigAtom = persistentAtom<WalletUserConfig>({
         const result: WalletUserConfig = {};
 
         // Validate walletId
-        if (validatedState.walletId && typeof validatedState.walletId === "string") {
+        if (
+          validatedState.walletId &&
+          typeof validatedState.walletId === "string"
+        ) {
           result.walletId = validatedState.walletId;
         }
 
@@ -241,7 +249,7 @@ export const userConfigAtom = persistentAtom<WalletUserConfig>({
           typeof validatedState.selectedAddress === "string"
         ) {
           const addressValidation = tryCatch(() =>
-            encodeAddress(validatedState.selectedAddress!, 73)
+            encodeAddress(validatedState.selectedAddress!, 73),
           );
           if (addressValidation.isSome()) {
             result.selectedAddress = validatedState.selectedAddress;
@@ -251,7 +259,10 @@ export const userConfigAtom = persistentAtom<WalletUserConfig>({
         }
 
         // Preserve proxyFor if valid
-        if (validatedState.proxyFor && typeof validatedState.proxyFor === "object") {
+        if (
+          validatedState.proxyFor &&
+          typeof validatedState.proxyFor === "object"
+        ) {
           result.proxyFor = validatedState.proxyFor;
         }
 
@@ -439,9 +450,10 @@ const enableWallet = async (
         errors: [
           {
             extensionName: wallet?.extensionName ?? "unknown wallet",
-            type: error instanceof Error && error.message.includes("denied") 
-              ? "InteractionDenied" 
-              : "InteractionDenied",
+            type:
+              error instanceof Error && error.message.includes("denied")
+                ? "InteractionDenied"
+                : "InteractionDenied",
           },
         ],
       };

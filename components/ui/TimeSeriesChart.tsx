@@ -33,7 +33,7 @@ export interface ChartData {
 
 const ChartToolTip = (props) => {
   const [isMobile, setIsMobile] = useState(false);
-  
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640);
@@ -50,21 +50,25 @@ const ChartToolTip = (props) => {
       value: new Decimal(props.payload[index]?.value ?? 0),
     }))
     .sort((a, b) => b.value.minus(a.value).toNumber());
-  
+
   return (
     <>
       {props.label !== undefined &&
       props.label !== -Infinity &&
       props.label !== Infinity ? (
-        <div className={`rounded-lg bg-gradient-to-br from-ztg-primary-50 to-blue-50 shadow-xl backdrop-blur-sm ${isMobile ? "px-2 py-2" : "px-3 py-3"}`}>
+        <div
+          className={`rounded-lg border border-white/20 bg-ztg-primary-900/95 shadow-xl backdrop-blur-lg ${isMobile ? "px-2 py-2" : "px-3 py-3"}`}
+        >
           <div className={isMobile ? "text-[10px]" : "text-xs"}>
-            <div className={`mb-1.5 flex items-center gap-1.5 border-b-2 border-ztg-primary-200/50 ${isMobile ? "pb-1.5" : "mb-2 gap-2 pb-2"}`}>
-              <span className="font-semibold text-gray-700">
+            <div
+              className={`mb-1.5 flex items-center gap-1.5 border-b border-white/20 ${isMobile ? "pb-1.5" : "mb-2 gap-2 pb-2"}`}
+            >
+              <span className="font-semibold text-white">
                 {new Intl.DateTimeFormat("default", {
                   dateStyle: "short",
                 }).format(new Date(props.label))}
               </span>
-              <span className="text-gray-500">
+              <span className="text-white/70">
                 {new Intl.DateTimeFormat("default", {
                   hour: "numeric",
                   minute: "numeric",
@@ -77,16 +81,22 @@ const ChartToolTip = (props) => {
                   key={index}
                   className={`flex items-center justify-between ${isMobile ? "gap-2" : "gap-4"}`}
                 >
-                  <div className={`flex items-center ${isMobile ? "gap-1.5" : "gap-2"}`}>
+                  <div
+                    className={`flex items-center ${isMobile ? "gap-1.5" : "gap-2"}`}
+                  >
                     <div
                       className={`rounded-full ${isMobile ? "h-1.5 w-1.5" : "h-2 w-2"}`}
                       style={{ backgroundColor: item.color }}
                     ></div>
-                    <div className={`font-semibold capitalize text-gray-700 ${isMobile ? "text-[10px]" : ""}`}>
+                    <div
+                      className={`font-semibold capitalize text-white ${isMobile ? "text-[10px]" : ""}`}
+                    >
                       {item.label}
                     </div>
                   </div>
-                  <div className={`font-bold text-gray-900 ${isMobile ? "text-[10px]" : ""}`}>{`${item.value.toFixed(isMobile ? 2 : 3)} ${props.yUnits}`}</div>
+                  <div
+                    className={`font-bold text-white ${isMobile ? "text-[10px]" : ""}`}
+                  >{`${item.value.toFixed(isMobile ? 2 : 3)} ${props.yUnits}`}</div>
                 </div>
               ))}
             </div>
@@ -154,16 +164,22 @@ const TimeSeriesChart = ({
     >
       {isLoading === false ? (
         <ResponsiveContainer width="100%">
-          <LineChart 
-            width={500} 
-            height={isMobile ? 220 : 300} 
+          <LineChart
+            width={500}
+            height={isMobile ? 220 : 300}
             data={data}
-            margin={{ top: 5, right: 5, left: isMobile ? -25 : -20, bottom: isMobile ? -5 : 0 }}
+            margin={{
+              top: 5,
+              right: 5,
+              left: isMobile ? -25 : -20,
+              bottom: isMobile ? -5 : 0,
+            }}
           >
             <CartesianGrid
               strokeDasharray="3 3"
               strokeWidth={1}
-              stroke="#BAE6FD"
+              stroke="#989CB5"
+              strokeOpacity={0.2}
               vertical={false}
             />
             <XAxis
@@ -172,15 +188,17 @@ const TimeSeriesChart = ({
               tickCount={isMobile ? 4 : 5}
               tick={{
                 fontSize: isMobile ? "9px" : "10px",
-                stroke: "#6B7280",
-                strokeWidth: 1,
-                fontWeight: 100,
+                fill: "#E8E9ED",
+                stroke: "none",
+                strokeWidth: 0,
+                fontWeight: 400,
               }}
               tickMargin={isMobile ? 5 : 10}
               type="number"
-              stroke="#BAE6FD"
+              stroke="#C4C6D2"
+              strokeOpacity={0.5}
               tickLine={true}
-              strokeWidth={2}
+              strokeWidth={1.5}
               tickFormatter={(unixTime) => {
                 if (unixTime !== -Infinity && unixTime !== Infinity) {
                   if (lessThanTwoDays === true) {
@@ -200,9 +218,10 @@ const TimeSeriesChart = ({
             <YAxis
               tick={{
                 fontSize: isMobile ? "9px" : "10px",
-                stroke: "#6B7280",
-                strokeWidth: 1,
-                fontWeight: 100,
+                fill: "#E8E9ED",
+                stroke: "none",
+                strokeWidth: 0,
+                fontWeight: 400,
               }}
               tickLine={false}
               width={isMobile ? 30 : 45}
@@ -220,8 +239,9 @@ const TimeSeriesChart = ({
                   },
                 ]
               }
-              stroke="#BAE6FD"
-              strokeWidth={2}
+              stroke="#C4C6D2"
+              strokeOpacity={0.5}
+              strokeWidth={1.5}
               tickFormatter={(val) => `${+val.toFixed(isMobile ? 1 : 2)}`}
             />
 
@@ -237,7 +257,9 @@ const TimeSeriesChart = ({
             {series.map((s, index) => (
               <Line
                 key={index}
-                strokeWidth={mouseInside ? (isMobile ? 2.5 : 3) : (isMobile ? 1.5 : 2)}
+                strokeWidth={
+                  mouseInside ? (isMobile ? 2.5 : 3) : isMobile ? 1.5 : 2
+                }
                 type="linear"
                 dataKey={s.accessor}
                 dot={false}

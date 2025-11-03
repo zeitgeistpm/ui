@@ -75,18 +75,16 @@ const MarketSearch = () => {
   }, [selectedIndex]);
 
   return (
-      <div className="relative w-full" ref={wrapperRef}>
-        <div className="flex items-center">
-          <div
-            className="relative w-full transition-all"
-          >
+    <div className="relative w-full" ref={wrapperRef}>
+      <div className="flex items-center">
+        <div className="relative w-full transition-all">
           <div className="pointer-events-none absolute left-3 top-[50%] translate-y-[-50%] text-white/70">
-            <Search size={14} className="sm:h-4 sm:w-4" />
+            <Search size={18} />
           </div>
 
           <input
             ref={inputRef}
-            className={`h-9 w-full rounded-lg bg-white/10 pl-9 pr-9 text-xs text-white outline-none backdrop-blur-sm transition-all placeholder:text-white/60 ring-2 ring-transparent focus:bg-white/15 focus:ring-2 focus:ring-ztg-green-500/30 focus:shadow-lg touch-manipulation sm:pl-10 sm:pr-10 sm:text-sm md:h-11 md:text-base md:pl-10 md:pr-10 overflow-hidden text-ellipsis`}
+            className={`h-11 w-full touch-manipulation overflow-hidden text-ellipsis rounded-lg bg-white/10 pl-4 pr-4 text-base text-white outline-none ring-2 ring-transparent backdrop-blur-sm transition-all placeholder:text-white/60 focus:bg-white/15 focus:shadow-lg focus:ring-2 focus:ring-ztg-green-500/30 md:text-base`}
             value={searchTerm}
             placeholder="Search markets..."
             onChange={(event) => {
@@ -125,7 +123,7 @@ const MarketSearch = () => {
                 }, 66);
               }}
             >
-              <X size={14} className="sm:h-4 sm:w-4" />
+              <X size={18} />
             </button>
           )}
         </div>
@@ -140,7 +138,7 @@ const MarketSearch = () => {
         leaveTo="transform opacity-0 scale-95"
         show={Boolean(showResults && showSearch && markets)}
       >
-        <div className="absolute top-[42px] left-1/2 z-50 max-h-[420px] w-full max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-col rounded-md bg-white/10 px-2 py-4 shadow-2xl backdrop-blur-lg md:max-w-xl">
+        <div className="absolute left-1/2 top-[42px] z-50 max-h-[420px] w-full max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-col rounded-md bg-white/10 px-2 py-4 shadow-2xl backdrop-blur-lg md:max-w-xl">
           <div className="subtle-scroll-bar overflow-y-scroll">
             {markets?.length ? (
               markets?.map((market, index) => (

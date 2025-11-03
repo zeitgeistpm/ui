@@ -39,10 +39,10 @@ const NotificationCard: FC<{
         type,
       )} ${getBorderColor(type)}`}
       style={{
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        transform: 'translateZ(0)',
-        willChange: 'transform',
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        transform: "translateZ(0)",
+        willChange: "transform",
       }}
     >
       <div
@@ -168,7 +168,7 @@ const NotificationCenter = () => {
   const { notifications, removeNotification } = useNotifications();
 
   return (
-    <div 
+    <div
       className="pointer-events-none fixed right-4 top-4 w-full max-w-[420px] md:right-6"
       style={{
         zIndex: 9999,
@@ -181,19 +181,22 @@ const NotificationCenter = () => {
             initial={{ x: 400, opacity: 0.01 }}
             exit={{ x: 400, opacity: 0.01 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ 
+            transition={{
               type: "tween",
               ease: [0.16, 1, 0.3, 1],
               duration: 0.5,
-              delay: index * 0.05
+              delay: index * 0.05,
             }}
             className="pointer-events-auto relative box-border w-full overflow-hidden"
             style={{
               zIndex: 9999,
-              position: 'relative',
+              position: "relative",
             }}
           >
-            <div className="mb-4 flex-1" style={{ position: 'relative', zIndex: 9999 }}>
+            <div
+              className="mb-4 flex-1"
+              style={{ position: "relative", zIndex: 9999 }}
+            >
               <NotificationCard
                 dataTest="notificationMessage"
                 key={notification.id}

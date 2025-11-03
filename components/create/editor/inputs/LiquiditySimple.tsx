@@ -24,12 +24,15 @@ export const LiquiditySimple = ({
 }: LiquiditySimpleProps) => {
   const currencyMetadata = getMetadataForCurrency(currency);
   const { data: rawAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
-  
+
   // Hardcode stablecoins to $1 USD
-  const isStablecoin = currency === "USDC.wh";
+  // DISABLED: USDC.wh temporarily disabled
+  // const isStablecoin = currency === "USDC.wh";
+  const isStablecoin = false; // currency === "USDC.wh";
   const baseAssetPrice = isStablecoin ? new Decimal(1) : rawAssetPrice;
 
-  const numOutcomes = answers?.type === "scalar" ? 2 : answers?.answers?.length || 0;
+  const numOutcomes =
+    answers?.type === "scalar" ? 2 : answers?.answers?.length || 0;
   const defaultAmount = "100";
   const ratio = numOutcomes > 0 ? 1 / numOutcomes : 0;
 
@@ -88,7 +91,6 @@ export const LiquiditySimple = ({
 
   return (
     <div className="space-y-4">
-
       <div className="space-y-3">
         <div className="space-y-2">
           <label className="block text-xs font-semibold text-white">
@@ -99,7 +101,7 @@ export const LiquiditySimple = ({
             inputMode="decimal"
             value={value?.amount || ""}
             onChange={(e) => handleAmountChange(e.target.value)}
-            className="h-11 w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 text-sm text-white placeholder:text-white/50 backdrop-blur-sm transition-all"
+            className="h-11 w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 text-sm text-white backdrop-blur-sm transition-all placeholder:text-white/50"
             placeholder={`e.g., ${defaultAmount}`}
           />
           {totalValue && totalValue.gt(0) && (
@@ -108,7 +110,8 @@ export const LiquiditySimple = ({
             </p>
           )}
           <p className="text-xs text-white/60">
-            💡 This amount will be evenly distributed across all {numOutcomes} outcomes
+            💡 This amount will be evenly distributed across all {numOutcomes}{" "}
+            outcomes
           </p>
         </div>
 
@@ -148,10 +151,7 @@ export const LiquiditySimple = ({
                   ? new Decimal(value.amount).mul(ratio).toFixed(2)
                   : "0";
                 return (
-                  <div
-                    key={idx}
-                    className="rounded-lg bg-white/5 p-2"
-                  >
+                  <div key={idx} className="rounded-lg bg-white/5 p-2">
                     <p className="mb-1 truncate text-xs font-medium text-white">
                       {outcomeName}
                     </p>
@@ -168,4 +168,3 @@ export const LiquiditySimple = ({
     </div>
   );
 };
-

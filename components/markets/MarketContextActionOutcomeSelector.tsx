@@ -129,7 +129,6 @@ const MarketContextActionOutcomeSelector = ({
     }
   }, [open, inputRef]);
 
-
   const [revealed, setRevealed] = useState(false);
 
   const getSelectedText = () => {
@@ -172,7 +171,10 @@ const MarketContextActionOutcomeSelector = ({
           setOpen(false);
         }}
       >
-        <div ref={containerRef} className="relative z-10 w-full flex flex-col gap-3">
+        <div
+          ref={containerRef}
+          className="relative z-10 flex w-full flex-col gap-3"
+        >
           <div className="flex gap-3">
             <Listbox.Button
               onClick={() => setOpen(!open)}
@@ -206,11 +208,11 @@ const MarketContextActionOutcomeSelector = ({
                 }}
               </TruncatedText>
               {!disabled && (
-                <RiArrowDownSLine 
-                  size={18} 
+                <RiArrowDownSLine
+                  size={18}
                   className={`ml-auto text-white/90 transition-transform ${
                     open ? "rotate-180" : ""
-                  }`} 
+                  }`}
                 />
               )}
             </Listbox.Button>
@@ -240,9 +242,9 @@ const MarketContextActionOutcomeSelector = ({
             leaveFrom="transform scale-100 opacity-100"
             leaveTo="transform scale-95 opacity-0"
           >
-            <div 
+            <div
               ref={dropdownRef}
-              className="fixed inset-0 z-[100] flex flex-col bg-ztg-primary-500/95 backdrop-blur-md md:absolute md:left-0 md:right-0 md:top-full md:bottom-auto md:z-[100] md:mt-2 md:w-full md:rounded-lg md:border-2 md:border-white/10 md:bg-ztg-primary-700/95 md:shadow-2xl md:ring-2 md:ring-white/5 md:backdrop-blur-lg"
+              className="fixed inset-0 z-[100] flex flex-col bg-ztg-primary-500/95 backdrop-blur-md md:absolute md:bottom-auto md:left-0 md:right-0 md:top-full md:z-[100] md:mt-2 md:w-full md:rounded-lg md:border-2 md:border-white/10 md:bg-ztg-primary-700/95 md:shadow-2xl md:ring-2 md:ring-white/5 md:backdrop-blur-lg"
             >
               {/* Mobile header */}
               <div className="border-b-2 border-white/10 bg-ztg-primary-600/95 shadow-sm backdrop-blur-lg md:hidden">
@@ -259,7 +261,7 @@ const MarketContextActionOutcomeSelector = ({
                       type="text"
                       ref={inputRef}
                       placeholder="Search Assets"
-                      className="h-[44px] w-full rounded-lg bg-white/10 px-4 text-sm text-white/90 placeholder:text-white/60 shadow-md backdrop-blur-sm focus:bg-white/15 focus:shadow-lg"
+                      className="h-[44px] w-full rounded-lg bg-white/10 px-4 text-sm text-white/90 shadow-md backdrop-blur-sm placeholder:text-white/60 focus:bg-white/15 focus:shadow-lg"
                       value={search ?? ""}
                       onChange={(event) => {
                         setSearch(event.target.value);
@@ -270,12 +272,12 @@ const MarketContextActionOutcomeSelector = ({
               </div>
               {/* Desktop search */}
               {Number(options?.length) > SEARCH_ITEMS_THRESHOLD && (
-                <div className="hidden px-3 pt-3 pb-3 md:block">
+                <div className="hidden px-3 pb-3 pt-3 md:block">
                   <Input
                     type="text"
                     ref={inputRef}
                     placeholder="Search outcomes..."
-                    className="h-[40px] w-full rounded-lg bg-white/10 px-3 text-sm text-white/90 placeholder:text-white/60 backdrop-blur-sm transition-all focus:bg-white/15 focus:ring-2 focus:ring-ztg-green-500/30 focus:shadow-md"
+                    className="h-[40px] w-full rounded-lg bg-white/10 px-3 text-sm text-white/90 backdrop-blur-sm transition-all placeholder:text-white/60 focus:bg-white/15 focus:shadow-md focus:ring-2 focus:ring-ztg-green-500/30"
                     value={search ?? ""}
                     onChange={(event) => {
                       setSearch(event.target.value);
@@ -283,45 +285,49 @@ const MarketContextActionOutcomeSelector = ({
                   />
                 </div>
               )}
-            <Listbox.Options
-              static
-              className="no-scroll-bar flex-1 overflow-y-scroll px-3 py-3 md:max-h-[300px]"
-            >
-              {(searchResults ?? assetOptions)?.map((option, index) => {
-                return (
-                  <Listbox.Option
-                    key={option.assetIndex}
-                    value={option.asset}
-                    className="mb-2 cursor-pointer last:mb-0"
-                  >
-                    {({ selected, active }) => (
-                      <div
-                        className={`group flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-150 ease-in-out ${
-                          selected
-                            ? "bg-ztg-green-500/20 text-white shadow-sm ring-2 ring-ztg-green-500/30"
-                            : active
-                            ? "bg-white/20 text-white shadow-sm"
-                            : "bg-white/10 text-white/90 hover:bg-white/20 hover:shadow-sm"
-                        }`}
-                      >
+              <Listbox.Options
+                static
+                className="no-scroll-bar flex-1 overflow-y-scroll px-3 py-3 md:max-h-[300px]"
+              >
+                {(searchResults ?? assetOptions)?.map((option, index) => {
+                  return (
+                    <Listbox.Option
+                      key={option.assetIndex}
+                      value={option.asset}
+                      className="mb-2 cursor-pointer last:mb-0"
+                    >
+                      {({ selected, active }) => (
                         <div
-                          className="h-3 w-3 flex-shrink-0 rounded-full ring-2 ring-white/30 transition-all group-hover:ring-white/50"
-                          style={{ backgroundColor: option.color }}
-                        ></div>
-                        <span className={`text-sm font-medium transition-colors ${
-                          selected ? "text-ztg-green-400" : "text-white/90 group-hover:text-white"
-                        }`}>
-                          {option.category?.name || option.assetIndex}
-                        </span>
-                        {selected && (
-                          <div className="ml-auto h-1.5 w-1.5 rounded-full bg-ztg-green-400"></div>
-                        )}
-                      </div>
-                    )}
-                  </Listbox.Option>
-                );
-              })}
-            </Listbox.Options>
+                          className={`group flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-150 ease-in-out ${
+                            selected
+                              ? "bg-ztg-green-500/20 text-white shadow-sm ring-2 ring-ztg-green-500/30"
+                              : active
+                                ? "bg-white/20 text-white shadow-sm"
+                                : "bg-white/10 text-white/90 hover:bg-white/20 hover:shadow-sm"
+                          }`}
+                        >
+                          <div
+                            className="h-3 w-3 flex-shrink-0 rounded-full ring-2 ring-white/30 transition-all group-hover:ring-white/50"
+                            style={{ backgroundColor: option.color }}
+                          ></div>
+                          <span
+                            className={`text-sm font-medium transition-colors ${
+                              selected
+                                ? "text-ztg-green-400"
+                                : "text-white/90 group-hover:text-white"
+                            }`}
+                          >
+                            {option.category?.name || option.assetIndex}
+                          </span>
+                          {selected && (
+                            <div className="ml-auto h-1.5 w-1.5 rounded-full bg-ztg-green-400"></div>
+                          )}
+                        </div>
+                      )}
+                    </Listbox.Option>
+                  );
+                })}
+              </Listbox.Options>
             </div>
           </Transition>
         </div>
