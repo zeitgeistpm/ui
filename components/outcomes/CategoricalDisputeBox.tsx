@@ -115,50 +115,35 @@ const CategoricalDisputeBox = ({
   };
 
   return (
-    <div className="flex flex-col items-center gap-y-3 p-[30px]">
-      <div className="text-[22px] font-bold">Dispute Outcome</div>
-      <div className="mb-[20px] flex flex-col items-center justify-center gap-3 text-center">
-        <div>
-          Bond cost: {disputeBond} {tokenSymbol}
+    <div className="flex flex-col items-center gap-y-4">
+      
+      <div className="mb-4 flex w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-orange-400/40 bg-orange-500/20 p-4 text-center backdrop-blur-md">
+        <div className="text-sm text-white/90">
+          Bond cost: <span className="font-semibold text-white">{disputeBond} {tokenSymbol}</span>
         </div>
-        <div className="font-bold">
-          Bonds will be slashed if the reported outcome is deemed to be
-          incorrect
+        <div className="text-sm font-semibold text-white/90">
+          Bonds will be slashed if the reported outcome is deemed to be incorrect
         </div>
       </div>
 
-      <div className="item-center flex flex-col text-center">
-        <span className="text-[14px] text-ztg-primary-600">
+      <div className="flex flex-col items-center text-center">
+        <span className="text-sm text-white/70">
           Previous Report:
         </span>
-        <span className="">{getPreviousReportName()}</span>
+        <span className="mt-1 font-semibold text-white">{getPreviousReportName()}</span>
       </div>
-      {/* <div className="flex flex-col item-center text-center">
-        <span className="text-ztg-primary-600 text-[14px]">New Report:</span>
-
-        <div className="mb-4">
-          {market && selectedAssetId && (
-            <MarketContextActionOutcomeSelector
-              market={market}
-              selected={selectedAssetId}
-              options={outcomeAssets}
-              onChange={(assetId) => {
-                setSelectedAssetId(assetId as CategoricalAssetId);
-              }}
-            />
-          )}
-        </div>
-      </div> */}
+      
       {bondAmount !== disputeBond && bondAmount !== undefined && (
-        <div className="item-center flex flex-col text-center">
-          <span className="text-[14px] text-ztg-primary-600">
+        <div className="flex flex-col items-center text-center">
+          <span className="text-sm text-white/70">
             Previous Bond:
           </span>
-          <span className="">{bondAmount}</span>
+          <span className="mt-1 font-semibold text-white">{bondAmount}</span>
         </div>
       )}
+      
       <TransactionButton
-        className="mb-ztg-10 mt-[20px]"
+        className="mt-4 w-full"
         onClick={() => dispute()}
         disabled={isLoading}
         loading={isBroadcasting}

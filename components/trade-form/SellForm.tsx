@@ -216,7 +216,7 @@ const SellForm = ({
       const effectivePoolId = poolData?.poolId || pool?.poolId;
 
       const categoryCount =
-        poolData?.assetIds?.length || market?.categories?.length;
+        poolData?.assetIds?.length || poolData?.outcomeCombinations?.length || market?.categories?.length;
 
       if (
         !isRpcSdk(sdk) ||
@@ -226,13 +226,12 @@ const SellForm = ({
         categoryCount == null ||
         !selectedAsset ||
         (isCombinatorialToken(selectedAsset) &&
-          (poolData?.assetIds?.length || 0) <= 1) ||
+          (poolData?.assetIds?.length || poolData?.outcomeCombinations?.length || 0) <= 1) ||
         !newSpotPrice ||
         !orders
       ) {
         return;
       }
-
       const minPrice = newSpotPrice.mul(slippageMultiplier); // adjust by slippage
 
       const selectedOrders = selectOrdersForMarketSell(
@@ -328,19 +327,22 @@ const SellForm = ({
                 .toFixed(3, Decimal.ROUND_DOWN),
             ),
           );
-        } else if (
-          name === "amount" &&
-          value.amount != null &&
-          value.amount !== 0
-        ) {
-          setValue(
-            "percentage",
-            new Decimal(value.amount)
-              .mul(ZTG)
-              .div(selectedAssetBalance)
-              .mul(100)
-              .toString(),
-          );
+        } else if (name === "amount") {
+          // Handle amount changes - convert to number and validate
+          const amountValue = Number(value.amount);
+          if (!isNaN(amountValue) && amountValue > 0) {
+            setValue(
+              "percentage",
+              new Decimal(amountValue)
+                .mul(ZTG)
+                .div(selectedAssetBalance)
+                .mul(100)
+                .toString(),
+            );
+          } else {
+            // Reset percentage to 0 when input is cleared or invalid
+            setValue("percentage", "0");
+          }
         }
         trigger("amount");
       } finally {

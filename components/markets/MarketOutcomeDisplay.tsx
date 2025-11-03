@@ -23,26 +23,26 @@ const StatusConfig = {
   Resolved: {
     icon: MdCheckCircle,
     label: "Final Outcome",
-    gradient: "from-emerald-400/80 to-emerald-500/80",
-    borderColor: "border-emerald-200/40",
-    iconColor: "text-emerald-600",
-    bgColor: "bg-emerald-50/50",
+    gradient: "from-ztg-green-400/80 to-ztg-green-500/80",
+    borderColor: "border-ztg-green-400/40",
+    iconColor: "text-ztg-green-400",
+    bgColor: "bg-ztg-green-500/10",
   },
   Reported: {
     icon: MdCheckCircle,
     label: "Reported Outcome",
     gradient: "from-purple-400/80 to-purple-500/80",
-    borderColor: "border-purple-200/40",
-    iconColor: "text-purple-600",
-    bgColor: "bg-purple-50/50",
+    borderColor: "border-purple-400/40",
+    iconColor: "text-purple-400",
+    bgColor: "bg-purple-500/10",
   },
   Disputed: {
     icon: MdGavel,
     label: "Disputed Outcome",
     gradient: "from-orange-400/80 to-orange-500/80",
-    borderColor: "border-orange-200/40",
-    iconColor: "text-orange-600",
-    bgColor: "bg-orange-50/50",
+    borderColor: "border-orange-400/50",
+    iconColor: "text-orange-400",
+    bgColor: "bg-orange-500/20",
   },
 };
 
@@ -60,7 +60,7 @@ export const MarketOutcomeDisplay: FC<MarketOutcomeDisplayProps> = ({
   const StatusIcon = config.icon;
 
   return (
-    <div className="group relative rounded-lg bg-white/10 px-4 py-3 shadow-md backdrop-blur-md transition-all hover:bg-white/20 hover:shadow-lg">
+    <div className="group relative rounded-lg bg-ztg-primary-900/60 px-4 py-3 shadow-md backdrop-blur-md transition-all hover:bg-ztg-primary-800/70 hover:shadow-lg">
       {/* Status Indicator Bar */}
       <div
         className={`absolute left-0 top-0 h-1 w-full rounded-t-lg bg-gradient-to-r ${config.gradient}`}
@@ -71,7 +71,7 @@ export const MarketOutcomeDisplay: FC<MarketOutcomeDisplayProps> = ({
         <div
           className={`flex items-center gap-1.5 rounded-md bg-white/10 px-2.5 py-1.5 backdrop-blur-sm`}
         >
-          <StatusIcon className={`text-ztg-green-400`} size={16} />
+          <StatusIcon className={config.iconColor} size={16} />
           <span className="whitespace-nowrap text-xs font-semibold text-white/90">
             {config.label}
           </span>

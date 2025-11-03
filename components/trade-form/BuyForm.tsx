@@ -372,18 +372,21 @@ const BuyForm = ({
                 .toFixed(3, Decimal.ROUND_DOWN),
             ),
           );
-        } else if (
-          name === "amount" &&
-          value.amount != null &&
-          value.amount !== 0
-        ) {
-          const max = maxSpendableBalance.greaterThan(maxAmountIn)
-            ? maxAmountIn
-            : maxSpendableBalance;
-          setValue(
-            "percentage",
-            new Decimal(value.amount).mul(ZTG).div(max).mul(100).toString(),
-          );
+        } else if (name === "amount") {
+          // Handle amount changes - convert to number and validate
+          const amountValue = Number(value.amount);
+          if (!isNaN(amountValue) && amountValue > 0) {
+            const max = maxSpendableBalance.greaterThan(maxAmountIn)
+              ? maxAmountIn
+              : maxSpendableBalance;
+            setValue(
+              "percentage",
+              new Decimal(amountValue).mul(ZTG).div(max).mul(100).toString(),
+            );
+          } else {
+            // Reset percentage to 0 when input is cleared or invalid
+            setValue("percentage", "0");
+          }
         }
         trigger("amount");
       } finally {

@@ -799,7 +799,7 @@ const Market: NextPage<MarketPageProps> = ({
         <div className="hidden md:block md:w-[320px] lg:w-[400px] xl:w-[460px]">
           <div className="sticky">
             <div
-                className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg bg-white/15 backdrop-blur-md"
+                className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg bg-white/5 backdrop-blur-md"
             >
               {market?.status === MarketStatus.Active ||
               marketData?.status === "Active" ? (
@@ -1097,18 +1097,18 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
                 className={`relative z-20 flex w-full items-center rounded-lg px-5 py-3 transition-all ${
                   !open
                     ? "bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white shadow-md backdrop-blur-md"
-                    : "border-2 border-ztg-primary-200/30 bg-white/80 text-ztg-primary-800 shadow-md backdrop-blur-md"
+                    : "border-2 border-ztg-primary-200/30 bg-white/20 text-ztg-primary-800 shadow-md backdrop-blur-md text-white"
                 }`}
               >
                 <h3
                   className={`flex-1 text-left text-base font-semibold ${
-                    open ? "text-ztg-primary-900" : "text-white"
+                    open ? "text-white" : "text-white"
                   }`}
                 >
                   {open ? "Close" : "Market can be disputed"}
                 </h3>
                 {open ? (
-                  <X className="text-ztg-primary-900" size={18} />
+                  <X className="text-white" size={18} />
                 ) : (
                   <FaChevronUp
                     size={18}
@@ -1123,7 +1123,7 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
                 leave="transition duration-75 ease-out"
                 leaveFrom="transform scale-100 opacity-100"
                 leaveTo="transform scale-95 opacity-0"
-                className="relative z-10 -mt-[8px] rounded-b-lg bg-white/60 px-5 pb-10 pt-12 shadow-md backdrop-blur-sm"
+                className="relative z-10 rounded-b-lg px-5 pb-10 pt-12 shadow-md backdrop-blur-sm"
               >
                 <Disclosure.Panel>
                   {isMarketCategoricalOutcome(reportedOutcome) ? (
