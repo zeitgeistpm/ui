@@ -396,7 +396,7 @@ const CourtPage: NextPage = ({
                           }
                           position={index > 1 ? "top-end" : "bottom-end"}
                           popoverCss="!w-80"
-                          css="text-green-500"
+                          className="text-green-500"
                         >
                           Staking reward.
                         </InfoPopover>

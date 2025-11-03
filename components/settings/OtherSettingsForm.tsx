@@ -84,9 +84,9 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
   }, [wallet.accounts]);
 
   return (
-    <form className="flex flex-col" onSubmit={(e) => e.preventDefault()}>
-      <div className="mb-4 flex items-center gap-3">
-        <label className="font-bold text-white/90">Proxy Account</label>
+    <form className="flex flex-col gap-y-4" onSubmit={(e) => e.preventDefault()}>
+      <div className="flex items-center gap-3">
+        <label className="text-sm font-semibold text-white/90">Proxy Account</label>
 
         <InfoPopover
           title={
@@ -115,11 +115,11 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
         >
           <div className="ml-auto flex items-center gap-2 text-white/90">
             <Check size={16} className="text-green-500" />
-            <div className="text-sm">Saved</div>
+            <div className="text-xs">Saved</div>
           </div>
         </Transition>
       </div>
-      <div className="mb-4 flex flex-row items-center p-2">
+      <div className="flex flex-row items-center p-2">
         <input
           type="checkbox"
           {...register("enableProxy")}
@@ -127,7 +127,7 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
           className="cursor-pointer accent-ztg-blue"
         />
         <label
-          className="ml-2 cursor-pointer text-white/90"
+          className="ml-2 cursor-pointer text-sm text-white/90"
           htmlFor="enableProxy"
         >
           Enable Proxy Execution

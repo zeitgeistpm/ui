@@ -100,12 +100,13 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
 
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <ModalPanel
-          maxWidth="xl"
+          size="xl"
           className={`cursor-pointer p-6 ${className} text-base font-light`}
-          onClick={() => setIsOpen(false)}
         >
-          {title}
-          <div className="text-center">{children}</div>
+          <div onClick={() => setIsOpen(false)}>
+            {title}
+            <div className="text-center">{children}</div>
+          </div>
         </ModalPanel>
       </Modal>
     </div>

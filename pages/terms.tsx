@@ -4,7 +4,7 @@ import { ChevronLeft } from "react-feather";
 
 const TermsPage: NextPage = () => {
   return (
-    <div className="container-fluid py-8">
+    <div className="py-8">
       {/* Back Button */}
       <Link
         href="/"

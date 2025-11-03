@@ -230,7 +230,7 @@ const MarketFilterSelection = ({
                 <div className="min-w-0 shrink-0 flex-grow basis-0"></div>
                 <div className="flex shrink-0 items-center gap-1.5 sm:gap-2 md:gap-3">
                   <MarketActiveFilters className="shrink-0" />
-                  <Menu as="div" className="relative">
+                  <Menu as="div" className="relative shrink-0">
                     {({ open }) => (
                       <>
                         <Menu.Button className="flex min-h-[44px] items-center gap-1.5 rounded-md bg-ztg-green-600/80 px-2 py-2 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-sm">

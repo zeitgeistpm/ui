@@ -15,6 +15,7 @@ import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolutio
 import { BLOCK_TIME_SECONDS } from "lib/constants";
 import { MarketStatus } from "@zeitgeistpm/indexer";
 import { Disclosure, Transition } from "@headlessui/react";
+import { isInfinity, infinity } from "@zeitgeistpm/utility/dist/infinity";
 
 interface ComboMarketHeaderUnifiedProps {
   poolId: number;
@@ -26,7 +27,6 @@ interface ComboMarketHeaderUnifiedProps {
   virtualMarket?: any;
 }
 
-// Component to display individual outcome balance
 const OutcomeBalance = ({
   assetId,
   walletAddress,
@@ -57,7 +57,6 @@ const OutcomeBalance = ({
   );
 };
 
-// Collapsible source market card component
 const SourceMarketCard = ({
   market,
   stage,
@@ -86,36 +85,37 @@ const SourceMarketCard = ({
     <Disclosure>
       {({ open }) => (
         <div
-          className={`flex h-full flex-col rounded-lg border-l-4 ${borderColor} bg-white/5 shadow-md backdrop-blur-sm transition-all ${hoverBorderColor}`}
+          className={`flex h-full w-full flex-col rounded-lg border-l-4 ${borderColor} bg-white/5 shadow-md backdrop-blur-sm transition-all ${hoverBorderColor}`}
         >
-          {/* Collapsible Header - Always Visible */}
-          <Disclosure.Button className="w-full">
-            <div className="flex items-start gap-2 p-2.5 text-left sm:gap-2.5 sm:p-3">
-              {/* Badge */}
+          <Disclosure.Button className="flex w-full">
+            <div className="flex h-14 w-full items-center gap-2 p-2 text-left sm:gap-2.5 sm:p-2.5">
               <div
-                className={`flex-shrink-0 rounded-lg border px-2 py-0.5 text-xs font-semibold shadow-sm backdrop-blur-sm ${pillColor}`}
+                className={`flex-shrink-0 rounded-lg border px-1.5 py-0.5 text-xs font-semibold shadow-sm backdrop-blur-sm ${pillColor}`}
               >
                 {roleLabel}
               </div>
 
-              {/* Question - Takes up remaining space */}
               <div className="min-w-0 flex-1">
-                <h3 className="text-sm font-semibold leading-tight text-white sm:text-base">
+                <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-white sm:text-sm">
                   {market.question}
                 </h3>
               </div>
 
-              {/* Chevron Icon */}
+              <ChevronDown
+                size={16}
+                className={`flex-shrink-0 text-white/60 transition-transform duration-200 sm:hidden ${
+                  open ? "rotate-180" : ""
+                }`}
+              />
               <ChevronDown
                 size={18}
-                className={`flex-shrink-0 text-white/60 transition-transform duration-200 ${
+                className={`hidden flex-shrink-0 text-white/60 transition-transform duration-200 sm:block ${
                   open ? "rotate-180" : ""
                 }`}
               />
             </div>
           </Disclosure.Button>
 
-          {/* Expandable Content */}
           <Transition
             enter="transition duration-200 ease-out"
             enterFrom="transform scale-95 opacity-0"
@@ -260,30 +260,51 @@ const ComboMarketHeaderUnified: FC<ComboMarketHeaderUnifiedProps> = ({
     Number(virtualMarket?.deadlines?.disputeDuration ?? 0),
   );
 
-  // Determine combo market stage from source market stages
-  // Use the "most restrictive" stage (e.g., if one is Trading and one is Closed, show Closed)
   const comboStage: MarketStage | null =
     sourceMarketStages[0]?.stage && sourceMarketStages[1]?.stage
-      ? {
-          ...sourceMarketStages[0].stage,
-          // Use the minimum remaining time
-          remainingTime: Math.min(
-            sourceMarketStages[0].stage.remainingTime,
-            sourceMarketStages[1].stage.remainingTime,
-          ),
-          // Use the minimum total time
-          totalTime: Math.min(
-            sourceMarketStages[0].stage.totalTime,
-            sourceMarketStages[1].stage.totalTime,
-          ),
-        }
+      ? (() => {
+          const stage0 = sourceMarketStages[0].stage;
+          const stage1 = sourceMarketStages[1].stage;
+          
+          const isRemainingInfinity0 = isInfinity(stage0.remainingTime);
+          const isRemainingInfinity1 = isInfinity(stage1.remainingTime);
+          const isTotalInfinity0 = isInfinity(stage0.totalTime);
+          const isTotalInfinity1 = isInfinity(stage1.totalTime);
+          
+          const hasInfinityRemaining = isRemainingInfinity0 || isRemainingInfinity1;
+          const hasInfinityTotal = isTotalInfinity0 || isTotalInfinity1;
+          
+          if (hasInfinityRemaining && hasInfinityTotal) {
+            return {
+              type: stage0.type,
+              remainingTime: infinity,
+              totalTime: infinity,
+            } as MarketStage;
+          } else {
+            return {
+              type: stage0.type,
+              remainingTime: hasInfinityRemaining
+                ? infinity
+                : Math.min(
+                    stage0.remainingTime as number,
+                    stage1.remainingTime as number,
+                  ),
+              totalTime: hasInfinityTotal
+                ? infinity
+                : Math.min(
+                    stage0.totalTime as number,
+                    stage1.totalTime as number,
+                  ),
+            } as MarketStage;
+          }
+        })()
       : (sourceMarketStages[0]?.stage ?? sourceMarketStages[1]?.stage ?? null);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Source Markets Section with Arrow */}
-      <div className="flex flex-col items-stretch gap-3 lg:flex-row lg:items-start">
-        <div className="flex-1">
+      <div className="flex flex-col items-start gap-2.5 lg:flex-row lg:items-start lg:gap-2.5">
+        <div className="flex min-w-0 w-full flex-1 lg:w-auto">
           <SourceMarketCard
             market={sourceMarketStages[0].market}
             stage={sourceMarketStages[0].stage}
@@ -293,13 +314,13 @@ const ComboMarketHeaderUnified: FC<ComboMarketHeaderUnifiedProps> = ({
         </div>
 
         {/* Arrow indicator */}
-        <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center self-center rounded-full bg-white/10 shadow-md backdrop-blur-sm sm:h-7 sm:w-7 lg:mt-3 lg:self-start">
-          <span className="text-xs font-medium text-white/60 sm:text-sm">
+        <div className="flex h-5 w-5 items-center justify-center self-center rounded-full bg-white/10 shadow-md backdrop-blur-sm">
+          <span className="text-xs font-medium leading-none text-white/60">
             →
           </span>
         </div>
 
-        <div className="flex-1">
+        <div className="flex min-w-0 w-full flex-1 lg:w-auto">
           <SourceMarketCard
             market={sourceMarketStages[1].market}
             stage={sourceMarketStages[1].stage}

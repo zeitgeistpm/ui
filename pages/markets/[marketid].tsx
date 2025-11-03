@@ -645,15 +645,9 @@ const Market: NextPage<MarketPageProps> = ({
               </div>
             )}
           {marketIsLoading === false && marketHasPool === false && (
-            <div className="mt-8 flex items-center gap-2.5 rounded-lg border-2 border-red-500/40 bg-red-900/30 p-3 text-red-400 shadow-md backdrop-blur-sm sm:gap-3 sm:p-4">
-              <AlertTriangle
-                size={18}
-                className="flex-shrink-0 sm:h-5 sm:w-5"
-              />
-              <div
-                className="text-xs sm:text-sm"
-                data-test="liquidityPoolMessage"
-              >
+            <div className="flex mt-8 items-center gap-2.5 rounded-lg border-2 border-red-500/40 bg-red-900/30 p-3 text-red-400 shadow-md backdrop-blur-sm sm:gap-3 sm:p-4">
+              <AlertTriangle size={18} className="flex-shrink-0 sm:h-5 sm:w-5" />
+              <div className="text-xs sm:text-sm" data-test="liquidityPoolMessage">
                 This market doesn't have a liquidity pool and therefore cannot
                 be traded
               </div>
@@ -699,10 +693,10 @@ const Market: NextPage<MarketPageProps> = ({
 
           {marketHasPool === true && (
             <div className="mt-8 rounded-lg bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4">
-              <h3 className="mb-3 text-base font-semibold text-white sm:mb-4 sm:text-lg">
-                Latest Trades
-              </h3>
-              <div className="pb-3 sm:pb-4">
+                <h3 className="mb-3 text-base font-semibold text-white sm:mb-4 sm:text-lg">
+                  Latest Trades
+                </h3>
+                <div className="pb-3 sm:pb-4">
                 <LatestTrades
                   limit={3}
                   marketId={marketId}
@@ -754,7 +748,7 @@ const Market: NextPage<MarketPageProps> = ({
                       : undefined
                   }
                 />
-              </div>
+                </div>
             </div>
           )}
 
@@ -804,7 +798,9 @@ const Market: NextPage<MarketPageProps> = ({
 
         <div className="hidden md:block md:w-[320px] lg:w-[400px] xl:w-[460px]">
           <div className="sticky">
-            <div className="mb-12 animate-pop-in rounded-lg border-2 border-white/10 bg-white/10 opacity-0 shadow-xl ring-2 ring-white/5 backdrop-blur-lg">
+            <div
+                className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg bg-white/15 backdrop-blur-md"
+            >
               {market?.status === MarketStatus.Active ||
               marketData?.status === "Active" ? (
                 <>
@@ -817,13 +813,9 @@ const Market: NextPage<MarketPageProps> = ({
                     />
                   ) : (
                     <div className="flex items-center gap-2.5 rounded-lg border-2 border-orange-500/40 bg-orange-900/30 p-4 text-orange-400 shadow-md backdrop-blur-sm">
-                      <AlertTriangle
-                        size={18}
-                        className="flex-shrink-0 sm:h-5 sm:w-5"
-                      />
+                      <AlertTriangle size={18} className="flex-shrink-0 sm:h-5 sm:w-5" />
                       <div className="text-sm">
-                        This market doesn't have a liquidity pool yet. Deploy a
-                        pool below to enable trading.
+                        This market doesn't have a liquidity pool yet. Deploy a pool below to enable trading.
                       </div>
                     </div>
                   )}
@@ -941,12 +933,12 @@ const MobileContextButtons = ({
       >
         <div
           onClick={() => setOpen(false)}
-          className="fixed left-0 top-0 z-40 h-full w-full bg-ztg-primary-950/50 backdrop-blur-md md:hidden"
+          className="fixed left-0 top-0 z-40 h-full w-full bg-black/20 md:hidden"
         />
       </Transition>
 
       <div
-        className={`pb-safe fixed bottom-12 left-0 right-0 z-50 w-full rounded-t-lg border-t-2 border-white/10 bg-white/10 pb-2 shadow-2xl ring-2 ring-white/5 backdrop-blur-lg transition-all duration-500 ease-in-out md:hidden ${
+        className={`fixed bottom-12 left-0 right-0 z-50 w-full rounded-t-lg bg-ztg-primary-700/95 border-t-2 border-white/10 shadow-2xl backdrop-blur-lg pb-safe pb-2 transition-all duration-500 ease-in-out md:hidden ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
@@ -958,22 +950,16 @@ const MobileContextButtons = ({
               poolData={poolData}
               showTabs={false}
               selectedTab={
-                tradeItem?.action === "buy"
-                  ? TradeTabType.Buy
-                  : TradeTabType.Sell
+                tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell
               }
               filteredAssets={relevantPoolAssets}
               outcomeCombinations={outcomeCombinations}
             />
           ) : (
-            <div className="mx-4 my-4 flex items-center gap-2.5 rounded-lg border-2 border-orange-500/40 bg-orange-900/30 p-4 text-orange-400 shadow-md backdrop-blur-sm">
-              <AlertTriangle
-                size={18}
-                className="flex-shrink-0 sm:h-5 sm:w-5"
-              />
+            <div className="flex items-center gap-2.5 rounded-lg border-2 border-orange-500/40 bg-orange-900/30 p-4 text-orange-400 shadow-md backdrop-blur-sm mx-4 my-4">
+              <AlertTriangle size={18} className="flex-shrink-0 sm:h-5 sm:w-5" />
               <div className="text-sm">
-                This market doesn't have a liquidity pool yet. Deploy a pool to
-                enable trading.
+                This market doesn't have a liquidity pool yet. Deploy a pool to enable trading.
               </div>
             </div>
           )

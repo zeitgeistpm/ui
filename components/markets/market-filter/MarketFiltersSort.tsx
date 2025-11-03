@@ -7,6 +7,7 @@ import ReactSelect, {
   InputProps,
   MenuListProps,
   OptionProps,
+  StylesConfig,
   ValueContainerProps,
 } from "react-select";
 import { useMarketFiltersContext } from "./MarketFiltersContainer";
@@ -161,15 +162,6 @@ const Input = (props: InputProps<MarketOrderByOption, false>) => {
     <components.Input
       {...props}
       className="!pointer-events-none !absolute !m-0 !h-0 !w-0 !p-0 !opacity-0"
-      style={{
-        position: "absolute",
-        opacity: 0,
-        pointerEvents: "none",
-        width: 0,
-        height: 0,
-        margin: 0,
-        padding: 0,
-      }}
     />
   );
 };
@@ -181,15 +173,6 @@ const ValueContainer = (
     <components.ValueContainer
       {...props}
       className="!pointer-events-none !absolute !m-0 !h-0 !w-0 !p-0 !opacity-0"
-      style={{
-        position: "absolute",
-        opacity: 0,
-        pointerEvents: "none",
-        width: 0,
-        height: 0,
-        margin: 0,
-        padding: 0,
-      }}
     />
   );
 };
@@ -210,7 +193,7 @@ const Placeholder = () => {
   return <></>;
 };
 
-const customStyles = {
+const customStyles: StylesConfig<MarketOrderByOption, false> = {
   menu: () => {
     return {
       backgroundColor: "rgba(255, 255, 255, 0.1)",
@@ -238,28 +221,6 @@ const customStyles = {
   },
   menuPortal: () => {
     return { width: "100%", zIndex: 50 };
-  },
-  valueContainer: () => {
-    return {
-      position: "absolute",
-      opacity: 0,
-      pointerEvents: "none",
-      width: 0,
-      height: 0,
-      margin: 0,
-      padding: 0,
-    };
-  },
-  input: () => {
-    return {
-      position: "absolute",
-      opacity: 0,
-      pointerEvents: "none",
-      width: 0,
-      height: 0,
-      margin: 0,
-      padding: 0,
-    };
   },
 };
 

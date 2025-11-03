@@ -23,6 +23,10 @@ export type UseAlerts = {
    * @param alert - the alert to set as read.
    */
   setAsRead: (alert: Alert & { dismissible: true }) => void;
+  /**
+   * Mark all current alerts as read.
+   */
+  clearAll: () => void;
 };
 
 const readAlertsAtom = persistentAtom<{ read: AlertId[] }>({
@@ -103,5 +107,12 @@ export const useAlerts = (account?: string): UseAlerts => {
     }));
   };
 
-  return { alerts, setAsRead };
+  const clearAll = () => {
+    const allAlertIds = alerts.map((alert) => alert.id);
+    setRead((prev) => ({
+      read: [...new Set([...prev.read, ...allAlertIds])],
+    }));
+  };
+
+  return { alerts, setAsRead, clearAll };
 };

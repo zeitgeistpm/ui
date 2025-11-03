@@ -1,6 +1,6 @@
 import { Tab } from "@headlessui/react";
 import Modal from "components/ui/Modal";
-import { ModalPanel } from "components/ui/ModalPanel";
+import { ModalPanel, ModalHeader, ModalBody, ModalTabs } from "components/ui/ModalPanel";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { useWallet } from "lib/state/wallet";
 import React from "react";
@@ -28,72 +28,87 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   const { data: identity } = useIdentity(address);
 
   const getModalSize = () => {
-    if (
-      tabSelection === TabSelection.Proxy ||
-      tabSelection === TabSelection.Fees
-    ) {
-      return "md";
-    }
     return "2xl";
   };
 
   return (
     <Modal open={open} onClose={onClose}>
-      <ModalPanel maxWidth={getModalSize()} className="p-6">
-        <h3 className="mb-6 text-center text-2xl font-bold text-white">
-          Settings
-        </h3>
+      <ModalPanel size="lg" className="flex flex-col">
+        {/* Standardized header */}
+        <ModalHeader title="Settings" />
+
+        {/* Added min-w-0 to Tab.Group to ensure width constraints propagate */}
         <Tab.Group
           selectedIndex={tabSelection}
           onChange={(index) => setTabSelection(index)}
+          as="div"
+          className="flex flex-col h-full min-w-0 w-full"
         >
-          <Tab.List className="mb-6 flex gap-2 rounded-lg bg-white/10 p-1 backdrop-blur-sm">
-            <Tab
-              className={({ selected }) =>
-                `flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all focus:outline-none ${
-                  selected
-                    ? "bg-white/10 text-white shadow-sm"
-                    : "text-white/70 hover:bg-white/10 hover:text-white/90"
-                }`
-              }
-            >
-              Account
-            </Tab>
-            <Tab
-              className={({ selected }) =>
-                `flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all focus:outline-none ${
-                  selected
-                    ? "bg-white/10 text-white shadow-sm"
-                    : "text-white/70 hover:bg-white/10 hover:text-white/90"
-                }`
-              }
-            >
-              Proxy
-            </Tab>
-            <Tab
-              className={({ selected }) =>
-                `flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all focus:outline-none ${
-                  selected
-                    ? "bg-white/10 text-white shadow-sm"
-                    : "text-white/70 hover:bg-white/10 hover:text-white/90"
-                }`
-              }
-            >
-              Fee Asset
-            </Tab>
-          </Tab.List>
+          {/* Standardized tabs */}
+          <ModalTabs
+            tabs={
+              <Tab.List className="flex h-full">
+                <Tab
+                  className={({ selected }) =>
+                    `flex-1 px-3 py-2 text-sm font-medium transition-all border-r border-white/10 ${
+                      selected
+                        ? "bg-white/10 text-white font-semibold"
+                        : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
+                    }`
+                  }
+                >
+                  Account
+                </Tab>
+                <Tab
+                  className={({ selected }) =>
+                    `flex-1 px-3 py-2 text-sm font-medium transition-all border-r border-white/10 ${
+                      selected
+                        ? "bg-white/10 text-white font-semibold"
+                        : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
+                    }`
+                  }
+                >
+                  Proxy
+                </Tab>
+                <Tab
+                  className={({ selected }) =>
+                    `flex-1 px-3 py-2 text-sm font-medium transition-all ${
+                      selected
+                        ? "bg-white/10 text-white font-semibold"
+                        : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
+                    }`
+                  }
+                >
+                  Fee Asset
+                </Tab>
+              </Tab.List>
+            }
+          />
+
+          {/* Standardized content area */}
+          {/* Added min-w-0 and w-full to prevent tab switching from resizing modal */}
+          <Tab.Panels className="flex-1 min-w-0 w-full overflow-hidden">
+            <Tab.Panel className="h-full min-w-0 w-full">
+              <ModalBody>
+                {identity ? (
+                  <AcccountSettingsForm identity={identity} />
+                ) : (
+                  <></>
+                )}
+              </ModalBody>
+            </Tab.Panel>
+            <Tab.Panel className="h-full min-w-0 w-full">
+              <ModalBody>
+                <OtherSettingsForm />
+              </ModalBody>
+            </Tab.Panel>
+            <Tab.Panel className="h-full min-w-0 w-full">
+              <ModalBody>
+                <FeePayingAssetSelect />
+              </ModalBody>
+            </Tab.Panel>
+          </Tab.Panels>
         </Tab.Group>
-        {
-          {
-            [TabSelection.Account]: identity ? (
-              <AcccountSettingsForm identity={identity} />
-            ) : (
-              <></>
-            ),
-            [TabSelection.Proxy]: <OtherSettingsForm />,
-            [TabSelection.Fees]: <FeePayingAssetSelect />,
-          }[tabSelection]
-        }
       </ModalPanel>
     </Modal>
   );

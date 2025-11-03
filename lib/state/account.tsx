@@ -23,7 +23,12 @@ export const useAccountModals = () => {
     },
     openWalletSelect: () => {
       if (disclaimerAccepted) {
-        setState({ ...state, walletSelectModalOpen: true });
+        // When opening wallet select, ensure account select is closed
+        setState({
+          ...state,
+          accountSelectModalOpen: false,
+          walletSelectModalOpen: true,
+        });
       } else {
         showDisclaimer();
       }
@@ -33,6 +38,13 @@ export const useAccountModals = () => {
     },
     closeWalletSelect: () => {
       setState({ ...state, walletSelectModalOpen: false });
+    },
+    closeAllModals: () => {
+      setState({
+        ...state,
+        accountSelectModalOpen: false,
+        walletSelectModalOpen: false,
+      });
     },
   };
 };

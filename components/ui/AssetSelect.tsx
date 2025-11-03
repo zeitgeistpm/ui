@@ -1,8 +1,5 @@
-import { AssetId, ZTG } from "@zeitgeistpm/sdk";
+import { AssetId } from "@zeitgeistpm/sdk";
 import Image from "next/image";
-import { useBalance } from "lib/hooks/queries/useBalance";
-import { useWallet } from "lib/state/wallet";
-import { formatNumberLocalized } from "lib/util";
 import omit from "lodash-es/omit";
 import React from "react";
 import Select, {
@@ -13,7 +10,10 @@ import Select, {
   ContainerProps,
   ValueContainerProps,
   MenuListProps,
+  MenuProps,
+  DropdownIndicatorProps,
 } from "react-select";
+import { ChevronDown, ChevronUp } from "react-feather";
 import { lookupAssetOriginChain } from "lib/constants/foreign-asset";
 
 export type AssetOption = {
@@ -23,11 +23,25 @@ export type AssetOption = {
   additionalText?: string;
 };
 
+const DropdownIndicator = (
+  props: DropdownIndicatorProps<AssetOption, false>,
+) => {
+  const Chevron = props.selectProps.menuIsOpen ? ChevronUp : ChevronDown;
+  return (
+    <components.DropdownIndicator {...props}>
+      <Chevron
+        size={14}
+        className="mr-3 text-white/70 transition-transform"
+      />
+    </components.DropdownIndicator>
+  );
+};
+
 const Control = ({ children, ...rest }: ControlProps<AssetOption, false>) => {
   return (
     <components.Control
       {...rest}
-      className="flex h-full w-full !cursor-pointer items-center justify-between pl-4"
+      className="flex h-full w-full !cursor-pointer items-center justify-between pl-3"
     >
       {children}
     </components.Control>
@@ -50,23 +64,26 @@ const SelectContainer = (props: ContainerProps<AssetOption, false>) => {
   );
 };
 
+// Stable IndicatorSeparator component
+const IndicatorSeparator = () => null;
+
 const SingleValue = (props: SingleValueProps<AssetOption, false>) => {
   const { label, image, value } = props.data;
   return (
-    <div className="flex items-center font-semibold">
+    <div className="flex items-center text-xs font-semibold text-white">
       {image ? (
         <Image
           src={image}
-          width={36}
-          height={36}
-          className="mr-3"
+          width={24}
+          height={24}
+          className="mr-2 shrink-0"
           alt={label}
           quality={100}
         />
       ) : (
-        <div className="mr-3 h-[36px] w-[36px] rounded-full bg-ztg-blue"></div>
+        <div className="mr-2 h-6 w-6 shrink-0 rounded-full bg-ztg-blue"></div>
       )}
-      <span>
+      <span className="truncate">
         {label} ({lookupAssetOriginChain(value)})
       </span>
     </div>
@@ -75,40 +92,52 @@ const SingleValue = (props: SingleValueProps<AssetOption, false>) => {
 
 const Option = (props: OptionProps<AssetOption, false>) => {
   const { label, value, image, additionalText } = props.data;
-  const wallet = useWallet();
-  const address = wallet.activeAccount?.address;
+  const { isFocused, isSelected } = props;
 
-  const { data: balance } = useBalance(address, value);
+  // Memoize the origin chain lookup to prevent recalculations
+  const originChain = React.useMemo(
+    () => lookupAssetOriginChain(value),
+    [value]
+  );
 
   return (
     <components.Option
       {...props}
-      className="mb-2 !flex h-14 w-full !cursor-pointer items-center rounded-md bg-anti-flash-white px-4 font-semibold last:mb-0"
+      className={`mb-1 !flex h-10 w-full !cursor-pointer items-center rounded-md px-3 text-xs font-medium transition-all last:mb-0 ${
+        isSelected
+          ? "bg-ztg-green-500/20 text-ztg-green-400"
+          : isFocused
+            ? "bg-white/15 text-white"
+            : "bg-white/10 text-white/90 hover:bg-white/15 hover:text-white"
+      }`}
     >
       {image ? (
         <Image
           src={image}
-          width={36}
-          height={36}
-          className="mr-3"
+          width={24}
+          height={24}
+          className="mr-2 shrink-0"
           alt={label}
           quality={100}
         />
       ) : (
-        <div className="mr-3 h-[36px] w-[36px] rounded-full bg-ztg-blue"></div>
+        <div className="mr-2 h-6 w-6 shrink-0 rounded-full bg-ztg-blue"></div>
       )}
-      <span>
-        {label} ({lookupAssetOriginChain(value)})
+      <span className="truncate flex-1 min-w-0">
+        {label} ({originChain})
       </span>
-      {balance && (
-        <div className="ml-auto text-xs">
-          Balance: {formatNumberLocalized(balance.div(ZTG).toNumber())}
-        </div>
-      )}
       {additionalText && (
-        <div className="ml-auto text-xs">{additionalText}</div>
+        <div className="ml-2 shrink-0 text-xs text-white/70">{additionalText}</div>
       )}
     </components.Option>
+  );
+};
+
+const Menu = (props: MenuProps<AssetOption, false>) => {
+  return (
+    <components.Menu {...props} className="!z-[9999]">
+      {props.children}
+    </components.Menu>
   );
 };
 
@@ -116,7 +145,7 @@ const MenuList = (props: MenuListProps<AssetOption, false>) => {
   return (
     <components.MenuList
       {...props}
-      className="mt-1 !w-full rounded-md bg-white/10 pt-1 shadow-xl backdrop-blur-md"
+      className="mt-1 !w-full rounded-lg border-2 border-white/10 bg-white/10 p-1.5 shadow-lg backdrop-blur-md"
     >
       {props.children}
     </components.MenuList>
@@ -128,6 +157,7 @@ export type AssetSelectProps = {
   selectedOption?: AssetOption;
   onChange: (value: AssetOption) => void;
   showArrowRight?: boolean;
+  menuPortalTarget?: HTMLElement | null;
 };
 
 const AssetSelect: React.FC<AssetSelectProps> = ({
@@ -135,9 +165,52 @@ const AssetSelect: React.FC<AssetSelectProps> = ({
   selectedOption,
   onChange,
   showArrowRight = false,
+  menuPortalTarget,
 }) => {
+  // Default to document.body if no portal target is provided to ensure menu renders
+  // outside scrollable containers (like modals) to prevent positioning issues
+  const portalTarget = React.useMemo(() => {
+    if (menuPortalTarget) return menuPortalTarget;
+    if (typeof document !== "undefined") return document.body;
+    return undefined;
+  }, [menuPortalTarget]);
+
+  // Memoize components to prevent react-select from thinking components changed
+  const components = React.useMemo(
+    () => ({
+      Control,
+      ValueContainer,
+      SelectContainer,
+      Option,
+      SingleValue,
+      Menu,
+      MenuList,
+      DropdownIndicator,
+      IndicatorSeparator,
+    }),
+    []
+  );
+
+  // Memoize styles to prevent recreating on every render
+  const styles = React.useMemo(
+    () => ({
+      menu: (base: any) => ({
+        ...base,
+        zIndex: 9999,
+        // Ensure menu matches the select width
+        minWidth: base.minWidth || "auto",
+      }),
+      menuPortal: (base: any) => ({
+        ...base,
+        zIndex: 9999,
+      }),
+    }),
+    []
+  );
+
   return (
     <Select
+      instanceId="asset-select"
       className={`!static h-full ${showArrowRight ? "pr-4" : "w-fit"}`}
       isSearchable={false}
       options={options}
@@ -145,14 +218,10 @@ const AssetSelect: React.FC<AssetSelectProps> = ({
       value={selectedOption}
       placeholder="Select"
       isMulti={false}
-      components={{
-        Control,
-        ValueContainer,
-        SelectContainer,
-        Option,
-        SingleValue,
-        MenuList,
-      }}
+      menuPortalTarget={portalTarget}
+      menuPosition="fixed"
+      components={components}
+      styles={styles}
       onChange={onChange}
     />
   );

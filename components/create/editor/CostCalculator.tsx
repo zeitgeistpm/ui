@@ -86,10 +86,7 @@ export const CostCalculator = ({
   );
 
   const { data: rawAssetPrice } = useAssetUsdPrice(baseCurrency?.assetId);
-  // Hardcode stablecoins to $1 USD
-  // DISABLED: USDC.wh temporarily disabled
-  // const isStablecoin = editor.form.currency === "USDC.wh";
-  const isStablecoin = false; // editor.form.currency === "USDC.wh";
+  const isStablecoin = false;
   const baseAssetPrice = isStablecoin ? new Decimal(1) : rawAssetPrice;
 
   const bondCost =
@@ -142,8 +139,6 @@ export const CostCalculator = ({
     ztgBalanceDelta?.gte(0) &&
     (!foreignCurrencyCost || foreignAssetBalanceDelta?.gte(0));
 
-  // Only show breakdown if we have costs in different currencies
-  // Check that foreignCurrencyCost exists, has value, currency is not ZTG (case-insensitive), and fee is not in ZTG
   const currency = editor.form.currency?.toUpperCase().trim();
   const isZtgCurrency = currency === "ZTG" || !currency;
   const shouldShowBreakdown =
@@ -408,7 +403,6 @@ const CostDetailsModal = ({
       : timelineAsBlocks(form, chainTime).unwrap();
   }, [form, chainTime]);
 
-  // Only show breakdown if we have costs in different currencies
   const currency = editor.form.currency?.toUpperCase().trim();
   const isZtgCurrency = currency === "ZTG" || !currency;
   const shouldShowBreakdown =
@@ -422,18 +416,18 @@ const CostDetailsModal = ({
   return (
     <Modal open={open} onClose={onClose}>
       <ModalPanel
-        maxWidth="2xl"
+        size="lg"
         className="flex h-[70vh] flex-col overflow-hidden"
       >
-        <div className="flex h-full flex-col px-6 pt-6 md:px-8 md:pt-8">
+        <div className="flex h-full flex-col px-4 pt-4 md:px-6 md:pt-6">
           <Tab.Group selectedIndex={selectedTab} onChange={setSelectedTab}>
             <div className="flex h-full min-h-0 flex-col">
-              <Tab.List className="mb-6 flex flex-shrink-0 gap-2 border-b-2 border-white/20">
+              <Tab.List className="mb-4 flex flex-shrink-0 gap-2 border-b-2 border-white/20">
                 {tabs.map((tab) => (
                   <Tab
                     key={tab}
                     className={({ selected }) =>
-                      `border-b-2 px-4 pb-2 text-sm font-semibold transition-colors ${
+                      `border-b-2 px-3 pb-2 text-sm font-semibold transition-colors ${
                         selected
                           ? "border-ztg-green-500 text-white"
                           : "border-transparent text-white/60 hover:text-white/80"
@@ -445,13 +439,11 @@ const CostDetailsModal = ({
                 ))}
               </Tab.List>
               <Tab.Panels className="min-h-0 flex-1 overflow-hidden">
-                {/* Summary Tab */}
                 <Tab.Panel className="h-full overflow-hidden">
                   <div
                     className="no-scroll-bar h-full space-y-4 overflow-y-auto px-0 pb-6 md:pb-8"
                     style={{ WebkitOverflowScrolling: "touch" }}
                   >
-                    {/* Question */}
                     <div className="space-y-2 rounded-lg bg-white/5 p-4">
                       <label className="text-xs font-semibold text-white/70">
                         Market Question
@@ -465,7 +457,6 @@ const CostDetailsModal = ({
                       </p>
                     </div>
 
-                    {/* Answers */}
                     {form.answers && (
                       <div className="space-y-2 rounded-lg bg-white/5 p-4">
                         <label className="text-xs font-semibold text-white/70">
@@ -765,7 +756,7 @@ const ResetConfirmationModal = ({
 }) => {
   return (
     <Modal open={open} onClose={onClose}>
-      <ModalPanel maxWidth="sm" className="p-6 md:p-8">
+      <ModalPanel size="sm" className="p-6 md:p-8">
         <h2 className="mb-4 text-lg font-bold text-white md:text-xl">
           Reset Form
         </h2>

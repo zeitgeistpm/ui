@@ -19,7 +19,6 @@ export const CreatedMarketsTabGroup = ({ address }: { address: string }) => {
 
   const { data: pools, isLoading } = useAccountAmm2Pool(address);
 
-  // Split pools into regular markets and multi-markets
   const { regularMarketPools, multiMarketPools } = useMemo(() => {
     if (!pools) {
       return { regularMarketPools: null, multiMarketPools: null };
@@ -29,12 +28,9 @@ export const CreatedMarketsTabGroup = ({ address }: { address: string }) => {
     const multi: typeof pools = [];
 
     pools.forEach((pool) => {
-      // Check if this is a multi-market pool
-      // Multi-markets have isMultiMarket flag and marketIds with > 1 market
       if (pool.isMultiMarket && pool.marketIds && pool.marketIds.length > 1) {
         multi.push(pool);
       } else {
-        // Regular markets include single-market pools
         regular.push(pool);
       }
     });

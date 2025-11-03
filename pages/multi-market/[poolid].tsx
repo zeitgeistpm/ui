@@ -10,7 +10,10 @@ import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
 import { TradeTabType } from "components/trade-form/TradeTab";
 import RedeemButton from "components/assets/AssetActionButtons/RedeemButton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
+import TimeSeriesChart, {
+  ChartData,
+  ChartSeries,
+} from "components/ui/TimeSeriesChart";
 import TimeFilters, { TimeFilter, filters } from "components/ui/TimeFilters";
 import { useComboMarketPriceHistory } from "lib/hooks/queries/useMarketPriceHistory";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
@@ -146,25 +149,17 @@ const ComboAssetDetails = ({
               style={{ backgroundColor: combination.color }}
             />
             <div className="flex flex-col gap-1">
-              <span className="font-semibold text-white">
-                {combination.name}
-              </span>
+              <span className="font-semibold text-white">{combination.name}</span>
               <div className="text-xxs leading-relaxed text-white/80">
                 <div>
                   <span className="font-semibold text-blue-400">Assume:</span>{" "}
-                  <span className="font-bold text-blue-400">
-                    {market1Outcome}
-                  </span>
-                  , {sourceMarkets[0].question}
+                  <span className="font-bold text-blue-400">{market1Outcome}</span>,{" "}
+                  {sourceMarkets[0].question}
                 </div>
                 <div>
-                  <span className="font-semibold text-ztg-green-400">
-                    Then:
-                  </span>{" "}
-                  <span className="font-bold text-ztg-green-400">
-                    {market2Outcome}
-                  </span>
-                  , {sourceMarkets[1].question}
+                  <span className="font-semibold text-ztg-green-400">Then:</span>{" "}
+                  <span className="font-bold text-ztg-green-400">{market2Outcome}</span>,{" "}
+                  {sourceMarkets[1].question}
                 </div>
               </div>
             </div>
@@ -211,50 +206,49 @@ const CombinatorialTooltip = ({ children }: { children: React.ReactNode }) => {
           });
         }
       };
-
+      
       updatePosition();
-      window.addEventListener("scroll", updatePosition);
-      window.addEventListener("resize", updatePosition);
-
+      window.addEventListener('scroll', updatePosition);
+      window.addEventListener('resize', updatePosition);
+      
       return () => {
-        window.removeEventListener("scroll", updatePosition);
-        window.removeEventListener("resize", updatePosition);
+        window.removeEventListener('scroll', updatePosition);
+        window.removeEventListener('resize', updatePosition);
       };
     }
   }, [isHovered]);
 
-  const tooltipContent =
-    isHovered && mounted
-      ? createPortal(
-          <div
-            className="pointer-events-none fixed z-[9999] w-80 rounded-lg border border-white/20 bg-ztg-primary-900/95 px-4 py-3 text-xs text-white shadow-xl backdrop-blur-lg"
-            style={{
-              top: `${position.top}px`,
-              left: `${position.left}px`,
-              transform: "translateY(-50%)",
-            }}
-          >
-            <div className="space-y-2">
-              <p className="font-semibold text-white">
-                How Combinatorial Markets Work:
-              </p>
-              <p className="text-white/90">
-                The <strong>Assume</strong> market is the condition, and the{" "}
-                <strong>Then</strong> market is the outcome. This creates
-                combinations like: "Assuming outcome X happens in Market 1, THEN
-                what happens in Market 2?"
-              </p>
-              <p className="text-ztg-green-400">
-                Example: Assume "Trump wins" → Then "Bitcoin reaches $100k"
-              </p>
-            </div>
-            <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2">
-              <div className="h-2 w-2 rotate-45 border-b border-l border-white/20 bg-ztg-primary-900/95"></div>
-            </div>
-          </div>,
-          document.body,
-        )
-      : null;
+  const tooltipContent = isHovered && mounted ? (
+    createPortal(
+      <div
+        className="pointer-events-none fixed z-[9999] w-80 rounded-lg border border-white/20 bg-ztg-primary-900/95 px-4 py-3 text-xs text-white shadow-xl backdrop-blur-lg"
+        style={{
+          top: `${position.top}px`,
+          left: `${position.left}px`,
+          transform: 'translateY(-50%)',
+        }}
+      >
+        <div className="space-y-2">
+          <p className="font-semibold text-white">
+            How Combinatorial Markets Work:
+          </p>
+          <p className="text-white/90">
+            The <strong>Assume</strong> market is the condition, and the{" "}
+            <strong>Then</strong> market is the outcome. This creates
+            combinations like: "Assuming outcome X happens in Market 1,
+            THEN what happens in Market 2?"
+          </p>
+          <p className="text-ztg-green-400">
+            Example: Assume "Trump wins" → Then "Bitcoin reaches $100k"
+          </p>
+        </div>
+        <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="h-2 w-2 rotate-45 bg-ztg-primary-900/95 border-l border-b border-white/20"></div>
+        </div>
+      </div>,
+      document.body
+    )
+  ) : null;
 
   return (
     <>
@@ -340,7 +334,19 @@ const ComboChart = ({
   const chartData =
     isSuccess && prices
       ? prices
-          .filter((data) => data.prices.every((p) => p.price != null))
+          .filter((data) => {
+            // Ensure prices exist and are valid numbers
+            return (
+              data.prices &&
+              data.prices.length > 0 &&
+              data.prices.every(
+                (p) =>
+                  p.price != null &&
+                  !isNaN(Number(p.price)) &&
+                  isFinite(Number(p.price)),
+              )
+            );
+          })
           .map((price) => {
             const time = new Date(price.timestamp).getTime();
 
@@ -364,11 +370,15 @@ const ComboChart = ({
 
               // Only add if we found a matching combination
               if (matchingIndex !== -1) {
+                const priceValue = Number(priceData.price);
+                // Validate price is a valid number before using it
+                if (isNaN(priceValue) || !isFinite(priceValue)) {
+                  return obj;
+                }
                 // Ensure prices don't exceed 1
                 return {
                   ...obj,
-                  [`v${matchingIndex}`]:
-                    priceData.price > 1 ? 1 : priceData.price,
+                  [`v${matchingIndex}`]: priceValue > 1 ? 1 : priceValue,
                 };
               }
               return obj;
@@ -379,6 +389,11 @@ const ComboChart = ({
               ...assetPrices,
             };
           })
+          .filter((data) => {
+            // Ensure we have at least one valid price value
+            const keys = Object.keys(data).filter((k) => k !== "t");
+            return keys.length > 0 && keys.some((k) => !isNaN(data[k]));
+          }) as ChartData[]
       : [];
 
   const handleFilterChange = (filter: TimeFilter) => {
@@ -475,12 +490,12 @@ const MobileContextButtons = ({
       >
         <div
           onClick={() => setOpen(false)}
-          className="fixed left-0 top-0 z-40 h-full w-full bg-ztg-primary-950/50 backdrop-blur-md md:hidden"
+          className="fixed left-0 top-0 z-40 h-full w-full bg-black/20 md:hidden"
         />
       </Transition>
 
       <div
-        className={`pb-safe fixed bottom-12 left-0 right-0 z-50 w-full rounded-t-lg border-t-2 border-white/10 bg-white/10 pb-2 shadow-2xl ring-2 ring-white/5 backdrop-blur-lg transition-all duration-500 ease-in-out md:hidden ${
+        className={`fixed bottom-12 left-0 right-0 z-50 w-full rounded-t-lg bg-ztg-primary-700/95 border-t-2 border-white/10 shadow-2xl backdrop-blur-lg pb-safe pb-2 transition-all duration-500 ease-in-out md:hidden ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
@@ -496,9 +511,7 @@ const MobileContextButtons = ({
           />
         ) : comboMarketIsResolved && virtualMarket ? (
           <div className="p-4 sm:p-6">
-            <h3 className="mb-4 text-lg font-semibold text-white">
-              Redeem Your Tokens
-            </h3>
+            <h3 className="mb-4 text-lg font-semibold text-white">Redeem Your Tokens</h3>
             <p className="mb-6 text-sm text-white/90">
               Both source markets have been resolved. Redeem your outcome tokens
               below.
@@ -541,9 +554,7 @@ const MobileContextButtons = ({
                         className="h-3 w-3 rounded-full"
                         style={{ backgroundColor: combo.color }}
                       />
-                      <span className="font-medium text-white">
-                        {combo.name}
-                      </span>
+                      <span className="font-medium text-white">{combo.name}</span>
                     </div>
                     <RedeemButton
                       market={virtualMarket}
@@ -598,7 +609,7 @@ const MobileContextButtons = ({
       </Transition>
 
       <div
-        className={`pb-safe fixed bottom-12 left-0 right-0 z-50 w-full rounded-t-lg border-t-2 border-white/10 bg-ztg-primary-700/95 pb-2 shadow-2xl backdrop-blur-lg transition-all duration-500 ease-in-out md:hidden ${
+        className={`fixed bottom-12 left-0 right-0 z-50 w-full rounded-t-lg bg-ztg-primary-700/95 border-t-2 border-white/10 shadow-2xl backdrop-blur-lg pb-safe pb-2 transition-all duration-500 ease-in-out md:hidden ${
           showPartialRedeem ? "translate-y-0" : "translate-y-full"
         }`}
       >
@@ -623,9 +634,7 @@ const MobileContextButtons = ({
                         className="h-3 w-3 rounded-full"
                         style={{ backgroundColor: combo.color }}
                       />
-                      <span className="text-sm font-medium text-white">
-                        {combo.name}
-                      </span>
+                      <span className="text-sm font-medium text-white">{combo.name}</span>
                     </div>
                     <RedeemButton
                       market={virtualMarket}
@@ -711,11 +720,7 @@ const MobileContextButtons = ({
               className="center h-full w-full bg-ztg-green-600/90 text-white shadow-md backdrop-blur-md transition-all"
               onClick={() => setShowPartialRedeem(!showPartialRedeem)}
             >
-              {showPartialRedeem ? (
-                <X className="h-5 w-5" />
-              ) : (
-                "Redeem Tokens (Partial)"
-              )}
+              {showPartialRedeem ? <X className="h-5 w-5" /> : "Redeem Tokens (Partial)"}
             </div>
           </div>
         ) : null}
@@ -889,12 +894,9 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                       comboMarketData={comboMarketData}
                     />
                   ) : (
-                    <div className="flex h-[400px] items-center justify-center rounded-lg bg-white/10 shadow-md backdrop-blur-sm">
+                      <div className="flex h-[400px] items-center justify-center rounded-lg bg-white/10 shadow-md backdrop-blur-sm">
                       <div className="text-center text-white/70">
-                        <AlertTriangle
-                          size={48}
-                          className="mx-auto mb-2 text-white/70"
-                        />
+                        <AlertTriangle size={48} className="mx-auto mb-2 text-white/70" />
                         <p>Chart data not available</p>
                       </div>
                     </div>
@@ -1025,7 +1027,9 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
         <div className="hidden md:block md:w-[320px] lg:w-[400px] xl:w-[460px]">
           <div className="sticky">
             {comboMarketIsActive ? (
-              <div className="mb-12 animate-pop-in rounded-lg border-2 border-white/10 bg-white/10 opacity-0 shadow-xl ring-2 ring-white/5 backdrop-blur-lg">
+              <div
+                className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg bg-white/15 backdrop-blur-md"
+              >
                 <Amm2TradeForm
                   marketId={0}
                   poolData={comboMarketData}
@@ -1033,7 +1037,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                 />
               </div>
             ) : comboMarketIsResolved ? (
-              <div className="mb-12 rounded-lg border-2 border-white/10 bg-white/10 p-3 shadow-xl ring-2 ring-white/5 backdrop-blur-lg sm:p-4 md:p-5">
+              <div className="mb-12 rounded-lg bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4 md:p-5">
                 <h3 className="mb-4 text-lg font-semibold text-white">
                   Redeem Your Tokens
                 </h3>
@@ -1083,9 +1087,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                             className="h-3 w-3 rounded-full"
                             style={{ backgroundColor: combo.color }}
                           />
-                          <span className="font-medium text-white">
-                            {combo.name}
-                          </span>
+                          <span className="font-medium text-white">{combo.name}</span>
                         </div>
                         <RedeemButton
                           market={virtualMarket}
@@ -1161,9 +1163,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                   className="mx-auto mb-3 text-orange-400"
                   size={32}
                 />
-                <h3 className="mb-2 text-lg font-semibold text-white">
-                  Trading Closed
-                </h3>
+                <h3 className="mb-2 text-lg font-semibold text-white">Trading Closed</h3>
                 <p className="text-sm text-orange-400">
                   This combinatorial market is closed because one or more source
                   markets have ended.

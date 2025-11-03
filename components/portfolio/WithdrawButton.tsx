@@ -2,6 +2,7 @@ import { Dialog } from "@headlessui/react";
 import type { ApiPromise } from "@polkadot/api";
 import { isRpcSdk } from "@zeitgeistpm/sdk";
 import FormTransactionButton from "components/ui/FormTransactionButton";
+import GlassSlider from "components/ui/GlassSlider";
 import Input from "components/ui/Input";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
@@ -235,22 +236,22 @@ const WithdrawModal = ({
   };
 
   return (
-    <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white p-[30px]">
-      <h3 className="mb-8 text-center">Withdraw</h3>
-      <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
+    <Dialog.Panel className="w-full max-w-[564px] rounded-xl border-2 border-white/10 bg-white/10 backdrop-blur-xl shadow-2xl ring-2 ring-white/5 p-[30px]">
+      <h3 className="mb-8 text-center text-white">Withdraw</h3>
+      <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold text-white">
         <Transfer destinationChain={toChain} sourceChain="Zeitgeist" />
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex w-full flex-col items-center"
         >
-          <div className="center relative h-[56px] w-full bg-anti-flash-white text-ztg-18-150 font-normal">
+          <div className="center relative h-[56px] w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-ztg-18-150 font-normal">
             <Controller
               render={({ field }) => {
                 return (
                   <Input
                     {...field}
                     type="number"
-                    className="w-full bg-transparent !text-center outline-none"
+                    className="!w-full !bg-transparent !rounded-none !border-0 !backdrop-blur-none !text-center !outline-none !text-white !shadow-none !p-0 h-full"
                     step="any"
                     value={
                       countDecimals(field.value ? Number(field.value) : 0) > 3
@@ -289,28 +290,32 @@ const WithdrawModal = ({
                 },
               }}
             />
-            <div className="absolute right-0 mr-[10px]">{tokenSymbol}</div>
+            <div className="absolute right-0 mr-[10px] text-white/90">{tokenSymbol}</div>
           </div>
-          <input
+          <GlassSlider
             className="mb-[10px] mt-[30px] w-full"
-            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={watch("percentage") || "0"}
+            disabled={maxSendAmount.lessThanOrEqualTo(0)}
             {...register("percentage", { value: "0" })}
           />
-          <div className="my-[4px] h-[16px] text-ztg-12-120 text-ztg-red-400">
+          <div className="my-[4px] h-[16px] text-xs text-ztg-red-400">
             {formState.errors["amount"]?.message?.toString()}
           </div>
-          <div className="center mb-[16px] text-ztg-12-120 font-normal text-ztg-primary-600">
+          <div className="center text-xs font-normal text-white/70">
             Zeitgeist fee:
             {fee && (
-              <span className="ml-1 text-black">
+              <span className="ml-1 text-white/90">
                 {formatNumberCompact(fee.amount.div(ZTG).toNumber())}{" "}
                 {fee.symbol}
               </span>
             )}
           </div>
-          <div className="center mb-[10px] text-ztg-12-120 font-normal text-ztg-primary-600">
+          <div className="center mb-[10px] text-xs font-normal text-white/70">
             {toChain} fee:
-            <span className="ml-1 text-black">{chain?.withdrawFee}</span>
+            <span className="ml-1 text-white/90">{chain?.withdrawFee}</span>
           </div>
           <FormTransactionButton
             loading={isLoading}

@@ -18,10 +18,8 @@ import { AiOutlineEye, AiOutlineFileAdd } from "react-icons/ai";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { X } from "react-feather";
 import { LuClipboardCheck, LuVote } from "react-icons/lu";
-import {
-  useMobileViewport,
-  useBodyScrollLock,
-} from "lib/hooks/useMobileViewport";
+import { useMobileViewport } from "lib/hooks/useMobileViewport";
+import { useSimpleScrollLock } from "lib/hooks/useSimpleScrollLock";
 import { useMenuSwipeToClose } from "lib/hooks/useSwipeGesture";
 
 interface NotificationsPanelProps {
@@ -34,7 +32,7 @@ export const NotificationsPanel = ({
   onClose,
 }: NotificationsPanelProps) => {
   const wallet = useWallet();
-  const { alerts } = useAlerts(wallet.realAddress);
+  const { alerts, clearAll } = useAlerts(wallet.realAddress);
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -62,7 +60,7 @@ export const NotificationsPanel = ({
   }, []);
 
   // Lock body scroll when panel is open
-  useBodyScrollLock(isOpen);
+  useSimpleScrollLock(isOpen);
 
   // Don't render until mounted to avoid SSR issues
   if (!mounted) return null;
@@ -105,7 +103,7 @@ export const NotificationsPanel = ({
             fixed left-0 top-0 w-full overflow-y-auto
             border-r-2 border-white/10 bg-white/10 p-4
             shadow-xl ring-2 ring-white/5 backdrop-blur-lg focus:outline-none
-            md:max-w-md md:p-6
+            sm:min-w-[50vw] md:max-w-[700px] md:p-6
             ${isMobile ? "pt-16" : "pt-4"}`}
           style={{
             zIndex: 999,
@@ -122,12 +120,22 @@ export const NotificationsPanel = ({
             <h2 className="text-xl font-bold text-white md:text-2xl">
               Notifications
             </h2>
-            <button
-              onClick={onClose}
-              className="flex h-10 w-10 touch-manipulation items-center justify-center rounded-lg bg-white/10 text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white active:scale-95"
-            >
-              <X size={20} />
-            </button>
+            <div className="flex items-center gap-2">
+              {alerts.length > 0 && (
+                <button
+                  onClick={clearAll}
+                  className="touch-manipulation rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white active:scale-95"
+                >
+                  Clear All
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                className="flex h-10 w-10 touch-manipulation items-center justify-center rounded-lg bg-white/10 text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white active:scale-95"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
 
           {/* Alerts List */}
@@ -369,7 +377,6 @@ const RelevantMarketDisputeItem = ({}: {
 };
 
 const UnknownAlertItem = ({ alert }: { alert: never }) => {
-  // This should never be reached
   console.warn("Unknown alert type:", alert);
   return <></>;
 };

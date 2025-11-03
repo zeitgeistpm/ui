@@ -162,6 +162,8 @@ export type FiltersListProps = {
   close: () => void;
   marketType?: MarketType;
   onMarketTypeChange?: (type: MarketType) => void;
+  ordering?: MarketsOrderBy;
+  onOrderingChange?: (ordering: MarketsOrderBy) => void;
 };
 
 const MobileMarketTypeToggle = ({

@@ -10,6 +10,7 @@ import { isValidPolkadotAddress } from "lib/util";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
+import { useEffect } from "react";
 
 // Lazy load tab components - only load when user switches to that tab
 const PredictionsTabGroup = dynamic(
@@ -60,6 +61,7 @@ const Portfolio: NextPageWithLayout = () => {
     ? router.query.address[0]
     : router.query.address;
 
+
   //init cross chain apis early
   useCrossChainApis();
 
@@ -79,7 +81,8 @@ const Portfolio: NextPageWithLayout = () => {
   }
 
   return (
-    <div className="container-fluid mt-6 overflow-hidden">
+    <div className="">
+
       <PortfolioHeader
         address={address}
         {...(breakdown ?? {

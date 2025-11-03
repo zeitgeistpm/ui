@@ -41,7 +41,7 @@ import CopyIcon from "../ui/CopyIcon";
 import { useAlerts, Alert } from "lib/state/alerts";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { NotificationsPanel } from "./NotificationsPanel";
-import { useBodyScrollLock } from "lib/hooks/useMobileViewport";
+import { useSimpleScrollLock } from "lib/hooks/useSimpleScrollLock";
 
 const BalanceRow = ({
   imgPath,
@@ -181,7 +181,7 @@ const AccountButton: FC<{
   }, []);
 
   // Lock body scroll when account menu is open on mobile
-  useBodyScrollLock(accountMenuOpen && isMobile);
+  useSimpleScrollLock(accountMenuOpen && isMobile);
 
   useEffect(() => {
     updatePosition();
@@ -546,6 +546,7 @@ const AccountButton: FC<{
                                       walletId === "web3auth"
                                         ? accountModals.openWalletSelect()
                                         : accountModals.openAccountSelect();
+                                      close();
                                     }}
                                   >
                                     <User
@@ -588,7 +589,10 @@ const AccountButton: FC<{
                                       ? "bg-white/20 shadow-sm"
                                       : "hover:bg-white/20"
                                   }`}
-                                  onClick={() => setShowSettingsModal(true)}
+                                  onClick={() => {
+                                    setShowSettingsModal(true);
+                                    close();
+                                  }}
                                 >
                                   <Settings
                                     className="text-ztg-green-400 transition-colors"

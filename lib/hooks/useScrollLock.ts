@@ -1,46 +1,57 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * Hook to lock body scroll when modal/dialog is open
- * Prevents scrolling while keeping background content visible for backdrop blur effect
+ * Properly handles scroll position to prevent content jumping
  */
 export function useScrollLock(locked: boolean) {
+  const scrollPositionRef = useRef(0);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     if (locked) {
-      const body = document.body;
-      const html = document.documentElement;
+      // Check if we're on mobile iOS (which has specific scrolling issues)
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
       // Save current scroll position
-      const scrollY = window.scrollY;
-      
-      // Get current styles to restore later
-      const originalBodyOverflow = body.style.overflow;
-      const originalBodyPosition = body.style.position;
-      const originalBodyTop = body.style.top;
-      const originalBodyWidth = body.style.width;
-      const originalHtmlOverflow = html.style.overflow;
+      scrollPositionRef.current = window.scrollY || window.pageYOffset || 0;
+      const body = document.body;
 
-      // Lock scroll by setting position fixed but preserving scroll position visually
-      // This keeps content visible for backdrop blur while preventing scrolling
-      body.style.overflow = "hidden";
-      body.style.position = "fixed";
-      body.style.top = `-${scrollY}px`;
-      body.style.width = "100%";
-      
-      html.style.overflow = "hidden";
+      // Store original styles
+      const originalStyles = {
+        overflow: body.style.overflow,
+        position: body.style.position,
+        top: body.style.top,
+        width: body.style.width,
+      };
+
+      // Apply scroll lock with iOS-friendly approach
+      if (isIOS) {
+        // For iOS, use a simpler approach to avoid conflicts
+        body.style.overflow = "hidden";
+        body.style.position = "relative";
+      } else {
+        // For other devices, use the fixed position approach
+        body.style.overflow = "hidden";
+        body.style.position = "fixed";
+        body.style.top = `-${scrollPositionRef.current}px`;
+        body.style.width = "100%";
+      }
 
       return () => {
         // Restore original styles
-        body.style.overflow = originalBodyOverflow;
-        body.style.position = originalBodyPosition;
-        body.style.top = originalBodyTop;
-        body.style.width = originalBodyWidth;
-        html.style.overflow = originalHtmlOverflow;
+        Object.keys(originalStyles).forEach(key => {
+          body.style[key] = originalStyles[key] || "";
+        });
 
-        // Restore scroll position
-        window.scrollTo(0, scrollY);
+        // Restore scroll position (not needed for iOS)
+        if (!isIOS && scrollPositionRef.current > 0) {
+          window.scrollTo({
+            top: scrollPositionRef.current,
+            behavior: "instant" as ScrollBehavior,
+          });
+        }
       };
     }
   }, [locked]);

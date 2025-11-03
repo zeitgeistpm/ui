@@ -90,7 +90,6 @@ const BuyForm = ({
   const notificationStore = useNotifications();
   const percentageValue = watch("percentage");
   const isUpdatingRef = useRef(false);
-  // Only fetch market data if poolData is not provided
   const { data: market } = useMarket(poolData ? undefined : { marketId });
 
   const wallet = useWallet();
@@ -100,17 +99,14 @@ const BuyForm = ({
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
-  //TODO: fix this so it's consistent among: combo markets, legacy, and new markets
   const firstAssetString = market?.outcomeAssets[0];
   let parsedFirstAsset;
   let isFirstCombi = false;
 
   try {
-    // Try to parse as JSON first (for combinatorial tokens)
     parsedFirstAsset = JSON.parse(firstAssetString || "{}");
     isFirstCombi = isCombinatorialToken(parsedFirstAsset);
   } catch {
-    // Fall back to parseAssetIdString for regular assets
     parsedFirstAsset = parseAssetIdString(firstAssetString);
     isFirstCombi = isCombinatorialToken(parsedFirstAsset);
   }
@@ -134,9 +130,8 @@ const BuyForm = ({
     ? new Decimal(poolData.swapFee || 0).div(ZTG)
     : pool?.swapFee.div(ZTG);
   const creatorFee = poolData
-    ? new Decimal(0) // set creator fees to 0 for combo markets
+    ? new Decimal(0)
     : new Decimal(perbillToNumber(market?.creatorFee ?? 0));
-  // Sort assets to match the order in market.outcomeAssets
 
   const outcomeAssets = (() => {
     if (filteredAssets) {

@@ -52,10 +52,8 @@ import { ArrowRight, BarChart, Bell, Settings, LogOut } from "react-feather";
 import CopyIcon from "components/ui/CopyIcon";
 import SettingsModal from "components/settings/SettingsModal";
 import { NotificationsPanel } from "components/account/NotificationsPanel";
-import {
-  useMobileViewport,
-  useBodyScrollLock,
-} from "lib/hooks/useMobileViewport";
+import { useMobileViewport } from "lib/hooks/useMobileViewport";
+import { useSimpleScrollLock } from "lib/hooks/useSimpleScrollLock";
 import { useHapticFeedback } from "lib/hooks/useHapticFeedback";
 
 const AccountButton = dynamic(
@@ -352,15 +350,20 @@ const TopBar = () => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Lock body scroll when menus are open on mobile
-  useBodyScrollLock(hamburgerMenuOpen && isMobile);
+  useSimpleScrollLock(hamburgerMenuOpen && isMobile);
 
-  // Set CSS variable for top-bar height so mobile menus can position correctly
   const mainTopBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const updateTopBarHeight = () => {
-      // For mobile hamburger menu, only use main top bar height (not including filters)
+      if (topBarRef.current) {
+        const totalHeight = topBarRef.current.offsetHeight;
+        document.documentElement.style.setProperty(
+          "--top-bar-total-height",
+          `${totalHeight}px`,
+        );
+      }
+
       if (mainTopBarRef.current) {
         const height = mainTopBarRef.current.offsetHeight;
         document.documentElement.style.setProperty(
@@ -370,10 +373,21 @@ const TopBar = () => {
       }
     };
 
-    updateTopBarHeight();
-    window.addEventListener("resize", updateTopBarHeight);
+    if (typeof window === "undefined") return;
 
-    return () => window.removeEventListener("resize", updateTopBarHeight);
+    updateTopBarHeight();
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateTopBarHeight();
+    });
+
+    if (topBarRef.current) {
+      resizeObserver.observe(topBarRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, [showQuickNav, showMarketFilters]);
 
   return (
@@ -657,8 +671,8 @@ const TopBar = () => {
       {/* QuickNav Section */}
       {showQuickNav && (
         <div className="relative -z-10 w-full border-t-2 border-white/5 bg-ztg-primary-500 shadow-md backdrop-blur-md">
-          <div className="container-fluid w-full">
-            <div className="relative flex items-center gap-1.5 overflow-x-auto py-2.5 sm:gap-2 md:gap-3 md:px-0 md:py-3">
+          <div className="container-fluid relative w-full">
+            <div className="relative flex items-center gap-1.5 overflow-x-auto py-2.5 sm:gap-2 md:gap-3 md:py-3">
               <Link
                 href="/markets"
                 className={`group flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-3 sm:text-sm md:px-4 ${
@@ -717,11 +731,11 @@ const TopBar = () => {
                 />
                 <span className="whitespace-nowrap">Trending</span>
               </Link>
-              <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+              <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2 md:hidden">
                 <Menu as="div" className="relative">
                   {({ open }) => (
                     <>
-                      <Menu.Button className="group flex shrink-0 items-center gap-1.5 rounded-lg bg-ztg-green-600/90 px-2.5 py-2 text-xs font-bold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg active:scale-95 sm:gap-2 sm:px-3 sm:text-sm md:px-4">
+                      <Menu.Button className="group flex shrink-0 items-center gap-1.5 rounded-lg bg-ztg-green-600/90 px-2.5 py-2 text-xs font-bold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg active:scale-95 sm:gap-2 sm:px-3 sm:text-sm">
                         <FiPlusSquare
                           size={14}
                           className="hidden shrink-0 sm:inline sm:h-4 sm:w-4"
@@ -803,6 +817,93 @@ const TopBar = () => {
                   )}
                 </Menu>
               </div>
+            </div>
+            {/* Create Market Menu - positioned outside overflow container */}
+            <div className="absolute right-0 top-0 hidden h-full items-center justify-end pr-4 md:pr-8 lg:pr-12 xl:pr-16 md:flex">
+              <Menu as="div" className="relative">
+                {({ open }) => (
+                  <>
+                    <Menu.Button className="group flex shrink-0 items-center gap-1.5 rounded-lg bg-ztg-green-600/90 px-2.5 py-2 text-xs font-bold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg active:scale-95 sm:gap-2 sm:px-3 sm:text-sm md:px-4">
+                      <FiPlusSquare
+                        size={14}
+                        className="hidden shrink-0 sm:inline sm:h-4 sm:w-4"
+                      />
+                      <span className="whitespace-nowrap font-bold">
+                        Create Market
+                      </span>
+                      <ChevronDown
+                        size={12}
+                        className={`ml-0.5 shrink-0 transition-transform sm:h-3.5 sm:w-3.5 ${open ? "rotate-180" : ""}`}
+                      />
+                    </Menu.Button>
+
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border-2 border-white/10 bg-ztg-primary-700/95 shadow-xl ring-2 ring-white/5 backdrop-blur-lg focus:outline-none">
+                        <div className="p-1">
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link href="/create">
+                                <button
+                                  className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm text-white/90 transition-all ${
+                                    active
+                                      ? "bg-white/20 text-white shadow-sm"
+                                      : ""
+                                  }`}
+                                >
+                                  <MdShowChart
+                                    size={18}
+                                    className="text-ztg-green-400"
+                                  />
+                                  <div className="flex flex-col items-start">
+                                    <span className="font-semibold">
+                                      Single Market
+                                    </span>
+                                  </div>
+                                </button>
+                              </Link>
+                            )}
+                          </Menu.Item>
+
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link href="/create-combo">
+                                <button
+                                  className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm text-white/90 transition-all ${
+                                    active
+                                      ? "bg-white/20 text-white shadow-sm"
+                                      : ""
+                                  }`}
+                                >
+                                  <MdStackedLineChart
+                                    size={18}
+                                    className="text-ztg-green-400"
+                                  />
+                                  <div className="flex flex-col items-start">
+                                    <span className="font-semibold">
+                                      Combinatorial Market
+                                    </span>
+                                    <span className="text-xs text-white/70">
+                                      Multi-outcome market
+                                    </span>
+                                  </div>
+                                </button>
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        </div>
+                      </Menu.Items>
+                    </Transition>
+                  </>
+                )}
+              </Menu>
             </div>
           </div>
         </div>
@@ -1004,7 +1105,7 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
   }, []);
 
   // Lock body scroll when categories submenu is open on mobile
-  useBodyScrollLock(categoriesOpen && isMobile);
+  useSimpleScrollLock(categoriesOpen && isMobile);
 
   return (
     <>
@@ -1087,7 +1188,7 @@ const CreateMarketMenuItem = ({ onSelect }: { onSelect: () => void }) => {
   }, []);
 
   // Lock body scroll when create market submenu is open on mobile
-  useBodyScrollLock(createMarketOpen && isMobile);
+  useSimpleScrollLock(createMarketOpen && isMobile);
 
   return (
     <>

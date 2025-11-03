@@ -4,6 +4,7 @@ const AccountModalHead = () => {
   const accountModals = useAccountModals();
 
   const switchExtension = () => {
+    // openWalletSelect now handles closing account select atomically
     accountModals.openWalletSelect();
   };
 

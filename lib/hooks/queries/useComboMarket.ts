@@ -61,7 +61,7 @@ export const useComboMarket = (poolId: number) => {
         neoPools: Array<{ poolId: number; createdAt: string }>;
       }>(neoPoolQuery, { poolId });
 
-      return response.neoPools[0];
+      return response.neoPools[0] ?? null;
     },
     {
       enabled: Boolean(sdk && poolId != null && isIndexedSdk(sdk)),

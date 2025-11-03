@@ -11,8 +11,9 @@ import {
   reportingPeriodOptions,
 } from "lib/state/market-creation/constants/deadline-options";
 import { useMarketDraftEditor } from "lib/state/market-creation/editor";
+import { sectionForFormKey } from "lib/state/market-creation/types/step";
 import dynamic from "next/dynamic";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
@@ -48,6 +49,7 @@ const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
 export const MarketEditor = () => {
   const wallet = useWallet();
   const editor = useMarketDraftEditor();
+  const [isWizard, setIsWizard] = useState(false);
 
   const headerRef = useRef<HTMLDivElement>(null);
 
@@ -56,12 +58,12 @@ export const MarketEditor = () => {
     steps,
     currentStep,
     setStep,
-    isWizard,
-    toggleWizard,
     input,
     fieldsState,
     mergeFormData,
   } = editor;
+
+  const toggleWizard = () => setIsWizard(!isWizard);
 
   const chainTime = useChainTime();
   const { isFetched } = useMarketDeadlineConstants();
@@ -166,8 +168,7 @@ export const MarketEditor = () => {
 
         <form>
           <MarketFormSection
-            wizard={isWizard}
-            isCurrent={currentStep.label == "Currency"}
+            isCurrent={currentStep.label == sectionForFormKey("currency")}
             onClickNext={next}
             nextDisabled={!fieldsState.currency.isValid}
           >
@@ -206,8 +207,7 @@ export const MarketEditor = () => {
           </MarketFormSection>
 
           <MarketFormSection
-            wizard={isWizard}
-            isCurrent={currentStep.label == "Question"}
+            isCurrent={currentStep.label == sectionForFormKey("question")}
             onClickNext={next}
             onClickBack={back}
             nextDisabled={
@@ -257,8 +257,7 @@ export const MarketEditor = () => {
           </MarketFormSection>
 
           <MarketFormSection
-            wizard={isWizard}
-            isCurrent={currentStep.label == "Answers"}
+            isCurrent={currentStep.label == sectionForFormKey("answers")}
             onClickNext={next}
             onClickBack={back}
             nextDisabled={!fieldsState.answers.isValid}
@@ -328,8 +327,7 @@ export const MarketEditor = () => {
           </MarketFormSection>
 
           <MarketFormSection
-            wizard={isWizard}
-            isCurrent={currentStep.label == "Time Period"}
+            isCurrent={currentStep.label == sectionForFormKey("endDate")}
             onClickNext={next}
             onClickBack={back}
             nextDisabled={
@@ -467,8 +465,7 @@ export const MarketEditor = () => {
           </MarketFormSection>
 
           <MarketFormSection
-            wizard={isWizard}
-            isCurrent={currentStep.label == "Oracle"}
+            isCurrent={currentStep.label == sectionForFormKey("oracle")}
             onClickNext={next}
             onClickBack={back}
             nextDisabled={!fieldsState.oracle.isValid}
@@ -509,8 +506,7 @@ export const MarketEditor = () => {
           </MarketFormSection>
 
           <MarketFormSection
-            wizard={isWizard}
-            isCurrent={currentStep.label == "Description"}
+            isCurrent={currentStep.label == sectionForFormKey("description")}
             onClickNext={next}
             onClickBack={back}
             nextDisabled={!fieldsState.description.isValid}
@@ -537,8 +533,7 @@ export const MarketEditor = () => {
           </MarketFormSection>
 
           <MarketFormSection
-            wizard={isWizard}
-            isCurrent={currentStep.label == "Moderation"}
+            isCurrent={currentStep.label == sectionForFormKey("moderation")}
             onClickNext={next}
             onClickBack={back}
             nextDisabled={!fieldsState.moderation.isValid}
@@ -572,8 +567,7 @@ export const MarketEditor = () => {
           </MarketFormSection>
 
           <MarketFormSection
-            wizard={isWizard}
-            isCurrent={currentStep.label == "Liquidity"}
+            isCurrent={currentStep.label == sectionForFormKey("liquidity")}
             onClickNext={next}
             onClickBack={back}
             nextDisabled={
@@ -699,16 +693,14 @@ export const MarketEditor = () => {
           </MarketFormSection>
 
           <MarketFormSection
-            wizard={isWizard}
-            isCurrent={currentStep.label == "Summary"}
-            disabled={!isWizard}
+            isCurrent={currentStep.label == "Review & Launch"}
           >
             <div className="center flex">
               <MarketSummary creationParams={creationParams} editor={editor} />
             </div>
           </MarketFormSection>
 
-          {(!editor.isWizard || currentStep.label == "Summary") && (
+          {(!isWizard || currentStep.label == "Review & Launch") && (
             <Publishing creationParams={creationParams} editor={editor} />
           )}
         </form>

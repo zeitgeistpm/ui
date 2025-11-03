@@ -32,15 +32,12 @@ export interface ChartData {
 }
 
 const ChartToolTip = (props) => {
+  // Use CSS media query instead of JS calculations
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    // Only check once on mount for SSR compatibility
+    setIsMobile(window.matchMedia("(max-width: 639px)").matches);
   }, []);
 
   const items = props.series
@@ -116,19 +113,21 @@ const TimeSeriesChart = ({
   yUnits,
   isLoading,
 }: TimeSeriesChartProps) => {
-  const [leftX, setLeftX] = useState("dataMin");
-  const [rightX, setRightX] = useState("dataMax");
+  const [leftX, setLeftX] = useState<number | string>("dataMin");
+  const [rightX, setRightX] = useState<number | string>("dataMax");
   const [mouseInside, setMouseInside] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    setIsMobile(window.matchMedia("(max-width: 639px)").matches);
   }, []);
+
+  const xDomain: [number | string, number | string] = data && data.length > 0
+    ? (() => {
+        const timestamps = data.map((d) => d.t);
+        return [Math.min(...timestamps), Math.max(...timestamps)];
+      })()
+    : [leftX, rightX];
 
   const roundingThreshold = 0.3;
 
@@ -156,8 +155,13 @@ const TimeSeriesChart = ({
       onDoubleClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        setLeftX("dataMin");
-        setRightX("dataMax");
+        if (data && data.length > 0) {
+          setLeftX(data[0].t);
+          setRightX(data[data.length - 1].t);
+        } else {
+          setLeftX("dataMin");
+          setRightX("dataMax");
+        }
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -184,7 +188,7 @@ const TimeSeriesChart = ({
             />
             <XAxis
               dataKey="t"
-              domain={[leftX, rightX]}
+              domain={xDomain}
               tickCount={isMobile ? 4 : 5}
               tick={{
                 fontSize: isMobile ? "9px" : "10px",

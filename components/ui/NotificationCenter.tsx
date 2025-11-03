@@ -95,7 +95,7 @@ const getGlassBgColor = (type: NotificationType) => {
     case "Info":
       return "bg-white/10 backdrop-blur-lg";
     case "Error":
-      return "bg-ztg-red-50/95 backdrop-blur-lg";
+      return "bg-white/10 backdrop-blur-lg";
     default:
       return "bg-white/10 backdrop-blur-lg";
   }
@@ -145,7 +145,7 @@ const getTextColor = (type: NotificationType) => {
     case "Info":
       return "text-white/90";
     case "Error":
-      return "text-ztg-red-900";
+      return "text-white/90";
     default:
       return "text-white/90";
   }
@@ -154,13 +154,13 @@ const getTextColor = (type: NotificationType) => {
 const getIconColor = (type: NotificationType) => {
   switch (type) {
     case "Success":
-      return "text-emerald-700 hover:text-emerald-900";
+      return "text-white/70 hover:text-white/90";
     case "Info":
-      return "text-ztg-green-400 hover:text-ztg-green-300";
+      return "text-white/70 hover:text-white/90";
     case "Error":
-      return "text-ztg-red-400 hover:text-ztg-red-300";
+      return "text-white/70 hover:text-white/90";
     default:
-      return "text-ztg-green-400 hover:text-ztg-green-300";
+      return "text-white/70 hover:text-white/90";
   }
 };
 

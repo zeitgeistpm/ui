@@ -1,6 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { ReactNode, Fragment } from "react";
-import { useScrollLock } from "lib/hooks/useScrollLock";
+import { useSimpleScrollLock } from "lib/hooks/useSimpleScrollLock";
 
 export interface ModalProps {
   children: ReactNode;
@@ -11,6 +11,12 @@ export interface ModalProps {
    * @default false
    */
   closeOnBackdropClick?: boolean;
+  /**
+   * Whether to enable scroll lock for this modal
+   * Set to false if scroll lock is handled at a higher level
+   * @default true
+   */
+  enableScrollLock?: boolean;
 }
 
 const Modal = ({
@@ -18,9 +24,10 @@ const Modal = ({
   children,
   onClose,
   closeOnBackdropClick = true,
+  enableScrollLock = true,
 }: ModalProps) => {
-  // Lock body scroll when modal is open
-  useScrollLock(open);
+  // Use simplified CSS-based scroll lock
+  useSimpleScrollLock(enableScrollLock ? open : false);
 
   const handleClose = (value: boolean) => {
     if (!value && closeOnBackdropClick) {
@@ -65,6 +72,7 @@ const Modal = ({
             className="fixed inset-0 z-50 flex w-screen items-center justify-center p-4"
             style={{ pointerEvents: "none" }}
           >
+            {/* Allow Dialog.Panel to be its natural size and be centered by parent flex container */}
             <div style={{ pointerEvents: "auto" }}>{children}</div>
           </div>
         </Transition.Child>

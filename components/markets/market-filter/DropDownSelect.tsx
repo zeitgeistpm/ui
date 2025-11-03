@@ -8,6 +8,7 @@ import ReactSelect, {
   InputProps,
   MenuListProps,
   OptionProps,
+  StylesConfig,
   ValueContainerProps,
 } from "react-select";
 import { useMarketFiltersContext } from "./MarketFiltersContainer";
@@ -25,10 +26,9 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
     Status: "status",
   };
 
-  // Check if this filter type has any active filters
   const filterType =
-    labelToTypeMap[selectProps.placeholder || ""] ||
-    selectProps.placeholder?.toLowerCase();
+    labelToTypeMap[String(selectProps.placeholder || "")] ||
+    (typeof selectProps.placeholder === "string" ? selectProps.placeholder.toLowerCase() : "");
   const hasActiveFilters =
     activeFilters?.some((filter) => filter.type === filterType) ?? false;
 
@@ -115,7 +115,7 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
   );
 };
 
-const MenuList = ({ children, ...props }: MenuListProps) => {
+const MenuList = ({ children, ...props }: MenuListProps<MarketFilter, false>) => {
   return (
     <components.MenuList {...props}>
       <div className="mx-auto flex flex-row flex-wrap gap-1.5">{children}</div>
@@ -146,15 +146,6 @@ const ValueContainer = (props: ValueContainerProps<MarketFilter, false>) => {
     <components.ValueContainer
       {...props}
       className="!pointer-events-none !absolute !m-0 !h-0 !w-0 !p-0 !opacity-0"
-      style={{
-        position: "absolute",
-        opacity: 0,
-        pointerEvents: "none",
-        width: 0,
-        height: 0,
-        margin: 0,
-        padding: 0,
-      }}
     />
   );
 };
@@ -175,7 +166,7 @@ const Placeholder = () => {
   return <></>;
 };
 
-const customStyles = {
+const customStyles: StylesConfig<MarketFilter, false> = {
   menu: (provided) => {
     return {
       backgroundColor: "rgba(255, 255, 255, 0.1)",
@@ -203,28 +194,6 @@ const customStyles = {
   },
   menuPortal: () => {
     return { width: "100%", zIndex: 50 };
-  },
-  valueContainer: () => {
-    return {
-      position: "absolute",
-      opacity: 0,
-      pointerEvents: "none",
-      width: 0,
-      height: 0,
-      margin: 0,
-      padding: 0,
-    };
-  },
-  input: () => {
-    return {
-      position: "absolute",
-      opacity: 0,
-      pointerEvents: "none",
-      width: 0,
-      height: 0,
-      margin: 0,
-      padding: 0,
-    };
   },
 };
 

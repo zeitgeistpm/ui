@@ -34,7 +34,7 @@ const BuySellFullSetsButton = ({
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel className="w-full max-w-[564px] rounded-lg border-2 border-ztg-primary-200/30 bg-white/95 shadow-xl backdrop-blur-lg">
           <Tab.Group>
-            <Tab.List className="flex h-16 text-center text-base font-semibold">
+            <Tab.List className="flex h-11 md:h-12 text-center text-sm font-semibold">
               <Tab className="w-1/2 rounded-tl-lg border-b-2 border-ztg-primary-200/30 bg-ztg-primary-50/50 transition-all ui-selected:border-b-0 ui-selected:bg-white/95 ui-selected:font-bold ui-selected:text-ztg-primary-900">
                 Buy Full Set
               </Tab>
@@ -43,7 +43,7 @@ const BuySellFullSetsButton = ({
               </Tab>
             </Tab.List>
 
-            <Tab.Panels className="p-5">
+            <Tab.Panels className="p-4 md:p-6">
               <Tab.Panel>
                 <BuyFullSetForm
                   marketId={marketId}

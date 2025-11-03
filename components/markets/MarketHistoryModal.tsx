@@ -1,5 +1,6 @@
 import { Dialog } from "@headlessui/react";
-import { OutcomeReport, ScalarRangeType } from "@zeitgeistpm/sdk";
+import { ScalarRangeType } from "@zeitgeistpm/sdk";
+type OutcomeReport = any;
 import { MarketEventHistory } from "lib/hooks/queries/useMarketEventHistory";
 import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import Link from "next/link";
@@ -53,7 +54,7 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
 
   return (
     <Dialog.Panel>
-      <div className="relative max-h-[90vh] w-full overflow-hidden rounded-xl border-2 border-ztg-primary-200/30 bg-white/95 shadow-2xl backdrop-blur-lg sm:min-w-[580px] sm:max-w-[580px]">
+      <div className="relative max-h-[90vh] w-full overflow-hidden rounded-xl border-2 border-ztg-primary-200/30 bg-white/95 shadow-2xl backdrop-blur-lg sm:w-[33vw] sm:min-w-[320px] sm:max-w-[580px]">
         {/* Header with gradient accent */}
         <div className="relative border-b-2 border-ztg-primary-200/30 bg-gradient-to-r from-ztg-primary-50/80 to-blue-50/80 px-6 py-4 backdrop-blur-sm">
           <h3 className="text-center text-lg font-bold text-ztg-primary-900">

@@ -39,11 +39,11 @@ export const ModerationModeSelect: React.FC<ModerationModeSelectProps> = ({
         onChange={(e) => {
           const selectedValue = e.target.value || undefined;
           onChange({
-            target: { name, value: selectedValue as Moderation | undefined },
+            target: { name, value: selectedValue as any },
             type: "change",
           });
           onBlur({
-            target: { name, value: selectedValue as Moderation | undefined },
+            target: { name, value: selectedValue as any },
             type: "blur",
           });
         }}

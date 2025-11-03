@@ -5,7 +5,6 @@ import { Loader } from "./Loader";
 import Decimal from "decimal.js";
 
 // Format large numbers with K, M, B suffixes
-// Note: amounts come in Planck (10^-10 DOT), so we divide by 10^10
 const formatVoteAmount = (amount: Decimal): string => {
   const dotAmount = amount.div(10_000_000_000); // Convert Planck to DOT
   const num = dotAmount.toNumber();

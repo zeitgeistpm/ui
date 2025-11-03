@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
 import FormTransactionButton from "components/ui/FormTransactionButton";
+import GlassSlider from "components/ui/GlassSlider";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
@@ -41,6 +42,7 @@ const ExitPoolForm = ({
     reValidateMode: "onChange",
     mode: "all",
   });
+  const poolSharesPercentageValue = watch("poolSharesPercentage") || "0";
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
   const { realAddress } = useWallet();
@@ -83,7 +85,6 @@ const ExitPoolForm = ({
       );
 
       // Calculate minAssetsOut based on actual shares being burned, not form display values
-      // This ensures precision and matches what the blockchain calculates
       const sharesRatio = poolSharesAmount.div(pool.totalShares);
 
       const minAssetsOut = reserves.map((reserve) => {
@@ -188,9 +189,9 @@ const ExitPoolForm = ({
   const onSubmit: SubmitHandler<any> = () => {
     exitPool();
   };
-  return (
-    <form className="flex flex-col gap-y-3" onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex max-h-[220px] flex-col gap-y-3 overflow-y-auto py-2 md:max-h-[300px]">
+    return (
+    <form className="flex flex-col gap-y-3 min-w-0 w-full" onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex max-h-[220px] flex-col gap-y-3 overflow-y-auto no-scroll-bar py-2 md:max-h-[350px]">
         {activeMarket &&
           poolAssets?.map((assetId, index) => {
             const assetName = virtualMarket
@@ -202,62 +203,71 @@ const ExitPoolForm = ({
             const userBalanceInPool = poolAssetBalance
               .mul(userOwnershipRatio)
               .toNumber();
+            const hasError = !!formState.errors[index.toString()]?.message;
 
             return (
               <div
                 key={index}
-                className="relative h-[52px] w-full text-sm font-semibold"
+                className="relative w-full"
               >
-                <div className="absolute left-3 top-[14px] z-10 w-[40%] truncate capitalize text-white/90">
-                  {assetName}
-                </div>
-                <Input
-                  className={`h-11 w-full rounded-lg border-2 px-3 text-right text-sm font-medium text-white shadow-sm backdrop-blur-sm transition-all focus:shadow-md focus:outline-none
+                <div className="relative h-ztg-40">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-[40%] truncate capitalize text-xs leading-tight text-white/90 pointer-events-none">
+                    {assetName}
+                  </div>
+                  <Input
+                    className={`h-ztg-40 w-full rounded-lg border-2 px-3 py-0 text-right text-xs leading-none font-medium text-white shadow-sm backdrop-blur-sm transition-all focus:shadow-md focus:outline-none
               ${
-                formState.errors[index.toString()]?.message
+                hasError
                   ? "border-ztg-red-500/60 bg-ztg-red-900/30 text-ztg-red-400 focus:border-ztg-red-500/80"
                   : "border-white/10 bg-white/10 text-white/90 hover:bg-white/15 focus:border-white/20 focus:bg-white/15 focus:ring-2 focus:ring-white/10"
               }
               `}
-                  key={index}
-                  type="number"
-                  step="any"
-                  {...register(index.toString(), {
-                    value: 0,
-                    required: {
-                      value: true,
-                      message: "Value is required",
-                    },
-                    validate: (value: number) => {
-                      if (value > userBalanceInPool) {
-                        return `Insufficient pool shares. Max amount to withdraw is ${userBalanceInPool.toFixed(
-                          3,
-                        )}`;
-                      } else if (value <= 0) {
-                        return "Value cannot be zero or less";
-                      } else if (
-                        activeMarket?.status.toLowerCase() !== "resolved" &&
-                        poolAssetBalance.minus(value).lessThanOrEqualTo(0.01)
-                      ) {
-                        return "Pool cannot be emptied completely before the market resolves";
-                      }
-                    },
-                  })}
-                />
-                <div className="mt-1 text-xs font-medium text-ztg-red-400">
-                  <>{formState.errors[index.toString()]?.message}</>
+                    key={index}
+                    type="number"
+                    step="any"
+                    {...register(index.toString(), {
+                      value: 0,
+                      required: {
+                        value: true,
+                        message: "Value is required",
+                      },
+                      validate: (value: number) => {
+                        if (value > userBalanceInPool) {
+                          return `Insufficient pool shares. Max amount to withdraw is ${userBalanceInPool.toFixed(
+                            3,
+                          )}`;
+                        } else if (value <= 0) {
+                          return "Value cannot be zero or less";
+                        } else if (
+                          activeMarket?.status.toLowerCase() !== "resolved" &&
+                          poolAssetBalance.minus(value).lessThanOrEqualTo(0.01)
+                        ) {
+                          return "Pool cannot be emptied completely before the market resolves";
+                        }
+                      },
+                    })}
+                  />
                 </div>
+                {hasError && (
+                  <div className="mt-1.5 mb-0.5 text-xs md:text-sm font-medium text-ztg-red-400 min-h-[1.25rem]">
+                    {String(formState.errors[index.toString()]?.message || '')}
+                  </div>
+                )}
               </div>
             );
           })}
       </div>
-      <input
-        className="my-3 w-full cursor-pointer accent-white/80"
-        type="range"
+      <GlassSlider
+        className="w-full"
+        min="0"
+        max="100"
+        step="1"
+        value={poolSharesPercentageValue}
         {...register("poolSharesPercentage", { min: 0, max: 100, value: "0" })}
       />
       <FormTransactionButton
         loading={isLoading}
+        className="!h-10 !text-sm !font-medium"
         disabled={formState.isValid === false || isLoading}
       >
         Exit Pool

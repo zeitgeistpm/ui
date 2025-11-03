@@ -507,7 +507,7 @@ const ComboMarketEditor: React.FC = () => {
   };
 
   return (
-    <div className="container-fluid mx-auto pb-4 md:pb-6">
+    <div className="pb-4 md:pb-6">
       <div className="mb-8 md:mb-12">
         <h1 className="mb-4 text-center text-2xl font-bold text-white md:text-3xl">
           Create Combinatorial Market

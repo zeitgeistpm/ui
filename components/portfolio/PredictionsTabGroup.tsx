@@ -10,7 +10,6 @@ import EmptyPortfolio from "./EmptyPortfolio";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { isCombinatorialToken } from "lib/types/combinatorial";
 
-// Helper to get index from asset ID without importing full SDK
 const getAssetIndex = (assetId: any): number => {
   if (assetId.CategoricalOutcome) {
     return assetId.CategoricalOutcome[1];
@@ -32,7 +31,6 @@ export const PredictionsTabGroup = ({ address }: { address: string }) => {
   const { markets, breakdown } = usePortfolioPositions(address);
   const { data: ztgPrice } = useZtgPrice();
 
-  // Split positions into regular markets and multi-markets
   const { regularMarketPositions, multiMarketPositions } = useMemo(() => {
     if (!markets) {
       return { regularMarketPositions: null, multiMarketPositions: null };
@@ -42,8 +40,6 @@ export const PredictionsTabGroup = ({ address }: { address: string }) => {
     const multi: typeof markets = [];
 
     markets.forEach((position) => {
-      // Check if this is a multi-market position
-      // Multi-markets have isMultiMarket flag set and underlyingMarketIds with > 1 market
       if (
         position.isMultiMarket &&
         position.underlyingMarketIds &&
@@ -51,9 +47,6 @@ export const PredictionsTabGroup = ({ address }: { address: string }) => {
       ) {
         multi.push(position);
       } else {
-        // Regular markets include:
-        // - Non-combinatorial tokens (CategoricalOutcome, ScalarOutcome)
-        // - Single-market combinatorial tokens
         regular.push(position);
       }
     });

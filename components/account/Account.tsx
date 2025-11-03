@@ -1,5 +1,5 @@
 import Modal, { ModalProps } from "components/ui/Modal";
-import { ModalPanel } from "components/ui/ModalPanel";
+import { ModalPanel, ModalHeader, ModalBody } from "components/ui/ModalPanel";
 import { useAccountModals } from "lib/state/account";
 import AccountModalContent from "./AccountModalContent";
 import AccountModalHead from "./AccountModalHead";
@@ -11,22 +11,43 @@ export const Account = () => {
     walletSelectModalOpen,
     closeAccountSelect,
     closeWalletSelect,
+    closeAllModals,
   } = useAccountModals();
+
+  const handleWalletSelectClose = () => {
+    closeAllModals();
+  };
 
   return (
     <>
-      <Modal open={accountSelectModalOpen} onClose={closeAccountSelect}>
-        <ModalPanel maxWidth="md" className="overflow-visible p-5">
-          <div className="mb-4">
-            <AccountModalHead />
-          </div>
-          <AccountModalContent />
-        </ModalPanel>
-      </Modal>
+      {!walletSelectModalOpen && (
+        <Modal
+          key="account-select-modal"
+          open={accountSelectModalOpen}
+          onClose={closeAccountSelect}
+          enableScrollLock={true}
+        >
+          <ModalPanel size="lg" className="flex flex-col">
+            <div className="pt-4 px-6">
+              <AccountModalHead />
+            </div>
+            <ModalBody>
+              <AccountModalContent />
+            </ModalBody>
+          </ModalPanel>
+        </Modal>
+      )}
 
-      <Modal open={walletSelectModalOpen} onClose={closeWalletSelect}>
-        <ModalPanel maxWidth="lg" className="p-6">
-          <WalletSelect />
+      <Modal
+        key="wallet-select-modal"
+        open={walletSelectModalOpen}
+        onClose={handleWalletSelectClose}
+        enableScrollLock={true}
+      >
+        <ModalPanel size="md" className="flex flex-col">
+          <ModalBody>
+            <WalletSelect />
+          </ModalBody>
         </ModalPanel>
       </Modal>
     </>

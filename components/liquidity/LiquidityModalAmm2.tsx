@@ -5,7 +5,7 @@ import {
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import Modal from "components/ui/Modal";
-import { ModalPanel } from "components/ui/ModalPanel";
+import { ModalPanel, ModalTabs, ModalBody } from "components/ui/ModalPanel";
 import Decimal from "decimal.js";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
@@ -53,39 +53,51 @@ const LiquidityModalAmm2 = ({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <ModalPanel maxWidth="md" className="overflow-hidden">
-        <Tab.Group>
-          <Tab.List className="flex h-12 border-b-2 border-white/10 text-center text-sm font-semibold">
-            <Tab className="w-1/2 border-r-2 border-white/10 bg-white/5 text-white/80 transition-all hover:bg-white/10 hover:text-white ui-selected:bg-white/10 ui-selected:font-bold ui-selected:text-white ui-selected:shadow-sm ui-selected:backdrop-blur-sm">
-              Join Pool
-            </Tab>
-            <Tab className="w-1/2 bg-white/5 text-white/80 transition-all hover:bg-white/10 hover:text-white ui-selected:bg-white/10 ui-selected:font-bold ui-selected:text-white ui-selected:shadow-sm ui-selected:backdrop-blur-sm">
-              Exit Pool
-            </Tab>
-          </Tab.List>
+      <ModalPanel size="xl" className="flex flex-col">
+        {/* Added min-w-0 to Tab.Group to ensure width constraints propagate */}
+        <Tab.Group as="div" className="flex flex-col h-full min-w-0 w-full">
+          {/* Standardized tab header */}
+          <ModalTabs
+            tabs={
+              <Tab.List className="flex h-full">
+                <Tab className="flex-1 px-3 py-2 text-sm font-medium transition-all border-r border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white ui-selected:bg-white/10 ui-selected:text-white ui-selected:font-semibold">
+                  Join Pool
+                </Tab>
+                <Tab className="flex-1 px-3 py-2 text-sm font-medium transition-all bg-white/5 text-white/70 hover:bg-white/10 hover:text-white ui-selected:bg-white/10 ui-selected:text-white ui-selected:font-semibold">
+                  Exit Pool
+                </Tab>
+              </Tab.List>
+            }
+          />
 
-          <Tab.Panels className="p-5">
-            <Tab.Panel>
-              {pool && (
-                <JoinPoolFormAmm2
-                  marketId={marketId}
-                  pool={pool}
-                  baseAssetTicker={metadata?.symbol}
-                  onSuccess={onClose}
-                  virtualMarket={virtualMarket}
-                />
-              )}
+          {/* Standardized scrollable content */}
+          {/* Added min-w-0 and w-full to prevent tab switching from resizing modal */}
+          <Tab.Panels className="flex-1 min-w-0 w-full overflow-hidden">
+            <Tab.Panel className="h-full min-w-0 w-full">
+              <ModalBody>
+                {pool && (
+                  <JoinPoolFormAmm2
+                    marketId={marketId}
+                    pool={pool}
+                    baseAssetTicker={metadata?.symbol}
+                    onSuccess={onClose}
+                    virtualMarket={virtualMarket}
+                  />
+                )}
+              </ModalBody>
             </Tab.Panel>
-            <Tab.Panel>
-              {pool && (
-                <ExitPoolFormAmm2
-                  marketId={marketId}
-                  pool={pool}
-                  baseAssetTicker={metadata?.symbol}
-                  onSuccess={onClose}
-                  virtualMarket={virtualMarket}
-                />
-              )}
+            <Tab.Panel className="h-full min-w-0 w-full">
+              <ModalBody>
+                {pool && (
+                  <ExitPoolFormAmm2
+                    marketId={marketId}
+                    pool={pool}
+                    baseAssetTicker={metadata?.symbol}
+                    onSuccess={onClose}
+                    virtualMarket={virtualMarket}
+                  />
+                )}
+              </ModalBody>
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>

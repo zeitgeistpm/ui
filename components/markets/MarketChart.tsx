@@ -1,6 +1,9 @@
 import { MarketStatus, parseAssetId } from "@zeitgeistpm/sdk";
 import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
-import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
+import TimeSeriesChart, {
+  ChartData,
+  ChartSeries,
+} from "components/ui/TimeSeriesChart";
 import { ZTG } from "lib/constants";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -60,15 +63,21 @@ export const CategoricalMarketChart = ({
   );
 
   const chartData = prices
-    ?.filter((data) => data.prices.every((p) => p.price != null))
+    ?.filter((data) => {
+      // Ensure prices exist and are valid numbers
+      return (
+        data.prices &&
+        data.prices.length > 0 &&
+        data.prices.every(
+          (p) => p.price != null && !isNaN(Number(p.price)) && isFinite(Number(p.price)),
+        )
+      );
+    })
     .map((price) => {
       const time = new Date(price.timestamp).getTime();
-
-      // For combinatorial markets, we need to ensure the price data order matches the category order
       let orderedPrices = price.prices;
 
       if (market?.outcomeAssets && market.outcomeAssets.length > 0) {
-        // Check if this is a combinatorial market
         const firstAsset = market.outcomeAssets[0];
         const isCombinatorialMarket =
           typeof firstAsset === "string" &&
@@ -76,8 +85,6 @@ export const CategoricalMarketChart = ({
             firstAsset.startsWith("0x"));
 
         if (isCombinatorialMarket) {
-          // Sort the price data to match market.outcomeAssets order
-          // This ensures v0, v1, etc. correspond to the correct category indices
           orderedPrices = [...price.prices].sort((a, b) => {
             const aIndex = market.outcomeAssets.findIndex(
               (marketAsset: any) => {
@@ -119,15 +126,25 @@ export const CategoricalMarketChart = ({
       }
 
       const assetPrices = orderedPrices.reduce((obj, val, index) => {
+        const priceValue = Number(val.price);
+        // Validate price is a valid number before using it
+        if (isNaN(priceValue) || !isFinite(priceValue)) {
+          return obj;
+        }
         // adjust prices over 1
-        return { ...obj, ["v" + index]: val.price > 1 ? 1 : val.price };
+        return { ...obj, ["v" + index]: priceValue > 1 ? 1 : priceValue };
       }, {});
 
       return {
         t: time,
         ...assetPrices,
       };
-    });
+    })
+    .filter((data) => {
+      // Ensure we have at least one valid price value
+      const keys = Object.keys(data).filter((k) => k !== "t");
+      return keys.length > 0 && keys.some((k) => !isNaN(data[k]));
+    }) as ChartData[] | undefined;
 
   const handleFilterChange = (filter: TimeFilter) => {
     setChartFilter(filter);
@@ -186,21 +203,43 @@ export const ScalarMarketChart = ({
   );
 
   const chartData = prices
-    ?.filter((data) => data.prices.every((p) => p.price != null))
+    ?.filter((data) => {
+      // Ensure we have at least 2 prices (long and short)
+      if (!data.prices || data.prices.length < 2) return false;
+      // Ensure all prices are valid numbers
+      return data.prices.every((p) => p.price != null && !isNaN(Number(p.price)));
+    })
     .map((price) => {
       const time = new Date(price.timestamp).getTime();
       const shortPrice = price.prices[1]?.price;
       const longPrice = price.prices[0]?.price;
+
+      // Validate prices exist and are valid numbers
+      if (
+        shortPrice == null ||
+        longPrice == null ||
+        isNaN(Number(shortPrice)) ||
+        isNaN(Number(longPrice))
+      ) {
+        return null;
+      }
+
       const prediction =
         (Number(upperBound) - Number(lowerBound)) *
-          ((1 - shortPrice + longPrice) / 2) +
-        lowerBound;
+          ((1 - Number(shortPrice) + Number(longPrice)) / 2) +
+        Number(lowerBound);
+
+      // Filter out NaN results
+      if (isNaN(prediction)) {
+        return null;
+      }
 
       return {
         t: time,
         prediction,
       };
-    });
+    })
+    .filter((data) => data != null) as ChartData[] | undefined;
 
   const handleFilterChange = (filter: TimeFilter) => {
     setChartFilter(filter);

@@ -33,14 +33,14 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
           onChange({
             target: {
               name,
-              value: selectedValue as SupportedCurrencyTag | undefined,
+              value: selectedValue as any,
             },
             type: "change",
           });
           onBlur({
             target: {
               name,
-              value: selectedValue as SupportedCurrencyTag | undefined,
+              value: selectedValue as any,
             },
             type: "blur",
           });

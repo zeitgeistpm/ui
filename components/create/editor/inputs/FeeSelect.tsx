@@ -46,20 +46,19 @@ const FeeSelect = ({
         },
       });
     } else if (selectedValue === "") {
-      // Empty selection - pass undefined
       const newValue = undefined;
       onChange({
         type: "change",
         target: {
           name,
-          value: newValue,
+          value: newValue as any,
         },
       });
       onBlur?.({
         type: "blur",
         target: {
           name,
-          value: newValue,
+          value: newValue as any,
         },
       });
     } else {

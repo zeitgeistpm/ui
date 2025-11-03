@@ -149,7 +149,7 @@ export const MarketEditorCompact = () => {
           ref={headerRef}
           className="sticky top-[52px] z-30 backdrop-blur-lg"
         >
-          <div className="container-fluid">
+          <div>
             <div className="py-2">
               <div className="flex items-center gap-4 rounded-lg bg-white/10 p-3 backdrop-blur-md md:p-4">
                 <div className="flex flex-1 items-center">
@@ -220,7 +220,7 @@ export const MarketEditorCompact = () => {
           </div>
         </div>
 
-        <div className="container-fluid">
+        <div>
           <form className="py-6 pb-32">
             {/* STEP 1: QUESTION & ANSWERS */}
             <MarketFormSection
