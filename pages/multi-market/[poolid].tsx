@@ -551,7 +551,7 @@ const MobileContextButtons = ({
                   >
                     <div className="flex items-center gap-2">
                       <div
-                        className="h-3 w-3 rounded-full"
+                        className="h-3 w-3 rounded-full flex-none"
                         style={{ backgroundColor: combo.color }}
                       />
                       <span className="font-medium text-white">{combo.name}</span>
@@ -615,23 +615,58 @@ const MobileContextButtons = ({
       >
         {childMarketResolved && virtualMarket && (
           <div className="p-4 sm:p-6">
-            <h3 className="mb-2 text-lg font-semibold text-white">
-              Partial Redemption Available
-            </h3>
-            <p className="mb-4 text-sm text-white/90">
-              Market 2 ("Then" market) has resolved. You can redeem tokens for
-              Market 1 ("Assume" market) tokens and use those for trading.
+            <div className="mb-3 flex items-center gap-2">
+              <div className="rounded-lg border border-ztg-green-400/40 bg-ztg-green-500/80 px-2 py-0.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm">
+                Partial Redemption
+              </div>
+              <h3 className="text-lg font-semibold text-white">
+                Available
+              </h3>
+            </div>
+            <p className="mb-4 text-sm leading-relaxed text-white/90">
+              <span className="font-semibold text-ztg-green-400">Market 2 ("Then" market)</span> has resolved. You can redeem tokens for{" "}
+              <span className="font-semibold text-blue-400">Market 1 ("Assume" market)</span> tokens and use those for trading.
             </p>
             <div className="space-y-3">
-              {comboMarketData?.outcomeCombinations?.map(
-                (combo: any, index: number) => (
+              {comboMarketData?.outcomeCombinations
+                ?.filter((combo: any) => {
+                  // Get child market (marketIds[1]) resolved outcome
+                  const childMarket = comboMarketData.sourceMarkets.find(
+                    (m: FullMarketFragment) => m.marketId === comboMarketData.marketIds[1]
+                  );
+
+                  if (!childMarket || childMarket.resolvedOutcome === null || childMarket.resolvedOutcome === undefined) {
+                    return false;
+                  }
+
+                  // If child market is scalar, show ALL combinations (blockchain calculates payouts)
+                  const isChildScalar = childMarket.marketType?.scalar !== null;
+                  if (isChildScalar) {
+                    return true;
+                  }
+
+                  // For categorical child markets, filter by resolved outcome
+                  const resolvedOutcomeIndex = typeof childMarket.resolvedOutcome === 'string'
+                    ? parseInt(childMarket.resolvedOutcome)
+                    : childMarket.resolvedOutcome;
+
+                  if (resolvedOutcomeIndex === undefined || resolvedOutcomeIndex === null) {
+                    return false;
+                  }
+
+                  const resolvedOutcomeName = childMarket.categories?.[resolvedOutcomeIndex]?.name;
+
+                  // Only show combinations where market2Outcome matches the resolved outcome
+                  return combo.market2Outcome === resolvedOutcomeName;
+                })
+                .map((combo: any, index: number) => (
                   <div
                     key={index}
                     className="flex items-center justify-between rounded-lg border border-white/10 bg-white/10 p-3 shadow-md backdrop-blur-sm"
                   >
                     <div className="flex items-center gap-2">
                       <div
-                        className="h-3 w-3 rounded-full"
+                        className="h-3 w-3 rounded-full flex-none"
                         style={{ backgroundColor: combo.color }}
                       />
                       <span className="text-sm font-medium text-white">{combo.name}</span>
@@ -644,8 +679,7 @@ const MobileContextButtons = ({
                       parentCollectionIds={parentCollectionIds ?? undefined}
                     />
                   </div>
-                ),
-              )}
+                ))}
             </div>
           </div>
         )}
@@ -1084,7 +1118,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                       >
                         <div className="flex items-center gap-2">
                           <div
-                            className="h-3 w-3 rounded-full"
+                            className="h-3 w-3 rounded-full flex-none"
                             style={{ backgroundColor: combo.color }}
                           />
                           <span className="font-medium text-white">{combo.name}</span>
@@ -1122,39 +1156,74 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                 </div>
               </div>
             ) : childMarketResolved ? (
-              <div className="mb-12 rounded-lg bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4 md:p-5">
-                <h3 className="mb-2 text-lg font-semibold text-white">
-                  Partial Redemption Available
-                </h3>
-                <p className="mb-4 text-sm text-white/90">
-                  Market 2 ("Then" market) has resolved. You can redeem tokens
-                  for Market 1 ("Assume" market) tokens and use those for
-                  trading.
+              <div className="mb-12 rounded-lg border-l-4 border-ztg-green-500/40 bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4 md:p-5">
+                <div className="mb-3 flex items-center gap-2">
+                  <div className="rounded-lg border border-ztg-green-400/40 bg-ztg-green-500/80 px-2 py-0.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm">
+                    Partial Redemption
+                  </div>
+                  <h3 className="text-lg font-semibold text-white">
+                    Available
+                  </h3>
+                </div>
+                <p className="mb-4 text-sm leading-relaxed text-white/90">
+                  <span className="font-semibold text-ztg-green-400">Market 2 ("Then" market)</span> has resolved. You can redeem tokens for{" "}
+                  <span className="font-semibold text-blue-400">Market 1 ("Assume" market)</span> tokens and use those for trading.
                 </p>
                 <div className="space-y-3">
-                  {comboMarketData?.outcomeCombinations?.map((combo, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between rounded-lg border border-white/10 bg-white/10 p-3 shadow-md backdrop-blur-sm"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="h-3 w-3 rounded-full"
-                          style={{ backgroundColor: combo.color }}
+                  {comboMarketData?.outcomeCombinations
+                    ?.filter((combo) => {
+                      // Get child market (marketIds[1]) resolved outcome
+                      const childMarket = comboMarketData.sourceMarkets.find(
+                        (m: FullMarketFragment) => m.marketId === comboMarketData.marketIds[1]
+                      );
+
+                      if (!childMarket || childMarket.resolvedOutcome === null || childMarket.resolvedOutcome === undefined) {
+                        return false;
+                      }
+
+                      // If child market is scalar, show ALL combinations (blockchain calculates payouts)
+                      const isChildScalar = childMarket.marketType?.scalar !== null;
+                      if (isChildScalar) {
+                        return true;
+                      }
+
+                      // For categorical child markets, filter by resolved outcome
+                      const resolvedOutcomeIndex = typeof childMarket.resolvedOutcome === 'string'
+                        ? parseInt(childMarket.resolvedOutcome)
+                        : childMarket.resolvedOutcome;
+
+                      if (resolvedOutcomeIndex === undefined || resolvedOutcomeIndex === null) {
+                        return false;
+                      }
+
+                      const resolvedOutcomeName = childMarket.categories?.[resolvedOutcomeIndex]?.name;
+
+                      // Only show combinations where market2Outcome matches the resolved outcome
+                      return combo.market2Outcome === resolvedOutcomeName;
+                    })
+                    .map((combo, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between rounded-lg border border-white/10 bg-white/10 p-3 shadow-md backdrop-blur-sm"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="h-3 w-3 rounded-full flex-none"
+                            style={{ backgroundColor: combo.color }}
+                          />
+                          <span className="text-sm font-medium text-white">
+                            {combo.name}
+                          </span>
+                        </div>
+                        <RedeemButton
+                          market={virtualMarket}
+                          assetId={combo.assetId as any}
+                          underlyingMarketIds={comboMarketData.marketIds}
+                          isPartialRedemption={true}
+                          parentCollectionIds={parentCollectionIds ?? undefined}
                         />
-                        <span className="text-sm font-medium text-white">
-                          {combo.name}
-                        </span>
                       </div>
-                      <RedeemButton
-                        market={virtualMarket}
-                        assetId={combo.assetId as any}
-                        underlyingMarketIds={comboMarketData.marketIds}
-                        isPartialRedemption={true}
-                        parentCollectionIds={parentCollectionIds ?? undefined}
-                      />
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             ) : (

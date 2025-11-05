@@ -345,7 +345,12 @@ const RedeemButtonByValue = ({
   return (
     <>
       {isSuccess ? (
-        <span className="font-bold text-green-500">Redeemed Tokens!</span>
+        <div className="flex items-center justify-center gap-2 rounded-lg border border-ztg-green-400/40 bg-ztg-green-500/20 px-3 py-1.5 shadow-md backdrop-blur-sm">
+          <div className="h-2 w-2 rounded-full bg-ztg-green-400"></div>
+          <span className="text-sm font-semibold text-ztg-green-400">
+            Redeemed Tokens!
+          </span>
+        </div>
       ) : (
         <SecondaryButton
           onClick={handleClick}
