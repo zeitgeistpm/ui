@@ -2,7 +2,6 @@ import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { parseAssetId } from "@zeitgeistpm/sdk";
 import PoolTable from "components/liquidity/PoolTable";
 import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
-import InfoPopover from "components/ui/InfoPopover";
 import { Loader } from "components/ui/Loader";
 import SecondaryButton from "components/ui/SecondaryButton";
 import TransactionButton from "components/ui/TransactionButton";
@@ -150,27 +149,27 @@ const LiquidityHeader = ({
           label="Fees"
           className="border-b-2 border-white/10 sm:border-b-0 sm:border-r-2 md:mr-6"
         >
-          {swapFee + creatorFee}%
-          <InfoPopover
-            className="ml-2"
-            title={
-              <h3 className="mb-4 flex items-center justify-center gap-2 text-white/90">
-                <AiOutlineInfoCircle />
-                <span className="font-semibold">Swap Fees</span>
-              </h3>
-            }
-          >
-            <div className="mt-2 flex w-full flex-col gap-3">
-              <div className="flex items-center justify-between rounded-lg bg-white/10 p-3 backdrop-blur-sm">
-                <span className="text-sm text-white/70">Creator fee:</span>
-                <span className="font-bold text-white/90">{creatorFee}%</span>
+          <div className="flex items-center gap-2">
+            {swapFee + creatorFee}%
+            <div className="group relative">
+              <div className="cursor-help text-white/70 transition-colors hover:text-white/90">
+                <AiOutlineInfoCircle className="h-3.5 w-3.5" />
               </div>
-              <div className="flex items-center justify-between rounded-lg bg-white/10 p-3 backdrop-blur-sm">
-                <span className="text-sm text-white/70">Pool fee:</span>
-                <span className="font-bold text-white/90">{swapFee}%</span>
+              <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 z-10 mb-1 w-64 whitespace-normal opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="rounded-md bg-gray-900 px-2 py-1 text-xs text-white shadow-lg">
+                  <div className="mb-1 font-medium">Swap Fees</div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span>Creator fee:</span>
+                    <span className="font-semibold">{creatorFee}%</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span>Pool fee:</span>
+                    <span className="font-semibold">{swapFee}%</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </InfoPopover>
+          </div>
         </LiquidityHeaderTextItem>
       </div>
       <div className="flex md:w-full">

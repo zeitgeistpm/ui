@@ -910,7 +910,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           {realAddress &&
             isOrdersLoading === false &&
             (orders?.length ?? 0) > 0 && (
-              <div className="mt-8 rounded-lg bg-white/10 p-4 shadow-lg backdrop-blur-md">
+              <div className="mt-8 rounded-lg bg-white/15 p-4 shadow-lg backdrop-blur-md">
                 <h3 className="mb-4 text-lg font-semibold text-white">
                   My Orders
                 </h3>
@@ -990,7 +990,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           {marketHasPool && (
             <div className="mt-8">
               <div
-                className="mb-3 flex cursor-pointer items-center rounded-lg bg-white/10 px-3 py-2.5 text-sm font-semibold text-white/90 shadow-lg backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-xl sm:mb-4 sm:px-4 sm:py-3 sm:text-base"
+                className="mb-3 flex cursor-pointer items-center rounded-lg bg-white/15 px-3 py-2.5 text-sm font-semibold text-white/90 shadow-lg backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-xl sm:mb-4 sm:px-4 sm:py-3 sm:text-base"
                 onClick={() => toggleLiquiditySection()}
               >
                 <div>Show Liquidity</div>
@@ -1011,7 +1011,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                 leaveTo="transform opacity-0 "
                 show={showLiquidity && Boolean(marketHasPool)}
               >
-                <div className="rounded-lg bg-white/10 p-4 shadow-lg backdrop-blur-md">
+                <div className="rounded-lg bg-white/15 p-4 shadow-lg backdrop-blur-md">
                   <MarketLiquiditySection
                     pool={true}
                     market={virtualMarket}

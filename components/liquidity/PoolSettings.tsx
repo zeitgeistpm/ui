@@ -1,5 +1,5 @@
-import Tooltip from "components/ui/Tooltip";
 import Table, { TableColumn, TableData } from "components/ui/Table";
+import InfoPopover from "components/ui/InfoPopover";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
@@ -11,6 +11,7 @@ import {
 } from "lib/util/weight-math";
 import Image from "next/image";
 import { ChangeEvent, FC, MouseEvent, ReactNode } from "react";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 import Input from "components/ui/Input";
 import { calculatePoolAmounts } from "lib/util/amm2";
 
@@ -216,9 +217,19 @@ const PoolSettings: FC<{
         <div className="mb-3">
           <label className="mb-1.5 flex items-center gap-1 text-xs font-medium text-ztg-primary-900">
             Base Liquidity
-            <Tooltip
-              content={`Amount of ${baseAssetSymbol} provided for trading. Subject to impermanent loss. Excludes bond & tx fees.`}
-            />
+            <InfoPopover
+              className="ml-1"
+              title={
+                <h3 className="mb-4 flex items-center justify-center gap-2 text-white/90">
+                  <AiOutlineInfoCircle />
+                  <span className="font-semibold">Base Liquidity</span>
+                </h3>
+              }
+            >
+              <div className="mt-2 text-sm text-white/90">
+                {`Amount of ${baseAssetSymbol} provided for trading. Subject to impermanent loss. Excludes bond & tx fees.`}
+              </div>
+            </InfoPopover>
           </label>
           <div className="relative w-48">
             <Input

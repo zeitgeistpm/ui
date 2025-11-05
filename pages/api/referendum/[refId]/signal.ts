@@ -5,6 +5,7 @@ import Decimal from "decimal.js";
 import { sanity } from "lib/cms/sanity/index";
 import groq from "groq";
 import https from "https";
+import { ZTG } from "@zeitgeistpm/sdk";
 
 // GraphQL query to find markets and combinatorial pools tagged with OpenGov/referendum
 const referendumMarketsQuery = gql`
@@ -262,7 +263,7 @@ export default async function handler(
         // Calculate spot prices from reserves
         const spotPrices: Decimal[] = [];
         reservesData.assets.forEach((asset) => {
-          const reserve = new Decimal(asset.amountInPool || "0").div(1e10);
+          const reserve = new Decimal(asset.amountInPool || "0").div(ZTG);
           const spotPrice = calculateSpotPrice(reserve, poolLiquidity);
           spotPrices.push(spotPrice);
         });
@@ -315,7 +316,7 @@ export default async function handler(
         const confidence = highestOutcome.probability;
 
         // Generate reasoning based on the outcome probabilities
-        const reasoning = `Based on current market predictions, "${highestOutcome.combination}" has the highest probability at ${Math.round(confidence * 100)}%. This suggests the market believes this is the most likely outcome if the proposal passes.`;
+        const reasoning = `Based on current market predictions, "${highestOutcome.combination}" has the highest probability at ${Math.round(confidence * 100)}%. This suggests the market believes this is the most likely outcome.`;
 
         futarchySignal = {
           welfare_metric: market2.question,

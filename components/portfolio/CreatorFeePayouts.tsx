@@ -51,7 +51,7 @@ const CreatorFeePayouts = ({ address }: { address: string }) => {
           buttonLink="/create"
         />
       ) : (
-        <div className="rounded-lg bg-white/10 p-4 shadow-lg backdrop-blur-md">
+        <div className="rounded-lg bg-white/15 p-4 shadow-lg backdrop-blur-md">
           <div className="overflow-hidden rounded-lg">
             <Table columns={columns} data={tableData} />
           </div>

@@ -74,7 +74,7 @@ const ScalarPriceRange = ({
             style={{
               width: `${averagePosition != null ? averagePosition : 0}px`,
             }}
-            className="absolute bottom-0 left-0 h-full rounded-lg bg-gradient-to-r from-ztg-green-500/60 to-ztg-green-400/70 transition-all"
+            className="absolute bottom-0 left-0 h-full bg-gradient-to-r from-ztg-green-500/60 to-ztg-green-400/70 transition-all"
           ></div>
           <span className="relative z-10 px-2.5 text-xs font-semibold text-white sm:text-sm">
             Prediction: {positionDisplay}

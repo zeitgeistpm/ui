@@ -59,7 +59,7 @@ const createCurrencyFilters = () => {
     type: "currency",
     value: "Ztg",
     label: "ZTG",
-    imageUrl: "/currencies/ztg.jpg",
+    imageUrl: "/currencies/ztg.svg",
   });
 
   return filters;

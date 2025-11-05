@@ -25,7 +25,7 @@ export const SimilarMarketsSection = ({
   return (
     <>
       {!isLoading && recommendedMarkets && (
-        <div className="relative z-[-1] animate-pop-in rounded-lg bg-white/10 p-6 opacity-0 shadow-lg backdrop-blur-md">
+        <div className="relative animate-pop-in rounded-lg bg-white/15 p-6 opacity-0 shadow-lg backdrop-blur-md">
           <h4 className="mb-5 text-lg font-semibold text-white/90">
             {recommendedMarkets.type === "similar"
               ? "Similar Markets"

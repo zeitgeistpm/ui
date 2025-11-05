@@ -187,7 +187,7 @@ const MobileAccountView = ({
       {/* Balances */}
       <div className="flex flex-col gap-2 border-b-2 border-white/10 pb-4">
         <BalanceRow
-          imgPath="/currencies/ztg.jpg"
+          imgPath="/currencies/ztg.svg"
           units={constants?.tokenSymbol}
           balance={activeBalance}
         />

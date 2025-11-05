@@ -429,7 +429,7 @@ const AccountButton: FC<{
                             className={`mb-3 flex flex-col gap-2 border-b-2 border-white/10 px-4 py-3 md:mb-2 md:gap-3 md:px-5 md:py-3`}
                           >
                             <BalanceRow
-                              imgPath="/currencies/ztg.jpg"
+                              imgPath="/currencies/ztg.svg"
                               units={constants?.tokenSymbol}
                               balance={activeBalance}
                             />
