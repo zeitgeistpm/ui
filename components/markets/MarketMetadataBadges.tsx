@@ -115,7 +115,7 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
           />
         }
         label="Currency"
-        tooltip={token}
+        tooltip={token ?? "—"}
         bgColor="bg-white/60"
       />
 
@@ -174,11 +174,6 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
               </div>
             </div>
           </InfoPopover>
-          <div className="pointer-events-none absolute bottom-full right-0 z-10 mb-1 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
-            <div className="rounded-md bg-gray-900 px-2 py-1 text-xs text-white shadow-lg">
-              Trusted Market
-            </div>
-          </div>
         </div>
       )}
 
@@ -222,21 +217,11 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
               )}
             </div>
           </InfoPopover>
-          <div className="pointer-events-none absolute bottom-full right-0 z-10 mb-1 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
-            <div className="rounded-md bg-gray-900 px-2 py-1 text-xs text-white shadow-lg">
-              Market Edited
-            </div>
-          </div>
         </div>
       )}
 
-      {/* Favorite Toggle - Icon Only */}
-      <IconBadge
-        icon={<MarketFavoriteToggle size={14} marketId={market.marketId} />}
-        tooltip="Toggle Favorite"
-        bgColor="bg-pink-100/80"
-        tooltipAlign="right"
-      />
+      {/* Favorite Toggle */}
+      <MarketFavoriteToggle size={14} marketId={market.marketId} />
 
       {promotionData && (
         <MarketPromotionCallout market={market} promotion={promotionData} />

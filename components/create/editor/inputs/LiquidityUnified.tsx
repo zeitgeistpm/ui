@@ -63,10 +63,10 @@ export const LiquidityUnified = ({
       },
     };
 
-  const handleAmountChange = (amount: string) => {
-    if (!numOutcomes || numOutcomes < 2) return;
+  const computeRowsForAmount = (amount: string) => {
+    if (!numOutcomes || numOutcomes < 2) return [];
 
-    const rows = Array.from({ length: numOutcomes }, (_, index) => {
+    return Array.from({ length: numOutcomes }, (_, index) => {
       const outcomeName =
         answers?.type === "categorical"
           ? answers.answers[index] || `Outcome ${index + 1}`
@@ -85,12 +85,10 @@ export const LiquidityUnified = ({
         },
       };
     });
+  };
 
-    onChange({
-      ...base,
-      amount: amount,
-      rows: rows as any,
-    });
+  const handleAmountChange = (amount: string, updatedValue: Liquidity) => {
+    onChange(updatedValue);
   };
 
   const handleFeeChange = (event: FormEvent<Fee | undefined>) => {
@@ -133,27 +131,51 @@ export const LiquidityUnified = ({
           <Input
             type="number"
             inputMode="decimal"
-            value={value?.amount || ""}
+            value={value?.amount ?? ""}
             onChange={(e) => {
               const newAmount = e.target.value;
-              handleAmountChange(newAmount);
+              
+              // Compute rows once for the new amount
+              const updatedRows = computeRowsForAmount(newAmount);
+              const updatedValue: Liquidity = {
+                ...base,
+                amount: newAmount,
+                rows: (updatedRows.length > 0 ? updatedRows : base.rows) as any,
+              };
+
+              // Update both parent and form library with the same value
+              handleAmountChange(newAmount, updatedValue);
               input.onChange({
                 type: "change",
                 target: {
                   name: input.name,
-                  value: {
-                    ...base,
-                    amount: newAmount,
-                  },
+                  value: updatedValue,
                 },
               });
             }}
-            onBlur={() => {
+            onBlur={(e) => {
+              // Derive the current value at blur time to avoid stale render-time base
+              const currentAmount = e.currentTarget.value || "";
+              const currentValue =
+                input.value ??
+                value ?? {
+                  deploy: false,
+                  amount: currentAmount,
+                  rows: [],
+                  swapFee: {
+                    type: "preset" as const,
+                    value: 1,
+                  },
+                };
+              // Ensure we use the current input value for amount
               input.onBlur({
                 type: "blur",
                 target: {
                   name: input.name,
-                  value: base,
+                  value: {
+                    ...currentValue,
+                    amount: currentAmount,
+                  },
                 },
               });
             }}
