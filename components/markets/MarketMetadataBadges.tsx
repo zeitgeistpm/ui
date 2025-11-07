@@ -1,4 +1,4 @@
-import InfoPopover from "components/ui/InfoPopover";
+import { InfoPopover } from "components/ui/InfoPopover";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { MarketPageIndexedData } from "lib/gql/markets";
 import Image from "next/image";
@@ -72,6 +72,24 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
   imagePath,
   promotionData,
 }) => {
+  // Get dispute mechanism description based on type
+  const getDisputeMechanismDescription = (
+    mechanism: MarketPageIndexedData["disputeMechanism"] | null | undefined,
+  ): string => {
+    switch (mechanism) {
+      case "Authorized":
+        return "Disputes are resolved by an authorized party. The authorized resolver has the authority to determine the final outcome of this market.";
+      case "SimpleDisputes":
+        return "Uses a simple community dispute mechanism. Community members can dispute the reported outcome, and disputes are resolved through a straightforward voting process.";
+      case "Court":
+        return "Uses the Court dispute mechanism for resolution.";
+      case null:
+      case undefined:
+      default:
+        return "No dispute mechanism - resolves automatically when reported.";
+    }
+  };
+
   return (
     <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
       <CompactCreatorBadge address={market.creator} />
@@ -142,7 +160,7 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
             <div className="text-left">
               <h4 className="mb-2 text-sm font-bold">Trusted Market</h4>
               <div className="mb-3 text-xs text-gray-500">
-                No dispute mechanism - resolves automatically when reported.
+                {getDisputeMechanismDescription(market.disputeMechanism)}
               </div>
               <div className="flex flex-col gap-2">
                 <div>

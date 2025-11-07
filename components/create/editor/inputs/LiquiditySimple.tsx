@@ -29,12 +29,23 @@ export const LiquiditySimple = ({
   // DISABLED: USDC.wh temporarily disabled
   // const isStablecoin = currency === "USDC.wh";
   const isStablecoin = false; // currency === "USDC.wh";
-  const baseAssetPrice = isStablecoin ? new Decimal(1) : rawAssetPrice;
+  const baseAssetPrice = isStablecoin
+    ? new Decimal(1)
+    : rawAssetPrice
+      ? new Decimal(rawAssetPrice)
+      : undefined;
 
   const numOutcomes =
     answers?.type === "scalar" ? 2 : answers?.answers?.length || 0;
   const defaultAmount = "100";
   const ratio = numOutcomes > 0 ? 1 / numOutcomes : 0;
+
+  const defaultLiquidity: Liquidity = {
+    deploy: value?.deploy ?? false,
+    amount: "0",
+    rows: [],
+    swapFee: value?.swapFee ?? { type: "preset", value: 1 },
+  };
 
   const handleAmountChange = (amount: string) => {
     if (!numOutcomes || numOutcomes < 2) return;
@@ -59,12 +70,13 @@ export const LiquiditySimple = ({
       };
     });
 
+    const base = value ?? defaultLiquidity;
     onChange({
       type: "change",
       target: {
         name,
         value: {
-          ...value!,
+          ...base,
           amount: amount,
           rows: rows as any,
         },
@@ -73,20 +85,21 @@ export const LiquiditySimple = ({
   };
 
   const handleFeeChange = (event: FormEvent<Fee | undefined>) => {
+    const base = value ?? defaultLiquidity;
     onChange({
       type: "change",
       target: {
         name,
         value: {
-          ...value!,
-          swapFee: event.target.value,
+          ...base,
+          swapFee: event.target.value ?? base.swapFee,
         },
       },
     });
   };
 
   const totalValue = value?.amount
-    ? baseAssetPrice?.mul(value.amount)
+    ? baseAssetPrice?.mul(value.amount) ?? new Decimal(0)
     : new Decimal(0);
 
   return (

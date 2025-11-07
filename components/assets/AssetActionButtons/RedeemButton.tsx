@@ -123,13 +123,32 @@ export const RedeemButtonByAssetId = ({
 
       if (tokenIndex === -1) return zero;
 
-      // Get the number of child outcomes from the actual child market
-      // For multi-markets: parent is marketIds[0], child is marketIds[1]
-      const numChildOutcomes =
-        childMarket?.categories?.length ||
-        (childMarket?.marketType?.scalar ? 2 : 0);
+      // Calculate the number of child outcomes with fallbacks:
+      // 1. For multi-markets: use the actual child market data (from underlyingMarketIds[1])
+      // 2. For single-market combos: use market.categories?.length
+      // 3. Calculate from totalCombinations / numParentOutcomes if parentCollectionIds available
+      let numChildOutcomes = 0;
 
-      // Guard against division by zero - if we can't determine child outcomes, return zero
+      if (childMarket) {
+        // Multi-market: use child market's actual outcome count
+        numChildOutcomes =
+          childMarket.categories?.length ||
+          (childMarket.marketType?.scalar ? 2 : 0);
+      } else if (market.categories?.length) {
+        // Single-market combinatorial or fallback: use virtual market's categories
+        numChildOutcomes = market.categories.length;
+      } else if (
+        parentCollectionIds &&
+        parentCollectionIds.length > 0 &&
+        market.outcomeAssets.length > 0
+      ) {
+        // Calculate from total combinations divided by parent outcomes
+        const totalCombinations = market.outcomeAssets.length;
+        const numParentOutcomes = parentCollectionIds.length;
+        numChildOutcomes = Math.floor(totalCombinations / numParentOutcomes);
+      }
+
+      // Guard against division by zero - only return zero as last resort
       if (numChildOutcomes === 0) {
         return zero;
       }
@@ -218,6 +237,7 @@ export const RedeemButtonByAssetId = ({
     childMarket,
     realAddress,
     scalarBounds,
+    parentCollectionIds,
   ]);
 
   const button = (

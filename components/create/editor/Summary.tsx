@@ -97,14 +97,16 @@ export const MarketSummary = ({
                 <span className="font-medium text-ztg-primary-100">
                   {form.currency}
                 </span>
-                <div className="relative h-4 w-4">
-                  <Image
-                    alt="Currency token logo"
-                    fill
-                    sizes="100vw"
-                    src={currencyMetadata?.image!}
-                  />
-                </div>
+                {currencyMetadata?.image && (
+                  <div className="relative h-4 w-4">
+                    <Image
+                      alt="Currency token logo"
+                      fill
+                      sizes="100vw"
+                      src={currencyMetadata.image}
+                    />
+                  </div>
+                )}
               </>
             ) : (
               <span className="text-ztg-primary-200">--</span>
@@ -303,7 +305,10 @@ const AnswersDisplay = ({
                 <div className="flex justify-between">
                   <span className="text-ztg-primary-200">Amount:</span>
                   <span className="font-medium text-ztg-primary-100">
-                    {Number(answerLiquidity?.amount).toFixed(1) ?? "--"}
+                    {answerLiquidity?.amount == null ||
+                    !Number.isFinite(Number(answerLiquidity.amount))
+                      ? "--"
+                      : Number(answerLiquidity.amount).toFixed(1)}
                   </span>
                 </div>
                 <div className="flex justify-between">

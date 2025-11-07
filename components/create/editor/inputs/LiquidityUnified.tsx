@@ -50,6 +50,19 @@ export const LiquidityUnified = ({
     answers?.type === "scalar" ? 2 : answers?.answers?.length || 0;
   const ratio = numOutcomes > 0 ? 1 / numOutcomes : 0;
 
+  // Derive a concrete base object to avoid spreading undefined
+  const base =
+    input.value ??
+    value ?? {
+      deploy: false,
+      amount: "",
+      rows: [],
+      swapFee: {
+        type: "preset" as const,
+        value: 1,
+      },
+    };
+
   const handleAmountChange = (amount: string) => {
     if (!numOutcomes || numOutcomes < 2) return;
 
@@ -74,7 +87,7 @@ export const LiquidityUnified = ({
     });
 
     onChange({
-      ...value!,
+      ...base,
       amount: amount,
       rows: rows as any,
     });
@@ -82,7 +95,7 @@ export const LiquidityUnified = ({
 
   const handleFeeChange = (event: FormEvent<Fee | undefined>) => {
     onChange({
-      ...value!,
+      ...base,
       swapFee: event.target.value,
     });
   };
@@ -129,7 +142,7 @@ export const LiquidityUnified = ({
                 target: {
                   name: input.name,
                   value: {
-                    ...value!,
+                    ...base,
                     amount: newAmount,
                   },
                 },
@@ -140,7 +153,7 @@ export const LiquidityUnified = ({
                 type: "blur",
                 target: {
                   name: input.name,
-                  value: value!,
+                  value: base,
                 },
               });
             }}
