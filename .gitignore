@@ -17,7 +17,12 @@
 
 # misc
 .DS_Store
+<<<<<<< HEAD
 .cursor
+=======
+.cursor/
+.serena/
+>>>>>>> staging
 /reference
 *.pem
 
@@ -49,4 +54,4 @@ yarn-error.log*
 /zeitgeist-sdk
 CLAUDE.md
 /.claude
-/.cursor
+DESIGN_SYSTEM.md
