@@ -50,3 +50,6 @@ yarn-error.log*
 CLAUDE.md
 /.claude
 /.cursor
+.cursor/
+.serena/
+DESIGN_SYSTEM.md
