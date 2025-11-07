@@ -4,7 +4,6 @@ import {
   MetadataStorage,
   NoPool,
   RpcContext,
-  WithPool,
   ZTG,
   swapFeeFromFloat,
 } from "@zeitgeistpm/sdk";
@@ -123,7 +122,7 @@ export const marketFormDataToExtrinsicParams = (
   signer: KeyringPairOrExtSigner,
   chainTime: ChainTime,
   proxy?: KeyringPairOrExtSigner,
-): CreateMarketParams<RpcContext<MetadataStorage>, MetadataStorage> => {
+): CreateMarketParams<RpcContext> => {
   const baseCurrencyMetadata = getMetadataForCurrency(form.currency);
   const timeline = timelineAsBlocks(form, chainTime).unwrap();
 
@@ -200,6 +199,27 @@ export const marketFormDataToExtrinsicParams = (
   };
 
   return params;
+};
+
+// Helper function to prepare combinatorial pool parameters from form data
+export const prepareCombinatorialPoolParams = (
+  form: ValidMarketFormData,
+) => {
+  if (!form.liquidity?.deploy) {
+    return null;
+  }
+
+  const liquidityAmount = new Decimal(form.liquidity.amount).mul(ZTG).toFixed(0);
+  const spotPrices = form.liquidity.rows.map((row) =>
+    new Decimal(row.price.price).mul(ZTG).toFixed(0),
+  );
+  const swapFee = swapFeeFromFloat(form.liquidity.swapFee?.value).toString();
+
+  return {
+    amount: liquidityAmount,
+    spotPrices,
+    swapFee,
+  };
 };
 
 export const durationasBlocks = (duration: Partial<PeriodDurationOption>) => {

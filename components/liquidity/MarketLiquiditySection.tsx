@@ -2,7 +2,6 @@ import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { parseAssetId } from "@zeitgeistpm/sdk";
 import PoolTable from "components/liquidity/PoolTable";
 import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
-import InfoPopover from "components/ui/InfoPopover";
 import { Loader } from "components/ui/Loader";
 import SecondaryButton from "components/ui/SecondaryButton";
 import TransactionButton from "components/ui/TransactionButton";
@@ -23,33 +22,36 @@ import { formatNumberCompact } from "lib/util/format-compact";
 
 export const MarketLiquiditySection = ({
   market,
-  poll,
+  pool,
+  comboMarket,
 }: {
   market: FullMarketFragment;
-  poll?: boolean;
+  pool?: boolean;
+  comboMarket?: boolean;
 }) => {
   const marketHasPool = market.neoPool != null;
 
   return (
     <>
-      {poll && !marketHasPool && (
-        <>
-          <div className="center">
-            <div className="center mr-4 h-12 w-12 bg-white">
-              <Loader variant="Success" loading className="h-12 w-12" />
-            </div>
-            <h4 className="text-gray-400">Waiting for pool to be indexed</h4>
+      {pool && !marketHasPool && (
+        <div className="center rounded-lg bg-white/10 p-8 shadow-sm backdrop-blur-md">
+          <div className="center mr-4 h-12 w-12">
+            <Loader variant="Success" loading className="h-12 w-12" />
           </div>
-        </>
+          <h4 className="font-semibold text-white/90">
+            Waiting for pool to be indexed
+          </h4>
+        </div>
       )}
       {marketHasPool && (
         <>
           <div className="mb-8">
-            <LiquidityHeader market={market} />
+            <LiquidityHeader market={market} comboMarket={comboMarket} />
           </div>
           <PoolTable
-            poolId={market.pool?.poolId}
+            poolId={market.pool?.poolId ?? market.neoPool?.poolId}
             marketId={Number(market.marketId)}
+            marketData={market}
           />
         </>
       )}
@@ -61,12 +63,14 @@ const LiquidityHeaderTextItem: FC<
   PropsWithChildren<{ label: string; className?: string }>
 > = ({ label, children, className = "" }) => {
   return (
-    <div className={"w-full border-gray-300 text-xs " + className}>
+    <div className={"w-full text-sm " + className}>
       <div className="center py-3 sm:flex-col sm:items-center md:items-start md:justify-start">
-        <div className="center mr-2 font-semibold text-sky-600 md:justify-start">
+        <div className="center mr-2 font-semibold text-white/70 md:justify-start">
           {label}
         </div>
-        <div className="center font-semibold sm:text-base">{children}</div>
+        <div className="center font-bold text-white/90 sm:text-lg">
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -86,11 +90,25 @@ const LiquidityHeaderButtonItem: FC<
   );
 };
 
-const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
+const LiquidityHeader = ({
+  market,
+  comboMarket,
+}: {
+  market: FullMarketFragment;
+  comboMarket?: boolean;
+}) => {
   const { pool, neoPool } = market;
 
   const { data: stats } = useMarketsStats([market.marketId]);
-  const liquidity = new Decimal(stats?.[0].liquidity ?? 0);
+  const neoPoolLiquidity =
+    (neoPool as any)?.totalShares ??
+    neoPool?.liquiditySharesManager?.reduce(
+      (total: any, manager: any) => total + Number(manager.stake),
+      0,
+    ) ??
+    neoPool?.liquidityParameter;
+
+  const liquidity = new Decimal(stats?.[0]?.liquidity ?? neoPoolLiquidity);
 
   const swapFee = new Decimal(Number(pool?.swapFee ?? neoPool?.swapFee ?? 0))
     .div(ZTG)
@@ -122,36 +140,36 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
       <div className="mb-8 flex flex-col sm:flex-row md:mb-0 md:w-full">
         <LiquidityHeaderTextItem
           label="Pool Value"
-          className="border-b-1 sm:border-b-0 sm:border-r-1 md:mr-6"
+          className="border-b-2 border-white/10 sm:border-b-0 sm:border-r-2 md:mr-6"
         >
           {formatNumberCompact(liquidity?.div(ZTG).abs().toNumber() ?? 0)}{" "}
           {metadata?.symbol}
         </LiquidityHeaderTextItem>
         <LiquidityHeaderTextItem
           label="Fees"
-          className="border-b-1 sm:border-b-0 sm:border-r-1 md:mr-6 md:border-r-1"
+          className="border-b-2 border-white/10 sm:border-b-0 sm:border-r-2 md:mr-6"
         >
-          {swapFee + creatorFee}%
-          <InfoPopover
-            className="ml-2"
-            title={
-              <h3 className="mb-4 flex items-center justify-center gap-2">
-                <AiOutlineInfoCircle />
-                Swap fees
-              </h3>
-            }
-          >
-            <div className="mt-6 flex w-full flex-col items-center gap-2">
-              <p className="mb-4 flex gap-2 font-light">
-                <span>Creator fee:</span>
-                <span className="font-bold">{creatorFee}%</span>
-              </p>
-              <p className="mb-4 flex gap-2 font-light">
-                <span>Pool fee:</span>
-                <span className="font-bold">{swapFee}%</span>
-              </p>
+          <div className="flex items-center gap-2">
+            {swapFee + creatorFee}%
+            <div className="group relative">
+              <div className="cursor-help text-white/70 transition-colors hover:text-white/90">
+                <AiOutlineInfoCircle className="h-3.5 w-3.5" />
+              </div>
+              <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 z-10 mb-1 w-64 whitespace-normal opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="rounded-md bg-gray-900 px-2 py-1 text-xs text-white shadow-lg">
+                  <div className="mb-1 font-medium">Swap Fees</div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span>Creator fee:</span>
+                    <span className="font-semibold">{creatorFee}%</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span>Pool fee:</span>
+                    <span className="font-semibold">{swapFee}%</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </InfoPopover>
+          </div>
         </LiquidityHeaderTextItem>
       </div>
       <div className="flex md:w-full">
@@ -161,29 +179,31 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           </LiquidityHeaderButtonItem>
         ) : (
           <>
-            <LiquidityHeaderButtonItem className="border-b-1 sm:border-b-0 sm:border-r-1 md:mr-6 md:border-r-1">
-              <BuySellFullSetsButton
-                marketId={market.marketId}
-                buttonClassName="h-8 border-gray-300 border-1 rounded-full text-ztg-10-150 px-1 w-full md:w-auto sm:px-6 mx-auto"
-              />
-            </LiquidityHeaderButtonItem>
             <LiquidityHeaderButtonItem className="lg:-ml-14">
-              <SecondaryButton
+              <button
                 onClick={() => setManageLiquidityOpen(true)}
-                className="max-w-[160px] md:ml-auto md:mr-0"
+                className="max-w-[200px] rounded-lg bg-ztg-green-600/80 px-6 py-2.5 font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg focus:outline-none md:ml-auto md:mr-0"
               >
                 Manage Liquidity
-              </SecondaryButton>
+              </button>
             </LiquidityHeaderButtonItem>
           </>
         )}
       </div>
       {neoPool && (
-        <LiquidityModalAmm2
-          marketId={neoPool.marketId}
-          open={manageLiquidityOpen}
-          onClose={() => setManageLiquidityOpen(false)}
-        />
+        <>
+          {/* TODO: Buy/Sell Full Sets not yet compatible with combinatorial token system */}
+          {/* <LiquidityHeaderButtonItem>
+            <BuySellFullSetsButton marketId={neoPool.marketId} />
+          </LiquidityHeaderButtonItem> */}
+          <LiquidityModalAmm2
+            marketId={comboMarket ? 0 : neoPool.marketId}
+            poolId={neoPool.poolId}
+            virtualMarket={market}
+            open={manageLiquidityOpen}
+            onClose={() => setManageLiquidityOpen(false)}
+          />
+        </>
       )}
     </div>
   );

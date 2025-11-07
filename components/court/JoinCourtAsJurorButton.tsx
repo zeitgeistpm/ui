@@ -127,8 +127,8 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
       </div>
 
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white p-[30px]">
-          <h3 className="mb-4">
+        <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white/10 p-[30px] backdrop-blur-lg">
+          <h3 className="mb-4 text-white/90">
             {connectedParticipant?.type === "Juror"
               ? "Set Personal Stake"
               : "Become a Juror"}
@@ -139,7 +139,7 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
               onSubmit={handleSubmit(onSubmit)}
               className="flex w-full flex-col items-center"
             >
-              <div className="center relative h-[56px] w-full bg-anti-flash-white text-ztg-18-150 font-normal">
+              <div className="center relative h-[56px] w-full bg-white/10 text-ztg-18-150 font-normal backdrop-blur-sm">
                 <Input
                   type="number"
                   className="w-full bg-transparent !text-center outline-none"
@@ -187,29 +187,29 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
               />
 
               {connectedParticipant?.type === "Juror" && (
-                <div className="relative mb-5 mt-4 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
+                <div className="relative mb-5 mt-4 w-full rounded-lg bg-white/10 p-5 text-sm font-normal text-white/90 backdrop-blur-sm">
                   This will set the new staked amount.
                 </div>
               )}
 
-              <div className="my-[4px] mb-5 h-[16px] text-center text-ztg-12-120 text-vermilion">
+              <div className="my-[4px] mb-5 h-[16px] text-center text-ztg-12-120 text-red-400">
                 <>{formState.errors["amount"]?.message}</>
               </div>
 
               {connectedParticipant?.type === "Delegator" && (
-                <div className="relative mb-5 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
+                <div className="relative mb-5 w-full rounded-lg border-2 border-orange-500/40 bg-orange-900/30 p-5 text-sm font-normal text-white/90 backdrop-blur-sm">
                   You are currently delegating to other jurors. If you join the
                   court as a juror, your delegations will be removed and stake
                   will be moved to your personal stake.
                   <IoIosWarning
                     size={24}
-                    className="absolute left-[50%] top-0 translate-x-[-50%] translate-y-[-50%] text-orange-700"
+                    className="absolute left-[50%] top-0 translate-x-[-50%] translate-y-[-50%] text-orange-400"
                   />
                 </div>
               )}
 
-              <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
-                <span className="ml-1 text-black">
+              <div className="center mb-[10px] text-ztg-12-120 font-normal text-white/70">
+                <span className="ml-1">
                   Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0}{" "}
                   {fee?.symbol}
                 </span>

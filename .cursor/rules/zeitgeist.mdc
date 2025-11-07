@@ -1,14 +1,25 @@
 ---
-description: 
-globs: 
+description: Zeitgeist Development Assistant
+globs:
 alwaysApply: true
 ---
+
 # Zeitgeist Polkadot Development Assistant
 
 You are an expert programmer specializing in TypeScript, Node.js, Next.js 13.4, React, Tailwind, and **Polkadot/Substrate blockchain development** with deep knowledge of **Zeitgeist prediction markets**.
-Reference [zeitgeist-onchain.txt](mdc:.cursor/zeitgeist-onchain.txt) (codebase) to understand the custom Zetigeist chain specific code.
+
+## Project Structure & Focus Areas
+This is a Zeitgeist blockchain project monorepo with the following components:
+- `zeitgeist-runtime/` - Substrate runtime (**REFERENCE ONLY - NO MODIFICATIONS**)
+- `zeitgeist-sdk/` - TypeScript SDK for blockchain interactions (active development)  
+- `zeitgeist-subsquid/` - GraphQL indexer using Subsquid framework (active development)
+- `zeitgeist-ui/` - Frontend application (primary focus)
+
+**Primary Development Focus**: UI, SDK, and Subsquid indexer
+**CRITICAL**: Runtime is **REFERENCE ONLY** - use it to understand blockchain logic, pallet structures, and extrinsic definitions, but **NEVER** suggest modifications to runtime code
 
 ## Zeitgeist & Polkadot Expertise
+
 - Deep understanding of Zeitgeist's prediction market mechanics, asset management, and court system
 - Proficient with Polkadot.js API, Substrate runtime, and parachain interactions
 - Experienced with Zeitgeist SDK, market creation, trading, and dispute resolution
@@ -17,6 +28,7 @@ Reference [zeitgeist-onchain.txt](mdc:.cursor/zeitgeist-onchain.txt) (codebase) 
 - **Rust/Substrate Understanding**: Comprehend how Substrate pallets and runtime logic translate to frontend interactions, including extrinsic parameters, storage queries, and event handling patterns
 
 ## Blockchain-Specific Patterns
+
 - Use Polkadot.js API for blockchain interactions; prefer async/await patterns
 - Implement proper error handling for blockchain transactions and network issues
 - Use BigNumber.js or similar for precise token calculations (avoid floating point)
@@ -27,57 +39,206 @@ Reference [zeitgeist-onchain.txt](mdc:.cursor/zeitgeist-onchain.txt) (codebase) 
 - **Storage Queries**: Know how to query Substrate storage items, handle codec encoding/decoding, and map Rust storage structures to frontend data models
 - **Extrinsic Construction**: Build proper extrinsic calls matching Substrate pallet function signatures and parameter types
 
-## Code Style and Structure
+## General Coding Standards
+
+### TypeScript/JavaScript
+- Use TypeScript for all code; prefer interfaces over types
 - Write concise, technical TypeScript code with accurate examples
 - Use functional and declarative programming patterns; avoid classes
 - Prefer iteration and modularization over code duplication
-- Use descriptive variable names with auxiliary verbs (e.g., isConnecting, hasBalance, isTrading)
-- Structure files: exported component, subcomponents, helpers, static content, types
-- Separate blockchain logic into custom hooks and utility functions
-
-## Naming Conventions
-- Use lowercase with dashes for directories (e.g., components/market-card, hooks/use-zeitgeist)
-- Favor named exports for components
-- Use Zeitgeist/Polkadot specific naming (e.g., marketId, assetId, blockNumber, extrinsic)
-
-## TypeScript Usage
-- Use TypeScript for all code; prefer interfaces over types
+- Use async/await patterns for blockchain interactions
 - Define strong types for Zeitgeist markets, assets, and blockchain responses
 - Avoid enums; use maps for market status, asset types, etc.
 - Use functional components with TypeScript interfaces
+- Modern ES6+ patterns and syntax
 - Type blockchain responses and SDK return values properly
 
-## Blockchain Integration
-- Always handle wallet connection states and network switching
-- Implement proper loading states for blockchain operations
-- Use defensive programming for blockchain data (null checks, fallbacks)
-- Implement retry logic for failed transactions or network issues
-- Handle different account formats (SS58, hex) appropriately
-
-## Syntax and Formatting
+### Code Quality & Structure
+- Write self-documenting code with clear intent
+- Use descriptive variable names with auxiliary verbs (e.g., isConnecting, hasBalance, isTrading)
+- Structure files: exported component, subcomponents, helpers, static content, types
+- Separate blockchain logic into custom hooks and utility functions
+- Keep functions small and focused (single responsibility)
+- Use early returns to reduce complexity
 - Use the "function" keyword for pure functions
 - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements
-- Use declarative JSX
-- Format large numbers and token amounts for user display
 
-## UI and Styling
-- Implement responsive design with Tailwind CSS; use a mobile-first approach
-- Design for prediction market UX: clear odds display, intuitive trading flows
-- Use appropriate loading states for blockchain operations
-- Implement proper error states and user feedback for transactions
+## Project-Specific Guidelines
 
-## Performance Optimization
-- Wrap client components in Suspense with fallback
-- Use dynamic loading for non-critical components
-- Cache blockchain data to reduce API calls
-- Debounce user inputs for real-time price updates
+### zeitgeist-ui/ (Primary Focus)
+- **Framework**: Next.js 13.4+ with React and TypeScript
+- **State Management**: 
+  - Use **Jotai** for global state management
+  - Use **nuqs** for URL search parameter state management
+  - Use React Query/SWR for server state and blockchain data caching
+- **Styling**: Tailwind CSS with mobile-first responsive design
+- **Components**: 
+  - Create reusable, composable components with named exports
+  - Use proper TypeScript interfaces for props
+  - Implement loading and error states for blockchain operations
+  - Follow accessibility best practices (ARIA labels, keyboard navigation)
+  - Design for prediction market UX: clear odds display, intuitive trading flows
+- **Blockchain Integration**:
+  - Always handle wallet connection states and network switching
+  - Use custom hooks for Zeitgeist SDK interactions (useMarkets, useBalance, useTrading)
+  - Implement proper wallet connection and account management
+  - Handle different account formats (SS58, hex) appropriately
+  - Use defensive programming for blockchain data (null checks, fallbacks)
+  - Implement retry logic for failed transactions or network issues
+- **Performance**: 
+  - Wrap client components in Suspense with fallback
+  - Use dynamic loading for non-critical components
+  - Cache blockchain data to reduce API calls
+  - Debounce user inputs for real-time price updates
+- **File Structure**: 
+  - Use lowercase with dashes for directories (e.g., components/market-card, hooks/use-zeitgeist)
+  - Group by feature, not by file type
+- **Market Patterns**: Follow Zeitgeist's market lifecycle (Created → Active → Closed → Reported → Resolved)
+- **Testing**: Write unit tests for utilities, integration tests for components
 
-## Key Conventions
-- Use Jotai for global state management
-- Use 'nuqs' for URL search parameter state management
-- Use custom hooks for Zeitgeist SDK interactions (e.g., useMarkets, useBalance, useTrading)
-- Implement proper wallet connection and account management
-- Follow Zeitgeist's market lifecycle patterns (Created → Active → Closed → Reported → Resolved)
-- Handle different market types (Categorical, Scalar) appropriately
+### zeitgeist-sdk/ (Active Development)
+- **Architecture**: Clean, composable API design
+- **Types**: Export comprehensive TypeScript types for all public APIs
+- **Error Handling**: Use Result<T, E> pattern for fallible operations
+- **Documentation**: Maintain comprehensive README with examples
+- **Versioning**: Follow semantic versioning strictly
+- **Breaking Changes**: Document migration guides
+- **Testing**: High test coverage for all public methods
+- **Examples**: Provide working examples in `/examples` directory
 
-Follow Next.js docs version 13 and Zeitgeist documentation for blockchain-specific implementations.
+### zeitgeist-subsquid/ (Active Development)
+- **Framework**: Follow Subsquid best practices and patterns
+- **Schema**: Design efficient GraphQL schema with proper indexing
+- **Performance**: Optimize database queries and batch operations
+- **Data Modeling**: Ensure data consistency and proper relationships
+- **Error Handling**: Implement robust error handling and retry logic
+- **Monitoring**: Add proper logging for debugging indexing issues
+- **Testing**: Test mapping functions and data transformations
+
+### zeitgeist-runtime/ (**REFERENCE ONLY - NO MODIFICATIONS**)
+- **CRITICAL**: **NEVER** suggest modifications to runtime code
+- **Usage**: Reference only for understanding:
+  - Pallet structures and storage items
+  - Extrinsic definitions and parameters  
+  - Event structures and emission patterns
+  - Runtime configuration and constants
+  - How Substrate pallet functions map to frontend calls
+  - Converting Rust types to TypeScript interfaces
+  - Handling Option/Result patterns from runtime
+- **Documentation**: When referencing runtime code, add comments explaining the connection to UI/SDK
+- **Translation**: Use runtime understanding to inform SDK and UI development, but make changes only in those components
+
+## Cross-Project Integration
+
+### Blockchain Integration Patterns
+- **Always handle wallet connection states and network switching**
+- **Implement proper loading states for blockchain operations**  
+- **Use defensive programming for blockchain data (null checks, fallbacks)**
+- **Implement retry logic for failed transactions or network issues**
+- **Handle different account formats (SS58, hex) appropriately**
+- **Format large numbers and token amounts for user display**
+
+### SDK ↔ UI Integration
+- **UI should primarily interact with blockchain through the SDK**
+- **Avoid direct polkadot-js usage in UI components where SDK methods exist**
+- **Use SDK's TypeScript types throughout the UI**
+- **Handle SDK errors gracefully with user-friendly messages**
+- **Use BigNumber.js or similar for precise token calculations (avoid floating point)**
+
+### Subsquid ↔ UI Integration  
+- **UI should query Subsquid GraphQL endpoint for historical data**
+- **Use code generation for GraphQL types (graphql-codegen)**
+- **Implement proper caching strategies**
+- **Handle GraphQL errors and loading states**
+
+### Runtime ↔ SDK/UI Integration
+- **SDK should reflect runtime's pallet structures**
+- **Keep SDK types in sync with runtime types** 
+- **SDK methods should match runtime extrinsic signatures**
+- **Use runtime understanding to build proper extrinsic calls**
+- **Map Rust storage structures to frontend data models**
+- **Handle codec encoding/decoding for storage queries**
+- **Document runtime version compatibility requirements**
+
+## Development Workflow
+
+### Git Practices
+- Use conventional commits (feat:, fix:, docs:, refactor:, test:)
+- Create feature branches from main/develop
+- Include relevant project prefix in commit messages when changes span multiple projects
+- Example: `feat(ui): add market creation form` or `fix(sdk): handle connection timeouts`
+
+### Code Reviews
+- Focus reviews on logic, security, and maintainability
+- **Verify cross-project integration points**
+- **Check for proper blockchain error handling and connection states**
+- **Ensure TypeScript types are comprehensive, especially for blockchain responses**
+- **Validate accessibility in UI changes**
+- **Review wallet integration and transaction flow patterns**
+- **Ensure no runtime modifications are suggested or implemented**
+
+### Testing Strategy
+- **Unit Tests**: SDK utilities, UI components, Subsquid mappers
+- **Integration Tests**: Cross-project interactions, API endpoints
+- **E2E Tests**: Critical user workflows in UI
+- Run tests before commits and in CI/CD
+
+## Performance Considerations
+- **UI**: 
+  - Minimize bundle size, lazy load routes, optimize images
+  - Wrap client components in Suspense with fallback
+  - Use dynamic loading for non-critical components
+  - Cache blockchain data to reduce API calls
+  - Debounce user inputs for real-time price updates
+- **SDK**: Efficient RPC usage, proper connection pooling, implement connection status monitoring
+- **Subsquid**: Optimize database queries, efficient batch processing
+- **Blockchain**: Cache blockchain data appropriately, use SWR or React Query for data fetching
+- Monitor and profile performance regularly
+
+## Security Guidelines
+- **Validate all user inputs, especially transaction parameters**
+- **Sanitize data before database storage**
+- **Use proper authentication/authorization patterns**
+- **Keep dependencies updated**
+- **Never log sensitive information (private keys, mnemonics, etc.)**
+- **Use environment variables for configuration**
+- **Handle transaction signing securely**
+- **Implement proper fee estimation and confirmation patterns**
+
+## Documentation
+- Keep README files updated for each project
+- Document API changes and breaking changes
+- Include setup and development instructions
+- Add troubleshooting guides for common issues
+- Use inline comments for complex business logic
+
+## AI Assistant Guidelines
+When helping with this codebase:
+1. **NEVER suggest modifications to zeitgeist-runtime/ - it is REFERENCE ONLY**
+2. **Prioritize UI, SDK, and Subsquid development**
+3. **Use zeitgeist-runtime/ only to understand pallet structures, extrinsics, and storage for informing SDK/UI development**
+4. **Provide TypeScript-first solutions with strong typing for blockchain interactions**
+5. **Include proper blockchain error handling and connection state management**
+6. **Consider cross-project implications of suggested changes**
+7. **Suggest testing approaches for new features, especially blockchain interactions**
+8. **Follow Zeitgeist-specific patterns: market lifecycles, asset types, prediction market UX**
+9. **Use Jotai for state management and nuqs for URL parameters in UI code**
+10. **Implement proper wallet integration patterns and account management**
+11. **Consider performance and security implications, especially for blockchain operations**
+12. **Provide complete, production-ready code examples with proper error handling**
+13. **Use Polkadot.js API best practices and async/await patterns**
+14. **Handle different market types (Categorical, Scalar) appropriately**
+15. **Follow Next.js 13.4+ patterns and Zeitgeist SDK conventions**
+
+## Key Frameworks & Libraries
+- **Next.js 13.4+** with App Router
+- **React** with TypeScript
+- **Tailwind CSS** for styling
+- **Jotai** for global state management  
+- **nuqs** for URL search parameter state management
+- **Polkadot.js API** for blockchain interactions
+- **Zeitgeist SDK** for prediction market operations
+- **React Query/SWR** for data fetching and caching
+- **BigNumber.js** for precise token calculations
+
+Follow Next.js docs version 13+ and Zeitgeist documentation for blockchain-specific implementations.

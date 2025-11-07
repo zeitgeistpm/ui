@@ -4,20 +4,21 @@ const AccountModalHead = () => {
   const accountModals = useAccountModals();
 
   const switchExtension = () => {
+    // openWalletSelect now handles closing account select atomically
     accountModals.openWalletSelect();
   };
 
   return (
-    <div className="flex flex-row justify-between">
-      <div className="text-lg font-bold">Account</div>
-      <div
-        className="cursor-pointer rounded-lg border-2 border-gray-300 px-1 hover:border-gray-400"
+    <div className="flex flex-row items-center justify-between">
+      <h3 className="text-lg font-bold text-white">Account</h3>
+      <button
+        className="cursor-pointer rounded-md border-2 border-white/10 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/20"
         onClick={() => {
           switchExtension();
         }}
       >
         Switch wallet extension
-      </div>
+      </button>
     </div>
   );
 };

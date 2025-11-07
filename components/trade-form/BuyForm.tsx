@@ -9,6 +9,7 @@ import {
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
+import GlassSlider from "components/ui/GlassSlider";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
 import {
@@ -36,21 +37,35 @@ import { formatNumberCompact } from "lib/util/format-compact";
 import { selectOrdersForMarketBuy } from "lib/util/order-selection";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { perbillToNumber } from "lib/util/perbill-to-number";
-import { useEffect, useMemo, useState } from "react";
+import { max } from "moment";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
+import { isCombinatorialToken } from "lib/types/combinatorial";
+import { sortAssetsByMarketOrder } from "lib/util/sort-assets-by-market";
+import { CombinatorialToken } from "lib/types/combinatorial";
 
 const BuyForm = ({
   marketId,
+  poolData,
   initialAsset,
   onSuccess,
+  filteredAssets,
+  outcomeCombinations,
 }: {
   marketId: number;
-  initialAsset?: MarketOutcomeAssetId;
+  poolData?: any;
+  initialAsset?: MarketOutcomeAssetId | CombinatorialToken;
   onSuccess: (
     data: ISubmittableResult,
-    outcomeAsset: MarketOutcomeAssetId,
+    outcomeAsset: MarketOutcomeAssetId | CombinatorialToken,
     amountIn: Decimal,
   ) => void;
+  filteredAssets?: (MarketOutcomeAssetId | CombinatorialToken)[];
+  outcomeCombinations?: Array<{
+    assetId: CombinatorialToken;
+    name: string;
+    color: string;
+  }>;
 }) => {
   const { data: constants } = useChainConstants();
   const {
@@ -61,91 +76,175 @@ const BuyForm = ({
     watch,
     setValue,
     trigger,
+    reset,
   } = useForm({
     reValidateMode: "onChange",
     mode: "onChange",
+    defaultValues: {
+      amount: 0,
+      percentage: "0",
+    },
   });
+
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
-  const { data: market } = useMarket({
-    marketId,
-  });
+  const percentageValue = watch("percentage");
+  const isUpdatingRef = useRef(false);
+  const { data: market } = useMarket(poolData ? undefined : { marketId });
+
   const wallet = useWallet();
-  const baseAsset = parseAssetIdString(market?.baseAsset);
+  const baseAsset = poolData
+    ? parseAssetIdString("ZTG")
+    : parseAssetIdString(market?.baseAsset);
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
-  const { data: pool } = useAmm2Pool(marketId);
+  const firstAssetString = market?.outcomeAssets[0];
+  let parsedFirstAsset;
+  let isFirstCombi = false;
+
+  try {
+    parsedFirstAsset = JSON.parse(firstAssetString || "{}");
+    isFirstCombi = isCombinatorialToken(parsedFirstAsset);
+  } catch {
+    parsedFirstAsset = parseAssetIdString(firstAssetString);
+    isFirstCombi = isCombinatorialToken(parsedFirstAsset);
+  }
+
+  const poolId =
+    poolData?.poolId || (isFirstCombi ? market?.neoPool?.poolId : undefined);
+
+  const useAmm2PoolMarketId = poolData?.poolId ? 0 : marketId;
+  const useAmm2PoolPoolId = poolId ?? null;
+
+  const { data: pool } = useAmm2Pool(useAmm2PoolMarketId, useAmm2PoolPoolId);
+
+  const [sellAssets, setSellAssets] = useState<CombinatorialToken[]>([]);
+
   const { data: orders } = useOrders({
     marketId_eq: marketId,
     status_eq: OrderStatus.Placed,
   });
 
-  const swapFee = pool?.swapFee.div(ZTG);
-  const creatorFee = new Decimal(perbillToNumber(market?.creatorFee ?? 0));
+  const swapFee = poolData
+    ? new Decimal(poolData.swapFee || 0).div(ZTG)
+    : pool?.swapFee.div(ZTG);
+  const creatorFee = poolData
+    ? new Decimal(0)
+    : new Decimal(perbillToNumber(market?.creatorFee ?? 0));
 
-  const outcomeAssets = market?.outcomeAssets.map(
-    (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
-  );
+  const outcomeAssets = (() => {
+    if (filteredAssets) {
+      return sortAssetsByMarketOrder(filteredAssets, market?.outcomeAssets);
+    }
+
+    if (poolData?.assetIds) {
+      return sortAssetsByMarketOrder(poolData.assetIds, market?.outcomeAssets);
+    }
+
+    if (pool?.assetIds) {
+      const assets = pool.assetIds.map((assetIdString) =>
+        isCombinatorialToken(assetIdString)
+          ? assetIdString
+          : (parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId),
+      );
+      return sortAssetsByMarketOrder(assets, market?.outcomeAssets);
+    }
+
+    return undefined;
+  })();
+
   const [selectedAsset, setSelectedAsset] = useState<
-    MarketOutcomeAssetId | undefined
-  >(initialAsset ?? outcomeAssets?.[0]);
+    MarketOutcomeAssetId | CombinatorialToken | undefined
+  >(initialAsset);
 
-  const formAmount = getValues("amount");
+  const { data: selectedAssetBalance } = useBalance(
+    wallet.realAddress,
+    selectedAsset,
+  );
+
+  useEffect(() => {
+    if (isCombinatorialToken(selectedAsset)) {
+      const getAllOtherAssets = (selectedAsset: CombinatorialToken) => {
+        const allAssets = poolData?.assetIds || pool?.assetIds || [];
+        return allAssets.filter(
+          (assetId) =>
+            isCombinatorialToken(assetId) &&
+            JSON.stringify(assetId) !== JSON.stringify(selectedAsset),
+        );
+      };
+      setSellAssets(getAllOtherAssets(selectedAsset));
+    }
+  }, [selectedAsset, pool?.assetIds, poolData?.assetIds]);
+
+  useEffect(() => {
+    if (!selectedAsset && outcomeAssets?.[0]) {
+      setSelectedAsset(outcomeAssets[0]);
+    }
+  }, [outcomeAssets, selectedAsset]);
+
+  const formAmount = watch("amount");
 
   const amountIn = new Decimal(
-    formAmount && formAmount !== "" ? formAmount : 0,
+    formAmount && formAmount !== 0 ? formAmount : 0,
   ).mul(ZTG);
-  const assetReserve =
-    pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
+
+  const assetReserve = poolData?.reserves
+    ? lookupAssetReserve(poolData.reserves, selectedAsset)
+    : pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
+
+  const effectiveLiquidity = poolData
+    ? new Decimal(poolData.liquidity)
+    : pool?.liquidity;
 
   const validBuy = useMemo(() => {
     return (
       assetReserve &&
-      pool.liquidity &&
+      effectiveLiquidity &&
       swapFee &&
       isValidBuyAmount(
         assetReserve,
         amountIn,
-        pool.liquidity,
+        effectiveLiquidity,
         swapFee,
         creatorFee,
       )
     );
-  }, [assetReserve, pool?.liquidity, amountIn]);
+  }, [assetReserve, effectiveLiquidity, amountIn]);
 
   const maxAmountIn = useMemo(() => {
     return (
       assetReserve &&
-      pool &&
-      approximateMaxAmountInForBuy(assetReserve, pool.liquidity)
+      effectiveLiquidity &&
+      approximateMaxAmountInForBuy(assetReserve, effectiveLiquidity)
     );
-  }, [assetReserve, pool?.liquidity]);
+  }, [assetReserve, effectiveLiquidity]);
 
   const { amountOut, spotPrice, newSpotPrice, priceImpact, maxProfit } =
     useMemo(() => {
       const amountOut =
-        assetReserve && pool.liquidity && swapFee
+        assetReserve && effectiveLiquidity && swapFee
           ? calculateSwapAmountOutForBuy(
               assetReserve,
               amountIn,
-              pool.liquidity,
+              effectiveLiquidity,
               swapFee,
               creatorFee,
             )
           : new Decimal(0);
 
       const spotPrice =
-        assetReserve && calculateSpotPrice(assetReserve, pool?.liquidity);
+        assetReserve &&
+        effectiveLiquidity &&
+        calculateSpotPrice(assetReserve, effectiveLiquidity);
 
       const newSpotPrice =
-        pool?.liquidity &&
+        effectiveLiquidity &&
         assetReserve &&
         swapFee &&
         calculateSpotPriceAfterBuy(
           assetReserve,
-          pool.liquidity,
+          effectiveLiquidity,
           amountOut,
           amountIn,
           swapFee,
@@ -165,19 +264,24 @@ const BuyForm = ({
         priceImpact,
         maxProfit,
       };
-    }, [amountIn, pool?.liquidity, assetReserve]);
+    }, [amountIn, effectiveLiquidity, assetReserve]);
 
   const { isLoading, send, fee } = useExtrinsic(
     () => {
       const amount = getValues("amount");
+      const effectivePoolId = poolData?.poolId || pool?.poolId;
+      const assetCount = poolData?.assetIds?.length || pool?.assetIds?.length;
+
       if (
         !isRpcSdk(sdk) ||
+        !effectivePoolId ||
         !amount ||
-        amount === "" ||
-        market?.categories?.length == null ||
+        amount === 0 ||
+        assetCount == null ||
         !selectedAsset ||
         !newSpotPrice ||
-        !orders
+        !orders ||
+        (isCombinatorialToken(selectedAsset) && sellAssets.length === 0)
       ) {
         return;
       }
@@ -185,7 +289,6 @@ const BuyForm = ({
 
       const maxPrice = newSpotPrice.plus(DEFAULT_SLIPPAGE_PERCENTAGE / 100); // adjust by slippage
       const approxOutcomeAmount = amountDecimal.mul(maxPrice); // this will be slightly higher than the expect amount out and therefore may pick up extra order suggestions
-
       const selectedOrders = selectOrdersForMarketBuy(
         maxPrice,
         orders
@@ -199,21 +302,36 @@ const BuyForm = ({
         approxOutcomeAmount.abs().mul(ZTG),
       );
 
-      return sdk.api.tx.hybridRouter.buy(
-        marketId,
-        market?.categories?.length,
-        selectedAsset,
-        amountDecimal.toFixed(0),
-        maxPrice.mul(ZTG).toFixed(0),
-        selectedOrders.map(({ id }) => id),
-        "ImmediateOrCancel",
-      );
+      if (!isCombinatorialToken(selectedAsset)) {
+        return sdk.api.tx.neoSwaps.buy(
+          effectivePoolId,
+          assetCount,
+          selectedAsset,
+          new Decimal(amount).mul(ZTG).toFixed(0),
+          maxPrice.mul(ZTG).toFixed(0),
+          // selectedOrders.map(({ id }) => id),
+          // "ImmediateOrCancel",
+        );
+      } else if (isCombinatorialToken(selectedAsset)) {
+        return sdk.api.tx.neoSwaps.comboBuy(
+          effectivePoolId,
+          assetCount,
+          [selectedAsset],
+          sellAssets,
+          amountDecimal.toFixed(0),
+          maxPrice.mul(ZTG).toFixed(0),
+          // selectedOrders.map(({ id }) => id),
+          // "ImmediateOrCancel",
+        );
+      }
     },
     {
       onSuccess: (data) => {
         notificationStore.pushNotification(`Successfully traded`, {
           type: "Success",
+          lifetime: 5,
         });
+        reset();
         onSuccess(data, selectedAsset!, amountIn);
       },
     },
@@ -229,38 +347,51 @@ const BuyForm = ({
 
       if (
         !changedByUser ||
+        isUpdatingRef.current ||
         !maxSpendableBalance ||
         maxSpendableBalance.eq(0) ||
         !maxAmountIn
       )
         return;
 
-      if (name === "percentage") {
-        const max = maxSpendableBalance.greaterThan(maxAmountIn)
-          ? maxAmountIn
-          : maxSpendableBalance;
-        setValue(
-          "amount",
-          Number(
-            max
-              .mul(value.percentage)
-              .abs()
-              .div(100)
-              .div(ZTG)
-              .toFixed(3, Decimal.ROUND_DOWN),
-          ),
-        );
-      } else if (name === "amount" && value.amount !== "") {
-        setValue(
-          "percentage",
-          new Decimal(value.amount)
-            .mul(ZTG)
-            .div(maxSpendableBalance)
-            .mul(100)
-            .toString(),
-        );
+      isUpdatingRef.current = true;
+
+      try {
+        if (name === "percentage" && value.percentage != null) {
+          const max = maxSpendableBalance.greaterThan(maxAmountIn)
+            ? maxAmountIn
+            : maxSpendableBalance;
+          setValue(
+            "amount",
+            Number(
+              max
+                .mul(value.percentage)
+                .abs()
+                .div(100)
+                .div(ZTG)
+                .toFixed(3, Decimal.ROUND_DOWN),
+            ),
+          );
+        } else if (name === "amount") {
+          // Handle amount changes - convert to number and validate
+          const amountValue = Number(value.amount);
+          if (!isNaN(amountValue) && amountValue > 0) {
+            const max = maxSpendableBalance.greaterThan(maxAmountIn)
+              ? maxAmountIn
+              : maxSpendableBalance;
+            setValue(
+              "percentage",
+              new Decimal(amountValue).mul(ZTG).div(max).mul(100).toString(),
+            );
+          } else {
+            // Reset percentage to 0 when input is cleared or invalid
+            setValue("percentage", "0");
+          }
+        }
+        trigger("amount");
+      } finally {
+        isUpdatingRef.current = false;
       }
-      trigger("amount");
     });
     return () => subscription.unsubscribe();
   }, [watch, maxSpendableBalance, maxAmountIn]);
@@ -268,38 +399,38 @@ const BuyForm = ({
   const onSubmit = () => {
     send();
   };
+
   return (
-    <div className="flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
+    <div className="flex w-full flex-col items-center gap-6 px-2 text-ztg-18-150 font-semibold text-white md:px-0">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex w-full flex-col items-center gap-y-4"
       >
-        <div className="flex w-full items-center justify-center rounded-md p-2">
-          <div className="mr-4 font-mono">
-            {amountOut.div(ZTG).abs().toFixed(3)}
-          </div>
-          <div>
-            {market && selectedAsset && (
+        <div className="flex w-full items-center gap-3 md:gap-4">
+          {(market || poolData) && selectedAsset && (
+            <div className="flex-1">
               <MarketContextActionOutcomeSelector
-                market={market}
+                market={market ?? undefined}
                 selected={selectedAsset}
                 options={outcomeAssets}
+                outcomeCombinations={outcomeCombinations}
                 onChange={(assetId) => {
                   setSelectedAsset(assetId);
                   trigger();
                 }}
               />
-            )}
+            </div>
+          )}
+          <div className="flex h-[56px] flex-1 items-center justify-center rounded-lg border border-white/10 bg-white/10 px-4 text-xl font-bold text-white shadow-lg shadow-black/20 backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/15">
+            {amountOut.div(ZTG).abs().toFixed(3)}
           </div>
         </div>
-        <div className="text-sm">For</div>
-        <div className="center relative h-[56px] w-full rounded-md bg-white text-ztg-18-150 font-normal">
+        <div className="relative w-full">
           <Input
             type="number"
-            className="w-full bg-transparent font-mono outline-none"
+            className="h-[56px] w-full rounded-lg border border-white/10 bg-white/10 px-4 text-center text-xl font-bold text-white shadow-lg shadow-black/20 backdrop-blur-sm transition-all placeholder:text-white/50 focus:border-ztg-green-500/40 focus:bg-white/15 focus:shadow-lg focus:shadow-ztg-green-500/10 focus:outline-none"
             step="any"
             {...register("amount", {
-              value: 0,
               required: {
                 value: true,
                 message: "Value is required",
@@ -321,30 +452,42 @@ const BuyForm = ({
               },
             })}
           />
-          <div className="absolute right-0 mr-[10px]">{baseSymbol}</div>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 font-medium text-white/90">
+            {baseSymbol}
+          </div>
         </div>
-        <input
+        <GlassSlider
           className="mb-[10px] mt-[30px] w-full"
-          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value={percentageValue}
           disabled={
             !maxSpendableBalance || maxSpendableBalance.lessThanOrEqualTo(0)
           }
-          {...register("percentage", { value: "0" })}
+          {...register("percentage")}
         />
-        <div className="mb-[10px] flex w-full flex-col items-center gap-2 text-xs font-normal text-sky-600 ">
-          <div className="h-[16px] text-xs text-vermilion">
-            <>{formState.errors["amount"]?.message}</>
+        <div className="mb-4 flex w-full flex-col items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-4 text-sm font-medium shadow-md shadow-black/10 backdrop-blur-sm">
+          <div className="h-4 text-xs font-semibold text-ztg-red-400">
+            {formState.errors["amount"]?.message?.toString()}
           </div>
           <div className="flex w-full justify-between">
-            <div>Max profit:</div>
-            <div className="text-black">
+            <div className="text-white/80">Max profit:</div>
+            <div className="font-semibold text-white">
               {maxProfit.div(ZTG).toFixed(2)} {baseSymbol}
             </div>
           </div>
           <div className="flex w-full justify-between">
-            <div>Price after trade:</div>
-            <div className="text-black">
+            <div className="text-white/80">Price after trade:</div>
+            <div className="font-semibold text-white">
               {newSpotPrice?.toFixed(2)} ({priceImpact?.toFixed(2)}%)
+            </div>
+          </div>
+          <div className="flex w-full justify-between">
+            <div className="text-white/80">Current shares:</div>
+            <div className="font-semibold text-white">
+              {selectedAssetBalance?.div(ZTG).toFixed(3, Decimal.ROUND_DOWN) ??
+                "0.000"}
             </div>
           </div>
         </div>

@@ -49,6 +49,8 @@ export const useMarketsByIds = (marketQueries?: UseMarketFilter[]) => {
     {
       keepPreviousData: true,
       enabled: Boolean(sdk && marketQueries && isIndexedSdk(sdk)),
+      staleTime: 30000, // Data fresh for 30 seconds
+      cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
       onSuccess(data) {
         data?.forEach((market) => {
           queryClient.setQueryData(

@@ -1,5 +1,4 @@
 import { FC, PropsWithChildren, useRef, useState } from "react";
-import { useResizeDetector } from "react-resize-detector";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 
@@ -38,36 +37,17 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   useSubscribeBlockEvents();
   const [tradeItem, setTradeItem] = useState<TradeItem | null>(null);
 
-  const {
-    width,
-    height,
-    ref: mainRef,
-  } = useResizeDetector({ refreshMode: "debounce", refreshRate: 50 });
-
   const contentRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div
-      className={`relative min-h-screen justify-evenly ${
-        greyBackgroundPageRoutes.includes(router.pathname) ||
-        router.pathname.match("topics")
-          ? "bg-light-gray"
-          : ""
-      }`}
-    >
+    <div className="relative flex min-h-screen w-full max-w-full flex-col overflow-x-hidden bg-ztg-primary-500">
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
-        <div ref={contentRef} className={`flex-grow`}>
+        <div ref={contentRef} className="flex flex-1 flex-col">
           <TopBar />
-          <main
-            className="container-fluid mb-12 mt-16"
-            ref={mainRef}
-            style={{ minHeight: "calc(100vh - 300px)" }}
-          >
-            <div
-              className={`w-full ${
-                ["/", "/markets"].includes(router.pathname) ? "pt-0" : "pt-2"
-              }`}
-            >
+          {/* Add space for fixed TopBar - accounts for filter bar on markets pages */}
+          <main className="main-content w-full flex-1">
+            {/* Content wrapper with consistent padding - matches TopBar container-fluid alignment */}
+            <div className="container-fluid w-full py-4">
               {process.env.NEXT_PUBLIC_MIGRATION_IN_PROGRESS === "true" ? (
                 <div className="flex h-[800px] w-full flex-col items-center justify-center ">
                   <div className="text-[24px] font-bold">
@@ -97,7 +77,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
       </TradeItemContext.Provider>
       <Account />
       <Onboarding />
-      {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" && <GrillChat />}
+      {/* {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" && <GrillChat />} */}
     </div>
   );
 };

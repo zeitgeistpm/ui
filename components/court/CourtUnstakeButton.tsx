@@ -75,7 +75,7 @@ const CourtUnstakeButton = ({ className }: { className?: string }) => {
             </div>
           </div>
           <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold">
-            <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
+            <div className="center mb-[10px] text-ztg-12-120 font-normal text-ztg-primary-600">
               <span className="ml-1 text-black">
                 Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0}{" "}
                 {fee?.symbol}

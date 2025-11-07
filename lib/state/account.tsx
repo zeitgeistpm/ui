@@ -1,4 +1,5 @@
 import { atom, useAtom } from "jotai";
+import { useMemo } from "react";
 import { useDisclaimer } from "./disclaimer";
 
 const accountsAtom = atom({
@@ -13,26 +14,41 @@ export const useAccountModals = () => {
     setState({ ...state, walletSelectModalOpen: true });
   });
 
-  return {
-    ...state,
-    openAccountSelect: () => {
-      setState({
-        ...state,
-        accountSelectModalOpen: true,
-      });
-    },
-    openWalletSelect: () => {
-      if (disclaimerAccepted) {
-        setState({ ...state, walletSelectModalOpen: true });
-      } else {
-        showDisclaimer();
-      }
-    },
-    closeAccountSelect: () => {
-      setState({ ...state, accountSelectModalOpen: false });
-    },
-    closeWalletSelect: () => {
-      setState({ ...state, walletSelectModalOpen: false });
-    },
-  };
+  return useMemo(
+    () => ({
+      ...state,
+      openAccountSelect: () => {
+        setState((prev) => ({
+          ...prev,
+          accountSelectModalOpen: true,
+        }));
+      },
+      openWalletSelect: () => {
+        if (disclaimerAccepted) {
+          // When opening wallet select, ensure account select is closed
+          setState((prev) => ({
+            ...prev,
+            accountSelectModalOpen: false,
+            walletSelectModalOpen: true,
+          }));
+        } else {
+          showDisclaimer();
+        }
+      },
+      closeAccountSelect: () => {
+        setState((prev) => ({ ...prev, accountSelectModalOpen: false }));
+      },
+      closeWalletSelect: () => {
+        setState((prev) => ({ ...prev, walletSelectModalOpen: false }));
+      },
+      closeAllModals: () => {
+        setState((prev) => ({
+          ...prev,
+          accountSelectModalOpen: false,
+          walletSelectModalOpen: false,
+        }));
+      },
+    }),
+    [state, disclaimerAccepted, showDisclaimer],
+  );
 };

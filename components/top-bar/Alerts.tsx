@@ -12,11 +12,18 @@ import {
 } from "lib/state/alerts";
 import { useWallet } from "lib/state/wallet";
 import { useRouter } from "next/router";
-import { Fragment, PropsWithChildren, useEffect, useState } from "react";
+import {
+  Fragment,
+  PropsWithChildren,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import { AiOutlineEye, AiOutlineFileAdd } from "react-icons/ai";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { LuClipboardCheck, LuVote } from "react-icons/lu";
+import { alertsButtonRef } from "./alertsRef";
 
 export const Alerts = () => {
   const wallet = useWallet();
@@ -25,6 +32,7 @@ export const Alerts = () => {
   const hasNotifications = alerts.length > 0;
 
   const [hoveringMenu, setHoveringMenu] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const mouseEnterMenuHandler = () => {
     setHoveringMenu(true);
@@ -33,21 +41,34 @@ export const Alerts = () => {
     setHoveringMenu(false);
   };
 
+  // Set the ref so AccountButton can trigger it
+  useEffect(() => {
+    if (buttonRef.current) {
+      alertsButtonRef.current = buttonRef.current;
+    }
+    return () => {
+      if (alertsButtonRef.current === buttonRef.current) {
+        alertsButtonRef.current = null;
+      }
+    };
+  }, []);
+
   return (
-    <Menu as="div" className="relative z-50">
+    <Menu as="div" className="relative">
       {({ open, close }) => {
         return (
           <>
             <div className="flex gap-2">
               <Menu.Button
+                ref={buttonRef}
                 disabled={alerts.length === 0}
-                className="center relative flex gap-2 font-light text-white"
+                className="center relative flex gap-2 rounded-lg bg-white/10 px-2 py-1 font-light text-white/90 backdrop-blur-sm transition-all hover:bg-white/20"
               >
                 <div
                   className={`transition-all ${
                     hasNotifications
-                      ? "cursor-pointer text-gray-200"
-                      : "text-gray-500"
+                      ? "cursor-pointer text-white"
+                      : "text-white/50"
                   }`}
                 >
                   <IoMdNotificationsOutline
@@ -55,7 +76,7 @@ export const Alerts = () => {
                     size={24}
                   />
                   {hasNotifications && (
-                    <div className="absolute right-0 top-0 h-3 w-3 animate-pulse-scale rounded-full bg-vermilion"></div>
+                    <div className="absolute right-0 top-0 h-3 w-3 animate-pulse-scale rounded-full border-2 border-white/20 bg-ztg-green-500"></div>
                   )}
                 </div>
               </Menu.Button>
@@ -63,7 +84,7 @@ export const Alerts = () => {
 
             <Transition
               as={Fragment}
-              show={open && hoveringMenu}
+              show={open}
               enter="transition-opacity ease-out duration-100"
               enterFrom="transform opacity-0"
               enterTo="transform opacity-1"
@@ -72,19 +93,21 @@ export const Alerts = () => {
               leaveTo="transform opacity-0 "
             >
               <div
-                className="fixed left-0 top-0 z-40 h-screen w-screen bg-black/10 backdrop-blur-sm"
+                className="fixed left-0 top-0 z-[150] h-screen w-screen bg-black/10 backdrop-blur-sm"
                 aria-hidden="true"
+                onClick={close}
               />
             </Transition>
 
             <Transition
               as={Fragment}
+              show={open}
               enter="transition ease-out duration-100"
-              enterFrom="transform -translate-y-2"
-              enterTo="transform translate-y-0 "
-              leave="transition ease-in translate-y-2 duration-75"
-              leaveFrom="transform translate-y-0"
-              leaveTo="transform opacity-0 -translate-y-2"
+              enterFrom="transform -translate-y-2 opacity-0"
+              enterTo="transform translate-y-0 opacity-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="transform translate-y-0 opacity-100"
+              leaveTo="transform -translate-y-2 opacity-0"
             >
               <Menu.Items
                 onMouseEnter={mouseEnterMenuHandler}
@@ -94,20 +117,20 @@ export const Alerts = () => {
                   e.preventDefault();
                 }}
                 className={`
-                  subtle-scroll-bar subtle-scroll-bar-on-hover fixed bottom-0 right-0 top-11 z-50 
-                  mt-6 h-full w-full origin-top-right divide-gray-100 overflow-hidden overflow-y-scroll 
-                  bg-black/20 p-2 py-3 pb-20 focus:outline-none md:absolute md:bottom-auto md:left-auto md:right-0 md:top-auto 
-                  md:mt-6 md:h-auto md:max-h-[664px] md:w-96  
-                  md:rounded-md md:bg-transparent md:px-4 md:pb-0 
+                  subtle-scroll-bar subtle-scroll-bar-on-hover
+                  fixed left-0 right-0 z-[200] h-[calc(100vh-50px)] w-screen overflow-y-auto
+                  bg-ztg-primary-800/95 p-4 pb-20 backdrop-blur-md focus:outline-none
+                  md:left-auto md:right-4 md:h-auto md:max-h-[664px] md:w-96
+                  md:rounded-lg md:bg-white/10 md:p-4 md:pb-4
+                  md:shadow-xl md:backdrop-blur-lg
                 `}
+                style={{
+                  top: "var(--top-bar-height, 50px)",
+                }}
               >
                 {alerts.map((alert) => (
                   <Menu.Item key={alert.id}>
-                    <div
-                      className={`${
-                        !hoveringMenu && "backdrop-blur-lg"
-                      } rounded-lg`}
-                    >
+                    <div className="rounded-lg">
                       {alert.type === "ready-to-report-market" ? (
                         <ReadyToReportMarketAlertItem alert={alert} />
                       ) : alert.type === "market-dispute" ? (
@@ -141,9 +164,9 @@ const AlertCard: React.FC<PropsWithChildren & { onClick?: () => void }> = ({
   children,
   onClick,
 }) => (
-  <div className="mb-2 cursor-pointer rounded-md ring-[#fa8cce] transition-all hover:ring-1 md:hover:scale-105">
+  <div className="mb-3 cursor-pointer rounded-lg transition-all hover:scale-[1.02]">
     <div
-      className={`rounded-md border-1 border-solid border-black/10  bg-white/80 px-4 py-3 transition-all md:bg-white/60 hover:md:bg-white/80`}
+      className={`rounded-lg bg-white/10 px-4 py-3 shadow-sm backdrop-blur-md transition-all hover:bg-white/20 hover:shadow-md`}
       onClick={onClick}
       style={{
         transform: "translate3d(0,0,0)",
@@ -182,13 +205,15 @@ const CourtCaseReadyToSettleItem = ({
               "linear-gradient(131.15deg, rgb(36 104 226 / 22%) 11.02%, rgb(69 83 226 / 60%) 93.27%)",
           }}
         >
-          <LuClipboardCheck size={12} className="text-gray-700" />
+          <LuClipboardCheck size={12} className="text-white/90" />
           Ready to Settle
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="mb-1 text-sm font-medium">{market?.question}</h3>
-        <p className="text-xxs text-gray-500">
+        <h3 className="mb-1 text-sm font-medium text-white/90">
+          {market?.question}
+        </h3>
+        <p className="text-xxs text-white/70">
           This court case can now be settled.
         </p>
       </div>
@@ -223,13 +248,15 @@ const CourtCaseReadyForVoteAlertItem = ({
               "linear-gradient(131.15deg, rgb(135 238 240 / 40%) 11.02%, rgb(157 0 254 / 40%) 93.27%)",
           }}
         >
-          <LuVote size={12} className="text-gray-700" />
+          <LuVote size={12} className="text-white/90" />
           Ready for vote
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="mb-1 text-sm font-medium">{market?.question}</h3>
-        <p className="text-xxs text-gray-500">
+        <h3 className="mb-1 text-sm font-medium text-white/90">
+          {market?.question}
+        </h3>
+        <p className="text-xxs text-white/70">
           You have been drawn as juror for this market and can now vote.
         </p>
       </div>
@@ -264,13 +291,15 @@ const CourtCaseReadyForRevealAlertItem = ({
               "linear-gradient(131.15deg, rgb(135 240 170 / 40%) 11.02%, rgb(204 0 254 / 40%) 93.27%)",
           }}
         >
-          <AiOutlineEye size={12} className="text-gray-700" />
+          <AiOutlineEye size={12} className="text-white/90" />
           Ready to reveal vote
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="mb-1 text-sm  font-medium">{market?.question}</h3>
-        <p className="text-xxs text-gray-500">
+        <h3 className="mb-1 text-sm font-medium text-white/90">
+          {market?.question}
+        </h3>
+        <p className="text-xxs text-white/70">
           You are required to reveal your vote for this court case.
         </p>
       </div>
@@ -303,12 +332,14 @@ const ReadyToReportMarketAlertItem = ({
               "linear-gradient(131.15deg, rgba(240, 206, 135, 0.4) 11.02%, rgba(254, 0, 152, 0.4) 93.27%)",
           }}
         >
-          <AiOutlineFileAdd size={12} className="text-gray-700" />
+          <AiOutlineFileAdd size={12} className="text-white/90" />
           Submit Report
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="text-sm font-medium">{alert.market.question}</h3>
+        <h3 className="text-sm font-medium text-white/90">
+          {alert.market.question}
+        </h3>
       </div>
     </AlertCard>
   );
@@ -340,12 +371,12 @@ const RedeemableMarketAlertItem = ({
               "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgb(142 185 231 / 38%) 93.27%)",
           }}
         >
-          <BiMoneyWithdraw size={12} className="text-gray-600" />
+          <BiMoneyWithdraw size={12} className="text-white/90" />
           Redeemable Tokens
         </div>
       </div>
       <div className="pl-1">
-        <h3 className="text-sm font-medium">
+        <h3 className="text-sm font-medium text-white/90">
           You have {alert.markets.length} redeemable markets.
         </h3>
       </div>

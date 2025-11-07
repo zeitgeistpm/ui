@@ -21,6 +21,7 @@ import { ErrorMessage } from "components/create/editor/ErrorMessage";
 import { LiquidityInput } from "components/create/editor/inputs/Liquidity";
 import { FormEvent } from "components/create/editor/types";
 import { Loader } from "components/ui/Loader";
+import { LuFileWarning } from "react-icons/lu";
 import { getMetadataForCurrencyByAssetId } from "lib/constants/supported-currencies";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
@@ -54,18 +55,21 @@ const PoolDeployer = ({
   } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && liquidity?.amount && liquidity.rows) {
-        const amount = new Decimal(liquidity.amount).mul(ZTG).toFixed(0);
-        return sdk.api.tx.utility.batchAll([
-          sdk.api.tx.predictionMarkets.buyCompleteSet(marketId, amount),
-          sdk.api.tx.neoSwaps.deployPool(
-            marketId,
-            new Decimal(liquidity.amount).mul(ZTG).toFixed(0),
-            liquidity.rows.map((row) =>
-              new Decimal(row.price.price).mul(ZTG).toFixed(0),
-            ),
-            swapFeeFromFloat(liquidity.swapFee?.value).toString(),
+        const liquidityAmount = new Decimal(liquidity.amount)
+          .mul(ZTG)
+          .toFixed(0);
+        const asset_count = liquidity.rows.length;
+
+        return sdk.api.tx.neoSwaps.deployCombinatorialPool(
+          asset_count,
+          [marketId],
+          new Decimal(liquidity.amount).mul(ZTG).toFixed(0),
+          liquidity.rows.map((row) =>
+            new Decimal(row.price.price).mul(ZTG).toFixed(0),
           ),
-        ]);
+          swapFeeFromFloat(liquidity.swapFee?.value).toString(),
+          { total: 16, consumeAll: true },
+        );
       }
     },
     {
@@ -187,21 +191,34 @@ const PoolDeployer = ({
       {isSuccess ? (
         <></>
       ) : liquidity && isLoading ? (
-        <div className="center">
-          <div className="center gap-4 rounded-md bg-slate-50 p-6">
-            <div className="center h-12 w-12 bg-inherit">
+        <div className="flex items-center justify-center py-8">
+          <div className="flex items-center gap-4 rounded-lg bg-white/5 p-6 shadow-md backdrop-blur-sm">
+            <div className="flex h-12 w-12 items-center justify-center">
               <Loader variant="Info" loading className="h-12 w-12" />
             </div>
-            <h4 className="text-gray-400">Deploying pool..</h4>
+            <h4 className="text-sm font-semibold text-white/90">
+              Deploying pool...
+            </h4>
           </div>
         </div>
       ) : poolId == null ? (
         liquidity ? (
-          <div className="my-ztg-20">
+          <div className="space-y-6 py-6">
             <div>
-              <h4 className="center mb-4 mt-10">Deploy Pool</h4>
+              <h4 className="mb-2 text-lg font-bold text-white md:text-xl">
+                Deploy Pool
+              </h4>
+              <p className="text-sm text-white/70">
+                Configure liquidity settings for this market
+              </p>
             </div>
-            <div className="mb-12">
+            <div
+              className={`space-y-4 rounded-lg border-2 bg-white/5 p-4 shadow-md transition-all ${
+                !fieldState.isValid && fieldState.isTouched
+                  ? "border-red-500/60"
+                  : "border-transparent"
+              }`}
+            >
               <LiquidityInput
                 name="poolDeployer"
                 value={liquidity ?? undefined}
@@ -210,24 +227,29 @@ const PoolDeployer = ({
                 fieldState={fieldState}
               />
 
-              <div className="center mt-4 h-6 text-vermilion">
-                <ErrorMessage field={fieldState} />
-              </div>
+              {!fieldState.isValid && fieldState.isTouched && (
+                <div className="flex items-start gap-1.5 text-xs text-red-400">
+                  <LuFileWarning size={14} className="mt-0.5 shrink-0" />
+                  <ErrorMessage field={fieldState} />
+                </div>
+              )}
             </div>
-            <div className="text-center">
+            <div className="flex flex-col items-center gap-4">
               <TransactionButton
-                className="mb-4 ml-ztg-8 w-ztg-266"
+                className="w-full rounded-lg bg-white/10 px-6 py-3 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto md:px-8 md:py-3 md:text-base"
                 onClick={() => deployAmm2Pool()}
                 disabled={!fieldState.isValid || isLoading}
               >
-                Deploy Pool
+                {isLoading ? "Deploying..." : "Deploy Pool"}
               </TransactionButton>
 
-              <div className="ml-[27px] text-ztg-12-150 font-bold text-sky-600">
-                Total Cost:
-                <span className="font-mono">
-                  {" "}
-                  {poolCost} {constants?.tokenSymbol}
+              <div className="text-center">
+                <span className="text-xs font-medium text-white/70">
+                  Total Cost:{" "}
+                </span>
+                <span className="text-sm font-semibold text-white">
+                  {poolCost}{" "}
+                  {currencyMetadata?.name || constants?.tokenSymbol || "ZTG"}
                 </span>
               </div>
             </div>
@@ -235,9 +257,9 @@ const PoolDeployer = ({
         ) : (
           <>
             {market?.status === "Active" && (
-              <div className="center">
+              <div className="flex items-center justify-center py-6">
                 <button
-                  className="my-ztg-20 rounded-ztg-10 border-1 border-sky-600 px-ztg-20 py-ztg-10 text-ztg-16-150 font-bold text-sky-600"
+                  className="rounded-lg border-2 border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20 hover:shadow-lg active:scale-95 md:px-8 md:py-3 md:text-base"
                   data-test="deployLiquidityButton"
                   onClick={handleDeployClick}
                 >

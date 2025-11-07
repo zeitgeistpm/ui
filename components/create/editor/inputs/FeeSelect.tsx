@@ -7,7 +7,8 @@ export type Fee = { type: "preset" | "custom"; value: number };
 export type FeeInputProps = {
   name: string;
   value?: Fee;
-  onChange: (event: FormEvent<Fee>) => void;
+  onChange: (event: FormEvent<Fee | undefined>) => void;
+  onBlur?: (event: FormEvent<Fee | undefined>) => void;
   isValid: boolean;
   presets: Fee[];
   label: string;
@@ -17,24 +18,76 @@ const FeeSelect = ({
   name,
   value,
   onChange,
+  onBlur,
   isValid,
   presets,
   label,
 }: FeeInputProps) => {
-  const handleFeePresetChange = (fee: Fee) => () => {
-    onChange({
-      type: "change",
-      target: {
-        name,
-        value: fee,
-      },
-    });
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = e.target.value;
+    if (selectedValue === "custom") {
+      // Keep current custom value if exists
+      if (value?.type === "custom") {
+        return;
+      }
+      const newValue = { value: 0, type: "custom" as const };
+      onChange({
+        type: "change",
+        target: {
+          name,
+          value: newValue,
+        },
+      });
+      onBlur?.({
+        type: "blur",
+        target: {
+          name,
+          value: newValue,
+        },
+      });
+    } else if (selectedValue === "") {
+      const newValue = undefined;
+      onChange({
+        type: "change",
+        target: {
+          name,
+          value: newValue,
+        },
+      });
+      onBlur?.({
+        type: "blur",
+        target: {
+          name,
+          value: newValue,
+        },
+      });
+    } else {
+      const preset = presets.find((p) => p.value.toString() === selectedValue);
+      if (preset) {
+        onChange({
+          type: "change",
+          target: {
+            name,
+            value: preset,
+          },
+        });
+        onBlur?.({
+          type: "blur",
+          target: {
+            name,
+            value: preset,
+          },
+        });
+      }
+    }
   };
 
-  const handleFeeCustomChange: ChangeEventHandler<HTMLInputElement> = (
+  const handleCustomInputChange: ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
-    const fee = parseFloat(event.target.value);
+    const inputValue = event.target.value;
+    // Allow empty string (blank field) or valid numbers
+    const fee = inputValue === "" ? NaN : parseFloat(inputValue);
     onChange({
       type: "change",
       target: {
@@ -44,36 +97,69 @@ const FeeSelect = ({
     });
   };
 
+  const displayValue =
+    value?.type === "preset"
+      ? value.value.toString()
+      : value?.type === "custom"
+        ? "custom"
+        : "";
+
   return (
     <div className="flex items-center gap-2">
-      {presets.map((preset, index) => (
-        <button
-          key={index}
-          type="button"
-          onClick={handleFeePresetChange(preset)}
-          className={`center active:scale-9 flex rounded-full bg-gray-100 px-6 py-3 transition-all ${
-            value?.type === "preset" &&
-            value?.value === preset.value &&
-            "bg-nyanza-base"
-          }`}
+      <div
+        className={`flex h-12 items-center rounded-lg border-2 border-white/20 bg-white/10 backdrop-blur-sm transition-all hover:border-white/30 ${value?.type === "custom" ? "flex-1" : "w-full"}`}
+      >
+        <select
+          value={displayValue}
+          className="h-full w-full bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50"
+          onChange={handleSelectChange}
         >
-          {preset.value}%
-        </button>
-      ))}
-      <div className="flex h-[50px]">
-        <Input
-          type="number"
-          min={0}
-          className={`w-32 rounded-r-none bg-gray-100 py-3 pl-4 text-right outline-none ${
-            value?.type === "custom" && isValid && "bg-nyanza-base"
-          }`}
-          value={Number(value?.value).toString()}
-          onChange={handleFeeCustomChange}
-        />
-        <div className="center pointer-events-none right-0 h-full rounded-r-md border-2 border-l-0 border-gray-100 bg-white px-4 text-gray-600">
-          {label}
-        </div>
+          <option value="" className="bg-ztg-primary-600 text-white">
+            Select fee
+          </option>
+          {presets.map((preset, index) => (
+            <option
+              key={index}
+              value={preset.value.toString()}
+              className="bg-ztg-primary-600 text-white"
+            >
+              {preset.value}%
+            </option>
+          ))}
+          <option value="custom" className="bg-ztg-primary-600 text-white">
+            Custom
+          </option>
+        </select>
       </div>
+      {value?.type === "custom" && (
+        <div className="flex h-12 flex-1 overflow-hidden rounded-lg bg-white/10 backdrop-blur-sm transition-all">
+          <Input
+            type="number"
+            min={0}
+            step={0.1}
+            className="w-full border-0 bg-transparent px-4 text-right text-sm text-white outline-none placeholder:text-white/50"
+            value={
+              value?.value != null && !isNaN(value.value)
+                ? String(value.value)
+                : ""
+            }
+            onChange={handleCustomInputChange}
+            onBlur={() => {
+              onBlur?.({
+                type: "blur",
+                target: {
+                  name,
+                  value: value,
+                },
+              });
+            }}
+            placeholder="Enter fee"
+          />
+          <div className="flex shrink-0  items-center bg-white/5 px-3 text-xs font-medium text-white/70">
+            {label}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -20,7 +20,6 @@ const Avatar = ({
   if (address === "") {
     return null;
   }
-
   const decodedAddressArray = Array.from(decodeAddress(address));
   const blue = blues[decodedAddressArray[5] % blues.length];
   const red = reds[decodedAddressArray[6] % reds.length];

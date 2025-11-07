@@ -109,14 +109,14 @@ const ScalarReportBox = ({
           />
         </div>
       ) : (
-        <div className="overflow-hidden rounded-md bg-gray-50 sm:flex md:block lg:flex">
+        <div className="overflow-hidden rounded-lg border border-ztg-primary-200/30 bg-ztg-primary-900/50 shadow-md backdrop-blur-md sm:flex md:block lg:flex">
           <Input
             type="number"
             value={scalarReportValue}
             onChange={(e) => handleNumberChange(e.target.value)}
             min={bounds[0].toString()}
             max={bounds[1].toString()}
-            className="w-full !rounded-none p-2 text-right font-mono text-ztg-14-150 outline-none "
+            className="w-full !rounded-none border-0 bg-transparent p-2 text-right font-mono text-ztg-14-150 text-white/90 outline-none focus:bg-transparent focus:ring-0 focus:ring-offset-0"
             onBlur={() => {
               if (
                 scalarReportValue === "" ||
@@ -143,12 +143,12 @@ const ScalarReportBox = ({
             }
           >
             <div
-              className={`flex h-full flex-1 items-center justify-end bg-scalar-bar px-3 py-1 text-sm text-scalar-text transition-all ease-[cubic-bezier(0.95,0.05,0.795,0.035)] sm:justify-center md:justify-end lg:justify-center`}
+              className={`flex h-full flex-1 items-center justify-end border-l border-ztg-green-500/40 bg-ztg-primary-800/40 px-3 py-1 text-sm text-white/90 shadow-sm backdrop-blur-sm transition-all ease-[cubic-bezier(0.95,0.05,0.795,0.035)] sm:justify-center md:justify-end lg:justify-center ${hasExpandedInfo ? "hover:bg-ztg-primary-700/40" : ""}`}
               style={{
                 minWidth: expandedInfoToggled ? digits * 18 : digits * 12,
               }}
             >
-              <div className="flex flex-1 self-start sm:hidden md:flex lg:hidden">
+              <div className="flex flex-1 self-start text-white/80 sm:hidden md:flex lg:hidden">
                 Scalar range:
               </div>
               <div className="whitespace-nowrap">
@@ -169,7 +169,7 @@ const ScalarReportBox = ({
         </div>
       )}
       <TransactionButton
-        className="mt-4 shadow-ztg-2"
+        className="mt-4"
         onClick={handleSignTransaction}
         disabled={reportDisabled}
         loading={isBroadcasting}

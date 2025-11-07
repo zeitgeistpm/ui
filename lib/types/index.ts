@@ -1,6 +1,9 @@
 import { ScalarRangeType } from "@zeitgeistpm/sdk";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
+import { z } from "zod";
+
+export * from "./virtual-market";
 
 export type Primitive = null | number | string | boolean;
 export type JSONObject =
@@ -62,6 +65,12 @@ export const isMarketCategoricalOutcome = (
 export const isMarketScalarOutcome = (val: any): val is MarketScalarOutcome => {
   return val.scalar != null;
 };
+
+export const IOCombinatorialToken = z.object({
+  CombinatorialToken: z.string()
+});
+
+export type CombinatorialToken = z.infer<typeof IOCombinatorialToken>;
 
 export type MarketReport = {
   at: number;

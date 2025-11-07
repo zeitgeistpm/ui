@@ -9,11 +9,24 @@ The Zeitgeist prediction markets platform consists of four main codebases:
 1. **zeitgeist-runtime** - Substrate/Polkadot parachain implementation (Rust)
 2. **zeitgeist-subsquid** - GraphQL indexing layer (TypeScript)
 3. **zeitgeist-sdk** - TypeScript SDK for chain interactions (TypeScript)
-4. **zeitgeist-ui** (current) - Next.js frontend application (TypeScript/React)
+4. **zeitgeist-ui** (current) - Next.js frontend application (TypeScript/React/Next.js 13.4)
 
-All codebases are located in `/Users/robhyrk/Dev/ztg/` as sibling directories.
+All codebases are located within the `/Users/robhyrk/Dev/ztg/` directory as subdirectories.
 
 ## Current UI Codebase (zeitgeist-ui)
+
+## Core Development Philosophy
+**KISS (Keep It Simple, Stupid)**
+Simplicity should be a key goal in design. Choose straightforward solutions over complex ones whenever possible. Simple solutions are easier to understand, maintain, and debug.
+**YAGNI (You Aren't Gonna Need It)**
+Avoid building functionality on speculation. Implement features only when they are needed, not when you anticipate they might be useful in the future. If you don't have 95% condifence on what to build; ask first.
+
+## Code Structure & Modularity
+**File and Function Limits**
+Never create a file longer than 500 lines of code. If approaching this limit, refactor by splitting into modules.
+Functions should be under 50 lines with a single, clear responsibility.
+**Documenation**
+Retrieve documenation for specific tools & libraries using context7 MCP server from `./claude/DOCUMENTION.md`
 
 ### Development Commands
 
@@ -75,6 +88,30 @@ This is a Next.js 13.4 TypeScript application for Zeitgeist prediction markets b
 - Tailwind CSS with mobile-first responsive design
 - Directory naming: lowercase with dashes (market-card, use-zeitgeist)
 
+### Design System
+
+**IMPORTANT**: All UI development must follow the glass morphism design system documented in `/DESIGN_SYSTEM.md`.
+
+**Key Design Principles**:
+- **Glass Morphism**: Translucent backgrounds with backdrop blur for modern, layered interfaces
+- **Sky Color Palette**: Consistent use of sky-50 through sky-950 for all theming
+- **Mobile-First**: Solid backgrounds on mobile (`bg-sky-50`), glass effects on desktop (`bg-white/95 backdrop-blur-lg`)
+- **Consistent Spacing**: Use `container-fluid` for uniform max-width across all pages
+
+**Quick Reference**:
+- Light glass panels: `bg-white/80 backdrop-blur-md border border-sky-200/30 shadow-sm`
+- Dark glass panels: `bg-sky-950/95 backdrop-blur-md border border-white/20`
+- Mobile menus: `bg-sky-50` (solid), positioned `top-[50px]` below TopBar
+- Text colors: `text-sky-900` (primary), `text-sky-700` (secondary)
+- Hover states: `hover:bg-white/80` on light backgrounds
+
+**Before implementing new components**, reference the full design system documentation in `DESIGN_SYSTEM.md` for:
+- Complete component patterns (navigation, menus, cards, timers)
+- Color palette and usage guidelines
+- Responsive breakpoints and mobile patterns
+- Accessibility requirements
+- Common implementation patterns
+
 ### Market Lifecycle
 
 Zeitgeist markets follow the pattern: Created → Active → Closed → Reported → Resolved
@@ -94,7 +131,7 @@ Copy `.env.example` to `.env.local` for required environment variables including
 
 ### 1. Zeitgeist Runtime (zeitgeist-runtime)
 
-**Location**: `/Users/robhyrk/Dev/ztg/zeitgeist-runtime`
+**Location**: `/Users/robhyrk/Dev/ztg/zeitgeist-ui/zeitgeist-runtime`
 
 **Purpose**: Substrate-based Polkadot parachain implementation containing the core blockchain logic for prediction markets.
 
@@ -131,7 +168,7 @@ make try-runtime-upgrade-zeitgeist      # Test runtime upgrades
 
 ### 2. Zeitgeist SDK (zeitgeist-sdk)
 
-**Location**: `/Users/robhyrk/Dev/ztg/zeitgeist-sdk`
+**Location**: `/Users/robhyrk/Dev/ztg/zeitgeist-ui/zeitgeist-sdk`
 
 **Purpose**: TypeScript SDK providing type-safe abstractions for interacting with the Zeitgeist blockchain.
 
@@ -171,7 +208,7 @@ yarn coverage          # Run test coverage
 
 ### 3. Zeitgeist Subsquid (zeitgeist-subsquid)
 
-**Location**: `/Users/robhyrk/Dev/ztg/zeitgeist-subsquid`
+**Location**: `/Users/robhyrk/Dev/ztg/zeitgeist-ui/zeitgeist-subsquid`
 
 **Purpose**: Subsquid-based indexer that processes Zeitgeist blockchain events and provides a GraphQL API for efficient data querying.
 

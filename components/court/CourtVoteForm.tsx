@@ -77,9 +77,9 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
   };
 
   return (
-    <div className="overflow-hidden rounded-xl shadow-lg">
-      <div className="center flex bg-fog-of-war py-3">
-        <h3 className="text-gray-300 text-opacity-50">Vote</h3>
+    <div className="overflow-hidden rounded-xl bg-white/10 shadow-lg backdrop-blur-md">
+      <div className="center flex bg-white/10 py-3 backdrop-blur-sm">
+        <h3 className="text-white">Vote</h3>
       </div>
       <div className="px-2 py-6 text-center">
         <div className="mb-8 mt-6">
@@ -94,9 +94,9 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
           />
         </div>
 
-        <div className="mb-6 w-full rounded-lg bg-provincial-pink p-5 text-sm font-normal">
+        <div className="mb-6 w-full rounded-lg bg-white/10 p-5 text-sm font-normal backdrop-blur-sm">
           <div className="mb-4">
-            <div className="mb-3 text-sm text-gray-700">
+            <div className="mb-3 text-sm text-white/90">
               <div className="mb-3">
                 Your vote is secret and can only be revealed when the vote
                 period ends. For this a secret salt has been generated for you
@@ -127,22 +127,22 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
             Show Details <AiOutlineEye size={12} />
           </div>
           <Modal open={showDetails} onClose={() => setShowDetails(false)}>
-            <Dialog.Panel className="relative w-full max-w-[762px] overflow-hidden rounded-[10px] bg-white">
+            <Dialog.Panel className="relative w-full max-w-[762px] overflow-hidden rounded-[10px] bg-white/10 backdrop-blur-lg">
               <div className="p-6">
-                <h3 className="mb-2 ">Commitment Hash</h3>
-                <p className="mb-4 text-sm">
+                <h3 className="mb-2 text-white">Commitment Hash</h3>
+                <p className="mb-4 text-sm text-white/80">
                   The commitment hash is calculated using a combination of your
                   account, the outcome you are voting for and a salt generated
                   from the secret phrase.
                 </p>
-                <p className="mb-4 text-sm">
+                <p className="mb-4 text-sm text-white/80">
                   This is supplied to the chain instead of the direct outcome
                   when voting, so that the vote is not known to other
                   participants. Yet ensures that when its revealed it can be
                   verified that the committed vote and what was revealed was
                   correct.
                 </p>
-                <code className="mb-4 block text-xs">
+                <code className="mb-4 block text-xs text-white/90">
                   <span>
                     vote_item = VoteItem::Outcome(OutcomeReport::Categorical(
                     {vote?.CategoricalOutcome[1] ?? "null"})) {"->"}{" "}
@@ -165,12 +165,14 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
                   <FaArrowRight size={12} />
                   {commitmentHash && u8aToHex(commitmentHash)}
                 </div>
-                <h3 className="mb-2 text-base">Salt Seed Backup</h3>
-                <p className="mb-3 text-sm">
+                <h3 className="mb-2 text-base text-white">
+                  Salt Seed Backup
+                </h3>
+                <p className="mb-3 text-sm text-white/80">
                   This is the content of the downloadable backup file, and the
                   data used to generate the commitment hash.
                 </p>
-                <pre className="mb-5 text-xs">
+                <pre className="mb-5 text-xs text-white/70">
                   {JSON.stringify(phraseStorage, undefined, 2)}
                 </pre>
               </div>

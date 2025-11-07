@@ -12,6 +12,7 @@ import Decimal from "decimal.js";
 import { environment } from "lib/constants";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { isPresent } from "lib/types";
+import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 
 export const assetUsdPriceRootKey = "asset-usd-price";
 
@@ -49,15 +50,13 @@ export const useAllForeignAssetUsdPrices = (): {
 } => {
   const queries = useQueries({
     queries: Object.keys(FOREIGN_ASSET_METADATA)?.map((foreignAssetId) => {
-      const assetId = parseAssetId({
+      const assetId = parseAssetIdStringWithCombinatorial({
         ForeignAsset: Number(foreignAssetId),
-      }).unwrap();
+      })
       return {
         queryKey: [
           assetUsdPriceRootKey,
-          parseAssetId({ ForeignAsset: Number(foreignAssetId) }).unrightOr(
-            null,
-          ),
+          parseAssetIdStringWithCombinatorial({ ForeignAsset: Number(foreignAssetId) })
         ],
         queryFn: async () => {
           if (IOForeignAssetId.is(assetId)) {
@@ -142,13 +141,18 @@ export const getForeignAssetPriceServerSide = async (
   return new Decimal(json[coinGeckoId]?.usd ?? 0);
 };
 export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
-  const coinGeckoId =
-    FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
+  try {
+    const coinGeckoId =
+      FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
 
-  const response = await fetch(`/api/usd-price?asset=${coinGeckoId}`);
-  const json = await response.json();
+    const response = await fetch(`/api/usd-price?asset=${coinGeckoId}`);
+    const json = await response.json();
 
-  return new Decimal(json.body.price);
+    const price = json?.body?.price;
+    return new Decimal(price ?? 0);
+  } catch (err) {
+    return new Decimal(0);
+  }
 };
 
 const getZTGPrice = async (): Promise<Decimal> => {

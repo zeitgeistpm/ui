@@ -121,53 +121,51 @@ export const CategoricalAnswersInput = ({
     value?.answers?.length < 2 ||
     uniq(value?.answers).length < value?.answers.length;
 
+  // Check if this is Yes/No (disabled with 2 answers)
+  const isYesNo = disabled && value?.answers?.length === 2;
+
   return (
     <div>
-      <div className="mb-2 items-center justify-center md:flex">
-        <div className="flex-1 justify-center md:flex">
-          <DndContext
-            sensors={dragSensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
+      <DndContext
+        sensors={dragSensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <SortableContext
+            items={value?.answers as string[]}
+            strategy={verticalListSortingStrategy}
+            disabled={draggingDisabled}
           >
-            <div>
-              <SortableContext
-                items={value?.answers as string[]}
-                strategy={verticalListSortingStrategy}
-                disabled={draggingDisabled}
-              >
-                {value?.answers.map((answer: string, index: number) => {
-                  return (
-                    <AnswerInput
-                      key={index}
-                      id={answer}
-                      disabled={disabled ?? false}
-                      value={answer}
-                      onChange={handleChange(index, onChange)}
-                      onBlur={handleChange(index, onBlur)}
-                      placeholder={`Answer ${index + 1}`}
-                      onClear={handleClearClick(index)}
-                      draggingDisabled={draggingDisabled || answer === ""}
-                    />
-                  );
-                })}
-              </SortableContext>
-            </div>
-          </DndContext>
-        </div>
-      </div>
+            {value?.answers.map((answer: string, index: number) => {
+              return (
+                <AnswerInput
+                  key={answer}
+                  id={answer}
+                  disabled={disabled ?? false}
+                  value={answer}
+                  onChange={handleChange(index, onChange)}
+                  onBlur={handleChange(index, onBlur)}
+                  placeholder={`Answer ${index + 1}`}
+                  onClear={handleClearClick(index)}
+                  draggingDisabled={draggingDisabled || answer === ""}
+                  isYesNo={isYesNo}
+                />
+              );
+            })}
+          </SortableContext>
 
-      {!disabled && (
-        <div className="center mb-4 flex">
-          <button
-            type="button"
-            className="rounded-full border-2 border-gray-300 px-8 py-4 text-sm transition-all active:scale-95"
-            onClick={handleAddOptionClick}
-          >
-            Add Option
-          </button>
+          {!disabled && (
+            <button
+              type="button"
+              className="rounded-lg bg-white/10 px-4 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20 active:scale-95"
+              onClick={handleAddOptionClick}
+            >
+              + Add Option
+            </button>
+          )}
         </div>
-      )}
+      </DndContext>
     </div>
   );
 };
@@ -181,6 +179,7 @@ const AnswerInput = ({
   onBlur,
   onClear,
   draggingDisabled,
+  isYesNo,
 }: {
   id: string;
   value: string;
@@ -190,6 +189,7 @@ const AnswerInput = ({
   onBlur: (answer: string) => void;
   onClear: () => void;
   draggingDisabled?: boolean;
+  isYesNo?: boolean;
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
@@ -205,14 +205,26 @@ const AnswerInput = ({
     transition,
   };
 
+  // For Yes/No, show as compact chips
+  if (isYesNo) {
+    return (
+      <div
+        style={style}
+        className="rounded-lg bg-white/10 px-4 py-3 text-sm font-semibold text-white shadow-sm backdrop-blur-sm"
+      >
+        {value}
+      </div>
+    );
+  }
+
   return (
     <div
       style={style}
-      className={`relative mb-3 w-full flex-1 rounded-md bg-gray-100 px-5 py-3 md:min-w-[520px] md:max-w-[420px]`}
+      className="group relative flex min-w-[140px] items-center rounded-lg bg-white/10 px-4 py-3 shadow-sm backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/15"
     >
       <Input
         disabled={disabled}
-        className={`!m-0 h-full w-full bg-transparent !p-0 outline-none`}
+        className="!m-0 h-full flex-1 bg-transparent !p-0 pr-16 text-sm text-white outline-none placeholder:text-white/50"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onBlur={(event) => onBlur(event.target.value)}
@@ -221,25 +233,26 @@ const AnswerInput = ({
       />
 
       {!disabled && (
-        <div className="absolute right-8 top-[50%] z-10 flex translate-y-[-50%] gap-2">
+        <div className="absolute right-8 top-[50%] z-10 flex translate-y-[-50%] gap-1 opacity-0 transition-opacity group-hover:opacity-100">
           <button
             type="button"
-            className=" rounded-md bg-white px-2 py-1"
+            className="rounded-md border-2 border-ztg-red-500/60 bg-ztg-red-500/20 px-1.5 py-0.5 text-xs font-medium text-ztg-red-400 transition-all hover:bg-ztg-red-500/30 active:scale-95"
             onClick={onClear}
+            aria-label={value ? `Remove ${value}` : "Remove selection"}
           >
-            remove
+            ✕
           </button>
         </div>
       )}
       <div
-        className={`absolute right-2 top-[50%] z-10 flex translate-y-[-50%] gap-2 transition-opacity duration-300 ${
+        className={`absolute right-2 top-[50%] z-10 flex translate-y-[-50%] gap-2 text-white/60 transition-opacity duration-300 ${
           draggingDisabled && "cursor-not-allowed opacity-25"
         }`}
         ref={setNodeRef}
         {...attributes}
         {...listeners}
       >
-        <MdOutlineDragIndicator />
+        <MdOutlineDragIndicator size={16} />
       </div>
     </div>
   );

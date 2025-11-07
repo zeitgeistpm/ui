@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { MarketOrderByInput, ZeitgeistIndexer } from "@zeitgeistpm/indexer";
+import { MarketOrderByInput, ZeitgeistIndexer, MarketStatus } from "@zeitgeistpm/indexer";
 import { isIndexedSdk } from "@zeitgeistpm/sdk";
 import Fuse from "fuse.js";
 import { isWSX, wsxID } from "lib/constants";
@@ -7,6 +7,7 @@ import { useDebounce } from "use-debounce";
 import { useSdkv2 } from "../useSdkv2";
 
 export const marketSearchKey = "market-search";
+export const activeMarketsKey = "active-markets";
 
 export const useMarketSearch = (searchTerm: string) => {
   const [sdk, id] = useSdkv2();
@@ -30,6 +31,84 @@ export const useMarketSearch = (searchTerm: string) => {
   );
 
   return query;
+};
+
+// New hook for loading active markets without search requirement
+export const useActiveMarkets = () => {
+  const [sdk, id] = useSdkv2();
+
+  const query = useQuery(
+    [id, activeMarketsKey],
+    async () => {
+      if (isIndexedSdk(sdk)) {
+        return loadActiveMarkets(sdk.indexer);
+      }
+      return [];
+    },
+    {
+      enabled: isIndexedSdk(sdk),
+      staleTime: 30_000, // Cache for 30 seconds
+    },
+  );
+
+  return query;
+};
+
+// Combined hook that shows active markets initially, then searches when typing
+export const useMarketSearchWithDefaults = (searchTerm: string) => {
+  const [sdk, id] = useSdkv2();
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
+  
+  // Trim the search term and check if it has meaningful content
+  const trimmedSearchTerm = debouncedSearchTerm?.trim() || "";
+  const hasSearchTerm = trimmedSearchTerm.length > 1;
+  
+  // Use a single query that handles both cases to prevent switching between queries
+  const query = useQuery(
+    [id, activeMarketsKey, hasSearchTerm ? "search" : "default", trimmedSearchTerm],
+    async () => {
+      if (!isIndexedSdk(sdk)) return [];
+      
+      if (hasSearchTerm) {
+        // Search mode
+        return searchMarketsText(sdk.indexer, trimmedSearchTerm);
+      } else {
+        // Default mode - load active markets
+        return loadActiveMarkets(sdk.indexer);
+      }
+    },
+    {
+      enabled: isIndexedSdk(sdk),
+      staleTime: hasSearchTerm ? 10_000 : 30_000, // Different cache times
+      keepPreviousData: true, // This prevents flickering when switching modes
+    },
+  );
+
+  return {
+    data: query.data,
+    isFetching: query.isFetching,
+    isLoading: query.isLoading,
+  };
+};
+
+export const loadActiveMarkets = async (indexer: ZeitgeistIndexer) => {
+  const { markets } = await indexer.markets({
+    where: {
+      AND: [
+        {
+          baseAsset_eq: isWSX ? `{"foreignAsset":${wsxID}}` : undefined,
+          baseAsset_not_eq: !isWSX ? `{"foreignAsset":${wsxID}}` : undefined,
+        },
+        {
+          status_eq: MarketStatus.Active,
+        },
+      ],
+    },
+    order: MarketOrderByInput.IdDesc,
+    limit: 100,
+  });
+
+  return markets;
 };
 
 export const searchMarketsText = async (

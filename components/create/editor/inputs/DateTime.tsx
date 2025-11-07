@@ -13,6 +13,7 @@ export type DateTimePickerProps = {
   onBlur: (event: FormEvent<string>) => void;
   placeholder?: string;
   isValid?: boolean;
+  hasValue?: boolean;
   className?: string;
 };
 
@@ -24,6 +25,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   onBlur,
   placeholder,
   isValid,
+  hasValue,
   className,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -58,12 +60,10 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
     <>
       {isFirefox ? (
         <div
-          className={`center flex overflow-hidden rounded-full bg-gray-100 transition-all ${
-            isValid && "!bg-nyanza-base"
-          } ${className}`}
+          className={`flex h-12 w-full items-center overflow-hidden rounded-lg border-2 border-white/20 bg-white/10 backdrop-blur-sm transition-all hover:border-white/30 ${className}`}
         >
           <Input
-            className="rounded-full bg-transparent px-8 py-3"
+            className="h-full w-full rounded-lg bg-transparent px-4 py-3 text-sm text-white outline-none placeholder:text-white/50"
             ref={inputRef}
             name={name}
             type="datetime-local"
@@ -79,19 +79,17 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       ) : (
         <button
           type="button"
-          className={`center flex rounded-full  bg-gray-100 transition-all active:scale-95  ${
-            isValid && "!bg-nyanza-base"
-          } ${className}`}
+          className={`flex h-12 w-full items-center rounded-lg border-2 border-white/20 bg-white/10 px-4 py-3 text-sm backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/15 active:scale-95 ${className || ""}`}
           onClick={() => {
             inputRef.current?.focus();
             inputRef.current?.showPicker();
           }}
         >
-          <div className="relative px-8 py-3">
-            <div>
+          <div className="relative w-full text-left">
+            <div className="text-sm placeholder:text-white text-white">
               {!value
-                ? placeholder ?? "Set Date"
-                : momentFn(value).format("MMM D, YYYY, h:mm:ss A")}
+                ? (placeholder ?? "Select end date and time")
+                : momentFn(value).format("MMM D, YYYY, h:mm A")}
             </div>
             <Input
               className="absolute -bottom-2 left-0 h-0 w-0 opacity-0"

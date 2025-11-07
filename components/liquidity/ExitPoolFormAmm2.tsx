@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
 import FormTransactionButton from "components/ui/FormTransactionButton";
+import GlassSlider from "components/ui/GlassSlider";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
@@ -11,6 +12,7 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { getPoolIdForTransaction } from "lib/util/get-pool-id";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -19,11 +21,13 @@ const ExitPoolForm = ({
   pool,
   baseAssetTicker,
   onSuccess,
+  virtualMarket,
 }: {
   marketId: number;
   pool: Amm2Pool;
   baseAssetTicker?: string;
   onSuccess?: () => void;
+  virtualMarket?: any;
 }) => {
   const { data: constants } = useChainConstants();
   const {
@@ -38,6 +42,7 @@ const ExitPoolForm = ({
     reValidateMode: "onChange",
     mode: "all",
   });
+  const poolSharesPercentageValue = watch("poolSharesPercentage") || "0";
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
   const { realAddress } = useWallet();
@@ -47,6 +52,7 @@ const ExitPoolForm = ({
   const userOwnershipRatio = userPoolShares?.div(pool.totalShares) ?? 0;
 
   const { data: market } = useMarket({ marketId });
+  const activeMarket = virtualMarket || market;
   const queryClient = useQueryClient();
   const reserves = Array.from(pool.reserves).map((reserve) => reserve[1]);
 
@@ -69,17 +75,6 @@ const ExitPoolForm = ({
       // const feeMultiplier = 1 - constants.swaps.exitFee;
       const feeMultiplier = 1;
 
-      const minAssetsOut = poolAssets.map((assetId, index) => {
-        const assetAmount = formValue[index] ?? 0;
-        return assetAmount === ""
-          ? "0"
-          : new Decimal(assetAmount)
-              .mul(ZTG)
-              .mul(slippageMultiplier)
-              .mul(feeMultiplier)
-              .toFixed(0, Decimal.ROUND_DOWN);
-      });
-
       const poolSharesPercentage: string | undefined =
         formValue["poolSharesPercentage"];
 
@@ -88,12 +83,26 @@ const ExitPoolForm = ({
       const poolSharesAmount = userPoolShares.mul(
         Number(poolSharesPercentage) / 100,
       );
+
+      // Calculate minAssetsOut based on actual shares being burned, not form display values
+      const sharesRatio = poolSharesAmount.div(pool.totalShares);
+
+      const minAssetsOut = reserves.map((reserve) => {
+        return reserve
+          .mul(sharesRatio)
+          .mul(slippageMultiplier)
+          .mul(feeMultiplier)
+          .toFixed(0, Decimal.ROUND_DOWN);
+      });
+
+      const poolIdForTx = getPoolIdForTransaction(pool, marketId);
+
       try {
         return sdk.api.tx.utility.batchAll([
           // shares can't be withdrawn without claiming fees first
-          sdk.api.tx.neoSwaps.withdrawFees(marketId),
+          sdk.api.tx.neoSwaps.withdrawFees(poolIdForTx),
           sdk.api.tx.neoSwaps.exit(
-            marketId,
+            poolIdForTx,
             poolSharesAmount.toFixed(0),
             minAssetsOut,
           ),
@@ -108,6 +117,8 @@ const ExitPoolForm = ({
           type: "Success",
         });
         queryClient.invalidateQueries([id, amm2PoolKey, marketId]);
+        // Invalidate balance queries for all pool assets
+        queryClient.invalidateQueries({ queryKey: [id, "balance"] });
         onSuccess?.();
       },
     },
@@ -178,74 +189,85 @@ const ExitPoolForm = ({
   const onSubmit: SubmitHandler<any> = () => {
     exitPool();
   };
-  return (
-    <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex max-h-[200px] flex-col gap-y-6 overflow-y-auto py-5 md:max-h-[400px]">
-        {market &&
+    return (
+    <form className="flex flex-col gap-y-3 min-w-0 w-full" onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex max-h-[220px] flex-col gap-y-3 overflow-y-auto no-scroll-bar py-2 md:max-h-[350px]">
+        {activeMarket &&
           poolAssets?.map((assetId, index) => {
-            const assetName = lookupAssetMetadata(market, assetId)?.name;
+            const assetName = virtualMarket
+              ? activeMarket.categories?.[index]?.name
+              : lookupAssetMetadata(activeMarket, assetId)?.name;
 
             const poolAssetBalance =
               reserves?.[index]?.div(ZTG) ?? new Decimal(0);
             const userBalanceInPool = poolAssetBalance
               .mul(userOwnershipRatio)
               .toNumber();
+            const hasError = !!formState.errors[index.toString()]?.message;
 
             return (
               <div
                 key={index}
-                className="relative h-[56px] w-full text-ztg-18-150 font-medium"
+                className="relative w-full"
               >
-                <div className="absolute left-[15px] top-[14px] h-full w-[40%] truncate capitalize">
-                  {assetName}
-                </div>
-                <Input
-                  className={`h-[56px] w-full rounded-[5px] bg-anti-flash-white px-[15px] text-right outline-none
+                <div className="relative h-ztg-40">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-[40%] truncate capitalize text-xs leading-tight text-white/90 pointer-events-none">
+                    {assetName}
+                  </div>
+                  <Input
+                    className={`h-ztg-40 w-full rounded-lg border-2 px-3 py-0 text-right text-xs leading-none font-medium text-white shadow-sm backdrop-blur-sm transition-all focus:shadow-md focus:outline-none
               ${
-                formState.errors[index.toString()]?.message
-                  ? "border-2 border-vermilion text-vermilion"
-                  : ""
+                hasError
+                  ? "border-ztg-red-500/60 bg-ztg-red-900/30 text-ztg-red-400 focus:border-ztg-red-500/80"
+                  : "border-white/10 bg-white/10 text-white/90 hover:bg-white/15 focus:border-white/20 focus:bg-white/15 focus:ring-2 focus:ring-white/10"
               }
               `}
-                  key={index}
-                  type="number"
-                  step="any"
-                  {...register(index.toString(), {
-                    value: 0,
-                    required: {
-                      value: true,
-                      message: "Value is required",
-                    },
-                    validate: (value: number) => {
-                      if (value > userBalanceInPool) {
-                        return `Insufficient pool shares. Max amount to withdraw is ${userBalanceInPool.toFixed(
-                          3,
-                        )}`;
-                      } else if (value <= 0) {
-                        return "Value cannot be zero or less";
-                      } else if (
-                        market?.status.toLowerCase() !== "resolved" &&
-                        poolAssetBalance.minus(value).lessThanOrEqualTo(0.01)
-                      ) {
-                        return "Pool cannot be emptied completely before the market resolves";
-                      }
-                    },
-                  })}
-                />
-                <div className="mt-[4px] text-ztg-12-120 text-red-500">
-                  <>{formState.errors[index.toString()]?.message}</>
+                    key={index}
+                    type="number"
+                    step="any"
+                    {...register(index.toString(), {
+                      value: 0,
+                      required: {
+                        value: true,
+                        message: "Value is required",
+                      },
+                      validate: (value: number) => {
+                        if (value > userBalanceInPool) {
+                          return `Insufficient pool shares. Max amount to withdraw is ${userBalanceInPool.toFixed(
+                            3,
+                          )}`;
+                        } else if (value <= 0) {
+                          return "Value cannot be zero or less";
+                        } else if (
+                          activeMarket?.status.toLowerCase() !== "resolved" &&
+                          poolAssetBalance.minus(value).lessThanOrEqualTo(0.01)
+                        ) {
+                          return "Pool cannot be emptied completely before the market resolves";
+                        }
+                      },
+                    })}
+                  />
                 </div>
+                {hasError && (
+                  <div className="mt-1.5 mb-0.5 text-xs md:text-sm font-medium text-ztg-red-400 min-h-[1.25rem]">
+                    {String(formState.errors[index.toString()]?.message || '')}
+                  </div>
+                )}
               </div>
             );
           })}
       </div>
-      <input
-        className="my-[20px]"
-        type="range"
-        {...register("poolSharesPercentage", { min: 0, value: "0" })}
+      <GlassSlider
+        className="w-full"
+        min="0"
+        max="100"
+        step="1"
+        value={poolSharesPercentageValue}
+        {...register("poolSharesPercentage", { min: 0, max: 100, value: "0" })}
       />
       <FormTransactionButton
         loading={isLoading}
+        className="!h-10 !text-sm !font-medium"
         disabled={formState.isValid === false || isLoading}
       >
         Exit Pool

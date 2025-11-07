@@ -1,6 +1,5 @@
-import { Dialog } from "@headlessui/react";
 import Decimal from "decimal.js";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type { ApiPromise } from "@polkadot/api";
 import { AssetId, IOForeignAssetId, ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
@@ -9,6 +8,7 @@ import AssetInput from "components/ui/AssetInput";
 import { AssetOption } from "components/ui/AssetSelect";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
+import { ModalPanel, ModalHeader, ModalBody } from "components/ui/ModalPanel";
 import SecondaryButton from "components/ui/SecondaryButton";
 import {
   FOREIGN_ASSET_METADATA,
@@ -103,14 +103,22 @@ const TransferModal = ({
     return options;
   }, [assetMetadata, isSuccess]);
 
-  const defaultOption = options.find(
-    (opt) => JSON.stringify(opt.value) === JSON.stringify(assetId),
-  );
+  const defaultOption = useMemo(() => {
+    return options.find(
+      (opt) => JSON.stringify(opt.value) === JSON.stringify(assetId),
+    );
+  }, [options, assetId]);
+
+  const defaultValues = useMemo(() => ({
+    asset: { amount: "", assetOption: defaultOption },
+    address: null,
+  }), [defaultOption]);
 
   const {
     control,
     handleSubmit,
     watch,
+    getValues,
     setValue,
     formState: { errors, isValid },
     reset,
@@ -120,7 +128,24 @@ const TransferModal = ({
   }>({
     reValidateMode: "onChange",
     mode: "all",
+    defaultValues,
   });
+
+  // Update form when defaultOption becomes available (only if form value is undefined)
+  // Use getValues instead of watch to avoid triggering re-renders
+  useEffect(() => {
+    if (defaultOption) {
+      const currentValue = getValues("asset");
+      if (!currentValue?.assetOption) {
+        setValue("asset.assetOption", defaultOption, { 
+          shouldValidate: false, 
+          shouldDirty: false,
+          shouldTouch: false,
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultOption?.value ? JSON.stringify(defaultOption.value) : null]);
 
   const asset = watch("asset");
   const isNativeCurrency = !IOForeignAssetId.is(asset?.assetOption?.value);
@@ -153,8 +178,10 @@ const TransferModal = ({
       targetAddress.value,
     );
   }, [
+    sdk,
     wallet.activeAccount,
     asset?.assetOption?.value,
+    asset?.amount,
     targetAddress?.value,
     isValid,
   ]);
@@ -202,110 +229,111 @@ const TransferModal = ({
   };
 
   return (
-    <Dialog.Panel className="w-full max-w-[564px] rounded-[10px] bg-white p-[30px]">
-      <h3 className="mb-5 text-lg font-bold">Transfer</h3>
-      <form className="flex flex-col" onSubmit={handleSubmit(submit)}>
-        <div className="mb-2 flex justify-between text-sm font-semibold">
-          <div>Select Asset and Amount</div>
-          {balance && (
-            <div
-              className="cursor-pointer"
-              onClick={() => {
-                if (!maxAmount) return;
-                setValue(
-                  "asset",
-                  { ...asset, amount: maxAmount },
-                  { shouldValidate: true },
-                );
-              }}
-            >
-              Balance: {formatNumberLocalized(balance?.toNumber())}
-            </div>
-          )}
-        </div>
-        {defaultOption && (
+    <ModalPanel size="md" className="flex flex-col">
+      <ModalHeader title="Transfer" />
+      <ModalBody>
+        <form className="flex flex-col" onSubmit={handleSubmit(submit)}>
+          <div className="mb-3 flex justify-between text-sm font-semibold text-white">
+            <div>Select Asset and Amount</div>
+            {balance && (
+              <div
+                className="cursor-pointer text-white/80 hover:text-white transition-colors"
+                onClick={() => {
+                  if (!maxAmount) return;
+                  setValue(
+                    "asset",
+                    { ...asset, amount: maxAmount },
+                    { shouldValidate: true },
+                  );
+                }}
+              >
+                Balance: {formatNumberLocalized(balance?.toNumber())}
+              </div>
+            )}
+          </div>
           <Controller
             control={control}
             name="asset"
-            defaultValue={{ amount: "", assetOption: defaultOption }}
+            rules={{
+                validate: (v) => {
+                  if (v.amount === "") {
+                    return "Value is required";
+                  }
+                  if (Number(v.amount) <= 0) {
+                    return "Value cannot be zero or less";
+                  }
+                  if (!v.assetOption) {
+                    return "Currency selection missing";
+                  }
+                  if (
+                    new Decimal(maxAmount === "" ? 0 : maxAmount).lessThan(
+                      v.amount,
+                    )
+                  ) {
+                    return "Insufficient balance";
+                  }
+                },
+              }}
+              render={({ field: { onChange, value } }) => {
+                return (
+                  <AssetInput
+                    options={options}
+                    error={errors.asset?.message}
+                    amount={value.amount}
+                    selectedOption={value.assetOption}
+                    onAssetChange={(opt) => {
+                      onChange({ ...value, assetOption: opt });
+                    }}
+                    onAmountChange={(amount) => {
+                      onChange({ ...value, amount });
+                    }}
+                  />
+                );
+              }}
+            />
+          <div className="mb-3 mt-4 text-sm font-semibold text-white">
+            To Address
+          </div>
+          <Controller
+            name="address"
+            control={control}
             rules={{
               validate: (v) => {
-                if (v.amount === "") {
+                if (!v) {
                   return "Value is required";
                 }
-                if (Number(v.amount) <= 0) {
-                  return "Value cannot be zero or less";
-                }
-                if (!v.assetOption) {
-                  return "Currency selection missing";
-                }
-                if (
-                  new Decimal(maxAmount === "" ? 0 : maxAmount).lessThan(
-                    v.amount,
-                  )
-                ) {
-                  return "Insufficient balance";
+                if (!isValidPolkadotAddress(v.value)) {
+                  return "Not a valid address";
                 }
               },
             }}
-            render={({ field: { onChange, value } }) => {
+            render={({ field: { onChange } }) => {
               return (
-                <AssetInput
-                  options={options}
-                  error={errors.asset?.message}
-                  amount={value.amount}
-                  selectedOption={value.assetOption}
-                  onAssetChange={(opt) => {
-                    onChange({ ...value, assetOption: opt });
-                  }}
-                  onAmountChange={(amount) => {
-                    onChange({ ...value, amount });
-                  }}
+                <AddressInput
+                  onChange={(opt) => onChange(opt)}
+                  value={targetAddress}
+                  error={errors.address?.message}
                 />
               );
             }}
           />
-        )}
-        <div className="mb-2 text-sm font-semibold">To Address</div>
-        <Controller
-          name="address"
-          control={control}
-          rules={{
-            validate: (v) => {
-              if (!v) {
-                return "Value is required";
-              }
-              if (!isValidPolkadotAddress(v.value)) {
-                return "Not a valid address";
-              }
-            },
-          }}
-          render={({ field: { onChange } }) => {
-            return (
-              <AddressInput
-                onChange={(opt) => onChange(opt)}
-                value={targetAddress}
-                error={errors.address?.message}
-              />
-            );
-          }}
-        />
-        <div className="mb-3 text-center text-sm">
-          <span className="text-sky-600">
-            Transfer Fee:{" "}
-            {fee
-              ? `${formatNumberCompact(fee.toNumber())} ${feeRaw?.symbol}`
-              : ""}
-          </span>
-        </div>
-        <FormTransactionButton
-          loading={txIsLoading}
-          disabled={!isValid || txIsLoading}
-        >
-          Transfer
-        </FormTransactionButton>
-      </form>
-    </Dialog.Panel>
+          <div className="mb-4 mt-4 text-center text-sm">
+            <span className="text-white/70">
+              Transfer Fee:{" "}
+              {fee
+                ? `${formatNumberCompact(fee.toNumber())} ${feeRaw?.symbol}`
+                : ""}
+            </span>
+          </div>
+          <FormTransactionButton
+            loading={txIsLoading}
+            disabled={!isValid || txIsLoading}
+          >
+            Transfer
+          </FormTransactionButton>
+        </form>
+      </ModalBody>
+    </ModalPanel>
   );
 };
 

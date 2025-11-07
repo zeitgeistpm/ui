@@ -21,53 +21,52 @@ interface InputProps {
 }
 
 const inputClasses =
-  "bg-gray-100 dark:bg-black text-ztg-14-150 w-full rounded-lg h-ztg-40 p-ztg-8  focus:outline-none dark:border-black text-black dark:text-white";
-const invalidClasses = "!border-vermilion !text-vermilion";
+  "bg-white/10 text-ztg-14-150 w-full rounded-lg h-ztg-40 p-ztg-8 focus:outline-none text-white/90 placeholder:text-white/60 backdrop-blur-sm transition-all focus:bg-white/15";
+const invalidClasses = "!border-ztg-red-500 !text-ztg-red-400";
 
-const Input: FC<InputProps & InputHTMLAttributes<HTMLInputElement>> =
-  React.forwardRef<
-    HTMLInputElement,
-    InputProps & InputHTMLAttributes<HTMLInputElement>
-  >(
-    (
-      {
-        placeholder = "",
-        type,
-        onChange,
-        min,
-        max,
-        step,
-        value,
-        className = "",
-        ...restProps
-      },
-      ref,
-    ) => {
-      const { name, ...rest } = restProps;
-
-      return (
-        <input
-          {...rest}
-          ref={ref}
-          name={name}
-          className={`${inputClasses} ${className}`}
-          placeholder={placeholder}
-          type={type}
-          onChange={onChange}
-          onBlur={(e) => {
-            rest.onBlur && rest.onBlur(e);
-          }}
-          min={min}
-          max={max}
-          step={step}
-          value={value}
-          onWheel={(event) => {
-            if (type === "number") event.currentTarget.blur();
-          }}
-        />
-      );
+const Input: any = React.forwardRef<
+  HTMLInputElement,
+  InputProps & InputHTMLAttributes<HTMLInputElement>
+>(
+  (
+    {
+      placeholder = "",
+      type,
+      onChange,
+      min,
+      max,
+      step,
+      value,
+      className = "",
+      ...restProps
     },
-  );
+    ref,
+  ) => {
+    const { name, ...rest } = restProps;
+
+    return (
+      <input
+        {...rest}
+        ref={ref}
+        name={name}
+        className={`${inputClasses} ${className}`}
+        placeholder={placeholder}
+        type={type}
+        onChange={onChange}
+        onBlur={(e) => {
+          rest.onBlur && rest.onBlur(e);
+        }}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onWheel={(event) => {
+          if (type === "number") event.currentTarget.blur();
+        }}
+      />
+    );
+  },
+);
 
 const rdtpInput = (
   props: InputProps & InputHTMLAttributes<HTMLInputElement>,
@@ -76,7 +75,9 @@ const rdtpInput = (
   const { className, ...restProps } = props;
   return (
     <div
-      className={"flex rounded-ztg-5 border-1 border-transparent " + className}
+      className={
+        "flex rounded-ztg-5 bg-white/10 shadow-md backdrop-blur-sm " + className
+      }
     >
       <Input
         {...restProps}
@@ -86,11 +87,11 @@ const rdtpInput = (
         readOnly
       />
       <div
-        className="center h-ztg-40 w-ztg-40 flex-shrink-0 cursor-pointer rounded-r-ztg-5 border-l-1 bg-gray-100 dark:bg-black"
+        className="center h-ztg-40 w-ztg-40 flex-shrink-0 cursor-pointer rounded-r-ztg-5 bg-white/10 shadow-md backdrop-blur-sm transition-all hover:bg-white/20"
         data-test="calendarIcon"
         onClick={openCalendar}
       >
-        <Calendar size={16} className="text-sky-600" />
+        <Calendar size={16} className="text-white/90" />
       </div>
     </div>
   );

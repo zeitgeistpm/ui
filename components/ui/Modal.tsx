@@ -1,30 +1,48 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { ReactNode, Fragment, useEffect } from "react";
+import { ReactNode, Fragment } from "react";
+import { useSimpleScrollLock } from "lib/hooks/useSimpleScrollLock";
+
+export interface ModalProps {
+  children: ReactNode;
+  open: boolean;
+  onClose: () => void;
+  /**
+   * Whether to prevent closing on backdrop click
+   * @default false
+   */
+  closeOnBackdropClick?: boolean;
+  /**
+   * Whether to enable scroll lock for this modal
+   * Set to false if scroll lock is handled at a higher level
+   * @default true
+   */
+  enableScrollLock?: boolean;
+}
 
 const Modal = ({
   open,
   children,
   onClose,
-}: {
-  children: ReactNode;
-  open: boolean;
-  onClose: () => void;
-}) => {
-  useEffect(() => {
-    if (typeof window !== undefined) {
-      const htmlElement = document.documentElement;
+  closeOnBackdropClick = true,
+  enableScrollLock = true,
+}: ModalProps) => {
+  // Use simplified CSS-based scroll lock
+  useSimpleScrollLock(enableScrollLock ? open : false);
 
-      if (open) {
-        htmlElement.classList.add("dialog-open");
-      } else {
-        htmlElement.classList.remove("dialog-open");
-      }
+  const handleClose = (value: boolean) => {
+    if (!value && closeOnBackdropClick) {
+      onClose();
     }
-  }, [open]);
+  };
 
   return (
     <Transition appear show={open} as={Fragment}>
-      <Dialog open={true} onClose={onClose} className="relative z-ztg-50">
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        className="relative z-ztg-50"
+        static={!closeOnBackdropClick}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-200"
@@ -34,7 +52,11 @@ const Modal = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+          <div
+            className="fixed inset-0 bg-ztg-primary-950/50 backdrop-blur-md"
+            aria-hidden="true"
+            style={{ zIndex: 40 }}
+          />
         </Transition.Child>
 
         <Transition.Child
@@ -47,9 +69,11 @@ const Modal = ({
           leaveTo="opacity-0 scale-95"
         >
           <div
-            className={`fixed inset-0 z-50 flex w-screen items-center justify-center p-4`}
+            className="fixed inset-0 z-50 flex w-screen items-center justify-center p-4"
+            style={{ pointerEvents: "none" }}
           >
-            {children}
+            {/* Allow Dialog.Panel to be its natural size and be centered by parent flex container */}
+            <div style={{ pointerEvents: "auto" }}>{children}</div>
           </div>
         </Transition.Child>
       </Dialog>

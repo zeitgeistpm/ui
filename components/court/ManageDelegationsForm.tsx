@@ -223,7 +223,7 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
           ))}
       </div>
 
-      <div className="my-[4px] mb-5 h-[16px] text-center text-ztg-12-120 text-vermilion">
+      <div className="my-[4px] mb-5 h-[16px] text-center text-ztg-12-120 text-ztg-red-400">
         <>
           {formState.errors["amount"]?.message ||
             formState.errors["delegates"]?.message}
@@ -242,7 +242,7 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
         </div>
       )}
 
-      <div className="center mb-[10px] text-ztg-12-120 font-normal text-sky-600">
+      <div className="center mb-[10px] text-ztg-12-120 font-normal text-ztg-primary-600">
         <span className="ml-1 text-black">
           Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0} {fee?.symbol}
         </span>

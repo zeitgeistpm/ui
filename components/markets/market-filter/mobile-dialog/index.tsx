@@ -7,12 +7,25 @@ import FilterDetails from "./FilterDetails";
 
 const TRANSITION_DURATION = 300;
 
+import { MarketType, MarketsOrderBy } from "lib/types/market-filter";
+
 export type MobileDialogProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
+  marketType?: MarketType;
+  onMarketTypeChange?: (type: MarketType) => void;
+  ordering?: MarketsOrderBy;
+  onOrderingChange?: (ordering: MarketsOrderBy) => void;
 };
 
-const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
+const MobileDialog = ({
+  open,
+  setOpen,
+  marketType,
+  onMarketTypeChange,
+  ordering,
+  onOrderingChange,
+}: MobileDialogProps) => {
   const [showTransition, setShowTransition] = useState(open);
   const [currentSelection, setCurrentSelection] =
     useState<SelectedMenu>("None");
@@ -54,21 +67,20 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
         className="absolute left-0 top-0 h-full w-full bg-white"
         appear={true}
       >
-        <Dialog.Panel className="h-full w-full">
-          <div className="flex h-[72px] items-center border-b border-gray-200 px-8 py-3.5 text-xl">
-            <div className="text-xl">Filters</div>
-            <div className="ml-auto">
-              <X
-                size={24}
-                className="cursor-pointer"
-                onClick={close}
-                tabIndex={1}
-              />
-            </div>
+        <Dialog.Panel className="h-full w-full bg-ztg-primary-500">
+          <div className="flex h-14 items-center justify-between border-b-2 border-white/10 bg-white/15 px-4 py-3 shadow-md backdrop-blur-md">
+            <div className="text-base font-semibold text-white">Filters</div>
+            <button
+              onClick={close}
+              tabIndex={1}
+              className="flex h-9 w-9 touch-manipulation items-center justify-center rounded-lg text-white/70 transition-all hover:bg-white/20 hover:text-white active:scale-95"
+            >
+              <X size={20} />
+            </button>
           </div>
           <div
-            className="flex h-full flex-col px-10 py-6"
-            style={{ height: "calc(100vh - 72px)" }}
+            className="flex h-full flex-col overflow-y-auto px-4 py-5"
+            style={{ height: "calc(100vh - 56px)" }}
           >
             {
               {
@@ -79,6 +91,10 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
                       setStep(1);
                     }}
                     close={close}
+                    marketType={marketType}
+                    onMarketTypeChange={onMarketTypeChange}
+                    ordering={ordering}
+                    onOrderingChange={onOrderingChange}
                   />
                 ),
                 1: (

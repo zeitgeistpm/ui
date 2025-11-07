@@ -7,15 +7,10 @@ import { union } from "lib/types/union";
  * @note a step represents a group of FieldStates.
  */
 export type MarketCreationStepType =
-  | "Currency"
-  | "Question"
-  | "Answers"
-  | "Time Period"
-  | "Oracle"
-  | "Description"
-  | "Moderation"
-  | "Liquidity"
-  | "Summary";
+  | "Question & Answers"
+  | "Timeline & Resolution"
+  | "Pricing & Options"
+  | "Review & Launch";
 
 /**
  * Market creation step that extends the wizard stepper data by the market creation
@@ -30,15 +25,25 @@ export type MarketCreationStep = WizardStep<MarketCreationStepType>;
 export const marketCreationSteps = union<MarketCreationStep>()
   .by("label")
   .exhaust([
-    { label: "Currency", isValid: false, isTouched: false, reached: true },
-    { label: "Question", isValid: false, isTouched: false, reached: false },
-    { label: "Answers", isValid: false, isTouched: false, reached: false },
-    { label: "Time Period", isValid: false, isTouched: false, reached: false },
-    { label: "Oracle", isValid: false, isTouched: false, reached: false },
-    { label: "Description", isValid: false, isTouched: false, reached: false },
-    { label: "Moderation", isValid: false, isTouched: false, reached: false },
-    { label: "Liquidity", isValid: false, isTouched: false, reached: false },
-    { label: "Summary", isValid: false, isTouched: false, reached: false },
+    { label: "Question & Answers", isValid: false, isTouched: false, reached: true },
+    {
+      label: "Timeline & Resolution",
+      isValid: false,
+      isTouched: false,
+      reached: false,
+    },
+    {
+      label: "Pricing & Options",
+      isValid: false,
+      isTouched: false,
+      reached: false,
+    },
+    {
+      label: "Review & Launch",
+      isValid: false,
+      isTouched: false,
+      reached: false,
+    },
   ]);
 
 /**
@@ -49,21 +54,22 @@ export const stepFormKeys: Record<
   MarketCreationStepType,
   Array<keyof MarketFormData>
 > = union<MarketCreationStepType>().exhaustAsRecord({
-  Currency: ["currency"],
-  Question: ["question", "tags"],
-  Answers: ["answers"],
-  "Time Period": [
+  "Question & Answers": ["question", "answers", "tags", "description"],
+  "Timeline & Resolution": [
     "endDate",
     "timeZone",
     "gracePeriod",
     "reportingPeriod",
     "disputePeriod",
+    "oracle",
   ],
-  Oracle: ["oracle"],
-  Description: ["description"],
-  Moderation: ["moderation"],
-  Liquidity: ["creatorFee", "liquidity"],
-  Summary: [
+  "Pricing & Options": [
+    "currency",
+    "creatorFee",
+    "moderation",
+    "liquidity",
+  ],
+  "Review & Launch": [
     "currency",
     "question",
     "tags",
@@ -74,6 +80,9 @@ export const stepFormKeys: Record<
     "disputePeriod",
     "oracle",
     "moderation",
+    "creatorFee",
+    "liquidity",
+    "description",
   ],
 });
 

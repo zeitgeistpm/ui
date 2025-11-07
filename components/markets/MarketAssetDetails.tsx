@@ -1,10 +1,3 @@
-import {
-  AssetId,
-  CategoricalAssetId,
-  MarketOutcomeAssetId,
-  ScalarAssetId,
-} from "@zeitgeistpm/sdk";
-import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -13,6 +6,7 @@ import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { sortCategoriesByMarketOrder } from "lib/util/sort-assets-by-market";
 import dynamic from "next/dynamic";
 
 const columns: TableColumn[] = [
@@ -49,37 +43,46 @@ const MarketAssetDetails = ({
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
 
+  // Use utility function to handle all ordering logic
+  const { orderedCategories, orderedSpotPrices, orderedPriceChanges } =
+    sortCategoriesByMarketOrder(
+      categories ?? market?.categories ?? [],
+      spotPrices ?? undefined,
+      priceChanges ?? undefined,
+      market?.outcomeAssets,
+    );
+
   const totalAssetPrice = spotPrices
     ? Array.from(spotPrices.values()).reduce(
         (val, cur) => val.plus(cur),
         new Decimal(0),
       )
     : new Decimal(0);
-
-  const tableData: TableData[] | undefined = (
-    categories ?? market?.categories
-  )?.map((category, index) => {
-    const outcomeName = category?.name;
-    const currentPrice = spotPrices?.get(index)?.toNumber();
-    const priceChange = priceChanges?.get(index);
-
-    return {
-      assetId: market?.pool?.weights[index]?.assetId,
-      id: index,
-      outcome: outcomeName,
-      totalValue: {
-        value: currentPrice ?? 0,
-        usdValue: new Decimal(
-          currentPrice ? usdPrice?.mul(currentPrice) ?? 0 : 0,
-        ).toNumber(),
-      },
-      pre:
+  const tableData: TableData[] | undefined = orderedCategories?.map(
+    (category: any, index: number) => {
+      const outcomeName = category?.name;
+      const currentPrice = orderedSpotPrices?.get(index)?.toNumber();
+      const priceChange = orderedPriceChanges?.get(index);
+      const impliedPercent =
         currentPrice != null
           ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
-          : null,
-      change: priceChange,
-    };
-  });
+          : null;
+
+      return {
+        assetId: market?.pool?.weights[index]?.assetId,
+        id: index,
+        outcome: outcomeName,
+        totalValue: {
+          value: currentPrice ?? 0,
+          usdValue: new Decimal(
+            currentPrice ? (usdPrice?.mul(currentPrice) ?? 0) : 0,
+          ).toNumber(),
+        },
+        pre: impliedPercent,
+        change: priceChange,
+      };
+    },
+  );
 
   return <Table columns={columns} data={tableData} />;
 };

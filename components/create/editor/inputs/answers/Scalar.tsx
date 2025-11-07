@@ -86,58 +86,74 @@ export const ScalarAnswersInput = ({
     };
 
   return (
-    <div>
-      <div className="center mb-6 flex">
-        <div className="mr-3 text-sm font-light">Numbers</div>
-        <Toggle
-          checked={value?.numberType === "date"}
-          onChange={handleNumberTypeChange}
-        />
-        <div className="ml-3 text-sm font-light">Dates</div>
+    <div className="space-y-3">
+      {/* Toggle */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-medium text-white/70">Type:</span>
+        <div className="flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-2 backdrop-blur-sm">
+          <span className="text-xs font-medium text-white">Numbers</span>
+          <Toggle
+            checked={value?.numberType === "date"}
+            activeClassName="bg-ztg-green-600"
+            onChange={handleNumberTypeChange}
+          />
+          <span className="text-xs font-medium text-white">Dates</span>
+        </div>
       </div>
-      <div className="flex justify-center gap-6">
-        <div className="">
+
+      {/* Range Inputs */}
+      <div className="flex flex-col gap-2">
+        <div className="flex w-full items-center gap-2">
+          <span className="flex-shrink-0 text-xs font-medium text-white/70">
+            Short:
+          </span>
           {value?.numberType === "date" ? (
-            <DateTimePicker
-              name="lower-bound"
-              className={`rounded-md bg-gray-100`}
-              value={new Date(value?.answers[0]).toString()}
-              onChange={handleDateChange(0, onChange)}
-              onBlur={handleDateChange(0, onBlur)}
-            />
+            <div className="flex-1">
+              <DateTimePicker
+                name="lower-bound"
+                className="w-full"
+                value={new Date(value?.answers[0]).toString()}
+                onChange={handleDateChange(0, onChange)}
+                onBlur={handleDateChange(0, onBlur)}
+              />
+            </div>
           ) : (
             <Input
               type="number"
               inputMode="numeric"
-              className={`w-full flex-1 rounded-md bg-gray-100 px-5 py-3 outline-none`}
+              className="flex-1 rounded-lg bg-white/10 px-4 py-3 text-sm text-white outline-none backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30"
               value={value?.answers[0]}
               onChange={handleNumberChange(0, onChange)}
               onBlur={handleNumberChange(0, onBlur)}
+              placeholder="Minimum value"
             />
           )}
-
-          <h4 className="ml-1 mt-2 text-center text-xs">Short</h4>
         </div>
-        <div className="">
+        <div className="flex w-full items-center gap-2">
+          <span className="flex-shrink-0 text-xs font-medium text-white/70">
+            Long:
+          </span>
           {value?.numberType === "date" ? (
-            <DateTimePicker
-              className={`rounded-md bg-gray-100`}
-              name="upper-bound"
-              value={new Date(value?.answers[1]).toString()}
-              onChange={handleDateChange(1, onChange)}
-              onBlur={handleDateChange(1, onBlur)}
-            />
+            <div className="flex-1">
+              <DateTimePicker
+                className="w-full"
+                name="upper-bound"
+                value={new Date(value?.answers[1]).toString()}
+                onChange={handleDateChange(1, onChange)}
+                onBlur={handleDateChange(1, onBlur)}
+              />
+            </div>
           ) : (
             <Input
               type="number"
               inputMode="numeric"
-              className={` w-full flex-1 rounded-md bg-gray-100 px-5 py-3 outline-none`}
+              className="flex-1 rounded-lg bg-white/10 px-4 py-3 text-sm text-white outline-none backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30"
               value={value?.answers[1]}
               onChange={handleNumberChange(1, onChange)}
               onBlur={handleNumberChange(1, onBlur)}
+              placeholder="Maximum value"
             />
           )}
-          <h4 className="ml-1 mt-2 text-center text-xs">Long</h4>
         </div>
       </div>
     </div>

@@ -1,4 +1,3 @@
-import { Disclosure, Tab, Transition } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
 import { FullMarketFragment, MarketStatus } from "@zeitgeistpm/indexer";
 import {
@@ -58,7 +57,6 @@ import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useTradeItem } from "lib/hooks/trade";
-import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useWallet } from "lib/state/wallet";
 import { extractChannelName, isLive } from "lib/twitch";
 import {
@@ -69,7 +67,10 @@ import {
   isValidMarketReport,
 } from "lib/types";
 import { MarketDispute } from "lib/types/markets";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
+import {
+  parseAssetIdString,
+  parseAssetIdStringWithCombinatorial,
+} from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -82,6 +83,12 @@ import { AiOutlineFileAdd } from "react-icons/ai";
 import { BsFillChatSquareTextFill } from "react-icons/bs";
 import { CgLivePhoto } from "react-icons/cg";
 import { FaChevronUp, FaTwitch } from "react-icons/fa";
+import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
+import { isCombinatorialToken } from "lib/types/combinatorial";
+import { filterMarketRelevantAssets } from "lib/util/filter-market-assets";
+import { calcMarketColors } from "lib/util/color-calc";
+import { Disclosure, Tab, Transition } from "@headlessui/react";
+import { CombinatorialToken } from "lib/types/combinatorial";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -211,74 +218,189 @@ const Market: NextPage<MarketPageProps> = ({
 }) => {
   const router = useRouter();
   const { marketid } = router.query;
-  const marketId = Number(marketid);
+
+  // Prioritize URL parameter over static props to ensure correct data on navigation
+  const marketId =
+    router.isReady && marketid ? Number(marketid) : indexedMarket?.marketId;
   const { realAddress } = useWallet();
+  const marketData = indexedMarket;
+
+  const [poolDeployed, setPoolDeployed] = useState(false);
+
+  // Fetch fresh market data when navigating between markets
+  const {
+    data: market,
+    isLoading: marketIsLoading,
+    refetch: refetchMarket,
+  } = useMarket(marketId ? { marketId } : undefined, {
+    refetchInterval: poolDeployed ? 1000 : false,
+  });
+
+  const { data: poolData } = useAmm2Pool(
+    marketId || 0,
+    market?.neoPool?.poolId ?? marketData?.neoPool?.poolId ?? null,
+    market || marketData,
+  );
+
   const { data: orders, isLoading: isOrdersLoading } = useOrders({
     marketId_eq: marketId,
     makerAccountId_eq: realAddress,
   });
 
-  const referendumChain = cmsMetadata?.referendumRef?.chain;
   const referendumIndex = cmsMetadata?.referendumRef?.referendumIndex;
 
   const tradeItem = useTradeItem();
 
-  if (indexedMarket == null) {
+  if (!marketData) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
 
-  const outcomeAssets = indexedMarket?.outcomeAssets?.map(
-    (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+  const outcomeAssets = marketData?.outcomeAssets?.map((assetIdString) =>
+    parseAssetIdStringWithCombinatorial(assetIdString),
   );
 
-  useEffect(() => {
-    tradeItem.set({
-      assetId: outcomeAssets[0],
-      action: "buy",
+  // Filter pool assets to match the market's specific outcomes
+  const relevantPoolAssets:
+    | (MarketOutcomeAssetId | CombinatorialToken)[]
+    | undefined = useMemo(() => {
+    // If pool data is not available, return undefined
+    if (!poolData?.assetIds) return undefined;
+
+    // Check if this is a combo pool
+    const isComboPool = poolData.assetIds.some(isCombinatorialToken);
+
+    if (!isComboPool) {
+      // Regular pool - return all assets
+      return poolData.assetIds;
+    }
+
+    // Combo pool - need to determine if this is a regular market or combo market
+    if (!marketData?.outcomeAssets || !outcomeAssets) {
+      return poolData.assetIds;
+    }
+
+    const marketAssetStrings = marketData.outcomeAssets;
+
+    // Check if market has categorical outcomes (regular market using combo pool)
+    const hasCategorialOutcomes = marketAssetStrings.some(
+      (assetString: string) => assetString.includes("categoricalOutcome"),
+    );
+
+    if (hasCategorialOutcomes) {
+      // Regular market using combo pool - need to match combo tokens to market.outcomeAssets order
+      const comboTokens = poolData.assetIds.filter(isCombinatorialToken);
+
+      // Sort combo tokens to match the order in market.outcomeAssets
+      const sortedTokens: CombinatorialToken[] = [];
+      for (const marketAsset of marketAssetStrings) {
+        // Parse the market asset to get the token ID
+        const marketAssetObj = JSON.parse(marketAsset);
+        const tokenId = marketAssetObj?.combinatorialToken;
+
+        if (tokenId) {
+          // Find the matching combo token
+          const matchingToken = comboTokens.find(
+            (token) => token.CombinatorialToken === tokenId,
+          );
+          if (matchingToken) {
+            sortedTokens.push(matchingToken);
+          }
+        }
+      }
+
+      // If we didn't find all tokens, fall back to original order
+      return sortedTokens.length > 0
+        ? sortedTokens
+        : comboTokens.slice(0, outcomeAssets.length);
+    }
+
+    // True combo market - try to match tokens and maintain market.outcomeAssets order
+    const filtered = poolData.assetIds.filter((poolAsset) => {
+      if (isCombinatorialToken(poolAsset)) {
+        const hasMatch = marketAssetStrings.some((marketAssetString: string) =>
+          marketAssetString.includes(poolAsset.CombinatorialToken),
+        );
+        return hasMatch;
+      } else {
+        const poolAssetString = JSON.stringify(poolAsset);
+        const hasMatch = marketAssetStrings.some(
+          (marketAssetString: string) => marketAssetString === poolAssetString,
+        );
+        return hasMatch;
+      }
     });
-  }, [marketId]);
 
-  const [showLiquidityParam, setShowLiquidityParam, unsetShowLiquidityParam] =
-    useQueryParamState("showLiquidity");
+    // If filtering removed everything, return all non-combo assets as fallback
+    if (filtered.length === 0) {
+      return poolData.assetIds.filter((asset) => !isCombinatorialToken(asset));
+    }
 
-  const showLiquidity = showLiquidityParam != null;
+    // Sort filtered assets to match market.outcomeAssets order
+    const sortedFiltered = filtered.sort((a, b) => {
+      const aString = isCombinatorialToken(a)
+        ? a.CombinatorialToken
+        : JSON.stringify(a);
+      const bString = isCombinatorialToken(b)
+        ? b.CombinatorialToken
+        : JSON.stringify(b);
 
-  const [poolDeployed, setPoolDeployed] = useState(false);
+      const aIndex = marketAssetStrings.findIndex((marketAsset: string) =>
+        marketAsset.includes(aString),
+      );
+      const bIndex = marketAssetStrings.findIndex((marketAsset: string) =>
+        marketAsset.includes(bString),
+      );
 
-  const { data: market, isLoading: marketIsLoading } = useMarket(
-    {
-      marketId,
-    },
-    {
-      refetchInterval: poolDeployed ? 1000 : false,
-    },
-  );
+      // If not found, put at end
+      const aPos = aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex;
+      const bPos = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
 
-  const { data: disputes } = useMarketDisputes(marketId);
+      return aPos - bPos;
+    });
+
+    return sortedFiltered;
+  }, [poolData?.assetIds, outcomeAssets, marketData?.outcomeAssets]);
+
+  // Set initial trade item when market loads
+  useEffect(() => {
+    if (outcomeAssets && outcomeAssets.length > 0 && marketId) {
+      tradeItem.set({
+        assetId: outcomeAssets[0],
+        action: "buy",
+      });
+    }
+  }, [marketId]); // Only depend on marketId to avoid re-setting on every render
+
+  const [showLiquidity, setShowLiquidity] = useState(false);
+
+  const { data: disputes } = useMarketDisputes(marketId || 0);
 
   const { data: marketStage } = useMarketStage(market ?? undefined);
-  const { data: spotPrices } = useMarketSpotPrices(marketId);
-  const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
-  const baseAsset = parseAssetIdString(indexedMarket?.baseAsset);
+  const { data: spotPrices, refetch: refetchSpotPrices } = useMarketSpotPrices(
+    marketId || 0,
+  );
+
+  const baseAsset = parseAssetIdString(marketData?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAsset);
 
   const [showTwitchChat, setShowTwitchChat] = useState(true);
 
   const wallet = useWallet();
 
+  // Market pool status - must be declared early for use in JSX
+  // Use static data if available, fallback to dynamic data
+  const marketHasPool = marketData?.neoPool != null || market?.neoPool != null;
+
   const handlePoolDeployed = () => {
     setPoolDeployed(true);
-    setShowLiquidityParam("");
+    setShowLiquidity(true);
+    // Refetch market data after pool deployment
+    refetchMarket();
+    refetchSpotPrices();
   };
 
   const toggleLiquiditySection = () => {
-    const nextState = !showLiquidity;
-    if (nextState) {
-      setShowLiquidityParam("");
-    } else {
-      unsetShowLiquidityParam();
-    }
+    setShowLiquidity(!showLiquidity);
   };
 
   const token = metadata?.symbol;
@@ -321,7 +443,7 @@ const Market: NextPage<MarketPageProps> = ({
   }, [market?.report, disputes]);
 
   const hasChart = Boolean(
-    chartSeries && (indexedMarket?.pool || indexedMarket.neoPool),
+    chartSeries && (marketData?.pool || marketData.neoPool),
   );
 
   const twitchStreamChannelName = extractChannelName(
@@ -332,37 +454,66 @@ const Market: NextPage<MarketPageProps> = ({
 
   const activeTabsCount = [hasChart, hasTwitchStream].filter(Boolean).length;
 
-  const { data: hasLiveTwitchStreamClient } = useQuery(
-    [],
-    async () => {
+  const { data: hasLiveTwitchStreamClient } = useQuery({
+    queryKey: ["twitch-stream", twitchStreamChannelName],
+    queryFn: async () => {
       if (!twitchStreamChannelName) return undefined;
       return isLive(twitchStreamChannelName);
     },
-    {
-      enabled: Boolean(hasTwitchStream),
-      refetchInterval: 1000 * 30,
-      refetchOnWindowFocus: false,
-      initialData: hasLiveTwitchStreamServer,
-    },
-  );
+    enabled: Boolean(hasTwitchStream),
+    refetchInterval: 1000 * 30,
+    refetchOnWindowFocus: false,
+    initialData: hasLiveTwitchStreamServer,
+  });
 
   const hasLiveTwitchStream =
     hasLiveTwitchStreamClient || hasLiveTwitchStreamServer;
 
-  const marketHasPool = market?.neoPool != null;
-
   const poolCreationDate = new Date(
-    indexedMarket.pool?.createdAt ?? indexedMarket.neoPool?.createdAt ?? "",
+    marketData.pool?.createdAt ?? marketData.neoPool?.createdAt ?? "",
   );
 
+  // Generate outcomeCombinations for regular markets using combo pools
+  const outcomeCombinations = useMemo(() => {
+    // Use available data - prefer market data but fallback to marketData (static props)
+    const categories = market?.categories || marketData?.categories;
+    const marketIdValue = market?.marketId || marketData?.marketId;
+
+    if (!relevantPoolAssets || !categories || !marketIdValue) return undefined;
+
+    // Only generate for markets that have combinatorial tokens but are regular markets
+    const hasComboTokens = relevantPoolAssets.some(isCombinatorialToken);
+    if (!hasComboTokens) return undefined;
+
+    const colors = calcMarketColors(marketIdValue, relevantPoolAssets.length);
+
+    // Debug logging
+    const filteredAssets = relevantPoolAssets.filter(isCombinatorialToken);
+
+    return filteredAssets.map((asset, index) => {
+      const categoryIndex = index < categories.length ? index : 0;
+      return {
+        assetId: asset,
+        name: categories[categoryIndex]?.name || `Outcome ${index}`,
+        color: categories[categoryIndex]?.color || colors[index],
+      };
+    });
+  }, [
+    relevantPoolAssets,
+    market?.categories,
+    market?.marketId,
+    marketData?.categories,
+    marketData?.marketId,
+  ]);
+
   return (
-    <div className="mt-6">
-      <div className="relative flex flex-auto gap-12">
-        <div className="flex-1 overflow-hidden">
-          <MarketMeta market={indexedMarket} />
+    <div className="w-full overflow-x-hidden">
+      <div className="relative grid gap-8 md:grid-cols-[1fr_auto] lg:gap-10">
+        <div className="min-w-0">
+          <MarketMeta market={marketData} />
 
           <MarketHeader
-            market={indexedMarket}
+            market={marketData}
             resolvedOutcome={market?.resolvedOutcome ?? undefined}
             report={report}
             disputes={lastDispute}
@@ -373,31 +524,31 @@ const Market: NextPage<MarketPageProps> = ({
           />
 
           {market?.rejectReason && market.rejectReason.length > 0 && (
-            <div className="mt-[10px] text-ztg-14-150">
+            <div className="mt-[10px] text-ztg-14-150 text-red-400">
               Market rejected: {market.rejectReason}
             </div>
           )}
 
-          <div className="mt-4">
+          <div className="mt-8 rounded-lg bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4 md:p-5">
             <Tab.Group defaultIndex={hasLiveTwitchStream ? 1 : 0}>
               <Tab.List
-                className={`flex gap-2 text-sm ${
+                className={`flex gap-1.5 text-xs sm:gap-2 sm:text-sm ${
                   activeTabsCount < 2 ? "hidden" : ""
                 }`}
               >
                 <Tab
                   key="chart"
-                  className="rounded-md border-1 border-gray-400 px-2 py-1 ui-selected:border-transparent ui-selected:bg-gray-300"
+                  className="rounded-md bg-white/10 px-2 py-1 text-xs text-white/70 shadow-md backdrop-blur-sm ui-selected:bg-ztg-green-600/80 ui-selected:text-white sm:text-sm"
                 >
                   Chart
                 </Tab>
 
                 <Tab
                   key="twitch"
-                  className="flex items-center gap-2 rounded-md border-1 border-twitch-purple px-2 py-1 text-twitch-purple ui-selected:border-transparent ui-selected:bg-twitch-purple ui-selected:text-twitch-gray"
+                  className="flex items-center gap-1.5 rounded-md bg-white/10 px-2 py-1 text-xs text-white/70 shadow-md backdrop-blur-sm ui-selected:bg-ztg-green-600/80 ui-selected:text-white sm:gap-2 sm:text-sm"
                 >
-                  <FaTwitch size={16} />
-                  Twitch Stream
+                  <FaTwitch size={14} className="sm:h-4 sm:w-4" />
+                  <span className="whitespace-nowrap">Twitch Stream</span>
                   {hasLiveTwitchStream && (
                     <div className="flex items-center gap-1 text-orange-400">
                       <div className="animate-pulse-scale">
@@ -408,7 +559,7 @@ const Market: NextPage<MarketPageProps> = ({
                   )}
                 </Tab>
                 <div className="flex flex-1 items-center">
-                  <button className="ml-auto flex items-center gap-1">
+                  <div className="ml-auto flex items-center gap-1">
                     <Toggle
                       className="w-6"
                       checked={showTwitchChat}
@@ -420,33 +571,33 @@ const Market: NextPage<MarketPageProps> = ({
                     <BsFillChatSquareTextFill
                       size={18}
                       className={
-                        showTwitchChat ? "text-twitch-purple" : "text-gray-400"
+                        showTwitchChat ? "text-ztg-green-400" : "text-white/50"
                       }
                     />
-                  </button>
+                  </div>
                 </div>
               </Tab.List>
 
               <Tab.Panels className="mt-2">
                 {hasChart ? (
                   <Tab.Panel key="chart">
-                    {indexedMarket.scalarType === "number" ? (
+                    {marketData.scalarType === "number" ? (
                       <ScalarMarketChart
-                        marketId={indexedMarket.marketId}
+                        marketId={marketData.marketId}
                         poolCreationDate={poolCreationDate}
-                        marketStatus={indexedMarket.status}
+                        marketStatus={marketData.status}
                         resolutionDate={new Date(resolutionTimestamp)}
                       />
                     ) : (
                       <CategoricalMarketChart
-                        marketId={indexedMarket.marketId}
+                        marketId={marketData.marketId}
                         chartSeries={chartSeries}
                         baseAsset={
-                          indexedMarket.pool?.baseAsset ??
-                          indexedMarket.neoPool?.collateral
+                          marketData.pool?.baseAsset ??
+                          marketData.neoPool?.collateral
                         }
                         poolCreationDate={poolCreationDate}
-                        marketStatus={indexedMarket.status}
+                        marketStatus={marketData.status}
                         resolutionDate={new Date(resolutionTimestamp)}
                       />
                     )}
@@ -479,96 +630,146 @@ const Market: NextPage<MarketPageProps> = ({
           {realAddress &&
             isOrdersLoading === false &&
             (orders?.length ?? 0) > 0 && (
-              <div className="mt-3 flex flex-col gap-y-3">
-                <div>My Orders</div>
-                <OrdersTable
-                  where={{
-                    marketId_eq: marketId,
-                    makerAccountId_eq: realAddress,
-                  }}
-                />
+              <div className="mt-8 rounded-lg bg-white/15 p-4 shadow-lg backdrop-blur-md">
+                <h3 className="mb-4 text-lg font-semibold text-white">
+                  My Orders
+                </h3>
+                <div className="overflow-hidden rounded-lg">
+                  <OrdersTable
+                    where={{
+                      marketId_eq: marketId,
+                      makerAccountId_eq: realAddress,
+                    }}
+                  />
+                </div>
               </div>
             )}
           {marketIsLoading === false && marketHasPool === false && (
-            <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
-              <div className="h-ztg-20 w-ztg-20">
-                <AlertTriangle size={20} />
-              </div>
-              <div
-                className="ml-ztg-10 text-ztg-12-120 "
-                data-test="liquidityPoolMessage"
-              >
+            <div className="flex mt-8 items-center gap-2.5 rounded-lg border-2 border-red-500/40 bg-red-900/30 p-3 text-red-400 shadow-md backdrop-blur-sm sm:gap-3 sm:p-4">
+              <AlertTriangle size={18} className="flex-shrink-0 sm:h-5 sm:w-5" />
+              <div className="text-xs sm:text-sm" data-test="liquidityPoolMessage">
                 This market doesn't have a liquidity pool and therefore cannot
                 be traded
               </div>
             </div>
           )}
-          <div className="my-8">
-            {indexedMarket?.marketType?.scalar !== null && (
-              <div className="mx-auto mb-8 max-w-[800px]">
+          <div className="mt-8">
+            {marketData?.marketType?.scalar !== null && (
+              <div className="mb-8">
                 {marketIsLoading ||
-                (!spotPrices?.get(1) && indexedMarket.status !== "Proposed") ||
-                (!spotPrices?.get(0) && indexedMarket.status !== "Proposed") ? (
+                (!spotPrices?.get(1) && marketData.status !== "Proposed") ||
+                (!spotPrices?.get(0) && marketData.status !== "Proposed") ? (
                   <Skeleton height="40px" width="100%" />
                 ) : (
                   <ScalarPriceRange
                     className="rounded-lg"
-                    scalarType={indexedMarket.scalarType}
-                    lowerBound={new Decimal(indexedMarket.marketType.scalar[0])
+                    scalarType={marketData.scalarType}
+                    lowerBound={new Decimal(marketData.marketType.scalar[0])
                       .div(ZTG)
                       .toNumber()}
-                    upperBound={new Decimal(indexedMarket.marketType.scalar[1])
+                    upperBound={new Decimal(marketData.marketType.scalar[1])
                       .div(ZTG)
                       .toNumber()}
                     shortPrice={spotPrices?.get(1)?.toNumber()}
                     longPrice={spotPrices?.get(0)?.toNumber()}
-                    status={indexedMarket.status}
+                    status={marketData.status}
                   />
                 )}
               </div>
             )}
-            <MarketAssetDetails
-              marketId={Number(marketid)}
-              categories={indexedMarket.categories}
-            />
+            <div className="rounded-lg bg-white/15 shadow-lg backdrop-blur-md">
+              <div className="overflow-hidden rounded-lg">
+                <MarketAssetDetails
+                  marketId={marketId ?? 0}
+                  categories={marketData.categories}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="mb-12 max-w-[90vw]">
-            <MarketDescription market={indexedMarket} />
+          <div className="mt-8">
+            <MarketDescription market={marketData} />
           </div>
 
-          <AddressDetails title="Oracle" address={indexedMarket.oracle} />
           {marketHasPool === true && (
-            <div className="mt-10 flex flex-col gap-4">
-              <h3 className="mb-5 text-2xl">Latest Trades</h3>
-              <LatestTrades limit={3} marketId={marketId} />
-              <Link
-                className="w-full text-center text-ztg-blue"
-                href={`/latest-trades?marketId=${marketId}`}
-              >
-                View more
-              </Link>
+            <div className="mt-8 rounded-lg bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4">
+                <h3 className="mb-3 text-base font-semibold text-white sm:mb-4 sm:text-lg">
+                  Latest Trades
+                </h3>
+                <div className="pb-3 sm:pb-4">
+                <LatestTrades
+                  limit={3}
+                  marketId={marketId}
+                  outcomeAssets={(() => {
+                    if (!relevantPoolAssets?.some(isCombinatorialToken))
+                      return undefined;
+
+                    const comboAssets =
+                      relevantPoolAssets.filter(isCombinatorialToken);
+
+                    // Apply consistent ordering to match market.outcomeAssets
+                    if (!marketData?.outcomeAssets) return comboAssets;
+
+                    return comboAssets.sort((a, b) => {
+                      const aIndex = marketData.outcomeAssets.findIndex(
+                        (marketAsset) => {
+                          if (
+                            typeof marketAsset === "string" &&
+                            marketAsset.includes(a.CombinatorialToken)
+                          ) {
+                            return true;
+                          }
+                          return JSON.stringify(marketAsset).includes(
+                            a.CombinatorialToken,
+                          );
+                        },
+                      );
+
+                      const bIndex = marketData.outcomeAssets.findIndex(
+                        (marketAsset) => {
+                          if (
+                            typeof marketAsset === "string" &&
+                            marketAsset.includes(b.CombinatorialToken)
+                          ) {
+                            return true;
+                          }
+                          return JSON.stringify(marketAsset).includes(
+                            b.CombinatorialToken,
+                          );
+                        },
+                      );
+
+                      return aIndex - bIndex;
+                    });
+                  })()}
+                  outcomeNames={
+                    relevantPoolAssets?.some(isCombinatorialToken)
+                      ? marketData?.categories?.map((cat) => cat.name)
+                      : undefined
+                  }
+                />
+                </div>
             </div>
           )}
 
           {marketHasPool === false && (
-            <PoolDeployer
-              marketId={marketId}
-              onPoolDeployed={handlePoolDeployed}
-            />
+            <div className="mt-8">
+              <PoolDeployer
+                marketId={marketId}
+                onPoolDeployed={handlePoolDeployed}
+              />
+            </div>
           )}
-
           {market && (marketHasPool || poolDeployed) && (
-            <div className="my-12">
+            <div className="mt-8">
               <div
-                className="mb-8 flex cursor-pointer items-center text-mariner"
+                className="mb-3 flex cursor-pointer items-center rounded-lg bg-white/15 px-3 py-2.5 text-sm font-semibold text-white/90 shadow-lg backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-xl sm:mb-4 sm:px-4 sm:py-3 sm:text-base"
                 onClick={() => toggleLiquiditySection()}
               >
                 <div>Show Liquidity</div>
                 <ChevronDown
-                  size={12}
-                  viewBox="6 6 12 12"
-                  className={`box-content px-2 ${
+                  size={16}
+                  className={`ml-2 transition-transform ${
                     showLiquidity && "rotate-180"
                   }`}
                 />
@@ -583,26 +784,46 @@ const Market: NextPage<MarketPageProps> = ({
                 leaveTo="transform opacity-0 "
                 show={showLiquidity && Boolean(marketHasPool || poolDeployed)}
               >
-                <MarketLiquiditySection poll={poolDeployed} market={market} />
+                <div className="rounded-lg bg-white/15 p-4 shadow-lg backdrop-blur-md">
+                  <MarketLiquiditySection
+                    pool={poolDeployed}
+                    market={market}
+                    comboMarket={false}
+                  />
+                </div>
               </Transition>
             </div>
           )}
         </div>
 
-        <div className="hidden md:-mr-6 md:block md:w-[320px] lg:mr-auto lg:w-[460px]">
-          <div className="sticky top-28">
+        <div className="hidden md:block md:w-[320px] lg:w-[400px] xl:w-[460px]">
+          <div className="sticky">
             <div
-              className="mb-12 animate-pop-in rounded-lg  opacity-0 shadow-lg"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(49, 125, 194, 0.2) 0%, rgba(225, 210, 241, 0.2) 100%)",
-              }}
+                className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg bg-white/15 backdrop-blur-md"
             >
-              {market?.status === MarketStatus.Active ? (
+              {market?.status === MarketStatus.Active ||
+              marketData?.status === "Active" ? (
                 <>
-                  <Amm2TradeForm marketId={marketId} />
+                  {marketHasPool ? (
+                    <Amm2TradeForm
+                      marketId={marketId}
+                      poolData={poolData}
+                      filteredAssets={relevantPoolAssets}
+                      outcomeCombinations={outcomeCombinations}
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2.5 rounded-lg border-2 border-orange-500/40 bg-orange-900/30 p-4 text-orange-400 shadow-md backdrop-blur-sm">
+                      <AlertTriangle size={18} className="flex-shrink-0 sm:h-5 sm:w-5" />
+                      <div className="text-sm">
+                        This market doesn't have a liquidity pool yet. Deploy a pool below to enable trading.
+                      </div>
+                    </div>
+                  )}
                 </>
-              ) : market?.status === MarketStatus.Closed && canReport ? (
+              ) : (market?.status === MarketStatus.Closed ||
+                  marketData?.status === "Closed") &&
+                canReport &&
+                market ? (
                 <>
                   <ReportForm market={market} />
                 </>
@@ -626,28 +847,77 @@ const Market: NextPage<MarketPageProps> = ({
           </div>
         </div>
       </div>
-      {market && <MobileContextButtons market={market} />}
+      {(market || marketData) && (
+        <MobileContextButtons
+          market={market}
+          relevantPoolAssets={relevantPoolAssets}
+          marketData={marketData}
+          poolData={poolData}
+          marketHasPool={marketHasPool}
+        />
+      )}
     </div>
   );
 };
 
-const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
+const MobileContextButtons = ({
+  market,
+  relevantPoolAssets,
+  marketData,
+  poolData,
+  marketHasPool,
+}: {
+  market: FullMarketFragment | null | undefined;
+  relevantPoolAssets?: (MarketOutcomeAssetId | CombinatorialToken)[];
+  marketData?: any; // Allow any type for marketData since it comes from static props
+  poolData?: any;
+  marketHasPool: boolean;
+}) => {
   const wallet = useWallet();
 
-  const { data: marketStage } = useMarketStage(market);
+  const { data: marketStage } = useMarketStage(market ?? undefined);
   const isOracle = market?.oracle === wallet.realAddress;
   const canReport =
     marketStage?.type === "OpenReportingPeriod" ||
     (marketStage?.type === "OracleReportingPeriod" && isOracle);
 
-  const outcomeAssets = market.outcomeAssets.map(
-    (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+  const outcomeAssets = (
+    market?.outcomeAssets ||
+    marketData?.outcomeAssets ||
+    []
+  ).map((assetIdString: string) =>
+    parseAssetIdStringWithCombinatorial(assetIdString),
   );
 
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
   const [open, setOpen] = useState(false);
+
+  // Generate outcomeCombinations for regular markets using combo pools
+  const outcomeCombinations = useMemo(() => {
+    // Use available categories data
+    const categories = market?.categories;
+    const marketIdValue = market?.marketId;
+
+    if (!relevantPoolAssets || !categories || !marketIdValue) return undefined;
+
+    // Only generate for markets that have combinatorial tokens but are regular markets
+    const hasComboTokens = relevantPoolAssets.some(isCombinatorialToken);
+    if (!hasComboTokens) return undefined;
+
+    const colors = calcMarketColors(marketIdValue, relevantPoolAssets.length);
+
+    return relevantPoolAssets
+      .filter(isCombinatorialToken)
+      .map((asset, index) => {
+        const categoryIndex = index < categories.length ? index : 0;
+        return {
+          assetId: asset,
+          name: categories[categoryIndex]?.name || `Outcome ${index}`,
+          color: categories[categoryIndex]?.color || colors[index],
+        };
+      });
+  }, [relevantPoolAssets, market?.categories, market?.marketId]);
 
   return (
     <>
@@ -668,21 +938,36 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
       </Transition>
 
       <div
-        className={`fixed bottom-20 left-0 z-50 w-full rounded-t-lg bg-white pb-12 transition-all duration-500 ease-in-out md:hidden ${
+        className={`fixed bottom-12 left-0 right-0 z-50 w-full rounded-t-lg bg-ztg-primary-700/95 border-t-2 border-white/10 shadow-2xl backdrop-blur-lg pb-safe pb-2 transition-all duration-500 ease-in-out md:hidden ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        {market?.status === MarketStatus.Active ? (
-          <Amm2TradeForm
-            marketId={market.marketId}
-            showTabs={false}
-            selectedTab={
-              tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell
-            }
-          />
-        ) : market?.status === MarketStatus.Closed && canReport ? (
+        {market?.status === MarketStatus.Active ||
+        marketData?.status === "Active" ? (
+          marketHasPool ? (
+            <Amm2TradeForm
+              marketId={market?.marketId || marketData?.marketId || 0}
+              poolData={poolData}
+              showTabs={false}
+              selectedTab={
+                tradeItem?.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell
+              }
+              filteredAssets={relevantPoolAssets}
+              outcomeCombinations={outcomeCombinations}
+            />
+          ) : (
+            <div className="flex items-center gap-2.5 rounded-lg border-2 border-orange-500/40 bg-orange-900/30 p-4 text-orange-400 shadow-md backdrop-blur-sm mx-4 my-4">
+              <AlertTriangle size={18} className="flex-shrink-0 sm:h-5 sm:w-5" />
+              <div className="text-sm">
+                This market doesn't have a liquidity pool yet. Deploy a pool to enable trading.
+              </div>
+            </div>
+          )
+        ) : (market?.status === MarketStatus.Closed ||
+            marketData?.status === "Closed") &&
+          canReport ? (
           <>
-            <ReportForm market={market} />
+            <ReportForm market={market!} />
           </>
         ) : market?.status === MarketStatus.Reported ? (
           <>
@@ -694,82 +979,96 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
       </div>
 
       {(market?.status === MarketStatus.Active ||
+        marketData?.status === "Active" ||
         market?.status === MarketStatus.Closed ||
-        market?.status === MarketStatus.Reported) && (
+        marketData?.status === "Closed" ||
+        market?.status === MarketStatus.Reported ||
+        marketData?.status === "Reported") && (
         <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-          <div className="flex h-20 cursor-pointer text-lg font-semibold">
-            {market?.status === MarketStatus.Active ? (
-              <>
-                <div
-                  className={`center h-full flex-1  ${
-                    tradeItem?.action === "buy"
-                      ? "bg-fog-of-war text-gray-200"
-                      : "bg-white text-black"
-                  } `}
-                  onClick={() => {
-                    setTradeItem({
-                      assetId: tradeItem?.assetId ?? outcomeAssets[0],
-                      action: "buy",
-                    });
-                    if (open && tradeItem?.action === "buy") {
-                      setOpen(false);
-                    } else {
-                      setOpen(true);
-                    }
-                  }}
-                >
-                  Buy{" "}
-                  <X
-                    className={`center h-full w-0 transition-all  ${
-                      open && tradeItem?.action === "buy" && "w-6"
+          <div className="flex h-14 cursor-pointer text-base font-semibold sm:text-lg">
+            {market?.status === MarketStatus.Active ||
+            marketData?.status === "Active" ? (
+              marketHasPool ? (
+                <>
+                  <div
+                    className={`center h-full flex-1 border-r-2 border-white/10 transition-all ${
+                      tradeItem?.action === "buy"
+                        ? "bg-ztg-green-600/90 text-white shadow-md backdrop-blur-md"
+                        : "bg-white/10 text-white/90 shadow-md backdrop-blur-md hover:bg-white/15"
+                    } `}
+                    onClick={() => {
+                      setTradeItem({
+                        assetId: tradeItem?.assetId ?? outcomeAssets[0],
+                        action: "buy",
+                      });
+                      if (open && tradeItem?.action === "buy") {
+                        setOpen(false);
+                      } else {
+                        setOpen(true);
+                      }
+                    }}
+                  >
+                    Buy{" "}
+                    <X
+                      className={`ml-1.5 h-5 w-0 transition-all ${
+                        open && tradeItem?.action === "buy" && "w-5"
+                      }`}
+                    />
+                  </div>
+                  <div
+                    className={`center h-full flex-1 transition-all ${
+                      tradeItem?.action === "sell"
+                        ? "bg-red-600/90 text-white shadow-md backdrop-blur-md"
+                        : "bg-white/10 text-white/90 shadow-md backdrop-blur-md hover:bg-white/15"
                     }`}
-                  />
+                    onClick={() => {
+                      setTradeItem({
+                        assetId: tradeItem?.assetId ?? outcomeAssets[0],
+                        action: "sell",
+                      });
+                      if (open && tradeItem?.action === "sell") {
+                        setOpen(false);
+                      } else {
+                        setOpen(true);
+                      }
+                    }}
+                  >
+                    Sell
+                    <X
+                      className={`ml-1.5 h-5 w-0 transition-all ${
+                        open && tradeItem?.action === "sell" && "w-5"
+                      }`}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="center h-full w-full bg-white/10 text-white/60 shadow-md backdrop-blur-md">
+                  Trading unavailable - No liquidity pool
                 </div>
-                <div
-                  className={`center h-full flex-1 ${
-                    tradeItem?.action === "sell"
-                      ? "bg-fog-of-war text-gray-200"
-                      : "bg-white text-black"
-                  }`}
-                  onClick={() => {
-                    setTradeItem({
-                      assetId: tradeItem?.assetId ?? outcomeAssets[0],
-                      action: "sell",
-                    });
-                    if (open && tradeItem?.action === "sell") {
-                      setOpen(false);
-                    } else {
-                      setOpen(true);
-                    }
-                  }}
-                >
-                  Sell
-                  <X
-                    className={`center h-full w-0 transition-all  ${
-                      open && tradeItem?.action === "sell" && "w-6"
-                    }`}
-                  />
-                </div>
-              </>
+              )
             ) : market?.status === MarketStatus.Closed && canReport ? (
               <>
                 <div
                   className={`center h-full flex-1 transition-all ${
-                    !open ? "bg-ztg-blue text-white" : "bg-slate-200"
+                    !open
+                      ? "bg-ztg-green-600/90 text-white shadow-md backdrop-blur-md"
+                      : "bg-white/10 text-white/90 backdrop-blur-md hover:bg-white/15"
                   }`}
                   onClick={() => setOpen(!open)}
                 >
-                  {open ? <X /> : "Report"}
+                  {open ? <X className="h-5 w-5" /> : "Report"}
                 </div>
               </>
             ) : market?.status === MarketStatus.Reported ? (
               <div
-                className={`center h-full flex-1 ${
-                  !open ? "bg-ztg-blue text-white" : "bg-slate-200"
+                className={`center h-full flex-1 transition-all ${
+                  !open
+                    ? "bg-orange-600/90 text-white shadow-md backdrop-blur-md"
+                    : "bg-white/10 text-white/90 shadow-md backdrop-blur-md hover:bg-white/15"
                 }`}
                 onClick={() => setOpen(!open)}
               >
-                {open ? <X /> : "Dispute"}
+                {open ? <X className="h-5 w-5" /> : "Dispute"}
               </div>
             ) : (
               <></>
@@ -795,25 +1094,25 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
           {({ open }) => (
             <>
               <Disclosure.Button
-                className={`relative z-20 flex w-full items-center rounded-md px-5 py-2 ${
-                  !open && "bg-orange-400 "
+                className={`relative z-20 flex w-full items-center rounded-lg px-5 py-3 transition-all ${
+                  !open
+                    ? "bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white shadow-md backdrop-blur-md"
+                    : "border-2 border-ztg-primary-200/30 bg-white/20 text-ztg-primary-800 shadow-md backdrop-blur-md text-white"
                 }`}
               >
                 <h3
-                  className={`flex-1 text-left text-base ${
-                    open ? "opacity-0" : "text-white opacity-100"
+                  className={`flex-1 text-left text-base font-semibold ${
+                    open ? "text-white" : "text-white"
                   }`}
                 >
-                  Market can be disputed
+                  {open ? "Close" : "Market can be disputed"}
                 </h3>
                 {open ? (
-                  <X />
+                  <X className="text-white" size={18} />
                 ) : (
                   <FaChevronUp
                     size={18}
-                    className={`justify-end text-gray-600 ${
-                      !open && "rotate-180 text-white"
-                    }`}
+                    className="rotate-180 justify-end text-white"
                   />
                 )}
               </Disclosure.Button>
@@ -824,7 +1123,7 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
                 leave="transition duration-75 ease-out"
                 leaveFrom="transform scale-100 opacity-100"
                 leaveTo="transform scale-95 opacity-0"
-                className="relative z-10 -mt-[30px]"
+                className="relative z-10 rounded-b-lg px-5 pb-10 pt-12 shadow-md backdrop-blur-sm"
               >
                 <Disclosure.Panel>
                   {isMarketCategoricalOutcome(reportedOutcome) ? (
@@ -867,26 +1166,26 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
   return !userCanReport ? (
     <></>
   ) : (
-    <div className="px-5 py-10">
+    <div className="p-3 sm:p-4 md:p-5">
       {reportedOutcome ? (
         <ReportResult market={market} outcome={reportedOutcome} />
       ) : (
         <>
-          <h4 className="mb-4 flex items-center gap-2">
-            <AiOutlineFileAdd size={20} className="text-gray-600" />
-            <span>Report Market Outcome</span>
+          <h4 className="mb-4 flex items-center gap-2 text-white">
+            <AiOutlineFileAdd size={20} />
+            <span className="font-semibold">Report Market Outcome</span>
           </h4>
 
-          <p className="mb-6 text-sm">
+          <p className="mb-6 text-sm text-white/90">
             Market has closed and the outcome can now be reported.
           </p>
 
           {stage?.type === "OpenReportingPeriod" && (
             <>
-              <p className="-mt-3 mb-6 text-sm italic text-gray-500">
+              <p className="-mt-3 mb-6 text-sm italic text-white/80">
                 Oracle failed to report. Reporting is now open to all.
               </p>
-              <p className="mb-6 text-sm">
+              <p className="mb-6 text-sm text-white/90">
                 Bond cost: {chainConstants?.markets.outsiderBond}{" "}
                 {chainConstants?.tokenSymbol}
               </p>
@@ -916,13 +1215,13 @@ const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
   const router = useRouter();
 
   return (
-    <div className="px-5 py-8">
-      <h4 className="mb-3 flex items-center gap-2">
+    <div className="p-3 sm:p-4 md:p-5">
+      <h4 className="mb-3 flex items-center gap-2 font-semibold text-white">
         <Image width={22} height={22} src="/icons/court.svg" alt="court" />
         <span>Market Court Case</span>
       </h4>
 
-      <p className="mb-5 text-sm">
+      <p className="mb-5 text-sm text-white/90">
         Market has been disputed and is awaiting a ruling in court.
       </p>
 
@@ -930,7 +1229,7 @@ const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
         disabled={!isFetched}
         onClick={() => router.push(`/court/${caseId}`)}
         onMouseEnter={() => router.prefetch(`/court/${caseId}`)}
-        className={`ztg-transition h-[56px] w-full rounded-full bg-purple-400 text-white focus:outline-none disabled:cursor-default disabled:bg-slate-300`}
+        className={`ztg-transition h-[56px] w-full rounded-full bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white shadow-md backdrop-blur-md transition-all hover:from-orange-500/80 hover:to-orange-600/80 hover:shadow-lg focus:outline-none disabled:cursor-default disabled:bg-ztg-primary-200/60 disabled:backdrop-blur-sm`}
       >
         View Case
       </button>

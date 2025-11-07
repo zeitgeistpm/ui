@@ -4,7 +4,7 @@ import { loadable } from "jotai/utils";
 import { environment } from "lib/constants";
 
 const endpoints =
-  environment === "production"
+  environment !== "production"
     ? [
         "wss://rpc.polkadot.io",
         "wss://polkadot-rpc.dwellir.com",

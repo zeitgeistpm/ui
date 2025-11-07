@@ -23,7 +23,7 @@
 
 .ql-editor[contenteditable="true"] {
   resize: vertical;
-  min-height: 18em;
+  min-height: 150px;
   @apply bg-gray-100;
   @apply !rounded-b-lg;
 }

@@ -23,7 +23,7 @@ const SearchPage: NextPage = () => {
     <div className="relative mt-2">
       <div className="fixed left-0 right-0 top-16 mt-1 flex items-center">
         <input
-          className="h-12 w-full flex-1 border bg-gray-200 px-5 focus:outline-none"
+          className="h-12 w-full flex-1 border-2 bg-gray-200 px-5 focus:outline-none"
           value={searchTerm}
           ref={inputRef}
           placeholder="Search markets"
@@ -35,7 +35,7 @@ const SearchPage: NextPage = () => {
           <TypingIndicator inputRef={inputRef} isFetching={isFetching} />
         </div>
         <button
-          className="absolute right-6 text-sky-600"
+          className="absolute right-6 text-ztg-primary-600"
           onClick={() => {
             setSearchTerm("");
           }}
@@ -49,7 +49,7 @@ const SearchPage: NextPage = () => {
             markets?.map((market) => (
               <Link
                 href={`/markets/${market.marketId}`}
-                className="flex overflow-ellipsis rounded-md px-2 py-2 hover:bg-sky-100"
+                className="flex overflow-ellipsis rounded-md px-2 py-2 hover:bg-ztg-primary-100"
               >
                 <div className="mr-4 line-clamp-1 overflow-ellipsis">
                   {market.question}

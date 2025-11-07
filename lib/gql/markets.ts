@@ -1,5 +1,5 @@
 import { MarketStatus, ScalarRangeType } from "@zeitgeistpm/sdk";
-import { MarketReport, FullMarketFragment } from "@zeitgeistpm/indexer";
+import { MarketReport, FullMarketFragment, ZeitgeistIndexer } from "@zeitgeistpm/indexer";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
 import { marketMetaFilter } from "./constants";
@@ -34,6 +34,13 @@ const marketQuery = gql`
       neoPool {
         createdAt
         collateral
+        poolId
+        account {
+          accountId
+        }
+        totalStake
+        liquidityParameter
+        swapFee
       }
       question
       slug
@@ -111,6 +118,7 @@ export type MarketPageIndexedData = {
   neoPool?: {
     collateral: string;
     createdAt: string;
+    poolId: number;
   };
   scalarType: ScalarRangeType;
   marketType: {

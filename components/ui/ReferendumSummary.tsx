@@ -1,65 +1,128 @@
 import { usePolkadotReferendumVotes } from "lib/hooks/queries/polkadot/usePolkadotReferendumVotes";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { ExternalLink } from "react-feather";
+import { Loader } from "./Loader";
+import Decimal from "decimal.js";
+
+// Format large numbers with K, M, B suffixes
+const formatVoteAmount = (amount: Decimal): string => {
+  const dotAmount = amount.div(10_000_000_000); // Convert Planck to DOT
+  const num = dotAmount.toNumber();
+
+  if (num >= 1_000_000_000) {
+    return `${(num / 1_000_000_000).toFixed(1)}B`;
+  } else if (num >= 1_000_000) {
+    return `${(num / 1_000_000).toFixed(1)}M`;
+  } else if (num >= 1_000) {
+    return `${(num / 1_000).toFixed(1)}K`;
+  }
+  return num.toFixed(1);
+};
 
 const ReferendumSummary = ({
   referendumIndex,
 }: {
   referendumIndex: number;
 }) => {
-  const { data: referendum } = usePolkadotReferendumVotes(referendumIndex);
+  const { data: referendum, isLoading } =
+    usePolkadotReferendumVotes(referendumIndex);
   const barValue = referendum?.ayePercentage.mul(100).toNumber() ?? 0;
+
+  if (isLoading) {
+    return (
+      <div className="flex w-full items-center justify-center rounded-xl border-2 border-ztg-primary-200/30 bg-white/80 p-8 shadow-md backdrop-blur-md">
+        <Loader variant="Success" loading className="h-10 w-10" />
+      </div>
+    );
+  }
+
   return (
     <>
       {referendum && (
-        <div className="flex w-full flex-col gap-4 rounded-lg px-10 py-6 font-medium shadow-lg">
-          <div className="flex items-center">
-            <div className="text-lg">Referendum</div>
+        <div className="flex w-full flex-col gap-4 rounded-xl border-2 border-ztg-primary-200/30 bg-white/80 px-6 py-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg">
+          {/* Header with Title and External Link */}
+          <div className="flex items-center border-b-2 border-ztg-primary-200/30 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="text-lg font-bold text-ztg-primary-900">
+                Referendum #{referendumIndex}
+              </div>
+            </div>
             <a
               href={`https://polkadot.polkassembly.io/referenda/${referendumIndex}`}
-              className="ml-auto flex items-center justify-center gap-2 rounded-md px-2 py-2 text-sm text-black "
+              className="group ml-auto flex items-center gap-2 rounded-lg border-2 border-ztg-primary-200/30 bg-white/60 px-2.5 py-1.5 text-sm font-medium text-ztg-primary-900 shadow-sm transition-all hover:bg-white/80 hover:shadow-md"
               target="_blank"
               rel="noreferrer"
             >
               <img
                 src="/icons/polkassembly.svg"
-                alt="Account balance"
-                width={"80px"}
+                alt="View on Polkassembly"
+                width={"70px"}
+                className="opacity-90 transition-opacity group-hover:opacity-100"
               />
-              <ExternalLink size={12} className="absolute right-[44px]" />
+              <ExternalLink size={12} className="text-ztg-primary-600" />
             </a>
           </div>
-          <div className="flex items-center justify-center">
-            <div className="mt-3 h-[150px] w-[300px] ">
+
+          {/* Circular Progress Gauge */}
+          <div className="flex items-center justify-center py-2">
+            <div className="h-[120px] w-[240px]">
               <CircularProgressbar
                 value={barValue}
                 circleRatio={0.5}
-                strokeWidth={2}
+                strokeWidth={3}
                 styles={buildStyles({
                   rotation: 0.75,
                   strokeLinecap: "round",
                   textSize: "16px",
                   pathTransitionDuration: 0.5,
-                  pathColor: `#0070EB`,
-                  trailColor: "#FC9965",
+                  pathColor: `#0ea5e9`, // sky-600
+                  trailColor: "#f97316", // orange-500
                 })}
               />
             </div>
           </div>
 
-          <div className="flex">
-            <div className="flex flex-col">
-              <div className="font-mono text-xl text-[#0070EB]">
-                {referendum.ayePercentage.mul(100).toFixed(1)}%
+          {/* Vote Breakdown */}
+          <div className="flex gap-2.5">
+            {/* Aye Votes */}
+            <div className="flex flex-1 flex-col items-center gap-1.5 rounded-lg border-2 border-ztg-primary-200/30 bg-gradient-to-br from-ztg-primary-50/50 to-ztg-primary-100/50 p-2.5 shadow-sm backdrop-blur-sm">
+              <div className="flex items-baseline gap-1.5">
+                <div className="text-xs font-semibold uppercase tracking-wide text-ztg-primary-700">
+                  Aye:
+                </div>
+                <div className="text-lg font-bold text-ztg-primary-600">
+                  {referendum.ayePercentage.mul(100).toFixed(1)}%
+                </div>
               </div>
-              <div className="text-lg">Aye</div>
-            </div>
-            <div className="ml-auto flex flex-col">
-              <div className="font-mono text-xl text-[#FC9965]">
-                {referendum.nayPercentage.mul(100).toFixed(1)}%
+              <div className="text-xs font-semibold text-ztg-primary-600">
+                {formatVoteAmount(referendum.ayes)} DOT
               </div>
-              <div className="text-lg">Nay</div>
             </div>
+
+            {/* Nay Votes */}
+            <div className="flex flex-1 flex-col items-center gap-1.5 rounded-lg border-2 border-orange-200/30 bg-gradient-to-br from-orange-50/50 to-orange-100/50 p-2.5 shadow-sm backdrop-blur-sm">
+              <div className="flex items-baseline gap-1.5">
+                <div className="text-xs font-semibold uppercase tracking-wide text-orange-700">
+                  Nay:
+                </div>
+                <div className="text-lg font-bold text-orange-600">
+                  {referendum.nayPercentage.mul(100).toFixed(1)}%
+                </div>
+              </div>
+              <div className="text-xs font-semibold text-orange-600">
+                {formatVoteAmount(referendum.nays)} DOT
+              </div>
+            </div>
+          </div>
+
+          {/* Total Votes Display */}
+          <div className="flex items-center justify-center gap-2 rounded-lg border-2 border-ztg-primary-200/30 bg-ztg-primary-50/50 py-2 text-center backdrop-blur-sm">
+            <span className="text-sm font-semibold text-ztg-primary-700">
+              Total:
+            </span>
+            <span className="text-sm font-bold text-ztg-primary-900">
+              {formatVoteAmount(referendum.ayes.plus(referendum.nays))} DOT
+            </span>
           </div>
         </div>
       )}

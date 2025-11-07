@@ -20,6 +20,7 @@ import { isWSX } from "lib/constants";
 import { useMemo } from "react";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
+import EmptyPortfolio from "./EmptyPortfolio";
 
 const columns: TableColumn[] = [
   {
@@ -35,7 +36,7 @@ const columns: TableColumn[] = [
   {
     header: "Balance",
     accessor: "balance",
-    type: "text",
+    type: "component",
   },
   {
     header: "",
@@ -53,13 +54,21 @@ const ImageAndText = ({
   imagePath: string;
 }) => {
   return (
-    <div className="flex items-center gap-2">
-      <div className="h-[16px] w-[16px] md:h-[30px] md:w-[30px]">
+    <div className="flex items-center gap-2.5">
+      <div className="h-5 w-5 shrink-0 md:h-7 md:w-7">
         {imagePath && (
-          <Image src={imagePath} alt={name} width={30} height={30} />
+          <Image
+            src={imagePath}
+            alt={name}
+            width={30}
+            height={30}
+            className="rounded-full"
+          />
         )}
       </div>
-      <div className="md:text-md text-xs">{name}</div>
+      <div className="text-sm font-medium text-white/90 md:text-base">
+        {name}
+      </div>
     </div>
   );
 };
@@ -166,15 +175,19 @@ const CurrenciesTable = ({ address }: { address: string }) => {
               imagePath={lookupAssetImagePath(
                 balance.foreignAssetId != null
                   ? {
-                    ForeignAsset: balance.foreignAssetId,
-                  }
+                      ForeignAsset: balance.foreignAssetId,
+                    }
                   : null,
               )}
             />
           ),
-          balance: amount.div(ZTG).toFixed(3),
+          balance: (
+            <span className="text-sm font-medium text-white/90">
+              {amount.div(ZTG).toFixed(3)}
+            </span>
+          ),
           button: (
-            <div className="flex flex-col gap-2 w-full py-2 whitespace-nowrap">
+            <div className="flex w-full flex-col gap-2 whitespace-nowrap py-2">
               <MoveButton
                 chain={balance.chain}
                 sourceChain={balance.sourceChain}
@@ -192,9 +205,31 @@ const CurrenciesTable = ({ address }: { address: string }) => {
       });
   }, [constants, balances, sorting]);
 
+  const hasBalances = tableData && tableData.length > 0;
+  const isFetchedNoData = isFetched && !hasBalances;
+
+  if (isFetchedNoData) {
+    return (
+      <EmptyPortfolio
+        headerText="No Cross-Chain Balances"
+        bodyText="You don't have any assets across chains yet. Deposit tokens to get started."
+        buttonText="View Markets"
+        buttonLink="/markets"
+      />
+    );
+  }
+
   return (
-    <div>
-      <Table data={tableData} columns={columns} showHighlight={false} />
+    <div className="rounded-lg border border-ztg-primary-200/30 bg-white/10 shadow-lg backdrop-blur-md">
+      <div className="mb-4 flex items-center gap-2 border-b border-ztg-primary-200/20 p-4 pb-3">
+        <span className="h-1 w-6 rounded-full bg-ztg-green-500"></span>
+        <h2 className="text-base font-semibold text-white">
+          Cross-Chain Balances
+        </h2>
+      </div>
+      <div className="px-4 pb-4">
+        <Table data={tableData} columns={columns} showHighlight={false} />
+      </div>
     </div>
   );
 };
