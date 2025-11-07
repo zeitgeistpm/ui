@@ -55,7 +55,7 @@ const GrillChat: React.FC<GrillChatProps> = () => {
         <div id="grill" className="h-full"></div>
       </motion.div>
       <button
-        className="center pointer-events-auto ml-auto mt-4 h-14 w-14 cursor-pointer rounded-full border-1 border-gray-300 bg-white shadow-ztg-5"
+        className="center pointer-events-auto ml-auto mt-4 h-14 w-14 cursor-pointer rounded-full border-2 border-gray-300 bg-white shadow-ztg-5"
         onClick={handleClick}
       >
         <MessageSquare size={28} />

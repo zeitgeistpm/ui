@@ -165,7 +165,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
 
         {commitmentHashMatches || matchingOutcome ? (
           <div
-            className="relative mb-6 w-full resize-none rounded-md border-black border-opacity-30 bg-transparent text-center font-semibold"
+            className="border-b-2 border-black relative mb-6 w-full resize-none rounded-md border-opacity-30 bg-transparent text-center font-semibold"
             onDragOver={onCourtSaltBackupDragOver}
             onDrop={onCourtSaltBackupDrop}
           >
@@ -189,8 +189,8 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
             onDrop={onCourtSaltBackupDrop}
           >
             <div
-              className={`rounded-md border-2  border-dotted bg-slate-100 px-6 py-12 text-sm italic text-gray-500 ${
-                hasDroppedFile && "border-red-500"
+              className={`rounded-md border-2  border-dotted bg-ztg-primary-100 px-6 py-12 text-sm italic text-gray-500 ${
+                hasDroppedFile && "border-r-2ed-500"
               }`}
             >
               <div className="center gap-4">

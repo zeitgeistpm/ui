@@ -10,25 +10,24 @@ export interface AccountSelectValueProps {
 }
 
 const AccountSelectValue: FC<AccountSelectValueProps> = ({ name, address }) => {
-  const wallet = useWallet();
   return (
-    <div className="flex h-full w-full items-center rounded-lg bg-sky-100 px-2">
-      <div className="center rounded-full bg-white">
-        <div className="rounded-full bg-sky-100">
+    <div className="flex h-full w-full items-center gap-3 px-3 py-2">
+      <div className="shrink-0">
+        <div className="h-9 w-9 rounded-full ring-2 ring-white/20">
           <Avatar zoomed address={address} />
         </div>
       </div>
-      <div className="ml-4 flex flex-col">
-        <div className="text-xxs font-bold uppercase text-sky-600">{name}</div>
-        <div className="flex items-center gap-1 font-mono text-sm font-semibold md:hidden">
-          {shortenAddress(address, 8, 12)}
-          <IoIosArrowDropdownCircle size={16} />
+      <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <div className="truncate text-xs font-semibold uppercase tracking-wide text-white/70">
+            {name}
+          </div>
+          <div className="truncate text-sm font-medium text-white/90">
+            {shortenAddress(address, 10, 8)}
+          </div>
         </div>
-        <div className="hidden gap-1 font-mono text-sm font-semibold md:flex">
-          {address}
-          {wallet.activeAccount?.address && (
-            <IoIosArrowDropdownCircle size={18} />
-          )}
+        <div className="flex shrink-0 items-center">
+          <IoIosArrowDropdownCircle className="text-white/70" size={20} />
         </div>
       </div>
     </div>

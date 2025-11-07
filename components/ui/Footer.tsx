@@ -5,6 +5,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useForm } from "react-hook-form";
 import { endpointOptions } from "lib/constants";
 import Input from "./Input";
+import Logo from "../icons/ZeitgeistIcon";
 
 const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
   const notificationStore = useNotifications();
@@ -32,19 +33,22 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
 
   return (
     <form className="flex w-full flex-col" onSubmit={handleSubmit(subscribe)}>
-      <h6 className="mb-[26px] font-semibold text-white">{title}</h6>
+      <h6 className="mb-[26px] flex items-center gap-2 font-semibold text-white">
+        <span className="h-1 w-6 rounded-full bg-ztg-green-500"></span>
+        {title}
+      </h6>
       <div className="mb-auto flex h-10 w-full items-center gap-3">
         <Input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-          className={`h-full grow rounded-md border-[1px] bg-anti-flash-white p-2 text-ztg-12-120 text-sky-600 focus:outline-none ${
-            invalid ? "border-vermilion" : "border-none"
+          className={`h-full grow rounded-md bg-white/10 p-2 text-ztg-12-120 text-white/90 backdrop-blur-sm placeholder:text-white/60 focus:bg-white/15 focus:outline-none ${
+            invalid ? "border-r-2ed-500/60" : ""
           }`}
           type="email"
         />
         <button
           type="submit"
-          className={`center h-full flex-shrink rounded-full bg-ztg-blue px-5 text-ztg-16-150 text-white ${
-            invalid ? "cursor-default" : "cursor-pointer"
+          className={`center h-full flex-shrink rounded-full bg-ztg-green-600/80 px-5 text-ztg-16-150 text-white backdrop-blur-sm transition-all hover:bg-ztg-green-600 ${
+            invalid ? "cursor-default opacity-60" : "cursor-pointer"
           } disabled:opacity-60`}
           disabled={invalid}
         >
@@ -64,15 +68,18 @@ interface FooterMenuProps {
 const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
   return (
     <div className={`${className}`}>
-      <h6 className="mb-1 font-semibold text-white">{title}</h6>
-      <div className="flex flex-col text-ztg-14-150 text-sky-600">
+      <h6 className="mb-3 flex items-center gap-2 font-semibold text-white">
+        <span className="h-1 w-6 rounded-full bg-ztg-green-500"></span>
+        {title}
+      </h6>
+      <div className="flex flex-col text-ztg-14-150 text-white/70">
         {links.map(({ text, href }, idx) => {
           return (
             <Link
               href={href}
               key={`footerMenuLink${idx}`}
               target="_blank"
-              className="mb-0.5"
+              className="mb-0.5 transition-colors hover:text-ztg-green-400"
             >
               <span>{text}</span>
             </Link>
@@ -84,58 +91,58 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
 };
 
 const Footer = () => {
+  const footerLinks = [
+    {
+      text: "Block Explorer",
+      href: `https://polkadot.js.org/apps/?rpc=${endpointOptions[0].value}`,
+      external: true,
+    },
+    { text: "Docs", href: "https://docs.zeitgeist.pm", external: true },
+    { text: "Github", href: "https://github.com/zeitgeistpm", external: true },
+    { text: "Discord", href: "https://discord.gg/xv8HuA4s8v", external: true },
+    {
+      text: "Twitter",
+      href: "https://twitter.com/ZeitgeistPM",
+      external: true,
+    },
+    { text: "Terms", href: "/terms", external: false },
+  ];
+
   return (
-    <div className="mt-auto flex w-full flex-col bg-[#1C1C1C] pb-24 pt-12">
+    <div className="mt-auto w-full border-t-2 border-white/10 bg-ztg-primary-500 py-4 shadow-lg backdrop-blur-md">
       <div className="container-fluid">
-        <div className="mb-8 flex flex-wrap justify-between gap-12 md:mb-16 md:flex-nowrap lg:gap-36">
-          <div className="flex w-full justify-between gap-7">
-            <FooterMenu
-              title="General"
-              links={[
-                {
-                  text: "Apps (Advanced UI)",
-                  href: `https://polkadot.js.org/apps/?rpc=${endpointOptions[0].value}`,
-                },
-                { text: "Website", href: "https://zeitgeist.pm" },
-              ]}
-            />
-            <FooterMenu
-              title="Technology"
-              links={[
-                { text: "Documentation", href: "https://docs.zeitgeist.pm" },
-                { text: "Github", href: "https://github.com/zeitgeistpm" },
-              ]}
-            />
-            <FooterMenu
-              title="Community"
-              links={[
-                { text: "Discord", href: "https://discord.gg/xv8HuA4s8v" },
-                { text: "Telegram", href: "https://t.me/zeitgeist_official" },
-                { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
-              ]}
-            />
+        {/* Main Footer Row */}
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+          {/* Powered by */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-white/70">Powered by</span>
+            <Link
+              href="/"
+              className="group flex cursor-pointer items-center gap-1.5 transition-colors"
+            >
+              <div className="scale-75 [&_svg_path]:transition-colors group-hover:[&_svg_path]:fill-ztg-green-500">
+                <Logo variant={"light"} width={20} height={20} />
+              </div>
+              <span className="text-xs font-semibold text-white/90 transition-colors group-hover:text-ztg-green-500">
+                Zeitgeist
+              </span>
+            </Link>
           </div>
-          <FooterNewsletterSub title="Subscribe to Newsletter" />
-        </div>
-        <div className="flex flex-col gap-5 md:flex-row">
-          <span className="whitespace-nowrap text-center text-ztg-12-150 text-white md:text-start">
-            © {new Date().getFullYear()} Equipoise Corp.
-          </span>
-          <span className="text-[11px] leading-relaxed text-sky-600">
-            Please be advised that Equipoise Corp. d/b/a Zeitgeist is registered
-            under the laws of Panama, and Zeitgeist has not sought licensing
-            with any other regulatory authority of any country or jurisdiction,
-            nor has any such regulatory authority passed upon or endorsed the
-            merits of the financial products offered by Zeitgeist. Therefore,
-            Zeitgeist does not accept clients from the United States and other
-            similar jurisdictions where regulations prohibit Zeitgeist from
-            offering its financial products (“Regulated Jurisdictions”). While
-            this website may be accessed worldwide, the information provided is
-            only intended for use by any person in any country where such use
-            would not be contrary to local law or regulation. Browsers from
-            Regulated Jurisdictions are specifically prohibited from using this
-            site.
-          </span>
+
+          {/* Links */}
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
+            {footerLinks.map((link, idx) => (
+              <Link
+                key={idx}
+                href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
+                className="text-white/70 transition-colors hover:text-ztg-green-400 hover:underline"
+              >
+                {link.text}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>

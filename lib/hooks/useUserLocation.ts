@@ -10,11 +10,17 @@ export const userLocationKey = "user-location";
 export const [userLocationDataAtom, userLocationStatusAtom] =
   atomsWithQuery<UserLocation>(() => ({
     queryKey: [userLocationKey],
+    enabled: typeof window !== 'undefined', // Only run on client side
     initialData: () => ({
       locationAllowed: true,
     }),
     keepPreviousData: true,
     queryFn: async () => {
+      // Skip if running on server side or if window is undefined
+      if (typeof window === 'undefined') {
+        return { locationAllowed: true };
+      }
+      
       const response = await fetch(`/api/location`);
       const json = await response.json();
 

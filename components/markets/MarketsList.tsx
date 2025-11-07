@@ -1,72 +1,41 @@
-import { ScalarRangeType } from "@zeitgeistpm/sdk";
-import React, { useEffect, useState } from "react";
-import Decimal from "decimal.js";
+import React, { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
-import Loader from "react-spinners/PulseLoader";
-import { X } from "react-feather";
-import { useRouter } from "next/router";
+import { Loader } from "components/ui/Loader";
 import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
-import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
-import MarketFilterSelection from "./market-filter";
-import MarketCard from "./market-card/index";
+import { useInfiniteMultiMarkets } from "lib/hooks/queries/useInfiniteMultiMarkets";
+import MarketOrComboCard from "./market-card/MarketOrComboCard";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
-import { filterTypes } from "lib/constants/market-filter";
-import { ZTG } from "lib/constants";
-import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
-import { CmsTopicHeader } from "lib/cms/topics";
-import { Topics } from "components/front-page/Topics";
 
 export type MarketsListProps = {
   className?: string;
 };
 
-const useChangeQuery = (
-  filters?: MarketFilter[],
-  orderBy?: MarketsOrderBy,
-  withLiquidityOnly?: boolean,
-) => {
-  const queryState = useMarketsUrlQuery();
-
-  useEffect(() => {
-    if (filters == null) {
-      return;
-    }
-    const newFilters = {};
-    for (const filterType of filterTypes) {
-      const filterByType = filters.filter((f) => f.type === filterType);
-      newFilters[filterType] = filterByType.map((f) => f.value);
-    }
-    queryState?.updateQuery({
-      filters: newFilters,
-    });
-  }, [filters]);
-
-  useEffect(() => {
-    if (orderBy == null) {
-      return;
-    }
-    queryState?.updateQuery({ ordering: orderBy });
-  }, [orderBy]);
-
-  useEffect(() => {
-    if (withLiquidityOnly == null) {
-      return;
-    }
-    queryState?.updateQuery({ liquidityOnly: withLiquidityOnly });
-  }, [withLiquidityOnly]);
-};
-
 const MarketsList = ({ className = "" }: MarketsListProps) => {
-  const [filters, setFilters] = useState<MarketFilter[]>();
-  const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
-  const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
-
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
   const queryState = useMarketsUrlQuery();
 
-  useChangeQuery(filters, orderBy, withLiquidityOnly);
+  // Conditionally fetch the appropriate data based on market type
+  const isMultiMarket = queryState.marketType === "multi";
+
+  // Only fetch regular markets when not in multi-market mode
+  const regularMarketsQuery = useInfiniteMarkets(
+    queryState.ordering,
+    queryState.liquidityOnly,
+    queryState.filters,
+    { enabled: !isMultiMarket },
+  );
+
+  // Only fetch multi-markets when in multi-market mode
+  const multiMarketsQuery = useInfiniteMultiMarkets(
+    queryState.ordering,
+    queryState.filters,
+    { enabled: isMultiMarket },
+  );
+
+  // Use the appropriate query based on market type
+  const activeQuery = isMultiMarket ? multiMarketsQuery : regularMarketsQuery;
 
   const {
     data: marketsPages,
@@ -74,86 +43,72 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
     isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteMarkets(
-    queryState.ordering,
-    queryState.liquidityOnly,
-    queryState.filters,
-  );
+  } = activeQuery;
 
   useEffect(() => {
     if (isLoadMarkerInView === true && hasNextPage === true) {
       fetchNextPage();
     }
-  }, [isLoadMarkerInView, hasNextPage]);
+  }, [isLoadMarkerInView, hasNextPage, fetchNextPage]);
 
-  const markets = marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
+  const marketItems = marketsPages?.pages.flatMap((page) => page.data) ?? [];
 
-  const count = markets?.length ?? 0;
+  const count = marketItems?.length ?? 0;
 
-  const { data: stats } = useMarketsStats(markets.map((m) => m.marketId));
+  // Determine loading states
+  const isInitialLoading = isLoading && count === 0;
+  const isFetchingMore = isFetchingMarkets && count > 0;
 
   return (
     <div
-      className={"mb-[38px] scroll-mt-[40px] " + className}
+      className={"mb-[38px] " + className}
       data-testid="marketsList"
       id={"market-list"}
     >
-      <MarketFilterSelection
-        onFiltersChange={setFilters}
-        onOrderingChange={setOrderBy}
-        onWithLiquidityOnlyChange={setWithLiquidityOnly}
-      />
+      {/* Initial loading state - centered */}
+      {isInitialLoading ? (
+        <div className="flex min-h-[400px] w-full items-center justify-center">
+          <Loader className="w-32" type="dots" />
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
+            {marketItems?.map((item) => {
+              return (
+                <MarketOrComboCard
+                  key={`${item.type}-${item.type === "market" ? item.data.marketId : item.data.poolId}`}
+                  item={item}
+                />
+              );
+            })}
+          </div>
 
-      <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
-        {markets?.map((market) => {
-          const stat = stats?.find((s) => s.marketId === market.marketId);
+          {/* Pagination loader - at bottom when fetching more */}
+          {isFetchingMore && (
+            <div className="mt-[78px] flex w-full justify-center">
+              <Loader className="w-32" type="dots" />
+            </div>
+          )}
 
-          return (
-            <MarketCard
-              key={`market-${market.marketId}`}
-              market={market}
-              numParticipants={stat?.participants}
-              liquidity={stat?.liquidity}
-            />
-          );
-        })}
-      </div>
-      <div className="mt-[78px] flex h-[20px] w-full justify-center">
-        {(isFetchingMarkets || isLoading) && <Loader />}
-      </div>
-      {!(isFetchingMarkets || isLoading) && count === 0 && (
-        <div className="text-center">No results!</div>
+          {/* Empty state - only show when not loading and no data */}
+          {!isInitialLoading && !isFetchingMore && count === 0 && (
+            <div className="mt-[78px] text-center text-white/70">
+              No results!
+            </div>
+          )}
+        </>
       )}
+
+      {/* Infinite scroll trigger */}
       <div
         className="h-0 w-full"
         style={
-          isFetchingMarkets || !hasNextPage
+          isFetchingMore || !hasNextPage
             ? { position: "absolute", left: "-10000px" }
             : {}
         }
         ref={loadMoreRef}
       ></div>
-    </div>
-  );
-};
-
-const MarketsSearchInfo = ({ searchText }: { searchText: string }) => {
-  const router = useRouter();
-
-  return (
-    <div className="my-ztg-30 flex h-ztg-34">
-      <h6 className="text-ztg-[24px]" id="marketsHead">
-        {`Search results for: "${searchText}"`}
-      </h6>
-      <div className="center ml-ztg-15 h-ztg-24 w-ztg-24 rounded-full bg-sky-400 dark:bg-black">
-        <X
-          size={24}
-          className="cursor-pointer text-sky-600"
-          onClick={() => {
-            router.push("/", "", { shallow: true });
-          }}
-        />
-      </div>
     </div>
   );
 };

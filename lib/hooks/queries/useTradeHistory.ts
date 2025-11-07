@@ -17,6 +17,7 @@ import {
 import Decimal from "decimal.js";
 import { getMarketHeaders, MarketHeader } from "lib/gql/market-header";
 import { useSdkv2 } from "../useSdkv2";
+import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 
 export const transactionHistoryKey = "trade-history";
 
@@ -25,7 +26,7 @@ const lookupAssetName = (
   marketsMap: Map<number, MarketHeader>,
   foreignAssetMap: Map<number, string>,
 ) => {
-  const assetId = parseAssetId(asset).unwrap();
+  const assetId = parseAssetIdStringWithCombinatorial(asset);
 
   if (IOMarketOutcomeAssetId.is(assetId)) {
     const marketId = getMarketIdOf(assetId);
@@ -40,7 +41,7 @@ const lookupAssetName = (
 };
 
 const lookupMarket = (asset: string, marketsMap: Map<number, MarketHeader>) => {
-  const assetId = parseAssetId(asset).unwrap();
+  const assetId = parseAssetIdStringWithCombinatorial(asset);
 
   if (IOMarketOutcomeAssetId.is(assetId)) {
     const marketId = getMarketIdOf(assetId);
@@ -57,7 +58,7 @@ const calculatePrice = (
   assetAmountIn: string,
   assetAmountOut: string,
 ) => {
-  const assetInId = parseAssetId(assetIn).unwrap();
+  const assetInId = parseAssetIdStringWithCombinatorial(assetIn);
 
   const assetInIsBaseAsset = IOBaseAssetId.is(assetInId);
 
@@ -75,7 +76,7 @@ const calculatePrice = (
 };
 
 export type TradeHistoryItem = {
-  marketId: MarketId;
+  marketId: number;
   question: string;
   assetIn?: string;
   assetOut?: string;
@@ -105,8 +106,8 @@ export const useTradeHistory = (address?: string) => {
         let marketIds = new Set<number>();
 
         historicalSwaps.forEach((swap) => {
-          const assetInId = parseAssetId(swap.assetIn).unwrap();
-          const assetOutId = parseAssetId(swap.assetOut).unwrap();
+          const assetInId = parseAssetIdStringWithCombinatorial(swap.assetIn);
+          const assetOutId = parseAssetIdStringWithCombinatorial(swap.assetOut);
 
           if (IOForeignAssetId.is(assetInId)) {
             foreignAssetIds.add(assetInId.ForeignAsset);

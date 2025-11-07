@@ -53,26 +53,28 @@ const ScalarDisputeBox = ({
   const handleSignTransaction = async () => send();
 
   return (
-    <div className="flex flex-col items-center gap-y-3 p-[30px]">
-      <div className="text-[22px] font-bold">Dispute Outcome</div>
-      <div className="mb-[20px] flex flex-col items-center justify-center gap-3 text-center">
-        <div>
-          Bond cost: {disputeBond} {tokenSymbol}
+    <div className="flex flex-col items-center gap-y-4">
+      
+      <div className="mb-4 flex w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-orange-400/40 bg-orange-500/20 p-4 text-center backdrop-blur-md">
+        <div className="text-sm text-white/90">
+          Bond cost: <span className="font-semibold text-white">{disputeBond} {tokenSymbol}</span>
         </div>
-        <div className="font-bold">
-          Bonds will be slashed if the reported outcome is deemed to be
-          incorrect
+        <div className="text-sm font-semibold text-white/90">
+          Bonds will be slashed if the reported outcome is deemed to be incorrect
         </div>
       </div>
 
       {bondAmount !== disputeBond && bondAmount !== undefined && (
-        <div className="item-center flex flex-col text-center">
-          <span className="text-[14px] text-sky-600">Previous Bond:</span>
-          <span className="">{bondAmount}</span>
+        <div className="flex flex-col items-center text-center">
+          <span className="text-sm text-white/70">
+            Previous Bond:
+          </span>
+          <span className="mt-1 font-semibold text-white">{bondAmount}</span>
         </div>
       )}
+      
       <TransactionButton
-        className="mb-ztg-10 mt-[20px]"
+        className="mt-4 w-full"
         onClick={handleSignTransaction}
         disabled={isLoading}
         loading={isBroadcasting}

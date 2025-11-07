@@ -1,5 +1,6 @@
 import { Dialog, Popover, Transition } from "@headlessui/react";
 import Modal from "components/ui/Modal";
+import { ModalPanel } from "components/ui/ModalPanel";
 import { Fragment, ReactNode, useMemo, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
@@ -86,9 +87,9 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
               leaveTo="opacity-0 scale-1"
             >
               <Popover.Panel
-                className={`absolute z-[100] bg-tooltip-bg ${positionCss} w-screen rounded-md lg:w-[564px] ${popoverCss}`}
+                className={`absolute z-[100] bg-tooltip-bg ${positionCss} w-screen max-w-[calc(100vw-2rem)] rounded-md lg:w-[564px] ${popoverCss}`}
               >
-                <div className="shadow-xs overflow-hidden rounded-md px-3 py-2 text-left  text-sm font-light text-black ring-2 ring-orange-400 ring-opacity-20">
+                <div className="shadow-xs overflow-hidden rounded-md bg-white/10 px-3 py-2 text-left text-sm font-medium text-white/90 ring-2 ring-white/10 backdrop-blur-sm">
                   {children}
                 </div>
               </Popover.Panel>
@@ -98,13 +99,15 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
       </Popover>
 
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        <Dialog.Panel
-          onClick={() => setIsOpen(false)}
-          className={`w-full max-w-[564px] cursor-pointer rounded-[10px] bg-tooltip-bg p-6 ${className} text-base font-light`}
+        <ModalPanel
+          size="xl"
+          className={`cursor-pointer p-6 ${className} text-base font-light`}
         >
-          {title}
-          <div className="text-center">{children}</div>
-        </Dialog.Panel>
+          <div onClick={() => setIsOpen(false)}>
+            {title}
+            <div className="text-center">{children}</div>
+          </div>
+        </ModalPanel>
       </Modal>
     </div>
   );

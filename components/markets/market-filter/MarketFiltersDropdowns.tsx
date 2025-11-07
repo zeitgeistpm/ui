@@ -11,12 +11,6 @@ export type MarketFiltersDropdownsProps = {
   className?: string;
 };
 
-const Divider = () => {
-  return (
-    <div className="hidden h-[10px] w-[1px] bg-pastel-blue lg:block"></div>
-  );
-};
-
 const MarketFiltersDropdowns = ({
   className = "",
 }: MarketFiltersDropdownsProps) => {
@@ -46,7 +40,6 @@ const MarketFiltersDropdowns = ({
         portal={portal}
         isOpen={selectedMenu === "Category"}
       />
-      <Divider />
       <DropDownSelect
         label="Currency"
         options={marketCurrencyFilterOptions}
@@ -54,7 +47,6 @@ const MarketFiltersDropdowns = ({
         portal={portal}
         isOpen={selectedMenu === "Currency"}
       />
-      <Divider />
       <DropDownSelect
         label="Status"
         options={marketStatusFilterOptions}
@@ -62,7 +54,6 @@ const MarketFiltersDropdowns = ({
         portal={portal}
         isOpen={selectedMenu === "Status"}
       />
-      <Divider />
     </div>
   );
 };

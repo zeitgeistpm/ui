@@ -137,7 +137,7 @@ const ResultButtons = ({
             target="_blank"
             className={
               "center flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-white p-3 leading-10 outline-none " +
-              (disabled ? "opacity-50 cursor-not-allowed" : "")
+              (disabled ? "cursor-not-allowed opacity-50" : "")
             }
             onClick={(e) => {
               if (disabled) {
@@ -292,7 +292,9 @@ const DepositPage: NextPage = () => {
 
   const [method, setMethod] = useState<DepositMethod | undefined>("buy");
   const [currency, setCurrency] = useState<DepositCurrency | undefined>("ztg");
-  const [paymentMethod, setPaymentMethod] = useState<DepositPaymentMethod | undefined>("card");
+  const [paymentMethod, setPaymentMethod] = useState<
+    DepositPaymentMethod | undefined
+  >("card");
 
   const encodedAddress =
     wallet.realAddress &&
@@ -326,7 +328,7 @@ const DepositPage: NextPage = () => {
           disabled={["usdt"]}
           className="h-36"
           itemClassName="flex flex-col sm:flex-row gap-3 items-center center outline-none rounded-lg bg-white"
-          disabledItemClassName="!bg-misty-harbor text-sky-600"
+          disabledItemClassName="!bg-misty-harbor text-ztg-primary-600"
           selectedItemClassName="!bg-ice-hush"
         />
         {method === "buy" && (
@@ -354,7 +356,7 @@ const DepositPage: NextPage = () => {
                 ]}
                 disabled={!acceptedTerms}
               />
-              <div className="flex items-center gap-2 mb-4">
+              <div className="mb-4 flex items-center gap-2">
                 <input
                   type="checkbox"
                   id="terms"
@@ -363,7 +365,9 @@ const DepositPage: NextPage = () => {
                   className="h-4 w-4"
                 />
                 <label htmlFor="terms" className="text-sm">
-                  I understand that I will be redirected to Banxa, a third-party website to complete the payment and will be subject to their terms of service.
+                  I understand that I will be redirected to Banxa, a third-party
+                  website to complete the payment and will be subject to their
+                  terms of service.
                 </label>
               </div>
               <div className="mt-7 flex flex-col gap-2 md:flex-row">
@@ -437,7 +441,7 @@ const DepositPage: NextPage = () => {
                 ]}
                 disabled={!acceptedPolkadotTerms}
               />
-              <div className="flex items-center gap-2 mb-4">
+              <div className="mb-4 flex items-center gap-2">
                 <input
                   type="checkbox"
                   id="polkadot-terms"
@@ -446,7 +450,9 @@ const DepositPage: NextPage = () => {
                   className="h-4 w-4"
                 />
                 <label htmlFor="polkadot-terms" className="text-sm">
-                  I understand that I will be redirected to Banxa, a third-party website to complete the payment and will be subject to their terms of service.
+                  I understand that I will be redirected to Banxa, a third-party
+                  website to complete the payment and will be subject to their
+                  terms of service.
                 </label>
               </div>
               <div className="mt-7 flex flex-col gap-2 md:flex-row">

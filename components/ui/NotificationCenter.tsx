@@ -35,31 +35,32 @@ const NotificationCard: FC<{
 
   return (
     <div
-      className={`relative flex flex-1 gap-4 rounded-md  px-5 ${getBgColor(
+      className={`relative flex flex-1 gap-4 rounded-lg border-2 px-5 shadow-lg transition-all ${getGlassBgColor(
         type,
-      )}`}
+      )} ${getBorderColor(type)}`}
+      style={{
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        transform: "translateZ(0)",
+        willChange: "transform",
+      }}
     >
       <div
-        className={`absolute left-0 top-0  z-20 h-1 w-full overflow-hidden rounded-t-md ${getBgColor(
+        className={`absolute left-0 top-0 z-20 h-1 w-full overflow-hidden rounded-t-lg ${getProgressBarBg(
           type,
         )}`}
       >
         <div
-          className={`${getTopBarColor(
+          className={`absolute left-0 top-0 z-40 h-full transition-all duration-500 ease-linear ${getProgressBarColor(
             type,
-          )} absolute left-0 top-0 z-40 h-full transition-all duration-500 ease-linear`}
+          )}`}
           style={{
             width: `${((100 * timer) / lifetime).toFixed(2)}%`,
           }}
         />
-        <div
-          className={`${getTopBarColor(
-            type,
-          )} absolute left-0 top-0 z-40 h-full  w-full opacity-10`}
-        />
       </div>
-      <div className="flex justify-center py-6 text-white">
-        <div className={`center ${getBgColor(type)}`}>
+      <div className="flex justify-center py-6">
+        <div className="center">
           <Loader
             loading={Boolean(lifetime)}
             lineThrough={type === "Error"}
@@ -69,11 +70,15 @@ const NotificationCard: FC<{
         </div>
       </div>
       <div className="center flex-1 py-6">
-        <div className="w-full text-left text-base font-normal">{content}</div>
+        <div
+          className={`w-full text-left text-base font-medium ${getTextColor(type)}`}
+        >
+          {content}
+        </div>
       </div>
       <div className="py-4">
         <X
-          className="ml-auto cursor-pointer"
+          className={`ml-auto cursor-pointer transition-colors ${getIconColor(type)}`}
           size={22}
           onClick={close}
           role="button"
@@ -83,25 +88,79 @@ const NotificationCard: FC<{
   );
 };
 
-const getBgColor = (type: NotificationType) => {
+const getGlassBgColor = (type: NotificationType) => {
   switch (type) {
     case "Success":
-      return "bg-success";
+      return "bg-white/10 backdrop-blur-lg";
     case "Info":
-      return "bg-info";
+      return "bg-white/10 backdrop-blur-lg";
     case "Error":
-      return "bg-error";
+      return "bg-white/10 backdrop-blur-lg";
+    default:
+      return "bg-white/10 backdrop-blur-lg";
   }
 };
 
-const getTopBarColor = (type: NotificationType) => {
+const getBorderColor = (type: NotificationType) => {
   switch (type) {
     case "Success":
-      return "bg-[#31C48D]";
+      return "border-emerald-200/40";
     case "Info":
-      return "bg-[#31A1C4]";
+      return "border-ztg-primary-200/40";
     case "Error":
-      return "bg-[#C43131]";
+      return "border-ztg-red-200/40";
+  }
+};
+
+const getProgressBarBg = (type: NotificationType) => {
+  switch (type) {
+    case "Success":
+      return "bg-emerald-100/50";
+    case "Info":
+      return "bg-emerald-100/50";
+    case "Error":
+      return "bg-ztg-red-100/50";
+    default:
+      return "bg-emerald-100/50";
+  }
+};
+
+const getProgressBarColor = (type: NotificationType) => {
+  switch (type) {
+    case "Success":
+      return "bg-gradient-to-r from-ztg-green-500/60 to-ztg-green-500/80";
+    case "Info":
+      return "bg-gradient-to-r from-ztg-green-500/60 to-ztg-green-500/80";
+    case "Error":
+      return "bg-gradient-to-r from-ztg-red-500/60 to-ztg-red-500/80";
+    default:
+      return "bg-gradient-to-r from-ztg-green-500/60 to-ztg-green-500/80";
+  }
+};
+
+const getTextColor = (type: NotificationType) => {
+  switch (type) {
+    case "Success":
+      return "text-white/90";
+    case "Info":
+      return "text-white/90";
+    case "Error":
+      return "text-white/90";
+    default:
+      return "text-white/90";
+  }
+};
+
+const getIconColor = (type: NotificationType) => {
+  switch (type) {
+    case "Success":
+      return "text-white/70 hover:text-white/90";
+    case "Info":
+      return "text-white/70 hover:text-white/90";
+    case "Error":
+      return "text-white/70 hover:text-white/90";
+    default:
+      return "text-white/70 hover:text-white/90";
   }
 };
 
@@ -109,34 +168,47 @@ const NotificationCenter = () => {
   const { notifications, removeNotification } = useNotifications();
 
   return (
-    <div className="pointer-events-none fixed top-0 z-[100] h-full w-full">
-      <div className="flex flex-row justify-end pt-20">
-        <div className="relative flex flex-1 flex-col items-end px-4">
-          <AnimatePresence mode="sync" presenceAffectsLayout>
-            {notifications.map((notification, index) => (
-              <motion.div
+    <div
+      className="pointer-events-none fixed right-4 top-4 w-full max-w-[420px] md:right-6"
+      style={{
+        zIndex: 9999,
+      }}
+    >
+      <AnimatePresence mode="popLayout" presenceAffectsLayout={false}>
+        {notifications.map((notification, index) => (
+          <motion.div
+            key={notification.id}
+            initial={{ x: 400, opacity: 0.01 }}
+            exit={{ x: 400, opacity: 0.01 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{
+              type: "tween",
+              ease: [0.16, 1, 0.3, 1],
+              duration: 0.5,
+              delay: index * 0.05,
+            }}
+            className="pointer-events-auto relative box-border w-full overflow-hidden"
+            style={{
+              zIndex: 9999,
+              position: "relative",
+            }}
+          >
+            <div
+              className="mb-4 flex-1"
+              style={{ position: "relative", zIndex: 9999 }}
+            >
+              <NotificationCard
+                dataTest="notificationMessage"
                 key={notification.id}
-                initial={{ x: 300, maxHeight: 0, opacity: 0 }}
-                exit={{ x: 300, maxHeight: 0, opacity: 0 }}
-                animate={{ x: 0, maxHeight: 900, opacity: 1 }}
-                transition={{ type: "spring", duration: 0.7 }}
-                className="pointer-events-auto box-border w-full overflow-hidden md:w-[420px] md:max-w-screen-sm"
-              >
-                <div className="mb-4 flex-1">
-                  <NotificationCard
-                    dataTest="notificationMessage"
-                    key={notification.id}
-                    {...notification}
-                    close={() => {
-                      removeNotification(notification);
-                    }}
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      </div>
+                {...notification}
+                close={() => {
+                  removeNotification(notification);
+                }}
+              />
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 };

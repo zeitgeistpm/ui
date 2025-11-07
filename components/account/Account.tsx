@@ -1,5 +1,5 @@
-import { Dialog } from "@headlessui/react";
-import Modal from "components/ui/Modal";
+import Modal, { ModalProps } from "components/ui/Modal";
+import { ModalPanel, ModalHeader, ModalBody } from "components/ui/ModalPanel";
 import { useAccountModals } from "lib/state/account";
 import AccountModalContent from "./AccountModalContent";
 import AccountModalHead from "./AccountModalHead";
@@ -11,26 +11,44 @@ export const Account = () => {
     walletSelectModalOpen,
     closeAccountSelect,
     closeWalletSelect,
+    closeAllModals,
   } = useAccountModals();
+
+  const handleWalletSelectClose = () => {
+    closeAllModals();
+  };
 
   return (
     <>
-      <Modal open={accountSelectModalOpen} onClose={closeAccountSelect}>
-        <Dialog.Panel className="rounded-ztg-10 bg-white p-[15px]">
-          <div className="mb-3">
-            <AccountModalHead />
-          </div>
-          <AccountModalContent />
-        </Dialog.Panel>
-      </Modal>
-
-      <Modal open={walletSelectModalOpen} onClose={closeWalletSelect}>
-        <Dialog.Panel
-          className="
-    w-full max-w-[450px]  rounded-lg bg-white p-8"
+      {!walletSelectModalOpen && (
+        <Modal
+          key="account-select-modal"
+          open={accountSelectModalOpen}
+          onClose={closeAccountSelect}
+          enableScrollLock={true}
         >
-          <WalletSelect />
-        </Dialog.Panel>
+          <ModalPanel size="lg" className="flex flex-col">
+            <div className="pt-4 px-6">
+              <AccountModalHead />
+            </div>
+            <ModalBody>
+              <AccountModalContent />
+            </ModalBody>
+          </ModalPanel>
+        </Modal>
+      )}
+
+      <Modal
+        key="wallet-select-modal"
+        open={walletSelectModalOpen}
+        onClose={handleWalletSelectClose}
+        enableScrollLock={true}
+      >
+        <ModalPanel size="md" className="flex flex-col">
+          <ModalBody>
+            <WalletSelect />
+          </ModalBody>
+        </ModalPanel>
       </Modal>
     </>
   );

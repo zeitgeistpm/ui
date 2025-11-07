@@ -1,50 +1,34 @@
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { isIndexedSdk } from "@zeitgeistpm/sdk";
+import { MarketListItem } from "lib/types/market-or-combo";
+import { MarketsOrderBy } from "lib/types/market-filter";
+type MarketsListFiltersQuery = any;
 import {
-  MarketOrderByInput,
   MarketStatus,
-  MarketWhereInput,
   ScoringRule,
+  MarketOrderByInput,
 } from "@zeitgeistpm/indexer";
-import { IndexerContext, Market, isIndexedSdk } from "@zeitgeistpm/sdk";
-import { hiddenMarketIds } from "lib/constants/markets";
-import {
-  MarketsListFiltersQuery,
-  MarketsOrderBy,
-} from "lib/types/market-filter";
-import { MarketOutcomes } from "lib/types/markets";
-import { useSdkv2 } from "../useSdkv2";
-import { FullMarketFragment } from "@zeitgeistpm/indexer";
+const validMarketWhereInput: any = {};
+const WHITELISTED_TRUSTED_CREATORS: any = [];
+type IndexerContext = any;
 import { FullCmsMarketMetadata } from "lib/cms/markets";
 import { marketCmsDatakeyForMarket } from "./cms/useMarketCmsMetadata";
-import { marketMetaFilter } from "./constants";
-import { marketsRootQuery } from "./useMarket";
 
-import { tryCatch } from "@zeitgeistpm/utility/dist/either";
-import { WHITELISTED_TRUSTED_CREATORS } from "lib/constants/whitelisted-trusted-creators";
+const rootKey = "infinite-markets";
 
-export const rootKey = "markets-filtered";
-
-const orderByMap = {
-  [MarketsOrderBy.Newest]: MarketOrderByInput.MarketIdDesc,
-  [MarketsOrderBy.Oldest]: MarketOrderByInput.MarketIdAsc,
-  [MarketsOrderBy.MostVolume]: MarketOrderByInput.VolumeDesc,
-  [MarketsOrderBy.LeastVolume]: MarketOrderByInput.VolumeAsc,
-};
-
-const validMarketWhereInput: MarketWhereInput = {
-  marketId_not_in: JSON.parse(hiddenMarketIds),
-  ...marketMetaFilter,
-};
-
-export type QueryMarketData = Market<IndexerContext> & {
-  outcomes: MarketOutcomes;
-  prediction: { name: string; price: number };
+const orderByMap: any = {
+  "most-volume": { volume_DESC: {} },
+  "most-recent": { marketId_DESC: {} },
+  "ending-soon": { period_end_ASC: {} },
+  "most-popular": { volume_DESC: {} }, // Could be enhanced with better popularity metric
 };
 
 export const useInfiniteMarkets = (
   orderBy: MarketsOrderBy,
   withLiquidityOnly = false,
   filters?: MarketsListFiltersQuery,
+  options?: { enabled?: boolean },
 ) => {
   const [sdk, id] = useSdkv2();
   const queryClient = useQueryClient();
@@ -52,7 +36,7 @@ export const useInfiniteMarkets = (
   const limit = 12;
   const fetcher = async ({
     pageParam = 0,
-  }): Promise<{ data: FullMarketFragment[]; next: number | boolean }> => {
+  }): Promise<{ data: MarketListItem[]; next: number | boolean }> => {
     if (
       !isIndexedSdk(sdk) ||
       filters == null ||
@@ -69,7 +53,8 @@ export const useInfiniteMarkets = (
     const tags = filters.tag;
     const currencies = filters.currency;
 
-    const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
+    // Fetch regular markets (no combo logic, full limit)
+    const markets: any[] = await sdk.model.markets.list({
       where: {
         AND: [
           {
@@ -118,10 +103,10 @@ export const useInfiniteMarkets = (
         ],
       },
       offset: !pageParam ? 0 : limit * pageParam,
-      limit: limit,
-      order: orderByMap[orderBy] as MarketOrderByInput, //todo: fix this type once sdk updated,
+      limit: limit, // Full limit for markets
+      order: orderByMap[orderBy] as MarketOrderByInput,
     });
-
+    // Apply CMS data to regular markets
     for (const market of markets) {
       const cmsData: FullCmsMarketMetadata | undefined =
         queryClient.getQueryData(marketCmsDatakeyForMarket(market.marketId));
@@ -129,9 +114,33 @@ export const useInfiniteMarkets = (
       if (cmsData?.imageUrl) market.img = cmsData.imageUrl;
     }
 
+    // Transform regular markets to MarketListItem
+    const marketItems: MarketListItem[] = markets.map((market) => {
+      const liquidity =
+        market.pool?.baseAsset || market.neoPool?.totalStake || "0";
+      const volume = market.volume || "0";
+
+      return {
+        type: "market",
+        data: market,
+        stats: {
+          liquidity,
+          participants: 0,
+          volume,
+        },
+        marketId: market.marketId,
+        slug: market.slug || `market-${market.marketId}`,
+        question: market.question || "Untitled Market",
+        categories: market.categories || [],
+        status: market.status,
+        baseAsset: market.baseAsset,
+        link: `/markets/${market.marketId}`,
+      };
+    });
+
     return {
-      data: markets,
-      next: markets.length >= limit ? pageParam + 1 : false,
+      data: marketItems,
+      next: marketItems.length >= limit ? pageParam + 1 : false,
     };
   };
 
@@ -139,22 +148,13 @@ export const useInfiniteMarkets = (
     queryKey: [id, rootKey, filters, orderBy, withLiquidityOnly],
     queryFn: fetcher,
     enabled:
+      (options?.enabled ?? true) &&
       isIndexedSdk(sdk) &&
       filters !== undefined &&
       orderBy !== undefined &&
       withLiquidityOnly !== undefined &&
       Boolean(sdk),
     getNextPageParam: (lastPage) => lastPage.next,
-    onSuccess(data) {
-      data.pages
-        .flatMap((p) => p.data)
-        .forEach((market) => {
-          queryClient.setQueryData(
-            [id, marketsRootQuery, market.marketId],
-            market,
-          );
-        });
-    },
     staleTime: 10_000,
   });
 

@@ -1,3 +1,40 @@
+import { NextPage } from "next";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+
+import { Loader } from "components/ui/Loader";
+
+/**
+ * Home page - Redirects to /markets
+ *
+ * The original home page code is preserved below (commented out)
+ * in case you want to restore it in the future.
+ */
+const IndexPage: NextPage = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to markets page on mount
+    router.replace("/markets");
+  }, [router]);
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-ztg-primary-500">
+      <Loader className="w-32" type="dots" />
+    </div>
+  );
+};
+
+export default IndexPage;
+
+/* ============================================================================
+ * ORIGINAL HOME PAGE CODE (COMMENTED OUT)
+ * ============================================================================
+ *
+ * To restore the original home page, uncomment the code below and
+ * comment out the redirect implementation above.
+ *
+
 import { GenericChainProperties } from "@polkadot/types";
 import { QueryClient, dehydrate } from "@tanstack/react-query";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
@@ -73,9 +110,12 @@ export async function getStaticProps() {
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
     getPlaiceholder(`/banner.png`),
-    getPlaiceholders(CATEGORIES?.map((cat) => `${cat.imagePath}`), {
-      dir: `${path.join(process.cwd())}/public/`,
-    }),
+    getPlaiceholders(
+      CATEGORIES?.map((cat) => `${cat.imagePath}`),
+      {
+        dir: `${path.join(process.cwd())}/public/`,
+      },
+    ),
     getPlaiceholders(
       news.map((slide) => slide.image ?? ""),
       { size: 16 },
@@ -101,7 +141,10 @@ export async function getStaticProps() {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery([categoryCountsKey], () =>
-    getCategoryCounts(sdk.indexer.client, CATEGORIES?.map((c) => c.name)),
+    getCategoryCounts(
+      sdk.indexer.client,
+      CATEGORIES?.map((c) => c.name),
+    ),
   );
 
   for (const marketCmsData of marketsCmsData) {
@@ -249,7 +292,7 @@ const IndexPage: NextPage<{
           </div>
         )}
 
-        <div className="mb-12 flex w-full flex-col gap-8 md:flex-row">
+        {/* <div className="mb-12 flex w-full flex-col gap-8 md:flex-row">
           <div className="flex w-full flex-col gap-y-6">
             <div className="flex items-center">
               <div className="text-xl font-bold">Trending Markets</div>
@@ -275,13 +318,13 @@ const IndexPage: NextPage<{
             </div>
             <LatestTradesCompact />
           </div>
-        </div>
+        </div> *\/}
 
         {/* <div className="mb-12">
           <PopularCategories imagePlaceholders={categoryPlaceholders} />
-        </div> */}
+        </div> *\/}
 
-        <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} />
+        {/* <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} /> *\/}
 
         <div className="mb-12">
           <WatchHow />
@@ -296,3 +339,5 @@ const IndexPage: NextPage<{
 };
 
 export default IndexPage;
+
+ * ============================================================================ */

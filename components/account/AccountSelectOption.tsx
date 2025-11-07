@@ -10,19 +10,16 @@ export interface AccountSelectRowProps {
 
 const AccountSelectOption: FC<AccountSelectRowProps> = ({ name, address }) => {
   return (
-    <div className="flex cursor-pointer items-center bg-sky-100 p-ztg-8 text-black dark:bg-black dark:text-white">
-      <div className="center h-ztg-28 w-ztg-28 rounded-full">
-        <div className="mr-4 h-ztg-22 w-ztg-22 rounded-full bg-sky-100 dark:bg-black">
+    <div className="mb-2 flex min-h-[48px] cursor-pointer touch-manipulation items-center gap-3 rounded-md bg-white/10 p-3 backdrop-blur-sm transition-all last:mb-0 hover:bg-white/20 md:mb-1.5 md:min-h-0 md:p-2.5">
+      <div className="shrink-0">
+        <div className="h-10 w-10 rounded-full ring-2 ring-white/20 md:h-9 md:w-9">
           <Avatar zoomed address={address} />
         </div>
       </div>
-      <div className="mr-ztg-10 flex flex-col">
-        <div className="text-ztg-12-120 font-medium">{name}</div>
-        <div className="font-mono text-ztg-12-120 font-semibold md:hidden">
-          {shortenAddress(address, 12, 12)}
-        </div>
-        <div className="hidden font-mono text-ztg-12-120 font-semibold md:block">
-          {address}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="text-sm font-semibold text-white/90">{name}</div>
+        <div className="text-xs font-medium text-white/70">
+          {shortenAddress(address, 8, 12)}
         </div>
       </div>
     </div>

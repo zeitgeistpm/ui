@@ -331,7 +331,7 @@ const DenounceVoteButton: React.FC<DenounceVoteButtonProps> = ({
   return (
     <>
       <button
-        className="center gap-2 rounded-md border-2 border-red-400 px-2 py-1 text-sm text-red-400"
+        className="center border-r-2ed-400 gap-2 rounded-md border-2 px-2 py-1 text-sm text-red-400"
         onClick={() => setOpen(true)}
       >
         <BsShieldFillExclamation size={12} />

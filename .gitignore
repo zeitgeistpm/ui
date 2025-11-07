@@ -17,6 +17,8 @@
 
 # misc
 .DS_Store
+.cursor
+/reference
 *.pem
 
 # debug
@@ -45,4 +47,6 @@ yarn-error.log*
 /zeitgeist-subsquid
 /zeitgeist-runtime
 /zeitgeist-sdk
-/reference
+CLAUDE.md
+/.claude
+/.cursor

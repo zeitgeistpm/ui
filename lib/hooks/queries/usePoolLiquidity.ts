@@ -15,7 +15,7 @@ export const usePoolLiquidity = (filter?: UseMarketFilter) => {
   const [sdk, id] = useSdkv2();
   const { data: market } = useMarket(filter);
 
-  const { data: spotPrices } = useMarketSpotPrices(market?.marketId);
+  const { data: spotPrices } = useMarketSpotPrices(market?.marketId ?? 0);
   const { data: balances } = useAccountPoolAssetBalances(
     market?.pool?.account.accountId,
     market?.pool ?? undefined,

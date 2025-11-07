@@ -5,6 +5,8 @@ import { useLatestTrades } from "lib/hooks/queries/useLatestTrades";
 import { ZTG } from "@zeitgeistpm/sdk";
 import moment from "moment";
 import Avatar from "components/ui/Avatar";
+import { CombinatorialToken } from "lib/types/combinatorial";
+import { useMemo } from "react";
 
 const columns: TableColumn[] = [
   {
@@ -12,11 +14,11 @@ const columns: TableColumn[] = [
     accessor: "trader",
     type: "component",
   },
-  {
-    header: "Market",
-    accessor: "question",
-    type: "component",
-  },
+  // {
+  //   header: "Market",
+  //   accessor: "question",
+  //   type: "component",
+  // },
   {
     header: "Outcome",
     accessor: "outcome",
@@ -47,45 +49,70 @@ const columns: TableColumn[] = [
 const LatestTrades = ({
   limit = 3,
   marketId,
+  outcomeAssets,
+  outcomeNames,
+  marketQuestion,
+  isMultiMarket = false,
 }: {
   limit?: number;
   marketId?: number;
+  outcomeAssets?: CombinatorialToken[];
+  outcomeNames?: string[];
+  marketQuestion?: string;
+  isMultiMarket?: boolean;
 }) => {
-  const { data: trades } = useLatestTrades(limit, marketId);
-  const now = moment();
+  const { data: trades, isLoading } = useLatestTrades({
+    limit,
+    marketId,
+    outcomeAssets,
+    outcomeNames,
+    marketQuestion,
+  });
 
-  const tableData: TableData[] | undefined = trades?.map((trade) => {
-    return {
+  const tableData: TableData[] | undefined = useMemo(() => {
+    // If still loading, return undefined to show skeleton
+    if (isLoading || trades === undefined) return undefined;
+
+    // If no trades, return empty array to show "No trades" message
+    if (!trades.length) return [];
+
+    const now = moment();
+    return trades.map((trade) => ({
       trader: (
-        <Link href={`/portfolio/${trade.traderAddress}`} className="">
+        <Link href={`/portfolio/${trade.traderAddress}`}>
           <Avatar address={trade.traderAddress} />
         </Link>
       ),
-      question: (
-        <Link href={`/markets/${trade.marketId}`} className="text-[14px]">
-          {trade?.question}
-        </Link>
-      ),
+      // question: isMultiMarket ? (
+      //   <Link href={`/multi-market/${trade.marketId}`} className="text-[14px]">
+      //     {trade.question}
+      //   </Link>
+      // ) : (
+      //   <Link href={`/markets/${trade.marketId}`} className="text-[14px]">
+      //     {trade.question}
+      //   </Link>
+      // ),
       outcome: trade.outcomeName,
-      trade: trade.type === "buy" ? "Buy" : "Sell",
-      cost: `${formatNumberLocalized(trade.cost.div(ZTG).toNumber())} ${
-        trade.costSymbol
-      }`,
+      trade:
+        trade.type === "buy" ? (
+          <span className="font-semibold text-ztg-green-400">Buy</span>
+        ) : (
+          <span className="font-semibold text-red-400">Sell</span>
+        ),
+      cost: `${formatNumberLocalized(trade.cost.div(ZTG).toNumber())} ${trade.costSymbol}`,
       price: formatNumberLocalized(trade.outcomePrice.toNumber()),
       time: `${moment.duration(now.diff(trade.time)).humanize()} ago`,
-    };
-  });
+    }));
+  }, [trades, isLoading]);
 
   return (
-    <div className="">
-      <div className="rounded-xl shadow-lg">
-        <Table
-          columns={columns}
-          data={tableData}
-          noDataMessage="No trades"
-          loadingNumber={limit}
-        />
-      </div>
+    <div>
+      <Table
+        columns={columns}
+        data={tableData}
+        noDataMessage="No trades"
+        loadingNumber={limit}
+      />
     </div>
   );
 };

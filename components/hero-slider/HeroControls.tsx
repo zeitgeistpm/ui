@@ -15,7 +15,7 @@ export const HeroControls: FC<HeroControlsProps> = ({ slides, slider }) => {
         onClick={() => {
           slider.prev(true);
         }}
-        className={`flex h-[40px] w-[40px] items-center justify-center rounded-full border border-white bg-black`}
+        className={`flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-white bg-black`}
       >
         <ChevronLeft className="relative right-[1px] text-white" />
       </button>
@@ -38,7 +38,7 @@ export const HeroControls: FC<HeroControlsProps> = ({ slides, slider }) => {
         onClick={() => {
           slider.next(true);
         }}
-        className={`ztg-transition flex h-[40px] w-[40px] items-center justify-center rounded-full border border-white bg-black`}
+        className={`ztg-transition flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-white bg-black`}
       >
         <ChevronRight className="relative left-[1px] text-white" />
       </button>

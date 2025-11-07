@@ -52,9 +52,9 @@ export const useChainConstants = () => {
         sdk.api.rpc.system.properties(),
         sdk.api.query.parachainInfo.parachainId(),
       ]);
-
       // minimumPeriod * 2 is fair assumption for now but need to make sure this stays up
       // to date with the chain code
+
       const blockTimeSec =
         (consts.timestamp.minimumPeriod.toNumber() * 2) / 1000;
       const config: ChainConstants = {
@@ -82,7 +82,7 @@ export const useChainConstants = () => {
         },
         identity: {
           basicDeposit: consts.identity.basicDeposit.toNumber() / ZTG,
-          fieldDeposit: consts.identity.fieldDeposit.toNumber() / ZTG,
+          fieldDeposit: consts.identity?.fieldDeposit?.toNumber() ?? 0 / ZTG,
         },
         balances: {
           existentialDeposit:
@@ -97,7 +97,6 @@ export const useChainConstants = () => {
           appealBond: consts.court.appealBond.toNumber() / ZTG,
         },
       };
-
       return config;
     },
     {

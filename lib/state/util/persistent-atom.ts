@@ -46,11 +46,35 @@ export type Migration<A, B> = (state: A) => B;
  * @returns WritableAtom<T & {__version: number}
  */
 export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
-  const parsedStorageValue = fromNullable(
-    globalThis.localStorage?.getItem(opts.key),
-  )
-    .bind((raw) => tryCatch(() => JSON.parse(raw) as Versioned<T>))
-    .unwrapOr(opts.defaultValue);
+  let parsedStorageValue: Versioned<T> = opts.defaultValue;
+  
+  try {
+    const rawValue = globalThis.localStorage?.getItem(opts.key);
+    if (rawValue) {
+      const parsed = tryCatch(() => JSON.parse(rawValue) as Versioned<T>);
+      parsedStorageValue = parsed.unwrapOr(opts.defaultValue);
+      
+      // If parsing failed or result is invalid, clear corrupted entry
+      if (parsed.isNone()) {
+        console.warn(`Failed to parse localStorage value for "${opts.key}", clearing corrupted entry`);
+        try {
+          globalThis.localStorage?.removeItem(opts.key);
+        } catch (e) {
+          console.error(`Failed to clear corrupted localStorage entry for "${opts.key}":`, e);
+        }
+        parsedStorageValue = opts.defaultValue;
+      }
+    }
+  } catch (error) {
+    console.error(`Error reading localStorage for "${opts.key}":`, error);
+    // Clear potentially corrupted entry
+    try {
+      globalThis.localStorage?.removeItem(opts.key);
+    } catch (e) {
+      console.error(`Failed to clear localStorage entry for "${opts.key}":`, e);
+    }
+    parsedStorageValue = opts.defaultValue;
+  }
 
   const storageAtom = atomWithStorage<Versioned<T>>(
     opts.key,

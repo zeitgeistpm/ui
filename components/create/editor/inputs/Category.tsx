@@ -29,21 +29,26 @@ export const CategorySelect = forwardRef(
     };
 
     return (
-      <div className="mx-auto flex flex-row flex-wrap justify-center gap-3">
+      <div className="flex flex-row flex-wrap justify-start gap-2">
         {defaultTags.map((tag, index) => {
           const isSelected = value?.includes(tag);
           return (
-            <div
+            <button
+              type="button"
               key={tag}
               className={`
-                center relative flex h-full cursor-pointer gap-2 rounded-full px-4 py-2 transition-all 
-                duration-200 ease-in-out active:scale-95
-                ${isSelected ? "bg-fog-of-war text-white" : "bg-gray-100"}
+                center relative flex cursor-pointer touch-manipulation gap-1.5 rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm
+                transition-all duration-200 ease-in-out active:scale-95
+                ${
+                  isSelected
+                    ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
+                    : "border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/20"
+                }
               `}
               onClick={handleSelect(tag)}
             >
               <div>{tag}</div>
-            </div>
+            </button>
           );
         })}
       </div>

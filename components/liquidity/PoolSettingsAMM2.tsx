@@ -88,7 +88,7 @@ const PoolSettingsAmm2: FC<{
           <div className="relative inline-block">
             <Input
               type="number"
-              className="font-base w-64 rounded-md bg-gray-100 py-4 pl-5 pr-28 text-right text-base outline-none"
+              className="font-base w-64 rounded-md bg-white/10 py-4 pl-5 pr-28 text-right text-base text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/60 focus:bg-white/15"
               value={`${parseFloat(baseAssetAmount ?? "0")}`}
               onChange={(event) => {
                 const value = parseFloat(event.target.value);
@@ -99,7 +99,7 @@ const PoolSettingsAmm2: FC<{
                 }
               }}
             />
-            <div className="center pointer-events-none absolute bottom-[50%] right-0 h-full translate-x-[0%] translate-y-[50%] gap-2 rounded-r-md border-2 border-l-0 border-gray-100 bg-white px-5 text-gray-600">
+            <div className="center pointer-events-none absolute bottom-[50%] right-0 h-full translate-x-[0%] translate-y-[50%] gap-2 rounded-r-md bg-white/10 px-5 text-white/90">
               {baseAssetSymbol}
               <div className="relative h-4 w-4">
                 {baseAssetImageSrc && (
@@ -119,7 +119,7 @@ const PoolSettingsAmm2: FC<{
       {onFeeChange && (
         <div className="mb-[40px] mt-[20px]">
           <div className="text-ztg-16-150 font-bold ">Pool Fees*</div>
-          <p className="mb-[30px] mt-[10px] text-ztg-14-150 text-sky-600 ">
+          <p className="mb-[30px] mt-[10px] text-ztg-14-150 text-ztg-primary-600 ">
             High fees will allow liquidity providers to collect more value from
             a given trade. However, high fees may also reduce market
             participants.

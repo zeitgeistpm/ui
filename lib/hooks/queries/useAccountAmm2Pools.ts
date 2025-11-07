@@ -7,6 +7,8 @@ import { getMarketHeaders } from "lib/gql/market-header";
 import { useAllForeignAssetUsdPrices } from "./useAssetUsdPrice";
 import { lookUpAssetPrice } from "lib/util/lookup-price";
 import { useZtgPrice } from "./useZtgPrice";
+import { getLiquiditySharesManagers } from "lib/gql/combo-pools";
+import { GraphQLClient } from "graphql-request";
 
 export const accountAmm2PoolsKey = "account-amm2-pools";
 
@@ -29,17 +31,25 @@ export const useAccountAmm2Pool = (address?: string) => {
     async () => {
       if (!enabled) return;
 
-      const { liquiditySharesManagers } =
-        await sdk.indexer.liquiditySharesManagers({
-          where: {
-            account_eq: address,
-          },
-        });
-
-      const markets = await getMarketHeaders(
-        sdk,
-        liquiditySharesManagers.map((manager) => manager.neoPool.marketId),
+      // Fetch liquidity shares managers directly from GraphQL
+      const liquiditySharesManagers = await getLiquiditySharesManagers(
+        sdk.indexer.client as unknown as GraphQLClient,
+        address,
       );
+      // Collect all market IDs (both single and multi-market)
+      const allMarketIds = new Set<number>();
+      liquiditySharesManagers.forEach((manager) => {
+        if (manager.neoPool.isMultiMarket && manager.neoPool.marketIds) {
+          // Multi-market pool - add all market IDs
+          manager.neoPool.marketIds.forEach((id) => allMarketIds.add(id));
+        } else if (manager.neoPool.marketId !== null) {
+          // Single market pool
+          allMarketIds.add(manager.neoPool.marketId);
+        }
+      });
+
+      // Fetch market data for all markets
+      const markets = await getMarketHeaders(sdk, Array.from(allMarketIds));
 
       const neoPools = liquiditySharesManagers.map((l) => l.neoPool);
 
@@ -60,11 +70,20 @@ export const useAccountAmm2Pool = (address?: string) => {
       });
 
       return neoPools.map((pool, index) => {
-        const market = markets.find((m) => m.marketId === pool.marketId);
-        const account = pool.liquiditySharesManager.find(
-          (l) => l.account === address,
-        );
-
+        const manager = liquiditySharesManagers[index];
+        // Handle multi-market pools
+        let question: string | undefined;
+        if (pool.isMultiMarket && pool.marketIds && pool.marketIds.length > 1) {
+          // Combine questions from all markets
+          const poolMarkets = pool.marketIds
+            .map((id) => markets.find((m) => m.marketId === id))
+            .filter(Boolean);
+          question = poolMarkets.map((m) => m?.question).join(" & ");
+        } else {
+          // Single market pool
+          const market = markets.find((m) => m.marketId === pool.marketId);
+          question = market?.question;
+        }
         const baseAssetUsdPrice = lookUpAssetPrice(
           pool.collateral,
           foreignAssetPrices,
@@ -74,7 +93,7 @@ export const useAccountAmm2Pool = (address?: string) => {
         const totalShares = pool.totalStake;
         const totalValue = valuations[index];
 
-        const percentageOwnership = new Decimal(account?.stake ?? 0).div(
+        const percentageOwnership = new Decimal(manager.stake ?? 0).div(
           pool.totalStake,
         );
 
@@ -89,16 +108,19 @@ export const useAccountAmm2Pool = (address?: string) => {
           addressValue,
           addressUsdValue,
           addressZtgValue,
-          question: market?.question,
-          account,
+          question,
+          account: manager,
           totalShares,
           baseAsset: pool.collateral,
+          marketIds: pool.marketIds || (pool.marketId !== null ? [pool.marketId] : []),
         };
       });
     },
     {
       keepPreviousData: true,
       enabled: enabled,
+      staleTime: 30000, // Data fresh for 30 seconds
+      cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     },
   );
 

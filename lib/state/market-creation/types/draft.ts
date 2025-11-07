@@ -19,11 +19,7 @@ export type MarketDraftState = {
    */
   form: Partial<MarketFormData>;
   /**
-   * Whether the draft is in wizard mode or not.
-   */
-  isWizard: boolean;
-  /**
-   * The current step of the draft in wizard mode.
+   * The current step of the draft.
    */
   currentStep: MarketCreationStep;
   /**
@@ -49,29 +45,28 @@ export type MarketDraftState = {
  * Create a new empty draft state.
  */
 export const empty = (): MarketDraftState => ({
-  isWizard: true,
   currentStep: {
-    label: "Currency",
+    label: "Question & Answers",
     isValid: false,
     isTouched: false,
     reached: true,
   },
   form: {
-    currency: "ZTG",
+    currency: undefined,
+    question: "",
+    tags: [],
     answers: {
-      type: "categorical",
-      answers: ["", ""],
+      type: "yes/no",
+      answers: ["Yes", "No"],
     },
     timeZone: moment.tz.guess(),
+    endDate: undefined,
     oracle: "",
     gracePeriod: gracePeriodOptions[0],
     reportingPeriod: reportingPeriodOptions[1],
     disputePeriod: disputePeriodOptions[0],
-    moderation: "Permissionless",
-    creatorFee: {
-      type: "preset",
-      value: 0,
-    },
+    moderation: undefined,
+    creatorFee: undefined,
     liquidity: {
       deploy: true,
       rows: [],
@@ -80,10 +75,11 @@ export const empty = (): MarketDraftState => ({
         value: 1,
       },
     },
+    description: undefined,
   },
   touchState: {},
   stepReachState: {
-    Currency: true,
+    "Question & Answers": true,
   },
   isPublished: false,
 });

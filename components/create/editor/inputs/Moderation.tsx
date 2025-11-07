@@ -15,12 +15,11 @@ export const options: Array<{
 }> = [
   {
     mode: "Permissionless",
-    description: "More expensive, but goes live as soon as you need.",
+    description: "Goes live immediately",
   },
   {
     mode: "Advised",
-    description:
-      "Cheaper, but but requires approval from the advisory committee before becoming active.",
+    description: "Requires committee approval",
   },
 ];
 
@@ -32,42 +31,40 @@ export const ModerationModeSelect: React.FC<ModerationModeSelectProps> = ({
 }) => {
   const { data: constants } = useChainConstants();
 
-  const handleSelect = (mode: Moderation) => () => {
-    onChange({ target: { name, value: mode }, type: "change" });
-    onBlur({ target: { name, value: mode }, type: "blur" });
-  };
-
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:justify-center md:gap-6">
-      {options.map((option, index) => (
-        <button
-          key={index}
-          type="button"
-          className={`
-              flex max-w-sm flex-1 cursor-pointer flex-col rounded-md p-6 transition-all active:scale-95 md:min-h-[230px]
-              ${value === option.mode ? "bg-nyanza-base" : "bg-gray-100"}
-            `}
-          onClick={handleSelect(option.mode)}
-        >
-          <div className="flex flex-1 flex-row pt-2">
-            <div className="flex flex-1 flex-col text-center">
-              <h3 className="mb-4 text-2xl">{option.mode}</h3>
-              <p className="mx-auto mb-4 flex-1 text-sm md:text-base">
-                {option.description}
-              </p>
-              <p className="">
-                <span className="text-xs text-gray-500">Bond Cost: </span>
-                <span className="text-xs text-gray-900">
-                  {option.mode === "Permissionless"
-                    ? constants?.markets.validityBond
-                    : constants?.markets.advisoryBond}
-                  ZTG
-                </span>
-              </p>
-            </div>
-          </div>
-        </button>
-      ))}
+    <div className="flex h-12 w-full items-center rounded-lg border-2 border-white/20 bg-white/10 backdrop-blur-sm transition-all hover:border-white/30">
+      <select
+        value={value || ""}
+        className="h-full w-full bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50"
+        onChange={(e) => {
+          const selectedValue = e.target.value || undefined;
+          onChange({
+            target: { name, value: selectedValue as any },
+            type: "change",
+          });
+          onBlur({
+            target: { name, value: selectedValue as any },
+            type: "blur",
+          });
+        }}
+      >
+        <option value="" className="bg-ztg-primary-600 text-white">
+          Select market type
+        </option>
+        {options.map((option, index) => (
+          <option
+            key={index}
+            value={option.mode}
+            className="bg-ztg-primary-600 text-white"
+          >
+            {option.mode} - {option.description} (
+            {option.mode === "Permissionless"
+              ? constants?.markets.validityBond
+              : constants?.markets.advisoryBond}{" "}
+            ZTG)
+          </option>
+        ))}
+      </select>
     </div>
   );
 };

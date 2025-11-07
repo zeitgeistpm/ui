@@ -56,7 +56,7 @@ const TransactionHistoryTable = ({ address }: { address: string }) => {
         question: (
           <Link
             href={`/markets/${transaction.marketId}`}
-            className="text-[14px]"
+            className="text-[14px] text-white transition-colors hover:text-ztg-green-400"
           >
             {transaction.question}
           </Link>
@@ -93,7 +93,17 @@ const TransactionHistoryTable = ({ address }: { address: string }) => {
           buttonLink="/markets"
         />
       ) : (
-        <Table columns={columns} data={tableData} />
+        <div className="rounded-lg border border-ztg-primary-200/30 bg-white/10 shadow-lg backdrop-blur-md">
+          <div className="mb-4 flex items-center gap-2 border-b border-ztg-primary-200/20 px-4 pb-3 pt-4">
+            <span className="h-1 w-6 rounded-full bg-ztg-green-500"></span>
+            <h2 className="text-base font-semibold text-white">
+              Transaction History
+            </h2>
+          </div>
+          <div className="px-4 pb-4">
+            <Table columns={columns} data={tableData} />
+          </div>
+        </div>
       )}
     </div>
   );

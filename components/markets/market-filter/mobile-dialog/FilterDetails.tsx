@@ -28,32 +28,32 @@ const FilterToggle = ({ option }: { option: MarketFilter }) => {
   };
 
   return (
-    <div className="mb-7 w-1/2">
-      <a
-        className={"cursor-pointer " + (isActive ? "text-ztg-blue" : "")}
-        onClick={() => {
-          toggle();
-        }}
-      >
-        {option.label}{" "}
-        {isActive ? <X className="inline text-gray-600" size={14} /> : ""}
-      </a>
-    </div>
+    <button
+      onClick={toggle}
+      className={`mb-3 mr-3 flex touch-manipulation items-center gap-2 rounded-lg px-4 py-3 text-base font-semibold shadow-md backdrop-blur-sm transition-all active:scale-[0.98] ${
+        isActive
+          ? "bg-ztg-green-600/80 text-white"
+          : "bg-white/15 text-white hover:bg-white/20 hover:shadow-lg"
+      }`}
+    >
+      <span>{option.label}</span>
+      {isActive && <X size={18} />}
+    </button>
   );
 };
 
 const FilterDetails = ({ back, menu }: FilterDetailsProps) => {
   return (
     <>
-      <a
-        className="mr-auto mt-1 flex cursor-pointer text-sky-600"
+      <button
+        className="mb-5 flex touch-manipulation items-center gap-2 text-base font-semibold text-ztg-green-400 transition-all hover:text-ztg-green-300 active:scale-95"
         onClick={back}
       >
-        <ChevronLeft className="w-6" transform="translate(-6, 0)" />{" "}
-        <div className="inline-block">Back</div>
-      </a>
-      <h3 className="my-7 text-2xl">{menu}</h3>
-      <div className="flex flex-wrap">
+        <ChevronLeft size={18} />
+        <span>Back</span>
+      </button>
+      <h3 className="mb-5 text-lg font-semibold text-white">{menu}</h3>
+      <div className="flex flex-wrap pb-4">
         {
           {
             Category: (
@@ -81,10 +81,10 @@ const FilterDetails = ({ back, menu }: FilterDetailsProps) => {
         }
       </div>
       <button
-        className="mt-auto h-14 rounded-full bg-ztg-blue text-white"
+        className="sticky bottom-0 mt-auto min-h-[48px] touch-manipulation rounded-lg bg-ztg-green-600/80 px-4 py-3 text-base font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 active:scale-[0.98]"
         onClick={back}
       >
-        Apply
+        Apply Filters
       </button>
     </>
   );
