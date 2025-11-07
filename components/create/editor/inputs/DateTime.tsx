@@ -86,7 +86,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
           }}
         >
           <div className="relative w-full text-left">
-            <div className="text-sm placeholder:text-white/50">
+            <div className="text-sm placeholder:text-white text-white">
               {!value
                 ? (placeholder ?? "Select end date and time")
                 : momentFn(value).format("MMM D, YYYY, h:mm A")}
