@@ -130,11 +130,24 @@ export const marketFormDataToExtrinsicParams = (
     throw new Error("Invalid market creation form data");
   }
 
-  // Always create market without pool - pool will be deployed separately as combinatorial
-  const poolParams: NoPool = {
-    scoringRule: "AmmCdaHybrid",
-    creationType: form.moderation,
-  };
+  const hasPool = form.moderation === "Permissionless" && form.liquidity.deploy;
+
+  const poolParams: WithPool | NoPool = hasPool
+    ? {
+        scoringRule: "Lmsr",
+        pool: {
+          amount: new Decimal(form.liquidity.amount).mul(ZTG).toFixed(0),
+          swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
+          spotPrices: form.liquidity.rows.map((row) =>
+            new Decimal(row.price.price).mul(ZTG).toFixed(0),
+          ),
+        },
+      }
+    : // patch to make it work until next runtime upgrade
+      ({
+        scoringRule: "Lmsr",
+        creationType: form.moderation,
+      } as any as NoPool);
 
   let disputeMechanism: CreateMarketParams<RpcContext>["disputeMechanism"] =
     "Authorized";
