@@ -19,6 +19,20 @@ enum TabSelection {
   Fees,
 }
 
+const tabClass = ({ selected }: { selected: boolean }) =>
+  `flex-1 px-3 py-2 text-sm font-medium transition-all border-r border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ztg-primary-500 ${
+    selected
+      ? "bg-white/10 text-white font-semibold"
+      : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
+  }`;
+
+const tabClassLast = ({ selected }: { selected: boolean }) =>
+  `flex-1 px-3 py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ztg-primary-500 ${
+    selected
+      ? "bg-white/10 text-white font-semibold"
+      : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
+  }`;
+
 const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   const [tabSelection, setTabSelection] = React.useState(TabSelection.Account);
 
@@ -48,39 +62,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           <ModalTabs
             tabs={
               <Tab.List className="flex h-full">
-                <Tab
-                  className={({ selected }) =>
-                    `flex-1 px-3 py-2 text-sm font-medium transition-all border-r border-white/10 ${
-                      selected
-                        ? "bg-white/10 text-white font-semibold"
-                        : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
-                    }`
-                  }
-                >
-                  Account
-                </Tab>
-                <Tab
-                  className={({ selected }) =>
-                    `flex-1 px-3 py-2 text-sm font-medium transition-all border-r border-white/10 ${
-                      selected
-                        ? "bg-white/10 text-white font-semibold"
-                        : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
-                    }`
-                  }
-                >
-                  Proxy
-                </Tab>
-                <Tab
-                  className={({ selected }) =>
-                    `flex-1 px-3 py-2 text-sm font-medium transition-all ${
-                      selected
-                        ? "bg-white/10 text-white font-semibold"
-                        : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
-                    }`
-                  }
-                >
-                  Fee Asset
-                </Tab>
+                <Tab className={tabClass}>Account</Tab>
+                <Tab className={tabClass}>Proxy</Tab>
+                <Tab className={tabClassLast}>Fee Asset</Tab>
               </Tab.List>
             }
           />

@@ -137,26 +137,26 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
         </button>
       ))}
 
-      {hasCustomDurationOption && value?.type === "duration" && (
+      {hasCustomDurationOption && (
         <DurationInput
           className="min-w-[200px] flex-1"
-          value={value}
+          value={
+            value?.type === "duration"
+              ? value
+              : { value: 1, unit: "days", preset: "" }
+          }
           onChange={handleDurationChange}
           onBlur={handleDurationBlur}
           isSelected={isValid && value?.type === "duration" && !value?.preset}
         />
       )}
 
-      {hasCustomDateOption && (
+      {hasCustomDateOption && value?.type === "date" && (
         <div className="w-full">
           <DateTimePicker
             timezone={timezone}
             name={name}
-            className={`w-full ${
-              value?.type === "date"
-                ? "border-ztg-green-600/80 !bg-ztg-green-600/90 !text-white shadow-md"
-                : ""
-            }`}
+            className={`w-full border-ztg-green-600/80 !bg-ztg-green-600/90 !text-white shadow-md`}
             placeholder="Custom Date"
             isValid={value?.type === "date" && isValid}
             value={chainTime && value?.type === "date" ? value.date : undefined}

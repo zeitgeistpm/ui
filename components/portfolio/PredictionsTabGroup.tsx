@@ -9,6 +9,7 @@ import { groupBy } from "lodash-es";
 import EmptyPortfolio from "./EmptyPortfolio";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { isCombinatorialToken } from "lib/types/combinatorial";
+import { VirtualMarket } from "lib/types";
 
 const getAssetIndex = (assetId: any): number => {
   if (assetId.CategoricalOutcome) {
@@ -100,9 +101,9 @@ export const PredictionsTabGroup = ({ address }: { address: string }) => {
         const allMarketsResolved = market.status === "Resolved";
 
         if (market.resolvedOutcome !== null && allMarketsResolved) {
-          const isParentScalar = (market.neoPool as any)?._debug
-            ?.isParentScalar;
-          const isChildScalar = (market.neoPool as any)?._debug?.isChildScalar;
+          const vm = market as VirtualMarket;
+          const isParentScalar = vm.neoPool?.isParentScalar ?? false;
+          const isChildScalar = vm.neoPool?.isChildScalar ?? false;
 
           // Find positions with winning outcomes
           const winningPositions = marketPositions.filter((position) => {

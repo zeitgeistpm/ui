@@ -27,6 +27,7 @@ import {
   CombinatorialToken,
   isCombinatorialToken,
 } from "lib/types/combinatorial";
+import { VirtualMarket } from "lib/types";
 import { useMemo } from "react";
 
 export type RedeemButtonProps = {
@@ -133,8 +134,9 @@ export const RedeemButtonByAssetId = ({
 
       // For full redemption (both markets resolved)
       // Handle scalar markets: multiple positions may have value
-      const isParentScalar = (market.neoPool as any)?._debug?.isParentScalar;
-      const isChildScalar = (market.neoPool as any)?._debug?.isChildScalar;
+      const virtualMarket = market as VirtualMarket;
+      const isParentScalar = virtualMarket.neoPool?.isParentScalar ?? false;
+      const isChildScalar = virtualMarket.neoPool?.isChildScalar ?? false;
 
       if (market.resolvedOutcome === null && isParentScalar) {
         // Parent is scalar - all positions may have value (blockchain calculates payouts)
@@ -257,7 +259,16 @@ const RedeemButtonByValue = ({
       if (parentCollectionIds && parentCollectionIds.length > 0) {
         const numParentOutcomes = parentCollectionIds.length;
         const totalCombinations = market.outcomeAssets.length;
-        const numChildOutcomes = totalCombinations / numParentOutcomes;
+
+        // Rectangular grid assumption: outcomes are evenly distributed across parent × child matrix
+        // totalCombinations = numParentOutcomes × numChildOutcomes
+        // Market design guarantees this even distribution for combinatorial markets
+        if (totalCombinations % numParentOutcomes !== 0) {
+          console.error(
+            `Invalid market structure: totalCombinations (${totalCombinations}) is not evenly divisible by numParentOutcomes (${numParentOutcomes})`
+          );
+        }
+        const numChildOutcomes = Math.floor(totalCombinations / numParentOutcomes);
 
         // Calculate which child outcome this token represents within its parent collection
         const childOutcomeIndex = absoluteIndex % numChildOutcomes;
@@ -295,7 +306,7 @@ const RedeemButtonByValue = ({
         // For multi-market positions, pass the underlying market IDs array.
         // Multi-markets use first marketId as parent and second marketId as child for splitting positions.
         const marketIds =
-          underlyingMarketIds && underlyingMarketIds.length > 0
+          underlyingMarketIds && underlyingMarketIds.length > 1
             ? underlyingMarketIds[1].toString()
             : market.marketId.toString();
 
@@ -311,7 +322,14 @@ const RedeemButtonByValue = ({
         ) {
           const numParentOutcomes = parentCollectionIds.length;
           const totalCombinations = market.outcomeAssets.length;
-          const numChildOutcomes = totalCombinations / numParentOutcomes;
+
+          // Rectangular grid assumption: outcomes are evenly distributed across parent × child matrix
+          if (totalCombinations % numParentOutcomes !== 0) {
+            console.error(
+              `Invalid market structure: totalCombinations (${totalCombinations}) is not evenly divisible by numParentOutcomes (${numParentOutcomes})`
+            );
+          }
+          const numChildOutcomes = Math.floor(totalCombinations / numParentOutcomes);
           const parentOutcomeIndex = Math.floor(
             tokenIndexData.absoluteIndex / numChildOutcomes,
           );

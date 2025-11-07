@@ -135,7 +135,10 @@ export const MarketSummary = ({
               </span>{" "}
               <span className="text-ztg-primary-400">≈</span>{" "}
               <span className="font-medium text-ztg-primary-200">
-                ${baseAssetPrice?.mul(baseAmount || 0).toFixed(2)}
+                $
+                {baseAssetPrice && baseAmount
+                  ? baseAssetPrice.mul(baseAmount).toFixed(2)
+                  : "--"}
               </span>
             </div>
           </div>
@@ -312,10 +315,14 @@ const AnswersDisplay = ({
                           .mul(answerLiquidity?.price.price ?? 0)
                           .toFixed(1)}{" "}
                         <span className="text-ztg-primary-400">≈</span>{" "}
-                        {baseAssetPrice
-                          ?.mul(answerLiquidity?.amount || 0)
-                          .mul(answerLiquidity?.price.price ?? 0)
-                          .toFixed(2)}{" "}
+                        {baseAssetPrice &&
+                        answerLiquidity?.amount &&
+                        answerLiquidity?.price.price
+                          ? baseAssetPrice
+                              .mul(answerLiquidity.amount)
+                              .mul(answerLiquidity.price.price)
+                              .toFixed(2)
+                          : "--"}{" "}
                         USD
                       </>
                     ) : (

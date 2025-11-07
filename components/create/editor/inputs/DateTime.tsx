@@ -79,14 +79,14 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       ) : (
         <button
           type="button"
-          className={`flex h-12 w-full items-center rounded-lg border-2 border-white/20 bg-white/10 px-4 py-3 text-sm text-white backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/15 active:scale-95 ${className}`}
+          className={`flex h-12 w-full items-center rounded-lg border-2 border-white/20 bg-white/10 px-4 py-3 text-sm backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/15 active:scale-95 ${className || ""}`}
           onClick={() => {
             inputRef.current?.focus();
             inputRef.current?.showPicker();
           }}
         >
           <div className="relative w-full text-left">
-            <div className="text-sm text-white placeholder:text-white/50">
+            <div className="text-sm placeholder:text-white/50">
               {!value
                 ? (placeholder ?? "Select end date and time")
                 : momentFn(value).format("MMM D, YYYY, h:mm A")}

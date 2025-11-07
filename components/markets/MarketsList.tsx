@@ -24,12 +24,14 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
     queryState.ordering,
     queryState.liquidityOnly,
     queryState.filters,
+    { enabled: !isMultiMarket },
   );
 
   // Only fetch multi-markets when in multi-market mode
   const multiMarketsQuery = useInfiniteMultiMarkets(
     queryState.ordering,
     queryState.filters,
+    { enabled: isMultiMarket },
   );
 
   // Use the appropriate query based on market type

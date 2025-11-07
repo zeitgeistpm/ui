@@ -85,7 +85,9 @@ const FeeSelect = ({
   const handleCustomInputChange: ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
-    const fee = parseFloat(event.target.value);
+    const inputValue = event.target.value;
+    // Allow empty string (blank field) or valid numbers
+    const fee = inputValue === "" ? NaN : parseFloat(inputValue);
     onChange({
       type: "change",
       target: {
@@ -136,7 +138,11 @@ const FeeSelect = ({
             min={0}
             step={0.1}
             className="w-full border-0 bg-transparent px-4 text-right text-sm text-white outline-none placeholder:text-white/50"
-            value={Number(value?.value || 0).toString()}
+            value={
+              value?.value != null && !isNaN(value.value)
+                ? String(value.value)
+                : ""
+            }
             onChange={handleCustomInputChange}
             onBlur={() => {
               onBlur?.({

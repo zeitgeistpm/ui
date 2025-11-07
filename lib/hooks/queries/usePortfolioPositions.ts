@@ -28,6 +28,7 @@ import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
 import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
+import { VirtualMarket } from "lib/types";
 import { useMemo } from "react";
 import { MarketBond, useAccountBonds } from "./useAccountBonds";
 import { useChainTime } from "lib/state/chaintime";
@@ -858,8 +859,9 @@ export const usePortfolioPositions = (
             );
 
             if (tokenIndex !== -1 && tokenIndex !== undefined) {
-              const isParentScalar = (market as any).neoPool?._debug?.isParentScalar;
-              const isChildScalar = (market as any).neoPool?._debug?.isChildScalar;
+              const vm = market as VirtualMarket;
+              const isParentScalar = vm.neoPool?.isParentScalar ?? false;
+              const isChildScalar = vm.neoPool?.isChildScalar ?? false;
 
               if (!isParentScalar && isChildScalar) {
                 // Parent categorical, child scalar: check if parent matches

@@ -136,6 +136,7 @@ const Footer = () => {
                 key={idx}
                 href={link.href}
                 target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
                 className="text-white/70 transition-colors hover:text-ztg-green-400 hover:underline"
               >
                 {link.text}

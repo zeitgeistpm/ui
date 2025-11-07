@@ -3,6 +3,8 @@ import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { z } from "zod";
 
+export * from "./virtual-market";
+
 export type Primitive = null | number | string | boolean;
 export type JSONObject =
   | Primitive

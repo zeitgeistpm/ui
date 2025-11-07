@@ -20,6 +20,7 @@ const rootKey = "infinite-multi-markets";
 export const useInfiniteMultiMarkets = (
   orderBy: MarketsOrderBy,
   filters?: MarketsListFiltersQuery,
+  options?: { enabled?: boolean },
 ) => {
   const [sdk, id] = useSdkv2();
   const queryClient = useQueryClient();
@@ -152,6 +153,7 @@ export const useInfiniteMultiMarkets = (
     queryKey: [id, rootKey, filters, orderBy],
     queryFn: fetcher,
     enabled:
+      (options?.enabled ?? true) &&
       isIndexedSdk(sdk) &&
       filters !== undefined &&
       orderBy !== undefined &&

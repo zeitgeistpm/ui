@@ -28,6 +28,7 @@ export const useInfiniteMarkets = (
   orderBy: MarketsOrderBy,
   withLiquidityOnly = false,
   filters?: MarketsListFiltersQuery,
+  options?: { enabled?: boolean },
 ) => {
   const [sdk, id] = useSdkv2();
   const queryClient = useQueryClient();
@@ -147,6 +148,7 @@ export const useInfiniteMarkets = (
     queryKey: [id, rootKey, filters, orderBy, withLiquidityOnly],
     queryFn: fetcher,
     enabled:
+      (options?.enabled ?? true) &&
       isIndexedSdk(sdk) &&
       filters !== undefined &&
       orderBy !== undefined &&

@@ -528,7 +528,7 @@ const TopBar = () => {
                             aria-labelledby="navigation-tab"
                           >
                             <Menu.Item>
-                              {({ active, close }) => (
+                              {({ active }) => (
                                 <Link
                                   href="/markets?status=Active&ordering=Newest&liquidityOnly=true"
                                   onClick={close}
@@ -556,7 +556,7 @@ const TopBar = () => {
                             <div className="my-0.5 border-b-2 border-white/10 md:my-1"></div>
 
                             <Menu.Item>
-                              {({ active, close }) => (
+                              {({ active }) => (
                                 <Link
                                   href="/markets?status=Active&ordering=Most%20Volume&liquidityOnly=true"
                                   onClick={close}
@@ -578,7 +578,7 @@ const TopBar = () => {
                             </Menu.Item>
 
                             <Menu.Item>
-                              {({ active, close }) => (
+                              {({ active }) => (
                                 <Link href="/markets/favorites" onClick={close}>
                                   <button
                                     className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
@@ -604,7 +604,7 @@ const TopBar = () => {
                               <>
                                 <div className="my-0.5 border-b-2 border-white/10 md:my-1"></div>
                                 <Menu.Item>
-                                  {({ active, close }) => (
+                                  {({ active }) => (
                                     <Link href="/court" onClick={close}>
                                       <button
                                         className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${

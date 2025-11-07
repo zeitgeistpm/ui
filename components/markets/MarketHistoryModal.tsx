@@ -1,6 +1,6 @@
 import { Dialog } from "@headlessui/react";
 import { ScalarRangeType } from "@zeitgeistpm/sdk";
-type OutcomeReport = any;
+import { OutcomeReport } from "@zeitgeistpm/indexer";
 import { MarketEventHistory } from "lib/hooks/queries/useMarketEventHistory";
 import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import Link from "next/link";
@@ -45,10 +45,23 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
   }).format(marketHistory?.end?.timestamp);
 
   const getOutcome = (outcome: OutcomeReport) => {
-    if (marketType.scalar === null) {
-      return categories[outcome.categorical!]?.name;
+    // Check marketType to determine market type, then validate outcome properties
+    if (marketType.categorical != null) {
+      // Categorical market - validate outcome.categorical exists before accessing
+      if (outcome.categorical != null) {
+        const categoryIndex =
+          typeof outcome.categorical === "number"
+            ? outcome.categorical
+            : parseInt(String(outcome.categorical));
+        return categories[categoryIndex]?.name ?? "Unknown";
+      }
+      return "Unknown";
     } else {
-      return formatScalarOutcome(outcome["scalar"], scalarType);
+      // Scalar market - validate outcome.scalar exists before formatting
+      if (outcome.scalar != null) {
+        return formatScalarOutcome(outcome.scalar, scalarType);
+      }
+      return "Unknown";
     }
   };
 
@@ -229,13 +242,7 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
                     <div className="text-sm font-medium text-white/90">
                       Market resolved to{" "}
                       <span className="font-bold text-white">
-                        {marketType.scalar === null
-                          ? categories[marketHistory.resolved.resolvedOutcome]
-                              ?.name
-                          : formatScalarOutcome(
-                              marketHistory.resolved.resolvedOutcome,
-                              scalarType,
-                            )}
+                        {getOutcome(marketHistory.resolved.outcome)}
                       </span>
                     </div>
                   </div>

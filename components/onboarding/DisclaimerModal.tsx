@@ -12,11 +12,13 @@ export const DisclaimerModal = () => {
   // Scroll component to top when it renders
   useEffect(() => {
     if (modalOpen && scrollableElementRef.current) {
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         if (scrollableElementRef.current) {
           scrollableElementRef.current.scrollTop = 0;
         }
       }, 10);
+
+      return () => clearTimeout(timeoutId);
     }
   }, [modalOpen]);
 

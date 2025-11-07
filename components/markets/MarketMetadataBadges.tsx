@@ -13,9 +13,12 @@ const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
 
-const MarketFavoriteToggle = dynamic(() => import("./MarketFavoriteToggle"), {
-  ssr: false,
-});
+const MarketFavoriteToggle = dynamic(
+  () => import("./MarketFavoriteToggle").then((m) => m.MarketFavoriteToggle),
+  {
+    ssr: false,
+  },
+);
 
 // Reusable icon badge with tooltip
 const IconBadge: FC<{

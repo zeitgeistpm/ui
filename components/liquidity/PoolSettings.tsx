@@ -1,5 +1,5 @@
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import InfoPopover from "components/ui/InfoPopover";
+import { InfoPopover } from "components/ui/InfoPopover";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { supportedCurrencies } from "lib/constants/supported-currencies";

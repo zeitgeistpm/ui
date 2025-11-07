@@ -363,15 +363,36 @@ const RedeemableMarketAlertItem = ({
   );
 };
 
-const RelevantMarketDisputeItem = ({}: {
+const RelevantMarketDisputeItem = ({
+  alert,
+}: {
   alert: RelevantMarketDisputeAlertData;
 }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.prefetch(`/markets/${alert.market.marketId}`);
+  }, [alert, router]);
+
   return (
-    <AlertCard>
-      <div className="text-sm font-semibold text-white">Market Dispute</div>
-      <p className="text-xs text-white/75">
-        A market you're involved in is disputed
-      </p>
+    <AlertCard
+      onClick={() => {
+        router.push(`/markets/${alert.market.marketId}`);
+      }}
+    >
+      <div className="mb-2">
+        <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-red-500/30 to-orange-600/40 px-2.5 py-1 text-xs font-semibold backdrop-blur-sm">
+          <span className="text-white">Market Dispute</span>
+        </div>
+      </div>
+      <div>
+        <h3 className="mb-1 text-sm font-semibold text-white">
+          {alert.market.question}
+        </h3>
+        <p className="text-xs text-white/75">
+          A market you're involved in is disputed
+        </p>
+      </div>
     </AlertCard>
   );
 };

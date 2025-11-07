@@ -238,6 +238,7 @@ const AnswerInput = ({
             type="button"
             className="rounded-md border-2 border-ztg-red-500/60 bg-ztg-red-500/20 px-1.5 py-0.5 text-xs font-medium text-ztg-red-400 transition-all hover:bg-ztg-red-500/30 active:scale-95"
             onClick={onClear}
+            aria-label={value ? `Remove ${value}` : "Remove selection"}
           >
             ✕
           </button>

@@ -23,6 +23,15 @@ export const isCombinatorialToken = (value: unknown): value is CombinatorialToke
   return result.success;
 };
 
+// Efficient equality comparison for CombinatorialToken objects
+// Compares the hex string values directly instead of using JSON.stringify
+export const isEqualCombinatorialToken = (
+  a: CombinatorialToken,
+  b: CombinatorialToken,
+): boolean => {
+  return a.CombinatorialToken === b.CombinatorialToken;
+};
+
 // Function to unwrap combinatorial token into a CombinatorialToken object
 export const unwrapCombinatorialToken = (token: string): { CombinatorialToken: `0x${string}` } => {
   try {

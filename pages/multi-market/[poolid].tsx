@@ -23,6 +23,7 @@ import { Transition } from "@headlessui/react";
 import Decimal from "decimal.js";
 import { useComboMarket } from "lib/hooks/queries/useComboMarket";
 import { OutcomeCombination } from "lib/hooks/useVirtualMarket";
+import { VirtualMarket } from "lib/types";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 import { useNeoPoolParentCollectionIds } from "lib/hooks/queries/useNeoPoolParentCollectionIds";
 import { useOrders } from "lib/hooks/queries/orderbook/useOrders";
@@ -524,10 +525,9 @@ const MobileContextButtons = ({
                     return true;
                   }
 
-                  const isParentScalar = (virtualMarket.neoPool as any)?._debug
-                    ?.isParentScalar;
-                  const isChildScalar = (virtualMarket.neoPool as any)?._debug
-                    ?.isChildScalar;
+                  const vm = virtualMarket as VirtualMarket;
+                  const isParentScalar = vm.neoPool?.isParentScalar ?? false;
+                  const isChildScalar = vm.neoPool?.isChildScalar ?? false;
 
                   if (isChildScalar && !isParentScalar) {
                     // Parent categorical, child scalar
@@ -1087,10 +1087,9 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                         return true;
                       }
 
-                      const isParentScalar = (virtualMarket.neoPool as any)
-                        ?._debug?.isParentScalar;
-                      const isChildScalar = (virtualMarket.neoPool as any)
-                        ?._debug?.isChildScalar;
+                      const vm = virtualMarket as VirtualMarket;
+                      const isParentScalar = vm.neoPool?.isParentScalar ?? false;
+                      const isChildScalar = vm.neoPool?.isChildScalar ?? false;
 
                       if (isChildScalar && !isParentScalar) {
                         // Parent categorical, child scalar

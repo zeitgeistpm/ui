@@ -202,12 +202,12 @@ export const useVirtualMarket = (
             reserves: poolData.reserves
               ? Object.fromEntries(poolData.reserves)
               : {},
+            isParentScalar,
+            isChildScalar,
             _debug: {
               assetIds: poolData.assetIds,
               reservesType: typeof poolData.reserves,
               reservesSize: poolData.reserves?.size || 0,
-              isParentScalar,
-              isChildScalar,
             },
           }
         : null,

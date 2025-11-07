@@ -37,9 +37,12 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { perbillToNumber } from "lib/util/perbill-to-number";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { isCombinatorialToken } from "lib/types/combinatorial";
+import {
+  isCombinatorialToken,
+  isEqualCombinatorialToken,
+  CombinatorialToken,
+} from "lib/types/combinatorial";
 import { sortAssetsByMarketOrder } from "lib/util/sort-assets-by-market";
-import { CombinatorialToken } from "lib/types/combinatorial";
 
 const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
@@ -258,29 +261,34 @@ const SellForm = ({
           // "ImmediateOrCancel",
         );
       } else if (isCombinatorialToken(selectedAsset)) {
-        // For combo markets, we need to provide all other assets as the sell parameter
-        const allOtherAssets =
-          poolData?.assetIds?.filter(
-            (assetId: any) =>
-              isCombinatorialToken(assetId) &&
-              JSON.stringify(assetId) !== JSON.stringify(selectedAsset),
-          ) ||
-          pool?.assetIds.filter(
-            (assetId) =>
-              isCombinatorialToken(assetId) &&
-              JSON.stringify(assetId) !== JSON.stringify(selectedAsset),
-          ) ||
-          [];
+        // For combinatorial markets, filter out all other assets except the one we're selling
+        // Consolidate asset sources to avoid duplication
+        const sourceAssets = poolData?.assetIds || pool?.assetIds || [];
 
+        // Filter for combinatorial tokens only, then exclude the selected asset
+        // Two-step filtering ensures type safety for isEqualCombinatorialToken
+        const allOtherAssets = sourceAssets
+          .filter((assetId: any): assetId is CombinatorialToken =>
+            isCombinatorialToken(assetId),
+          )
+          .filter(
+            (assetId) => !isEqualCombinatorialToken(assetId, selectedAsset),
+          );
+
+        // comboSell semantics for selling a combinatorial position:
+        // - buy: the asset we're reducing our position in (selling to get base currency)
+        // - keep: assets we want to maintain (empty for full sell)
+        // - sell: all other combinatorial assets we're simultaneously giving up
+        // This allows the AMM to rebalance across all positions in the combo market
         return sdk.api.tx.neoSwaps.comboSell(
           effectivePoolId,
           categoryCount,
-          [selectedAsset], // buy - the asset we want to end up with more of
-          [], // keep - empty
-          allOtherAssets, // sell - all other assets we're giving up
-          new Decimal(amount).mul(ZTG).toFixed(0), // amount_buy
-          0, // amount_keep
-          minPrice.mul(ZTG).toFixed(0), // min_amount_out
+          [selectedAsset], // buy - asset being sold for base currency
+          [], // keep - no assets held constant
+          allOtherAssets, // sell - other combo assets being rebalanced
+          new Decimal(amount).mul(ZTG).toFixed(0), // amount_buy - amount to sell
+          0, // amount_keep - amount to keep constant (0 for pure sell)
+          minPrice.mul(ZTG).toFixed(0), // min_amount_out - minimum base currency to receive
         );
       }
     },
