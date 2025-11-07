@@ -72,7 +72,7 @@ export const LiquiditySimple = ({
     });
   };
 
-  const handleFeeChange = (event: FormEvent<Fee>) => {
+  const handleFeeChange = (event: FormEvent<Fee | undefined>) => {
     onChange({
       type: "change",
       target: {

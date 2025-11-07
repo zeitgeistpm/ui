@@ -127,7 +127,9 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
       />
 
       {/* Trusted Badge - Click for Details */}
-      {!market.disputeMechanism && (
+      {(market.disputeMechanism === "Authorized" ||
+        market.disputeMechanism === "SimpleDisputes" ||
+        !market.disputeMechanism) && (
         <div className="group relative">
           <InfoPopover
             position="bottom-end"

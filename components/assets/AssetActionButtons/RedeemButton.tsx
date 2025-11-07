@@ -17,6 +17,7 @@ import {
   useAccountAssetBalances,
 } from "lib/hooks/queries/useAccountAssetBalances";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
@@ -81,6 +82,15 @@ export const RedeemButtonByAssetId = ({
   const { isLoading: isLoadingAssetBalance, get: getAccountAssetBalance } =
     useAccountAssetBalances(balanceQueries);
 
+  // Fetch child market data for multi-markets to get accurate numChildOutcomes
+  const childMarketId =
+    underlyingMarketIds && underlyingMarketIds.length > 1
+      ? underlyingMarketIds[1]
+      : undefined;
+  const { data: childMarket } = useMarket(
+    childMarketId != null ? { marketId: childMarketId } : undefined,
+  );
+
   const value = useMemo(() => {
     const zero = new Decimal(0);
     if (!realAddress || isLoadingAssetBalance) return zero;
@@ -113,11 +123,16 @@ export const RedeemButtonByAssetId = ({
 
       if (tokenIndex === -1) return zero;
 
-      // Get the number of child outcomes (from the second market)
+      // Get the number of child outcomes from the actual child market
+      // For multi-markets: parent is marketIds[0], child is marketIds[1]
       const numChildOutcomes =
-        underlyingMarketIds && underlyingMarketIds.length >= 2
-          ? market.categories?.length || 0
-          : 0;
+        childMarket?.categories?.length ||
+        (childMarket?.marketType?.scalar ? 2 : 0);
+
+      // Guard against division by zero - if we can't determine child outcomes, return zero
+      if (numChildOutcomes === 0) {
+        return zero;
+      }
 
       if (isPartialRedemption) {
         // Partial redemption: child market resolved, parent market still active
@@ -200,6 +215,9 @@ export const RedeemButtonByAssetId = ({
     isLoadingAssetBalance,
     getAccountAssetBalance,
     isPartialRedemption,
+    childMarket,
+    realAddress,
+    scalarBounds,
   ]);
 
   const button = (

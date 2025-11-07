@@ -140,7 +140,7 @@ export const CategoricalAnswersInput = ({
             {value?.answers.map((answer: string, index: number) => {
               return (
                 <AnswerInput
-                  key={index}
+                  key={answer}
                   id={answer}
                   disabled={disabled ?? false}
                   value={answer}

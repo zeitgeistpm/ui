@@ -80,7 +80,7 @@ export const LiquidityUnified = ({
     });
   };
 
-  const handleFeeChange = (event: FormEvent<Fee>) => {
+  const handleFeeChange = (event: FormEvent<Fee | undefined>) => {
     onChange({
       ...value!,
       swapFee: event.target.value,

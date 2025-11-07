@@ -7,8 +7,8 @@ export type Fee = { type: "preset" | "custom"; value: number };
 export type FeeInputProps = {
   name: string;
   value?: Fee;
-  onChange: (event: FormEvent<Fee>) => void;
-  onBlur?: (event: FormEvent<Fee>) => void;
+  onChange: (event: FormEvent<Fee | undefined>) => void;
+  onBlur?: (event: FormEvent<Fee | undefined>) => void;
   isValid: boolean;
   presets: Fee[];
   label: string;
@@ -51,14 +51,14 @@ const FeeSelect = ({
         type: "change",
         target: {
           name,
-          value: newValue as any,
+          value: newValue,
         },
       });
       onBlur?.({
         type: "blur",
         target: {
           name,
-          value: newValue as any,
+          value: newValue,
         },
       });
     } else {

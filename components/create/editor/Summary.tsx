@@ -136,7 +136,7 @@ export const MarketSummary = ({
               <span className="text-ztg-primary-400">≈</span>{" "}
               <span className="font-medium text-ztg-primary-200">
                 $
-                {baseAssetPrice && baseAmount
+                {baseAssetPrice != null && baseAmount != null
                   ? baseAssetPrice.mul(baseAmount).toFixed(2)
                   : "--"}
               </span>

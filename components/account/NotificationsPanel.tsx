@@ -194,11 +194,11 @@ const CourtCaseReadyToSettleItem = ({
 }) => {
   const router = useRouter();
   const { data: marketId } = useCaseMarketId(alert.caseId);
-  const { data: market } = useMarket({ marketId: marketId! });
+  const { data: market } = useMarket(marketId ? { marketId } : undefined);
 
   useEffect(() => {
     router.prefetch(`/court/${alert.caseId}`);
-  }, [alert, router]);
+  }, [alert.caseId, router]);
 
   return (
     <AlertCard
@@ -231,11 +231,11 @@ const CourtCaseReadyForVoteAlertItem = ({
 }) => {
   const router = useRouter();
   const { data: marketId } = useCaseMarketId(alert.caseId);
-  const { data: market } = useMarket({ marketId: marketId! });
+  const { data: market } = useMarket(marketId ? { marketId } : undefined);
 
   useEffect(() => {
     router.prefetch(`/court/${alert.caseId}`);
-  }, [alert, router]);
+  }, [alert.caseId, router]);
 
   return (
     <AlertCard
@@ -268,11 +268,11 @@ const CourtCaseReadyForRevealAlertItem = ({
 }) => {
   const router = useRouter();
   const { data: marketId } = useCaseMarketId(alert.caseId);
-  const { data: market } = useMarket({ marketId: marketId! });
+  const { data: market } = useMarket(marketId ? { marketId } : undefined);
 
   useEffect(() => {
     router.prefetch(`/court/${alert.caseId}`);
-  }, [alert, router]);
+  }, [alert.caseId, router]);
 
   return (
     <AlertCard
@@ -372,7 +372,7 @@ const RelevantMarketDisputeItem = ({
 
   useEffect(() => {
     router.prefetch(`/markets/${alert.market.marketId}`);
-  }, [alert, router]);
+  }, [alert.market.marketId, router]);
 
   return (
     <AlertCard
