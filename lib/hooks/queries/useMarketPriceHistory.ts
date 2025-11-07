@@ -5,6 +5,7 @@ import { gql, GraphQLClient } from "graphql-request";
 import { useSdkv2 } from "../useSdkv2";
 
 export const marketPriceHistoryKey = "market-price-history";
+export const poolPriceHistoryKey = "pool-price-history";
 
 const priceHistoryQuery = gql`
   query PriceHistory(
@@ -15,6 +16,27 @@ const priceHistoryQuery = gql`
   ) {
     priceHistory(
       marketId: $marketId
+      interval: { unit: $unit, value: $value }
+      startTime: $startTime
+    ) {
+      prices {
+        assetId
+        price
+      }
+      timestamp
+    }
+  }
+`;
+
+const priceHistoryByPoolIdQuery = gql`
+  query PriceHistoryByPoolId(
+    $poolId: Int!
+    $unit: Unit!
+    $value: Int!
+    $startTime: String
+  ) {
+    priceHistoryByPoolId(
+      poolId: $poolId
       interval: { unit: $unit, value: $value }
       startTime: $startTime
     ) {
@@ -38,13 +60,12 @@ export const useMarketPriceHistory = (
   startTime: string, //ISO timestamp
 ) => {
   const [sdk, id] = useSdkv2();
-
   const query = useQuery(
     [id, marketPriceHistoryKey, marketId, timeUnit, timeValue, startTime],
     async () => {
       if (isIndexedSdk(sdk)) {
         return await getPriceHistory(
-          sdk.indexer.client,
+          sdk.indexer.client as any,
           marketId,
           timeUnit,
           timeValue,
@@ -60,6 +81,40 @@ export const useMarketPriceHistory = (
     },
   );
 
+  return query;
+};
+
+export const useComboMarketPriceHistory = (
+  poolId: number,
+  timeUnit: TimeUnit,
+  timeValue: number,
+  startTime: string, //ISO timestamp
+) => {
+  const [sdk, id] = useSdkv2();
+
+  const query = useQuery({
+    queryKey: [id, poolPriceHistoryKey, poolId, timeUnit, timeValue, startTime],
+    queryFn: async () => {
+      if (!isIndexedSdk(sdk)) {
+        return [];
+      }
+      
+      const data = await getPriceHistoryByPoolId(
+        sdk.indexer.client as any,
+        poolId,
+        timeUnit,
+        timeValue,
+        startTime,
+      );
+      return data;
+    },
+    enabled: Boolean(
+      sdk && poolId != null && timeUnit && timeValue && startTime,
+    ),
+    staleTime: 10_000,
+    retry: 1,
+  });
+  
   return query;
 };
 
@@ -80,4 +135,22 @@ export async function getPriceHistory(
   });
 
   return priceHistory;
+}
+
+export async function getPriceHistoryByPoolId(
+  client: GraphQLClient,
+  poolId: number,
+  timeUnit: TimeUnit,
+  timeValue: number,
+  startTime: string,
+) {
+  const { priceHistoryByPoolId } = await client.request<{
+    priceHistoryByPoolId: PriceHistory[];
+  }>(priceHistoryByPoolIdQuery, {
+    poolId: poolId,
+    unit: timeUnit,
+    value: timeValue,
+    startTime: startTime,
+  });
+  return priceHistoryByPoolId;
 }

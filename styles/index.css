@@ -9,6 +9,111 @@
 html {
   font-size: 100%;
   -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  /* Remove min-width: 100vw and overflow-x: hidden to fix mobile scrolling */
+  /* These cause issues on iOS when combined with position fixed modals */
+}
+
+body {
+  width: 100%;
+  /* Remove min-width: 100vw and overflow-x: hidden to fix mobile scrolling */
+  /* Use overflow-x: clip if horizontal overflow needs to be hidden */
+  overflow-x: clip;
+}
+
+/* Modern viewport units for better mobile support */
+:root {
+  /* Use CSS env() for iOS safe areas */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+
+  /* Top bar heights - CSS defaults for initial render */
+  /* Base TopBar: ~52px (py-2.5/3 + content), MarketFilters: 52px when present */
+  --top-bar-height: 52px;
+  --top-bar-total-height: 52px; /* Base TopBar height */
+  --market-filters-height: 52px; /* Fixed height for market filters */
+
+  /* Use modern viewport units */
+  --full-height: 100dvh; /* Dynamic viewport height */
+  --small-height: 100svh; /* Small viewport height (with browser chrome) */
+  --large-height: 100lvh; /* Large viewport height (without browser chrome) */
+}
+
+/* Simple CSS-based scroll lock using data attribute */
+body[data-scroll-locked="true"] {
+  overflow: hidden !important;
+  /* Use touch-action to prevent scrolling on mobile without position fixed */
+  touch-action: none;
+}
+
+/* iOS-specific handling */
+@supports (-webkit-touch-callout: none) {
+  body[data-scroll-locked="true"] {
+    /* For iOS, just hide overflow without position fixed */
+    position: relative;
+  }
+}
+
+/* Ensure modals can still scroll internally when body is locked */
+body[data-scroll-locked="true"] .modal-content,
+body[data-scroll-locked="true"] [role="dialog"] {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: 100dvh;
+}
+
+/* Improved modal scrolling and sizing */
+.modal-scrollable {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.modal-scrollable::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-scrollable::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.modal-scrollable::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Modal content spacing for better readability */
+.modal-content-spacing > * + * {
+  margin-top: 1.5rem;
+}
+
+/* Modern mobile-first responsive utilities */
+@media (max-width: 639px) {
+  .mobile-only {
+    display: block !important;
+  }
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+@media (min-width: 640px) {
+  .mobile-only {
+    display: none !important;
+  }
+  .desktop-only {
+    display: block !important;
+  }
 }
 
 /* prevents styles injected by headless ui */
@@ -217,8 +322,53 @@ h6 {
 @import "./quill.css";
 @import "./range-component.css";
 
+/* Container System - Consistent spacing and max-width across the app */
 .container-fluid {
-  @apply mx-auto max-w-screen-2xl px-4;
+  @apply mx-auto w-full max-w-screen-xl px-4 md:px-8 lg:px-12 xl:px-16;
+}
+
+/* Main content spacing - accounts for fixed TopBar */
+/* Works on initial render without JS - TopBar height calculation is optional enhancement */
+.main-content {
+  /* Default: TopBar base height only (52px) */
+  padding-top: var(--top-bar-total-height, 52px);
+}
+
+/* When market filters are present (markets pages) */
+/* The TopBar includes MarketFilters, height can vary based on wrapping */
+/* Using :has() selector for automatic detection - works on initial render */
+/* JS will update --top-bar-total-height with actual calculated height */
+/* This provides a reasonable default until JS calculates the exact height */
+body:has(#market-filters-container) .main-content {
+  padding-top: var(--top-bar-total-height, calc(var(--top-bar-height, 52px) + var(--market-filters-height, 52px)));
+}
+
+/* Note: MarketFilters can wrap, so height is dynamic */
+/* useLayoutEffect updates CSS variables with actual calculated height */
+
+/* Fallback for browsers that don't support :has() - use JS-updated variable */
+@supports not selector(:has(*)) {
+  .main-content {
+    /* JS will update this variable, but fallback to 104px if filters might be present */
+    padding-top: var(--top-bar-total-height, 104px);
+  }
+}
+
+/* Ensure the height calculation happens as early as possible */
+/* This helps with initial render before JS runs */
+#top-bar-container {
+  /* Force layout calculation */
+  contain: layout style;
+}
+
+/* Container content - standard content wrapper with consistent padding */
+.container-content {
+  @apply w-full px-4;
+}
+
+/* Full-width container - removes max-width constraint */
+.container-full {
+  @apply w-full px-4;
 }
 
 .carousel__slide--visible {
@@ -295,7 +445,13 @@ tr td:first-child {
 
 /* Scroll */
 
+.no-scroll-bar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
 .no-scroll-bar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
   width: 0;
   height: 0;
 }
@@ -342,7 +498,7 @@ tr td:first-child {
   background: linear-gradient(
     90deg,
     transparent,
-    #1d2533,
+    rgba(26, 30, 59, 0.4),
     transparent
   ) !important;
 }
@@ -356,7 +512,7 @@ tr td:first-child {
   background: linear-gradient(
     90deg,
     transparent,
-    #d9e3ee,
+    rgba(44, 204, 48, 0.2),
     transparent
   ) !important;
 }
@@ -666,44 +822,44 @@ tr td:first-child {
 @keyframes border-flicker {
   0% {
     opacity: 0.1;
-    -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
+    -webkit-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    -moz-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
   }
 
   2% {
     opacity: 1;
-    -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
+    -webkit-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    -moz-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
   }
 
   4% {
     opacity: 0.1;
-    -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
+    -webkit-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    -moz-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
   }
 
   8% {
     opacity: 1;
-    -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
+    -webkit-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    -moz-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
   }
 
   70% {
     opacity: 0.7;
-    -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
+    -webkit-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    -moz-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
   }
 
   100% {
     opacity: 1;
-    -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
-    box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
+    -webkit-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    -moz-box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
+    box-shadow: 0px 0px 78px 4px rgba(44, 204, 48, 0.73);
   }
 }
 
@@ -828,4 +984,10 @@ input:-webkit-autofill {
   min-width: 0;
   padding-left: var(--slide-spacing);
   position: relative;
+}
+
+/* Market Filter Dropdown Glass Morphism */
+#marketsFiltersMenuPortal > div > div {
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }

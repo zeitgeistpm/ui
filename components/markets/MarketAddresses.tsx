@@ -28,7 +28,7 @@ const AddressInspectContent = ({
 
   return (
     <div>
-      <div className="flex w-full border-b-1 border-t-1 border-sky-600 py-ztg-15">
+      <div className="flex w-full border-b-1 border-t-1 border-ztg-primary-600 py-ztg-15">
         <div className="mr-auto flex w-[90%] items-center pr-ztg-10 text-white">
           <div className="mr-ztg-10 h-ztg-30 w-ztg-30 rounded-full bg-white">
             <Avatar address={address} />
@@ -45,7 +45,7 @@ const AddressInspectContent = ({
         </div>
       </div>
       {showSocialMediaRow ? (
-        <div className="flex flex-row  border-b-1 border-sky-600 py-ztg-15">
+        <div className="flex flex-row  border-b-1 border-ztg-primary-600 py-ztg-15">
           {identity?.twitter && identity.twitter.length > 0 ? (
             <a
               className="mr-ztg-40 flex items-center"
@@ -131,7 +131,7 @@ export const AddressDetails = ({
           <div className="flex items-center justify-center gap-2 pr-ztg-10">
             <Avatar address={address} size={30} />
             <div className="flex flex-col font-medium">
-              <div className="text-[10px] text-sky-600">{title}</div>
+              <div className="text-[10px] text-ztg-primary-600">{title}</div>
               {isLoading ? (
                 <Skeleton width={130} height={16} />
               ) : (
@@ -170,7 +170,7 @@ const getJudgementColorClass = (judgement: Judgement) => {
     judgement === "OutOfDate" ||
     judgement === "Erroneous"
   ) {
-    return "text-vermilion";
+    return "text-ztg-red-400";
   }
 };
 const AddressModalHeader = ({

@@ -1,13 +1,18 @@
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  AssetId,
   CategoricalAssetId,
   getIndexOf,
   IndexerContext,
+  IOCategoricalAssetId,
   isRpcSdk,
   Market,
-  MarketOutcomeAssetId,
-  parseAssetId,
 } from "@zeitgeistpm/sdk";
+import {
+  CombinatorialToken,
+  isCombinatorialToken,
+} from "lib/types/combinatorial";
+import { parseAssetIdStringWithCombinatorial } from "lib/util/parse-asset-id";
 import TransactionButton from "components/ui/TransactionButton";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import {
@@ -24,7 +29,7 @@ const CategoricalDisputeBox = ({
   onSuccess,
 }: {
   market: Market<IndexerContext>;
-  assetId?: MarketOutcomeAssetId;
+  assetId?: AssetId;
   onSuccess?: () => void;
 }) => {
   const [sdk, id] = useSdkv2();
@@ -34,14 +39,39 @@ const CategoricalDisputeBox = ({
   const { data: constants, isLoading: isConstantsLoading } =
     useChainConstants();
 
-  const outcomeAssets = market.outcomeAssets
-    .map(
-      (assetIdString) =>
-        parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
-    )
-    .filter(
-      (asset) => market.report?.outcome?.categorical !== getIndexOf(asset),
-    );
+  // Helper function to get the categorical index from either outcome type
+  const getCategoricalIndex = (
+    outcome: CategoricalAssetId | CombinatorialToken,
+    allAssets: any[],
+  ): number | undefined => {
+    if (isCombinatorialToken(outcome)) {
+      // Find the index of this combinatorial token in the allAssets array
+      const index = allAssets.findIndex(
+        (asset) =>
+          isCombinatorialToken(asset) &&
+          asset.CombinatorialToken === outcome.CombinatorialToken,
+      );
+      return index >= 0 ? index : undefined;
+    } else if (IOCategoricalAssetId.is(outcome)) {
+      return getIndexOf(outcome);
+    }
+    return undefined;
+  };
+
+  const allOutcomeAssets = market.outcomeAssets.map((assetIdString) =>
+    parseAssetIdStringWithCombinatorial(assetIdString),
+  );
+
+  // Filter to only categorical and combinatorial tokens, exclude scalar outcomes
+  const categoricalOutcomeAssets = allOutcomeAssets.filter(
+    (asset): asset is CategoricalAssetId | CombinatorialToken =>
+      !("ScalarOutcome" in asset),
+  );
+
+  const outcomeAssets = categoricalOutcomeAssets.filter((asset) => {
+    const assetIndex = getCategoricalIndex(asset, allOutcomeAssets);
+    return market.report?.outcome?.categorical !== assetIndex;
+  });
 
   const disputeBond = constants?.markets.disputeBond;
   const tokenSymbol = constants?.tokenSymbol;
@@ -62,11 +92,9 @@ const CategoricalDisputeBox = ({
     {
       onBroadcast: () => {},
       onSuccess: () => {
-        queryClient.invalidateQueries([
-          id,
-          marketDisputesRootKey,
-          market.marketId,
-        ]);
+        queryClient.invalidateQueries({
+          queryKey: [id, marketDisputesRootKey, market.marketId],
+        });
         if (onSuccess) {
           onSuccess();
         } else {
@@ -87,46 +115,35 @@ const CategoricalDisputeBox = ({
   };
 
   return (
-    <div className="flex flex-col items-center gap-y-3 p-[30px]">
-      <div className="text-[22px] font-bold">Dispute Outcome</div>
-      <div className="mb-[20px] flex flex-col items-center justify-center gap-3 text-center">
-        <div>
-          Bond cost: {disputeBond} {tokenSymbol}
+    <div className="flex flex-col items-center gap-y-4">
+      
+      <div className="mb-4 flex w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-orange-400/40 bg-orange-500/20 p-4 text-center backdrop-blur-md">
+        <div className="text-sm text-white/90">
+          Bond cost: <span className="font-semibold text-white">{disputeBond} {tokenSymbol}</span>
         </div>
-        <div className="font-bold">
-          Bonds will be slashed if the reported outcome is deemed to be
-          incorrect
+        <div className="text-sm font-semibold text-white/90">
+          Bonds will be slashed if the reported outcome is deemed to be incorrect
         </div>
       </div>
 
-      <div className="item-center flex flex-col text-center">
-        <span className="text-[14px] text-sky-600">Previous Report:</span>
-        <span className="">{getPreviousReportName()}</span>
+      <div className="flex flex-col items-center text-center">
+        <span className="text-sm text-white/70">
+          Previous Report:
+        </span>
+        <span className="mt-1 font-semibold text-white">{getPreviousReportName()}</span>
       </div>
-      {/* <div className="flex flex-col item-center text-center">
-        <span className="text-sky-600 text-[14px]">New Report:</span>
-
-        <div className="mb-4">
-          {market && selectedAssetId && (
-            <MarketContextActionOutcomeSelector
-              market={market}
-              selected={selectedAssetId}
-              options={outcomeAssets}
-              onChange={(assetId) => {
-                setSelectedAssetId(assetId as CategoricalAssetId);
-              }}
-            />
-          )}
-        </div>
-      </div> */}
+      
       {bondAmount !== disputeBond && bondAmount !== undefined && (
-        <div className="item-center flex flex-col text-center">
-          <span className="text-[14px] text-sky-600">Previous Bond:</span>
-          <span className="">{bondAmount}</span>
+        <div className="flex flex-col items-center text-center">
+          <span className="text-sm text-white/70">
+            Previous Bond:
+          </span>
+          <span className="mt-1 font-semibold text-white">{bondAmount}</span>
         </div>
       )}
+      
       <TransactionButton
-        className="mb-ztg-10 mt-[20px]"
+        className="mt-4 w-full"
         onClick={() => dispute()}
         disabled={isLoading}
         loading={isBroadcasting}

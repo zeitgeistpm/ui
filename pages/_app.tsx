@@ -1,8 +1,12 @@
 import "react-datetime/css/react-datetime.css";
+import "rc-slider/assets/index.css";
 import "styles/index.css";
 
 import { Hydrate, QueryClientProvider } from "@tanstack/react-query";
 import * as Fathom from "fathom-client";
+
+// Import debug utilities for scroll lock issues
+import "lib/util/debugScrollLock";
 
 import Devtools from "components/devtools";
 import DefaultLayout from "layouts/DefaultLayout";
@@ -24,8 +28,11 @@ const hotjarSiteId = process.env["NEXT_PUBLIC_HOTJAR_SITE_ID"];
 const isProduction =
   process.env.NEXT_PUBLIC_SITE_URL === "https://app.zeitgeist.pm";
 
+// Wrapper component that safely handles props for Fragment
+const FragmentWrapper = ({ children }) => <>{children}</>;
+
 const MyApp = ({ Component, pageProps }) => {
-  const Layout = Component.Layout ? Component.Layout : React.Fragment;
+  const Layout = Component.Layout || FragmentWrapper;
   const router = useRouter();
   const wallet = useWallet();
   const { initWeb3Auth } = useWeb3Wallet();
@@ -68,7 +75,7 @@ const MyApp = ({ Component, pageProps }) => {
 
   return (
     <div
-      className={`${inter.variable} ${kanit.variable} ${roboto_mono.variable} font-sans `}
+      className={`${inter.variable} ${kanit.variable} ${roboto_mono.variable} w-full min-w-full font-sans`}
     >
       <style jsx global>
         {`
@@ -83,13 +90,18 @@ const MyApp = ({ Component, pageProps }) => {
         <Hydrate state={pageProps.dehydratedState}>
           <Head>
             <title>Zeitgeist - Prediction Markets</title>
+            {/* Viewport meta tag must be in _app.tsx, not _document.tsx */}
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+            />
           </Head>
           <DefaultLayout>
             <Layout>
               <Component {...pageProps} />
             </Layout>
           </DefaultLayout>
-          {/* <Devtools /> */}
+          <Devtools />
         </Hydrate>
       </QueryClientProvider>
     </div>

@@ -92,7 +92,7 @@ const CreateAccountPage: NextPage = () => {
           );
         })}
       </div>
-      <div className="my-9 flex p-2 text-blue">
+      {/* <div className="my-9 flex p-2 text-blue">
         <a
           href="https://www.youtube.com/playlist?list=PLdOlgpqyU8RP-ZK2A2qbcfxOlzoeuR6sx"
           target="_blank"
@@ -102,10 +102,10 @@ const CreateAccountPage: NextPage = () => {
           <div>Watch this tutorial about how to buy tokens using crypto</div>
           <Video />
         </a>
-      </div>
-      <h2 className="mb-9 p-2">Next Steps</h2>
+      </div> */}
+      <h2 className="my-9 p-2">Next Steps</h2>
       <div className="flex flex-col gap-4 md:flex-row">
-        <DepositActionableCard />
+        {/* <DepositActionableCard /> */}
         <StartTradingActionableCard />
       </div>
     </>

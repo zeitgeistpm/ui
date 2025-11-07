@@ -117,7 +117,7 @@ const Inner = ({
   const { data: tradeItemState } = useTradeItemState(tradeItem);
 
   const { data: market } = useMarket({
-    marketId: getMarketIdOf(tradeItem.assetId),
+    marketId: getMarketIdOf(tradeItem.assetId as any),
   });
 
   const {
@@ -199,7 +199,7 @@ const Inner = ({
   }, [tradeItemState, predictionAfterTrade]);
 
   const [lastEditedAssetId, setLastEditedAssetId] = useState<AssetId>(
-    tradeItem.assetId,
+    tradeItem.assetId as any,
   );
 
   const transaction = useTradeTransaction(
@@ -234,15 +234,22 @@ const Inner = ({
       setFinalAmounts({ asset: assetAmount, base: baseAmount });
       setPercentageDisplay("0");
 
-      if (tradeItem.action === "buy" && wallet.realAddress) {
-        awaitIndexer(() => {
-          queryClient.invalidateQueries([
-            id,
-            positionsRootKey,
-            wallet.realAddress,
-          ]);
-        });
-      }
+      // Immediately invalidate spot prices and AMM pool data to show updated state
+      queryClient.invalidateQueries({
+        queryKey: [id, "market-spot-prices", market?.marketId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [id, "amm2-pool", market?.marketId],
+      });
+
+      // Wait for indexer to process the trade before invalidating positions
+      awaitIndexer(() => {
+        if (wallet.realAddress) {
+          queryClient.invalidateQueries({
+            queryKey: [id, positionsRootKey, wallet.realAddress],
+          });
+        }
+      });
     },
   });
 
@@ -500,7 +507,7 @@ const Inner = ({
         />
       ) : (
         <form
-          className="relative rounded-[10px] bg-white"
+          className="relative rounded-[10px] bg-white/10 shadow-md backdrop-blur-md"
           onSubmit={(e) => {
             e.preventDefault();
             swapTx();
@@ -528,7 +535,7 @@ const Inner = ({
               }}
               selectedIndex={tabIndex}
             >
-              <Tab.List className="flex h-[60px] justify-between rounded-xl text-center sm:h-[71px]">
+              <Tab.List className="flex h-[64px] justify-between rounded-xl text-center sm:h-[72px]">
                 <Tab
                   as={TradeTab}
                   selected={type === "buy"}
@@ -558,7 +565,7 @@ const Inner = ({
                 })}
                 onFocus={() => {
                   if (tradeItemState?.assetId) {
-                    setLastEditedAssetId(tradeItemState?.assetId);
+                    setLastEditedAssetId(tradeItemState?.assetId as any);
                   }
                 }}
                 step="any"
@@ -582,7 +589,7 @@ const Inner = ({
                 />
               )}
             </div>
-            <div className="center relative mb-[20px] h-[56px] rounded-lg bg-anti-flash-white text-ztg-18-150">
+            <div className="center relative mb-[20px] h-[56px] rounded-lg bg-white/10 text-ztg-18-150 shadow-sm backdrop-blur-sm">
               <Input
                 type="number"
                 {...register("baseAmount", {
@@ -599,7 +606,9 @@ const Inner = ({
                 step="any"
                 className="w-full bg-transparent text-center"
               />
-              <div className="absolute right-2 mr-[10px]">{baseSymbol}</div>
+              <div className="absolute right-2 mr-[10px] text-white/70">
+                {baseSymbol}
+              </div>
             </div>
             <RangeInput
               min="0"
@@ -608,7 +617,7 @@ const Inner = ({
               onValueChange={setPercentageDisplay}
               onFocus={() => {
                 if (tradeItemState?.assetId) {
-                  setLastEditedAssetId(tradeItemState?.assetId);
+                  setLastEditedAssetId(tradeItemState?.assetId as any);
                 }
               }}
               minLabel="0 %"
@@ -620,18 +629,20 @@ const Inner = ({
               {...register("percentage")}
             />
             <div className="mb-4 text-center">
-              <div className="text-ztg-12-150 sm:text-ztg-14-150">
+              <div className="text-ztg-12-150 text-white/90 sm:text-ztg-14-150">
                 <div className="mb-[10px]">
-                  <span className="text-sky-600">Average Price: </span>
+                  <span className="text-white/70">Average Price: </span>
                   {averagePrice} {baseSymbol}
                 </div>
                 <div className="mb-[10px]">
-                  <span className="text-sky-600">Prediction After Trade: </span>
+                  <span className="text-white/70">
+                    Prediction After Trade:{" "}
+                  </span>
                   {predictionAfterTrade.toFixed(2)} {baseSymbol} (
                   {predictionAfterTrade.mul(100).toFixed(0)}%)
                 </div>
                 <div className="mb-[10px]">
-                  <span className="text-sky-600">Price impact: </span>
+                  <span className="text-white/70">Price impact: </span>
                   {priceImpact}%
                 </div>
               </div>

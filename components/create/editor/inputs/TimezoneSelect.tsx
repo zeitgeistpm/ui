@@ -7,6 +7,7 @@ type TimezoneSelectProps = {
   value?: string;
   onChange: (event: FormEvent<string>) => void;
   onBlur: (event: FormEvent<string>) => void;
+  hasValue?: boolean;
 };
 
 const defaultTimezone = moment.tz.guess();
@@ -14,11 +15,11 @@ const allTimezones = moment.tz.names();
 
 const TimezoneSelect: React.FC<TimezoneSelectProps> = (props) => {
   return (
-    <div className="ml-4 rounded-full bg-gray-100 px-8 py-3">
+    <div className="flex h-12 w-full items-center rounded-lg border-2 border-white/20 bg-white/10 backdrop-blur-sm transition-all hover:border-white/30">
       <select
         defaultValue={defaultTimezone}
         value={props.value}
-        className="bg-transparent text-center outline-none"
+        className="h-full w-full bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50"
         onChange={(e) => {
           const value = e.target.value;
           props.onChange({
@@ -32,7 +33,7 @@ const TimezoneSelect: React.FC<TimezoneSelectProps> = (props) => {
         }}
       >
         {allTimezones.map((timezone, index) => (
-          <option key={index} value={timezone}>
+          <option key={index} value={timezone} className="bg-ztg-primary-600">
             {timezone}
           </option>
         ))}

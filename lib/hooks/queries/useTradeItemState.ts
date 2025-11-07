@@ -25,7 +25,7 @@ export const useTradeItemState = (item: TradeItem) => {
   const wallet = useWallet();
   const slippage = 1;
 
-  const marketId = getMarketIdOf(item.assetId);
+  const marketId = getMarketIdOf(item.assetId as any);
   const { data: pools } = usePoolsByIds([{ marketId: marketId }]);
   const { data: market } = useMarket({ marketId });
 
@@ -39,12 +39,12 @@ export const useTradeItemState = (item: TradeItem) => {
   const { data: poolBaseBalance } = usePoolBaseBalance(pool?.poolId);
 
   const traderAssets = useAccountAssetBalances([
-    { account: wallet.realAddress, assetId: item.assetId },
+    { account: wallet.realAddress, assetId: item.assetId as any },
   ]);
   const traderAssetBalance = wallet.realAddress
     ? new Decimal(
         (
-          traderAssets?.get(wallet.realAddress, item.assetId)?.data
+          traderAssets?.get(wallet.realAddress, item.assetId as any)?.data
             ?.balance as any
         )?.free?.toString() ?? 0,
       )
@@ -54,11 +54,11 @@ export const useTradeItemState = (item: TradeItem) => {
   const poolAccountId = pool?.poolId ? poolAccountIds[pool.poolId] : undefined;
 
   const poolAssetBalances = useAccountAssetBalances([
-    { account: poolAccountId, assetId: item.assetId },
+    { account: poolAccountId, assetId: item.assetId as any },
   ]);
 
   const poolAssetBalance =
-    poolAssetBalances?.get(poolAccountId, item.assetId)?.data?.balance ??
+    poolAssetBalances?.get(poolAccountId, item.assetId as any)?.data?.balance ??
     new Decimal(0);
 
   const balances = {
@@ -90,8 +90,8 @@ export const useTradeItemState = (item: TradeItem) => {
     () => {
       if (!enabled) return;
       const baseWeight = getAssetWeight(pool, baseAsset).unwrap();
-      const assetWeight = getAssetWeight(pool, item.assetId).unwrap();
-      const assetIndex = getIndexOf(item.assetId);
+      const assetWeight = getAssetWeight(pool, item.assetId as any).unwrap();
+      const assetIndex = getIndexOf(item.assetId as any);
       const asset = market.categories?.[assetIndex];
       const swapFee = new Decimal(
         pool.swapFee === "" ? "0" : pool.swapFee ?? "0",

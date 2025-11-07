@@ -46,8 +46,11 @@ export type MarketsListFiltersQuery = {
   [key in MarketFilterType]?: string[];
 };
 
+export type MarketType = "regular" | "multi";
+
 export type MarketsListQuery = {
   filters: MarketsListFiltersQuery;
   ordering: MarketsOrderBy;
   liquidityOnly: boolean;
+  marketType: MarketType;
 };

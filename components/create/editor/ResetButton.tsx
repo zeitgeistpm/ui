@@ -14,7 +14,7 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
     <>
       <Transition
         show={Boolean(editor.isTouched)}
-        className={`center flex text-sm font-medium text-gray-400 `}
+        className={`center flex`}
         enter="transition-opacity duration-100"
         enterFrom="opacity-0"
         enterTo="opacity-100"
@@ -24,7 +24,7 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
       >
         <button
           type="button"
-          className="center gap-1 rounded-md border-1 px-2 py-1 text-xs md:absolute md:right-0 md:top-[50%] md:translate-x-[125%] md:translate-y-[-50%]"
+          className="center gap-1 rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/50 px-2 py-1 text-xs text-ztg-primary-100 backdrop-blur-md transition-all hover:bg-ztg-primary-100/80 active:scale-95"
           onClick={() => setShowResetConfirmation(true)}
         >
           Clear form
@@ -55,7 +55,6 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
               className="rounded-full border-2 border-gray-300 px-6 py-3 text-sm transition-all duration-200 ease-in-out active:scale-95"
               onClick={() => {
                 editor.reset();
-                setShowResetConfirmation(false);
               }}
             >
               Clear

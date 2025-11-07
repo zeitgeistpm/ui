@@ -1,7 +1,13 @@
 import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
 import { createContext, FC, PropsWithChildren, useContext } from "react";
 
-export type SelectedMenu = "Category" | "Currency" | "Status" | "None";
+export type SelectedMenu =
+  | "Category"
+  | "Currency"
+  | "Status"
+  | "MarketType"
+  | "Sort"
+  | "None";
 
 export type MarketFiltersProps = {
   activeFilters: MarketFilter[];

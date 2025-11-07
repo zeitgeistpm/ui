@@ -52,41 +52,47 @@ const BondsTable = ({ address }: { address: string }) => {
                 question={market.question}
                 baseAsset={market.baseAsset}
               />
-              <Table
-                columns={columns}
-                data={[
-                  {
-                    type: "Creation",
-                    responsible: market.bonds.creation.who,
-                    value: {
-                      value: new Decimal(market.bonds.creation.value)
-                        .div(ZTG)
-                        .toNumber(),
-                      usdValue: new Decimal(market.bonds.creation.value)
-                        .div(ZTG)
-                        .mul(ztgPrice ?? 0)
-                        .toNumber(),
-                    },
-                    settled:
-                      market.bonds.creation.isSettled === true ? "Yes" : "No",
-                  },
-                  {
-                    type: "Oracle",
-                    responsible: market.bonds.oracle.who,
-                    value: {
-                      value: new Decimal(market.bonds.oracle.value)
-                        .div(ZTG)
-                        .toNumber(),
-                      usdValue: new Decimal(market.bonds.oracle.value)
-                        .div(ZTG)
-                        .mul(ztgPrice ?? 0)
-                        .toNumber(),
-                    },
-                    settled:
-                      market.bonds.oracle.isSettled === true ? "Yes" : "No",
-                  },
-                ]}
-              />
+              <div className="rounded-lg bg-white/10 shadow-lg backdrop-blur-md">
+                <div className="px-4 pb-4 pt-4">
+                  <Table
+                    columns={columns}
+                    data={[
+                      {
+                        type: "Creation",
+                        responsible: market.bonds.creation.who,
+                        value: {
+                          value: new Decimal(market.bonds.creation.value)
+                            .div(ZTG)
+                            .toNumber(),
+                          usdValue: new Decimal(market.bonds.creation.value)
+                            .div(ZTG)
+                            .mul(ztgPrice ?? 0)
+                            .toNumber(),
+                        },
+                        settled:
+                          market.bonds.creation.isSettled === true
+                            ? "Yes"
+                            : "No",
+                      },
+                      {
+                        type: "Oracle",
+                        responsible: market.bonds.oracle.who,
+                        value: {
+                          value: new Decimal(market.bonds.oracle.value)
+                            .div(ZTG)
+                            .toNumber(),
+                          usdValue: new Decimal(market.bonds.oracle.value)
+                            .div(ZTG)
+                            .mul(ztgPrice ?? 0)
+                            .toNumber(),
+                        },
+                        settled:
+                          market.bonds.oracle.isSettled === true ? "Yes" : "No",
+                      },
+                    ]}
+                  />
+                </div>
+              </div>
             </div>
           ))}
         </>

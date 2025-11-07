@@ -17,7 +17,7 @@ export type ChainName =
 export const CHAIN_IMAGES: Record<ChainName, string> = {
   Rococo: "/currencies/rococo.png",
   Polkadot: "/currencies/dot.png",
-  Zeitgeist: "/currencies/ztg.jpg",
+  Zeitgeist: "/currencies/ztg.svg",
   Moonbeam: "/currencies/moonbeam.png",
   AssetHub: "/currencies/assethub.svg",
 };

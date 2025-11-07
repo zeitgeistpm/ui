@@ -1,5 +1,5 @@
-import InfoPopover from "components/ui/InfoPopover";
 import Table, { TableColumn, TableData } from "components/ui/Table";
+import { InfoPopover } from "components/ui/InfoPopover";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
@@ -12,7 +12,6 @@ import {
 import Image from "next/image";
 import { ChangeEvent, FC, MouseEvent, ReactNode } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
-import PoolFeesSelect from "./PoolFeesSelect";
 import Input from "components/ui/Input";
 import { calculatePoolAmounts } from "lib/util/amm2";
 
@@ -76,10 +75,10 @@ const PriceSetter = ({
   const priceDecimal = new Decimal(price);
 
   return (
-    <div className="flex items-center">
-      <div className="mt-[10px] flex flex-col">
+    <div className="flex items-center gap-1.5">
+      <div className="flex flex-col">
         <Input
-          className={`h-ztg-32 w-[100px] rounded-ztg-5 bg-gray-100 p-ztg-8 text-right focus:outline-none ${
+          className={`h-7 w-20 rounded-md bg-ztg-primary-50/50 px-2 text-right text-xs focus:outline-none ${
             disabled && "!bg-transparent"
           }`}
           value={price}
@@ -87,24 +86,20 @@ const PriceSetter = ({
           disabled={disabled}
           onChange={handlePriceChange}
         />
-        <div className="h-[10px] text-[10px] text-vermilion">
-          {priceDecimal.greaterThanOrEqualTo(0.99) && (
-            <>Price must be less than 0.99</>
-          )}
-          {priceDecimal.lessThanOrEqualTo(0.01) && (
-            <>Price must be greater than 0.01</>
-          )}
+        <div className="h-3 text-[9px] text-ztg-red-400">
+          {priceDecimal.greaterThanOrEqualTo(0.99) && <>Max 0.99</>}
+          {priceDecimal.lessThanOrEqualTo(0.01) && <>Min 0.01</>}
         </div>
       </div>
       <button
-        className="ml-auto flex h-[30px] w-[30px] flex-grow-0 items-center justify-center rounded-full bg-gray-100"
+        className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-ztg-primary-50/50 transition-all hover:bg-ztg-primary-100/80"
         onClick={handleLockClick}
         disabled={disabled}
       >
         {isLocked === true ? (
-          <img src="/icons/lock.svg" alt="Locked" />
+          <img src="/icons/lock.svg" alt="Locked" className="h-3 w-3" />
         ) : (
-          <img src="/icons/unlock.svg" alt="Unlocked" />
+          <img src="/icons/unlock.svg" alt="Unlocked" className="h-3 w-3" />
         )}
       </button>
     </div>
@@ -119,6 +114,7 @@ const PoolSettings: FC<{
   onFeeChange?: (data: Decimal) => void;
   noDataMessage?: string | ReactNode;
   baseAssetPrice?: Decimal;
+  hideBaseLiquidity?: boolean;
 }> = ({
   data,
   onChange,
@@ -127,6 +123,7 @@ const PoolSettings: FC<{
   baseAssetSymbol,
   noDataMessage,
   baseAssetPrice,
+  hideBaseLiquidity = false,
 }) => {
   const handleBaseAmountChange = (amount: string) => {
     onChange(
@@ -195,13 +192,14 @@ const PoolSettings: FC<{
       header: "Token",
       accessor: "token",
       type: "token",
+      width: "35%",
     },
-    { header: "Amount", accessor: "amount", type: "number", width: "25%" },
+    { header: "Amount", accessor: "amount", type: "number", width: "30%" },
     {
       header: "Price",
       accessor: "price",
       type: "component",
-      width: "30%",
+      width: "35%",
     },
   ];
 
@@ -214,40 +212,29 @@ const PoolSettings: FC<{
   )?.image;
 
   return (
-    <div className="md:min-w-[720px]">
-      <div className="mb-8 flex justify-center">
-        <div className=" gap-2">
-          <h2 className="mb-3 flex items-center justify-center gap-2 text-base">
+    <div className="w-full">
+      {!hideBaseLiquidity && (
+        <div className="mb-3">
+          <label className="mb-1.5 flex items-center gap-1 text-xs font-medium text-ztg-primary-900">
             Base Liquidity
             <InfoPopover
+              className="ml-1"
               title={
-                <h3 className="mb-4 flex items-center justify-center gap-2">
+                <h3 className="mb-4 flex items-center justify-center gap-2 text-white/90">
                   <AiOutlineInfoCircle />
-                  Market Base Liquidity
+                  <span className="font-semibold">Base Liquidity</span>
                 </h3>
               }
             >
-              <p className="mb-4 font-light">
-                This is the amount of liquidity that will be provided to the
-                market. It will be used to facilitate trading and is subject to
-                impermanent loss, as compensation you will earn trading fees.
-              </p>
-              <p className="font-light">
-                <b className="font-bold">
-                  Note that this is the exact amount of {baseAssetSymbol} you
-                  will spend on liquidity.
-                  <i className="font-normal">
-                    This does not include the bond amount or the transaction
-                    fees.
-                  </i>
-                </b>
-              </p>
+              <div className="mt-2 text-sm text-white/90">
+                {`Amount of ${baseAssetSymbol} provided for trading. Subject to impermanent loss. Excludes bond & tx fees.`}
+              </div>
             </InfoPopover>
-          </h2>
-          <div className="relative inline-block">
+          </label>
+          <div className="relative w-48">
             <Input
               type="number"
-              className="font-base w-64 rounded-md bg-gray-100 py-4 pl-5 pr-28 text-right text-base outline-none"
+              className="h-9 w-full rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-50/50 py-2 pl-3 pr-20 text-right text-sm outline-none focus:border-ztg-primary-400"
               value={`${parseFloat(baseAssetAmount)}`}
               onChange={(event) => {
                 const value = parseFloat(event.target.value);
@@ -258,9 +245,9 @@ const PoolSettings: FC<{
                 }
               }}
             />
-            <div className="center pointer-events-none absolute bottom-[50%] right-0 h-full translate-x-[0%] translate-y-[50%] gap-2 rounded-r-md border-2 border-l-0 border-gray-100 bg-white px-5 text-gray-600">
+            <div className="pointer-events-none absolute right-0 top-0 flex h-9 items-center gap-1.5 rounded-r-md border-l-2 border-ztg-primary-200/30 bg-white/80 px-2.5 text-xs text-ztg-primary-900">
               {baseAssetSymbol}
-              <div className="relative h-4 w-4">
+              <div className="relative h-3.5 w-3.5">
                 {currencyImage && (
                   <Image
                     alt="Currency token logo"
@@ -273,27 +260,15 @@ const PoolSettings: FC<{
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="scale-[80%] md:scale-100">
+      <div className="w-full overflow-x-auto">
         <Table
           data={tableData}
           columns={columns}
           noDataMessage={noDataMessage}
         />
       </div>
-
-      {onFeeChange && (
-        <div className="mb-[40px] mt-[20px]">
-          <div className="text-ztg-16-150 font-bold ">Pool Fees*</div>
-          <p className="mb-[30px] mt-[10px] text-ztg-14-150 text-sky-600 ">
-            High fees will allow liquidity providers to collect more value from
-            a given trade. However, high fees may also reduce market
-            participants.
-          </p>
-          <PoolFeesSelect onFeeChange={handleFeeChange} />
-        </div>
-      )}
     </div>
   );
 };

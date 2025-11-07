@@ -20,7 +20,7 @@ import { useMarketImage } from "lib/hooks/useMarketImage";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import dynamic from "next/dynamic";
-import Image from "next/image";
+import SimpleImage from "components/ui/SimpleImage";
 import { getCurrentPrediction } from "lib/util/assets";
 
 const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
@@ -102,15 +102,14 @@ export const MarketCard = ({
         ? img
         : undefined,
   });
-
   const { data: cmsMetadata } = useMarketCmsMetadata(marketId);
 
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
-        className={`ztg-transition group relative flex min-w-full flex-col  
-        rounded-[10px] bg-white p-5 md:min-w-[calc(50%-8px)] md:hover:scale-[1.015] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+        className={`ztg-transition group relative flex min-w-full flex-col
+        rounded-lg bg-white/10 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg md:min-w-[calc(50%-8px)] md:hover:scale-[1.01] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
@@ -124,13 +123,12 @@ export const MarketCard = ({
             disableLink && "cursor-default"
           }`}
         >
-          <div className="flex h-[54px] w-full gap-4 whitespace-normal">
+          <div className="flex h-12 w-full gap-4 whitespace-normal">
             <div className="absolute right-4 top-4">
               <MarketFavoriteToggle marketId={marketId} />
             </div>
-            <div className="relative min-h-[54px] min-w-[54px] rounded-lg bg-gray-400 bg-opacity-30">
-              <Image
-                priority
+            <div className="relative min-h-12 min-w-12 rounded-lg bg-white/5 backdrop-blur-sm">
+              <SimpleImage
                 alt={"Market image"}
                 src={image}
                 fill
@@ -139,10 +137,9 @@ export const MarketCard = ({
                   objectFit: "cover",
                   objectPosition: "50% 50%",
                 }}
-                sizes={"54px"}
               />
             </div>
-            <h5 className="line-clamp-2 h-fit w-full pr-4 text-base duration-200">
+            <h5 className="line-clamp-2 h-12 w-full pr-4 text-base text-white/90 duration-200">
               {cmsMetadata?.question ?? question}
             </h5>
           </div>
@@ -173,25 +170,23 @@ export const MarketCard = ({
             ) : (
               <>
                 <div className="mb-1 flex justify-between text-sm">
-                  <span className="text-gray-500">
+                  <span className="text-white/70">
                     No liquidity in this market
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-white/70">
                     {lower} - {upper}
                   </span>
                 </div>
-                <div className="h-1.5 w-full rounded-lg bg-gray-200"></div>
+                <div className="h-1.5 w-full rounded-lg bg-ztg-primary-600/20"></div>
               </>
             )}
           </div>
-          <div className="flex flex-1 gap-2">
-            <div className="flex-1">
-              <MarketCardDetails
-                market={market}
-                numParticipants={numParticipants}
-                liquidity={liquidity}
-              />
-            </div>
+          <div className="mt-auto w-full">
+            <MarketCardDetails
+              market={market}
+              numParticipants={numParticipants}
+              liquidity={liquidity}
+            />
           </div>
         </Link>
       </div>
@@ -209,13 +204,19 @@ const MarketCardPredictionBar = ({
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
-      <div className={`relative h-[30px] w-full bg-gray-200 transition-all`}>
-        <div className="absolute flex h-full w-full items-center justify-between px-2.5 text-sm">
-          <span className="line-clamp-1 text-blue">{name}</span>
-          <span className="text-blue transition-all">{impliedPercentage}%</span>
+      <div
+        className={`relative h-6 w-full overflow-hidden rounded-lg bg-white/10 shadow-md backdrop-blur-sm transition-all sm:h-[30px]`}
+      >
+        <div className="absolute flex h-full w-full items-center justify-between px-3 text-sm">
+          <span className="line-clamp-1 font-semibold text-white/90">
+            {name}
+          </span>
+          <span className="font-bold text-white/90 transition-all">
+            {impliedPercentage}%
+          </span>
         </div>
         <div
-          className={`h-full bg-blue-lighter`}
+          className={`h-full bg-gradient-to-r from-ztg-green-500/60 to-ztg-green-400/70`}
           style={{
             width: `${isNaN(impliedPercentage) ? 0 : impliedPercentage}%`,
           }}
@@ -225,11 +226,11 @@ const MarketCardPredictionBar = ({
   } else {
     return (
       <>
-        <div className="mb-1 flex justify-between text-sm">
-          <span className="text-gray-500">No liquidity in this market</span>
-          <span className="text-gray-500">0%</span>
+        <div className="mb-1 flex justify-between text-xs">
+          <span className="text-white/70">No liquidity in this market</span>
+          <span className="text-white/70">0%</span>
         </div>
-        <div className="h-1.5 w-full rounded-lg bg-gray-100"></div>
+        <div className="h-2 w-full rounded-lg bg-ztg-primary-600/20"></div>
       </>
     );
   }
@@ -259,9 +260,9 @@ const MarketCardDetails = ({
   const imagePath = lookupAssetImagePath(assetId);
 
   return (
-    <div className="flex items-center text-xs">
+    <div className="flex items-center text-xs text-white/90">
       <div>
-        <span>
+        <span className="font-semibold">
           {period.end &&
             `${hasEnded ? "Ended" : "Ends"} ${new Date(
               Number(period.end),
@@ -270,29 +271,31 @@ const MarketCardDetails = ({
               day: "numeric",
             })}`}
         </span>
-        {isEnding() && <span className="ml-1 text-red">Ends Soon</span>}
-        <span className="ml-1 border-l-1 border-l-black pl-1 font-semibold ">
+        {isEnding() && (
+          <span className="ml-1 font-semibold text-ztg-red-400">Ends Soon</span>
+        )}
+        <span className="ml-1 border-l-1 border-l-ztg-green-500/40 pl-1">
           {outcomeAssets.length} outcomes{" "}
         </span>
       </div>
       <div className="ml-auto flex items-center justify-center gap-1.5">
         {numParticipants != undefined && baseAsset ? (
           <div className="flex items-center gap-0.5">
-            <Users size={12} />
+            <Users size={12} className="text-white/90" />
             <span>{formatNumberCompact(numParticipants, 2)}</span>
           </div>
         ) : (
           <Skeleton width={30} height={12} />
         )}
         <div className="flex items-center gap-1">
-          <BarChart2 size={12} />
+          <BarChart2 size={12} className="text-white/90" />
           <span>
             {formatNumberCompact(new Decimal(volume).div(ZTG).toNumber(), 2)}
           </span>
         </div>
         {liquidity != undefined && baseAsset ? (
           <div className="flex items-center gap-1">
-            <Droplet size={12} />
+            <Droplet size={12} className="text-white/90" />
             <span>
               {formatNumberCompact(
                 new Decimal(liquidity).div(ZTG).toNumber(),
@@ -303,12 +306,11 @@ const MarketCardDetails = ({
         ) : (
           <Skeleton width={30} height={12} />
         )}
-        <Image
-          width={12}
-          height={12}
+        <SimpleImage
           src={imagePath}
           alt="Currency token logo"
           className="rounded-full"
+          style={{ width: "12px", height: "12px" }}
         />
       </div>
     </div>

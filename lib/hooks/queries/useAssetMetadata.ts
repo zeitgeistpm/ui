@@ -71,7 +71,6 @@ export const useAssetMetadata = (assetId?: AssetId) => {
       staleTime: Infinity,
     },
   );
-
   return query;
 };
 

@@ -13,11 +13,14 @@ export const MarketActiveFilterItem = ({
   onRemove,
 }: MarketActiveFilterItemProps) => {
   return (
-    <div className="flex gap-ztg-5 rounded-ztg-5 bg-sky-200 px-ztg-10 py-ztg-5 text-ztg-14-150 font-normal text-gray-800">
-      <button onClick={() => onRemove(filter)}>
-        <X size={16} className="text-gray-800"></X>
+    <div className="flex items-center gap-1 rounded-md bg-white/15 px-2 py-1 text-sm font-semibold text-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white/20">
+      <span>{filter.label}</span>
+      <button
+        onClick={() => onRemove(filter)}
+        className="flex items-center transition-transform hover:scale-110"
+      >
+        <X size={12} className="text-white/90"></X>
       </button>
-      {filter.label}
     </div>
   );
 };
@@ -32,7 +35,7 @@ const MarketActiveFilters = ({ className = "" }: MarketActiveFiltersProps) => {
   return (
     <>
       {activeFilters?.length > 0 && (
-        <div className={className}>
+        <div className={`flex flex-row items-center gap-1.5 ${className}`}>
           {activeFilters.length > 0 && (
             <ClearAllButton clear={clearActiveFilters} />
           )}

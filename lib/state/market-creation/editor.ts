@@ -3,6 +3,12 @@ import Decimal from "decimal.js";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { merge } from "lodash-es";
 import { useEffect, useMemo } from "react";
+import moment from "moment-timezone";
+import {
+  disputePeriodOptions,
+  gracePeriodOptions,
+  reportingPeriodOptions,
+} from "./constants/deadline-options";
 import { minBaseLiquidity } from "./constants/currency";
 import * as MarketDraft from "./types/draft";
 import * as FieldsState from "./types/fieldstate";
@@ -53,10 +59,6 @@ export type BaseMarketDraftEditor = {
    */
   isTouched: boolean;
   /**
-   * Is the market creation mode in wizard mode or not.
-   */
-  isWizard: boolean;
-  /**
    * Is the market created on chain?
    */
   isPublished: boolean;
@@ -84,10 +86,6 @@ export type BaseMarketDraftEditor = {
    * Merge partial form data into the form draft.
    */
   mergeFormData: (data: DeepPartial<MarketFormData>) => void;
-  /**
-   * Toggle the wizard mode on or off.
-   */
-  toggleWizard: (on: boolean) => void;
   /**
    * Register a input to a form key.
    */
@@ -216,24 +214,26 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
   };
 
   const reset = () => {
-    update(
-      merge(MarketDraft.empty(), {
-        isWizard: draft.isWizard,
-        form: {
-          question: "",
-          oracle: "",
-        },
-      }),
-    );
-  };
-
-  const toggleWizard = (on: boolean) => {
-    let newDraft = { ...draft, isWizard: on };
-    if (on) {
-      const firstInvalidStep = steps.find((step) => !step.isValid);
-      newDraft.currentStep = firstInvalidStep || draft.currentStep;
+    // Clear localStorage completely
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.removeItem("market-creation-form");
+      }
+    } catch (error) {
+      console.error(
+        "Failed to clear market creation form from localStorage:",
+        error,
+      );
     }
-    update({ ...newDraft });
+
+    // Update the atom with a fresh empty state
+    update(MarketDraft.empty());
+
+    // Force reload the page to ensure complete reset
+    // This ensures all React components re-render with the fresh empty state
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
   };
 
   const setStep = (step: MarketCreationStep) =>
@@ -256,8 +256,15 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
     let mode =
       options?.mode || fieldsState[key].isTouched ? "onChange" : "onBlur";
 
-    if (options?.type === "text" || options?.type === "number") {
-      const value = draft.form?.[key];
+    // Get the current value and normalize it for text inputs
+    let value = draft.form?.[key];
+    if (options?.type === "text") {
+      // Ensure text inputs always have a string value (never undefined)
+      value = (value as string | undefined) ?? "";
+      if (value === "") {
+        mode = "onChange";
+      }
+    } else if (options?.type === "number") {
       if (value === "") {
         mode = "onChange";
       }
@@ -265,35 +272,23 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
 
     return {
       name: key,
-      value: draft.form?.[key],
+      value: value,
       fieldState: fieldsState[key],
       onChange: (event: FormEvent<MarketFormData[K]>) => {
         if (mode === "onBlur") return;
-        let newDraft = {
+        update({
           ...draft,
           form: { ...draft.form, [key]: event.target.value },
           touchState: { ...draft.touchState, [key]: true },
-        };
-        if (!draft.isWizard) {
-          const section = sectionForFormKey(key);
-          section && (newDraft.stepReachState[section] = true);
-        }
-        update(newDraft);
+        });
       },
       onBlur: (event: FormEvent<MarketFormData[K]>) => {
         if (mode === "onChange") return;
-        let newDraft = {
+        update({
           ...draft,
           form: { ...draft.form, [key]: event.target.value },
           touchState: { ...draft.touchState, [key]: true },
-        };
-        if (!draft.isWizard) {
-          const section = sectionForFormKey(key);
-          if (section) {
-            newDraft.stepReachState[section] = true;
-          }
-        }
-        update(newDraft);
+        });
       },
     };
   };
@@ -323,10 +318,10 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
 
     const baseAmount = minBaseLiquidity[draft.form.currency!]
       ? `${minBaseLiquidity[draft.form.currency!]}`
-      : "100";
+      : "200";
 
     const liquidity =
-      minBaseLiquidity[draft.form.currency!]?.toString() ?? "100";
+      minBaseLiquidity[draft.form.currency!]?.toString() ?? "200";
 
     const numOutcomes = draft.form.answers.answers.length;
     const ratio = 1 / numOutcomes;
@@ -347,7 +342,7 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
 
         const price = reset
           ? ratio.toString()
-          : liquidity?.price?.price ?? ratio.toString();
+          : (liquidity?.price?.price ?? ratio.toString());
 
         return {
           asset: tickers?.[index]?.ticker ?? answer,
@@ -360,7 +355,6 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
         };
       }),
     ];
-
     update({
       ...draft,
       form: {
@@ -376,7 +370,6 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
 
   const editor: BaseMarketDraftEditor = {
     currentStep: draft.currentStep,
-    isWizard: draft.isWizard,
     isPublished: draft.isPublished,
     marketId: draft.marketId,
     steps,
@@ -386,7 +379,6 @@ export const useMarketDraftEditor = (): MarketDraftEditor => {
     setStep,
     goToSection,
     mergeFormData,
-    toggleWizard,
     input,
     published,
   };

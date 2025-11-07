@@ -93,8 +93,9 @@ const Stepper = ({ start, end, currentStep, onStepClick }: StepperProps) => {
           key={step}
           onClick={() => onStepClick(step)}
           disabled={step === currentStep}
-          className={`h-[5px] w-full ${step === currentStep ? "bg-black" : "bg-mystic"
-            }`}
+          className={`h-[5px] w-full ${
+            step === currentStep ? "bg-black" : "bg-mystic"
+          }`}
         ></button>
       ))}
     </div>
@@ -133,10 +134,11 @@ const TextSection = ({
         <div className="flex h-[56px] w-full gap-x-5 font-medium">
           {leftButton && (
             <button
-              className={`w-full rounded-[100px] bg-mystic hover:bg-gray-100 ${leftButton.disabled === true
-                ? "cursor-default bg-gray-light-2"
-                : "border"
-                }`}
+              className={`w-full rounded-[100px] bg-mystic hover:bg-gray-100 ${
+                leftButton.disabled === true
+                  ? "cursor-default bg-gray-light-2"
+                  : "border"
+              }`}
               onClick={leftButton.onClick}
             >
               {leftButton.text}
@@ -144,10 +146,9 @@ const TextSection = ({
           )}
           {rightButton && (
             <button
-              className={`w-full rounded-[100px] bg-ztg-blue text-white hover:bg-black ${rightButton.disabled === true
-                ? "cursor-default bg-gray-light-2"
-                : "border"
-                }`}
+              className={`w-full rounded-[100px] bg-ztg-green-600/80 text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md ${
+                rightButton.disabled === true ? "cursor-default opacity-50" : ""
+              }`}
               onClick={rightButton.onClick}
             >
               {rightButton.text}
@@ -172,15 +173,18 @@ export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
                 key={index}
                 disabled={button.disabled || !isDisclaimerChecked}
                 onClick={button.onClick}
-                className={`flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${button?.className} ${button.disabled === true || !isDisclaimerChecked ? "bg-gray-light-2 cursor-not-allowed opacity-50" : "border"
-                  }`}
+                className={`flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${button?.className} ${
+                  button.disabled === true || !isDisclaimerChecked
+                    ? "cursor-not-allowed bg-gray-light-2 opacity-50"
+                    : "border"
+                }`}
               >
                 <div className="ml-4 flex items-center gap-2 text-lg font-medium">
                   <span>{button.title}</span>
                   <span>{button?.icon}</span>
                 </div>
               </button>
-              <div className="flex items-center mt-2">
+              <div className="mt-2 flex items-center">
                 <input
                   type="checkbox"
                   id="banxa-disclaimer"
@@ -188,7 +192,9 @@ export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
                   onChange={() => setIsDisclaimerChecked(!isDisclaimerChecked)}
                 />
                 <label htmlFor="banxa-disclaimer" className="ml-2 text-sm">
-                  I understand that I will be redirected to Banxa, a third-party website to complete the payment and will be subject to their terms of service.
+                  I understand that I will be redirected to Banxa, a third-party
+                  website to complete the payment and will be subject to their
+                  terms of service.
                 </label>
               </div>
             </>
@@ -199,8 +205,9 @@ export const ButtonList: React.FC<ButtonListProps> = ({ buttonList }) => {
               key={index}
               disabled={button.disabled}
               onClick={button.onClick}
-              className={`flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${button?.className} ${button.disabled === true ? "bg-gray-light-2" : "border"
-                }`}
+              className={`flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${button?.className} ${
+                button.disabled === true ? "bg-gray-light-2" : "border"
+              }`}
             >
               <div className="ml-4 flex items-center gap-2 text-lg font-medium">
                 <span>{button.title}</span>
@@ -223,8 +230,9 @@ export const ResourceList: React.FC<ButtonListProps> = ({ buttonList }) => {
             key={index}
             disabled={resource.disabled}
             onClick={resource.onClick}
-            className={`col-span-3 flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${resource.disabled === true ? "bg-gray-light-2" : "border"
-              }`}
+            className={`col-span-3 flex min-h-[56px] w-full items-center justify-center rounded-lg bg-mystic p-2 text-center hover:bg-gray-100 ${
+              resource.disabled === true ? "bg-gray-light-2" : "border"
+            }`}
           >
             <span className="ml-4 flex items-center gap-2 text-lg font-medium">
               {resource.title}
@@ -273,26 +281,26 @@ export const DesktopOnboardingModal = (props: {
       headerText="Create an Account"
       bodyText="Use one of the following options to create a wallet and start trading."
     />,
-    <TextSection
-      children={<ButtonList setStep={setStep} buttonList={exchangeList} />}
-      headerText="Wallet Successfully Installed"
-      bodyText="It's time to get ZTG so that you can start trading!"
-      leftButton={{
-        text: "Back",
-        onClick: () => setStep(0),
-      }}
-      rightButton={{
-        text: "Continue",
-        onClick: () => setStep(2),
-      }}
-    />,
+    // <TextSection
+    //   children={<ButtonList setStep={setStep} buttonList={exchangeList} />}
+    //   headerText="Wallet Successfully Installed"
+    //   bodyText="It's time to get ZTG so that you can start trading!"
+    //   leftButton={{
+    //     text: "Back",
+    //     onClick: () => setStep(0),
+    //   }}
+    //   rightButton={{
+    //     text: "Continue",
+    //     onClick: () => setStep(2),
+    //   }}
+    // />,
     <TextSection
       children={<ResourceList setStep={setStep} buttonList={resourceList} />}
       headerText="You're All Set!"
       bodyText="If you have any questions, feel free to check out our community channels."
       leftButton={{
         text: "Back",
-        onClick: () => setStep(1),
+        onClick: () => setStep(0),
       }}
     />,
   ];

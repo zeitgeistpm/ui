@@ -113,7 +113,6 @@ const _callback = (
   const { events, status } = result;
   if (status.isInBlock) {
     events.forEach(({ phase, event: { data, method, section } }) => {
-      console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
 
       if (method == "ExtrinsicSuccess") {
         unsubOrWarns(_unsub);

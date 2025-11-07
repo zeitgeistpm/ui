@@ -540,7 +540,7 @@ const Votes = ({
         return (
           <div
             key={category.ticker}
-            className={`relative flex flex-1 flex-col rounded-md border-1 text-xs shadow-sm md:min-w-[200px] ${
+            className={`relative flex flex-1 flex-col rounded-md border-2 text-xs shadow-sm md:min-w-[200px] ${
               showLeaderIndicator && index === 0 && "border-green-300"
             }`}
           >

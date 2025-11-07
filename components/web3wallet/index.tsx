@@ -8,46 +8,48 @@ const Web3wallet = () => {
   const [email, setEmail] = useState<string>("");
 
   return (
-    <div>
-      <h3 className="mb-4 text-lg font-bold">Social</h3>
-      <div className="grid grid-cols-3 gap-x-6 gap-y-4">
-        <WalletIcon
-          logoAlt="google"
-          logoSrc="/icons/google-g.svg"
-          extensionName="web3auth"
-          onClick={loginGoogle}
-        />
-        <WalletIcon
-          logoAlt="twitter"
-          logoSrc="/icons/x-logo.svg"
-          extensionName="web3auth"
-          className="px-1 invert"
-          onClick={loginTwitter}
-        />
-        <WalletIcon
-          logoAlt="discord"
-          logoSrc="/icons/discord.svg"
-          extensionName="web3auth"
-          onClick={loginDiscord}
-        />
-        <div className="col-span-3 grid grid-cols-3 gap-x-6">
-          <h3 className="col-span-3 mb-4 text-lg font-bold">Email</h3>
+    <>
+      <div>
+        <div className="grid grid-cols-3 gap-3">
+          <WalletIcon
+            logoAlt="google"
+            logoSrc="/icons/google-g.svg"
+            extensionName="web3auth"
+            onClick={loginGoogle}
+          />
+          <WalletIcon
+            logoAlt="twitter"
+            logoSrc="/icons/x-logo.svg"
+            extensionName="web3auth"
+            className="px-1 invert"
+            onClick={loginTwitter}
+          />
+          <WalletIcon
+            logoAlt="discord"
+            logoSrc="/icons/discord.svg"
+            extensionName="web3auth"
+            onClick={loginDiscord}
+          />
+        </div>
+      </div>
+      <div className="mt-4">
+        <div className="grid grid-cols-3 gap-3">
           <input
             type="text"
-            placeholder="Enter email for passwordless login"
-            className="col-span-3 mb-4 h-[56px] rounded-md border px-2 py-1 leading-8 placeholder:text-xs focus:outline-none focus:ring-1 focus:ring-ztg-blue sm:col-span-2 sm:mb-0"
+            placeholder="Enter email"
+            className="col-span-3 h-11 rounded-lg border-2 border-white/10 bg-white/10 px-3 py-2 text-sm text-white/90 shadow-sm backdrop-blur-sm transition-all placeholder:text-sm placeholder:text-white/60 focus:border-white/20 focus:bg-white/15 focus:outline-none sm:col-span-2"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <button
-            className="col-span-3 h-[56px] rounded-md bg-ztg-blue py-1 leading-8 text-white hover:bg-black sm:col-span-1"
+            className="col-span-3 h-11 rounded-lg bg-ztg-green-600/80 px-3 py-2 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg sm:col-span-1"
             onClick={() => loginEmail(email)}
           >
             Submit
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

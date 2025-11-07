@@ -13,6 +13,7 @@ import {
 import Decimal from "decimal.js";
 import { calcInGivenOut, calcOutGivenIn } from "lib/math";
 import { TradeType } from "lib/types";
+import { CombinatorialToken } from "lib/types/combinatorial";
 import { createContext, useContext } from "react";
 import { useTradeItemState } from "./queries/useTradeItemState";
 import { useSdkv2 } from "./useSdkv2";
@@ -20,7 +21,7 @@ import { perbillToNumber } from "lib/util/perbill-to-number";
 
 export type TradeItem = {
   action: TradeType;
-  assetId: CategoricalAssetId | ScalarAssetId;
+  assetId: CategoricalAssetId | ScalarAssetId | CombinatorialToken;
 };
 
 export const TradeItemContext = createContext<{

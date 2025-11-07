@@ -6,7 +6,7 @@ import {
 } from "lib/constants/foreign-asset";
 import { useAllAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import useFeePayingAssetSelection from "lib/state/fee-paying-asset";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useMemo, useState, useEffect, useRef } from "react";
 import { Check } from "react-feather";
 
 const isSupportedAsset = (id: number) => {
@@ -22,6 +22,24 @@ const FeePayingAssetSelect = () => {
   const { data: assetMetadata, isSuccess } = useAllAssetMetadata();
   const { assetSelection, setAsset } = useFeePayingAssetSelection();
   const [showSaved, setShowSaved] = useState(false);
+  const portalRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    let portal = document.getElementById("select-menu-portal") as HTMLDivElement;
+    if (!portal) {
+      portal = document.createElement("div") as HTMLDivElement;
+      portal.id = "select-menu-portal";
+      portal.style.position = "fixed";
+      portal.style.top = "0";
+      portal.style.left = "0";
+      portal.style.zIndex = "9999";
+      document.body.appendChild(portal);
+    }
+    portalRef.current = portal;
+    return () => {
+      // Don't remove portal on unmount as it might be used by other selects
+    };
+  }, []);
 
   const options = useMemo<AssetOption[]>(() => {
     if (!isSuccess) {
@@ -59,8 +77,10 @@ const FeePayingAssetSelect = () => {
 
   return (
     <div className="flex flex-col gap-y-3">
-      <div className="item-center flex">
-        <label className="font-bold">Select asset to pay network fees</label>
+      <div className="flex items-center">
+        <label className="text-sm font-semibold text-white/90">
+          Select asset to pay network fees
+        </label>
         <Transition
           as={Fragment}
           show={showSaved}
@@ -71,21 +91,18 @@ const FeePayingAssetSelect = () => {
           leaveFrom="transform scale-100 opacity-100"
           leaveTo="transform scale-95 opacity-0"
         >
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2 text-white/90">
             <Check size={16} className="text-green-500" />
-            <div className="text-sm">Saved</div>
+            <div className="text-xs">Saved</div>
           </div>
         </Transition>
       </div>
-      <div
-        className={
-          "relative h-14 w-full rounded-md border-1 border-transparent bg-anti-flash-white "
-        }
-      >
+      <div className="relative h-10 w-full rounded-lg border-2 border-white/10 bg-white/10 shadow-sm backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/20">
         <AssetSelect
           options={options}
           selectedOption={assetSelection}
           showArrowRight={true}
+          menuPortalTarget={portalRef.current}
           onChange={(option) => {
             setAsset(option);
             setShowSaved(true);

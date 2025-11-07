@@ -3,9 +3,10 @@ import { AssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
 import { balanceRootKey, fetchAssetBalance } from "./useBalance";
+import { CombinatorialToken } from "lib/types/combinatorial";
 
 export const useBalances = (
-  assetIds: AssetId[],
+  assetIds: (AssetId | CombinatorialToken)[],
   address?: string,
   blockNumber?: number,
 ) => {

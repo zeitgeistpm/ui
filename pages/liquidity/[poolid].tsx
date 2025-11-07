@@ -37,11 +37,11 @@ const PoolDetail = ({
     <>
       <div
         className={
-          "flex h-ztg-89 w-full flex-col rounded-ztg-10 bg-sky-100 p-ztg-15 dark:bg-black " +
+          "flex h-ztg-89 w-full flex-col rounded-ztg-10 bg-ztg-primary-100 p-ztg-15 dark:bg-black " +
           className
         }
       >
-        <div className=" text-ztg-12-150 font-bold text-sky-600">
+        <div className=" text-ztg-12-150 font-bold text-ztg-primary-600">
           <div className="flex">
             <span>{header}</span>
             {showInfo === true ? (
@@ -53,11 +53,11 @@ const PoolDetail = ({
                   className="ml-ztg-10 inline cursor-pointer"
                 />
                 {hoveringInfo === true ? (
-                  <div className="absolute bottom-ztg-20 left-ztg-50 w-ztg-164 rounded-ztg-5 bg-sky-200 px-ztg-8 py-ztg-14 text-ztg-12-150 text-black  dark:bg-border-dark dark:text-white">
-                    <div className="border-b-1 border-sky-600 pb-ztg-7 font-bold">
+                  <div className="absolute bottom-ztg-20 left-ztg-50 w-ztg-164 rounded-ztg-5 bg-ztg-primary-200 px-ztg-8 py-ztg-14 text-ztg-12-150 text-black  dark:bg-border-dark dark:text-white">
+                    <div className="border-b-1 border-ztg-primary-600 pb-ztg-7 font-bold">
                       Total APR
                     </div>
-                    <div className="border-b-1 border-sky-600 py-ztg-7 font-normal">
+                    <div className="border-b-1 border-ztg-primary-600 py-ztg-7 font-normal">
                       Fees
                     </div>
                     <div className="pt-ztg-13 font-normal">
@@ -74,7 +74,9 @@ const PoolDetail = ({
           </div>
         </div>
         <div className="font-mono text-ztg-14-150 font-bold">{middle}</div>
-        <div className="font-mono text-ztg-12-150 text-sky-600">{bottom}</div>
+        <div className="font-mono text-ztg-12-150 text-ztg-primary-600">
+          {bottom}
+        </div>
       </div>
     </>
   );
@@ -123,7 +125,7 @@ const PoolDetails: NextPage = () => {
           <span className="text-sm ">Back to pools</span>
           <Link
             href={`/markets/${market.marketId}`}
-            className="ml-auto flex items-center justify-center rounded-ztg-5 bg-sky-200 px-ztg-20 py-ztg-5 text-ztg-12-120 font-bold uppercase text-sky-600 dark:bg-black"
+            className="ml-auto flex items-center justify-center rounded-ztg-5 bg-ztg-primary-200 px-ztg-20 py-ztg-5 text-ztg-12-120 font-bold uppercase text-ztg-primary-600 dark:bg-black"
           >
             <BarChart2 size={14} className="mr-2" />
             <div className="flex content-end">Market</div>

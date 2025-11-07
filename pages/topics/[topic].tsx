@@ -102,7 +102,7 @@ const TopicPage: NextPage<{
       <div className="mb-12 flex">
         <h1 className="flex-1 text-xl">{cmsTopic.title}</h1>
         <Link href="/markets">
-          <div className="rounded-lg bg-slate-200 px-2 py-1 text-sm">
+          <div className="rounded-lg bg-ztg-primary-200 px-2 py-1 text-sm">
             All Markets
           </div>
         </Link>

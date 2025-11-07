@@ -55,12 +55,12 @@ export const CourtStageTimer = ({
           <div className="mr-4 font-semibold text-black">
             {courtStageCopy[stage.type].title}
           </div>
-          <div className="text-sm text-sky-600">
+          <div className="text-sm text-ztg-primary-600">
             {courtStageCopy[stage.type].description}
           </div>
           <div className="ml-auto flex items-center gap-2 ">
             {stage.type !== "closed" && stage.type !== "reassigned" && (
-              <div className="pl-1 text-right text-sm text-sky-600">
+              <div className="pl-1 text-right text-sm text-ztg-primary-600">
                 {timeLeft?.humanize()} left
               </div>
             )}
@@ -76,7 +76,7 @@ export const CourtStageTimer = ({
         </div>
         {!isInfinity(stage.remainingBlocks) && (
           <div className="w-full">
-            <div className="text-right text-xs text-sky-600">
+            <div className="text-right text-xs text-ztg-primary-600">
               {percentage.toFixed(0)}%
             </div>
             <div className="h-1.5 w-full rounded-lg bg-gray-100">
@@ -101,12 +101,12 @@ export const roundCopy: Record<
   "1": {
     description:
       "This case outcome has been appealed and is starting a new round of voting.",
-    className: "text-gray-500 bg-slate-100",
+    className: "text-gray-500 bg-ztg-primary-100",
   },
   "2": {
     description:
       "This case has been appealed for the second time and is starting a new round of voting.",
-    className: "text-gray-500 bg-slate-100",
+    className: "text-gray-500 bg-ztg-primary-100",
   },
   "3": {
     description:

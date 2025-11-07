@@ -19,42 +19,44 @@ export const WizardStepper = <T extends WizardStep<any>>({
   const { width } = useWindowSize();
   const isMobile = width < parseInt(TAILWIND.theme.screens.md.replace("px"));
 
-  const visibleStepRange = medianrange(
-    currentStepIndex,
-    isMobile ? 3 : steps.length,
-    0,
-    steps.length - 1,
-  );
+  // Calculate visible steps, ensuring we don't request more steps than available
+  // If we have 4 or fewer steps, just show all of them even on mobile
+  const shouldShowAllSteps = steps.length <= 4;
 
-  const visibleSteps: T[] = visibleStepRange.map((index) => steps[index]);
-  const visibleStepIndex = visibleSteps.findIndex(
-    (s) => s.label === current.label,
-  );
+  let visibleSteps: T[];
+  let visibleStepIndex: number;
 
+  if (shouldShowAllSteps || !isMobile) {
+    // Show all steps when we have 4 or fewer, or on desktop
+    visibleSteps = steps;
+    visibleStepIndex = currentStepIndex;
+  } else {
+    // On mobile with more than 4 steps, use medianrange
+    const visibleStepRange = medianrange(
+      currentStepIndex,
+      3,
+      0,
+      steps.length - 1,
+    );
+    visibleSteps = visibleStepRange.map((index) => steps[index]);
+    visibleStepIndex = visibleSteps.findIndex((s) => s.label === current.label);
+  }
   const progress = (currentStepIndex / (steps.length - 1)) * 100;
 
   return (
-    <div
-      className={`relative flex justify-center transition-transform md:!transform-none`}
-    >
-      <div className="center relative flex ">
-        <div
-          className={`transiton-all absolute left-[calc(0px+theme(space.12))] top-4 -z-10 w-[calc(100%-theme(space.24))] bg-black duration-300 ease-in-out`}
-          style={{
-            height: "1px",
-            transform: `scaleX(${progress.toFixed()}%)`,
-            transformOrigin: "left",
-          }}
-        />
-        <div
-          className={`absolute left-[calc(0px+theme(space.12))] top-4 -z-20 w-[calc(100%-theme(space.24))] bg-gray-200 transition-all duration-300 ease-in-out`}
-          style={{
-            height: "1px",
-            transform: `scaleX(100%)`,
-            transformOrigin: "left",
-          }}
-        />
+    <div className="relative flex w-full items-center">
+      {/* Progress bar background */}
+      <div className="absolute left-0 right-0 top-[10px] -z-20 h-[2px] bg-ztg-primary-300/60" />
+      {/* Progress bar fill */}
+      <div
+        className="absolute left-0 top-[10px] -z-10 h-[2px] bg-ztg-primary-600 transition-all duration-300 ease-in-out"
+        style={{
+          width: `${progress}%`,
+        }}
+      />
 
+      {/* Steps - evenly distributed */}
+      <div className="flex w-full items-start justify-between">
         {visibleSteps.map((step, index) => {
           const prevStep = prevStepFrom(steps, step);
 
@@ -74,22 +76,26 @@ export const WizardStepper = <T extends WizardStep<any>>({
           return (
             <button
               key={index}
-              className={`w-24 ${
+              className={`flex flex-1 flex-col items-center ${
                 canNavigate ? "cursor-pointer" : "cursor-not-allowed"
               } group transition-all`}
               disabled={!canNavigate}
               onClick={() => onChange?.(step)}
             >
-              <div className="center mb-2 flex">
+              <div className="center mb-1 flex">
                 <div
-                  className={`center relative flex h-8 w-8  rounded-full bg-gray-500 text-sm text-white duration-200 ease-in-out
+                  className={`center relative flex h-5 w-5 rounded-full text-xs font-semibold duration-200 ease-in-out
                   group-active:scale-95
-                  ${(canNavigate || index === visibleStepIndex) && "!bg-black"}
-                  ${showError && "bg-red-500"}
-                  ${showCompleted && "bg-green-400"}
+                  ${
+                    canNavigate || index === visibleStepIndex
+                      ? "bg-ztg-primary-600 text-white"
+                      : "bg-ztg-primary-300/60 text-ztg-primary-700"
+                  }
+                  ${showError && "bg-red-500 text-white"}
+                  ${showCompleted && "bg-emerald-500 text-white"}
                   ${
                     index === visibleStepIndex &&
-                    "ring-2 ring-blue-400 md:ring-0"
+                    "ring-2 ring-ztg-primary-400 ring-offset-1"
                   }
                 `}
                 >
@@ -102,9 +108,11 @@ export const WizardStepper = <T extends WizardStep<any>>({
                 </div>
               </div>
               <div
-                className={`center flex py-2 ${
-                  currentStepIndex >= index ? "text-black" : "text-gray-400"
-                } ${index === visibleStepIndex && "font-bold md:font-normal"}`}
+                className={`center hidden text-center text-[10px] leading-tight md:flex ${
+                  currentStepIndex >= index
+                    ? "font-medium text-ztg-primary-900"
+                    : "text-ztg-primary-700"
+                } ${index === visibleStepIndex && "font-semibold"}`}
               >
                 {step.label}
               </div>

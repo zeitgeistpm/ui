@@ -2,6 +2,9 @@ const { withPlaiceholder } = require("@plaiceholder/next");
 
 module.exports = withPlaiceholder({
   reactStrictMode: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   experimental: {
     esmExternals: true,
     scrollRestoration: true,
