@@ -62,13 +62,19 @@ const TradeResult = ({
       : `${twitterBaseUrl}I'm using %40ZeitgeistPM to bet on "${marketQuestion}" %0A%0ACheck out the market here%3A%0A&url=${marketUrl}`;
 
   return (
-    <div className="flex flex-col items-center gap-y-[10px] rounded-ztg-10 bg-white p-[30px] text-ztg-18-150">
-      <div>You've just {type === "buy" ? "bought" : "sold"}</div>
-      <div className="text-[58px]">{amount?.toFixed(2)}</div>
-      <div className="text-center">
-        <span className="font-bold capitalize">{tokenName}</span> Predictions
-        for
-        <div className="font-bold">
+    <div className="flex flex-col items-center gap-y-[10px] rounded-lg border border-ztg-green-500/40 bg-ztg-primary-900/60 p-[30px] shadow-lg shadow-ztg-green-500/10 backdrop-blur-md text-ztg-18-150">
+      <div className="text-ztg-primary-100">
+        You've just {type === "buy" ? "bought" : "sold"}
+      </div>
+      <div className="text-[58px] text-white font-bold">
+        {amount?.toFixed(2)}
+      </div>
+      <div className="text-center text-ztg-primary-200">
+        <span className="font-bold capitalize text-ztg-primary-100">
+          {tokenName}
+        </span>{" "}
+        Predictions for
+        <div className="font-bold text-ztg-primary-100">
           {baseTokenAmount?.toFixed(2)} {baseToken}
         </div>
       </div>
@@ -76,12 +82,15 @@ const TradeResult = ({
         target="_blank"
         rel="noopener noreferrer"
         href={tweetUrl}
-        className="mb-4"
+        className="mb-4 transition-all hover:opacity-80"
       >
         <TwitterBird />
       </a>
 
-      <button onClick={onContinueClick} className="font-bold text-ztg-blue">
+      <button
+        onClick={onContinueClick}
+        className="rounded-md px-4 py-2 font-bold text-ztg-green-400 transition-all hover:bg-ztg-primary-700/30 active:scale-95"
+      >
         Continue Trading
       </button>
     </div>
