@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { BsTwitterX } from "react-icons/bs";
 
 export const TwitterBird = () => {
   return (
@@ -62,37 +63,38 @@ const TradeResult = ({
       : `${twitterBaseUrl}I'm using %40ZeitgeistPM to bet on "${marketQuestion}" %0A%0ACheck out the market here%3A%0A&url=${marketUrl}`;
 
   return (
-    <div className="flex flex-col items-center gap-y-[10px] rounded-lg border border-ztg-green-500/40 bg-ztg-primary-900/60 p-[30px] shadow-lg shadow-ztg-green-500/10 backdrop-blur-md text-ztg-18-150">
-      <div className="text-ztg-primary-100">
+    <div className="flex flex-col items-center gap-y-4 rounded-lg border border-ztg-primary-200/30 p-5">
+      <div className="text-ztg-primary-100 text-sm">
         You've just {type === "buy" ? "bought" : "sold"}
       </div>
-      <div className="text-[58px] text-white font-bold">
+      <div className="text-5xl text-white font-bold">
         {amount?.toFixed(2)}
       </div>
       <div className="text-center text-ztg-primary-200">
         <span className="font-bold capitalize text-ztg-primary-100">
           {tokenName}
         </span>{" "}
-        Predictions for
-        <div className="font-bold text-ztg-primary-100">
+        for{" "} 
+        <span className="font-bold text-ztg-primary-100 mb-2">
           {baseTokenAmount?.toFixed(2)} {baseToken}
-        </div>
+        </span>
       </div>
+
+      <button
+        onClick={onContinueClick}
+        className="rounded-md px-4 font-bold text-ztg-green-400 transition-all hover:bg-ztg-primary-700/30 active:scale-95"
+      >
+        Continue Trading
+      </button>
       <a
         target="_blank"
         rel="noopener noreferrer"
         href={tweetUrl}
-        className="mb-4 transition-all hover:opacity-80"
+        className="mb-2 text-sm transition-all hover:opacity-80 text-white flex items-center gap-2"
       >
-        <TwitterBird />
+        Share on
+        <BsTwitterX color="white" size={18}/>
       </a>
-
-      <button
-        onClick={onContinueClick}
-        className="rounded-md px-4 py-2 font-bold text-ztg-green-400 transition-all hover:bg-ztg-primary-700/30 active:scale-95"
-      >
-        Continue Trading
-      </button>
     </div>
   );
 };

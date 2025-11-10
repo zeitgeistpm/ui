@@ -6,12 +6,14 @@ export const rootKey = "get-combinatorial-market-ids";
 
 export const useCombinatorialTokenMarketIds = (combinatorialTokens: string[]) => {
   const [sdk, id] = useSdkv2();
-  
+
+  const enabled = Boolean(sdk && isIndexedSdk(sdk) && combinatorialTokens.length > 0);
+
   return useQuery({
     queryKey: [rootKey, id ?? "default", combinatorialTokens],
     queryFn: async () => {
       if (!sdk || !isIndexedSdk(sdk) || !combinatorialTokens.length) {
-        return [];
+        return {};
       }
 
       // Fetch market IDs for all combinatorial tokens in parallel
@@ -27,21 +29,20 @@ export const useCombinatorialTokenMarketIds = (combinatorialTokens: string[]) =>
           });
           return res.assets?.[0]?.market?.marketId ?? null;
         } catch (error) {
-          console.error(`Error fetching market ID for token ${token}:`, error);
           return null;
         }
       });
 
       const marketIds = await Promise.all(promises);
-      
+
       // Return a map of token -> marketId for easy lookup
       const tokenToMarketIdMap: Record<string, number | null> = {};
       combinatorialTokens.forEach((token, index) => {
         tokenToMarketIdMap[token] = marketIds[index];
       });
-      
+
       return tokenToMarketIdMap;
     },
-    enabled: Boolean(sdk && isIndexedSdk(sdk) && combinatorialTokens.length > 0),
+    enabled,
   });
 };

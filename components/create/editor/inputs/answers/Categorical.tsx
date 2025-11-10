@@ -97,10 +97,18 @@ export const CategoricalAnswersInput = ({
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = value?.answers.findIndex((v) => v === active.id);
-      const newIndex = value?.answers.findIndex((v) => v === over.id);
+      // Extract index from id (format: "answer-0", "answer-1", etc.)
+      const getIndexFromId = (id: string | number) => {
+        if (typeof id === "string" && id.startsWith("answer-")) {
+          return parseInt(id.replace("answer-", ""), 10);
+        }
+        return -1;
+      };
 
-      if (!oldIndex || !newIndex || !value?.answers) return;
+      const oldIndex = getIndexFromId(active.id);
+      const newIndex = getIndexFromId(over.id);
+
+      if (oldIndex === -1 || newIndex === -1 || !value?.answers) return;
 
       onChange?.({
         type: "change",
@@ -133,15 +141,15 @@ export const CategoricalAnswersInput = ({
       >
         <div className="flex flex-wrap items-center gap-2">
           <SortableContext
-            items={value?.answers as string[]}
+            items={value?.answers.map((_, index) => `answer-${index}`) ?? []}
             strategy={verticalListSortingStrategy}
             disabled={draggingDisabled}
           >
             {value?.answers.map((answer: string, index: number) => {
               return (
                 <AnswerInput
-                  key={answer}
-                  id={answer}
+                  key={`answer-${index}`}
+                  id={`answer-${index}`}
                   disabled={disabled ?? false}
                   value={answer}
                   onChange={handleChange(index, onChange)}

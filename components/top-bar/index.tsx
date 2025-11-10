@@ -37,7 +37,6 @@ import Skeleton from "components/ui/Skeleton";
 import { delay } from "lib/util/delay";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
-import { MdFavoriteBorder } from "react-icons/md";
 import { useRouter } from "next/router";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { useBalance } from "lib/hooks/queries/useBalance";
@@ -571,25 +570,6 @@ const TopBar = () => {
                                     </div>
                                     <h3 className="text-base font-semibold text-white md:text-sm">
                                       Popular Markets
-                                    </h3>
-                                  </button>
-                                </Link>
-                              )}
-                            </Menu.Item>
-
-                            <Menu.Item>
-                              {({ active }) => (
-                                <Link href="/markets/favorites" onClick={close}>
-                                  <button
-                                    className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
-                                      active ? "bg-white/20" : ""
-                                    }`}
-                                  >
-                                    <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
-                                      <MdFavoriteBorder size={"100%"} />
-                                    </div>
-                                    <h3 className="text-base font-semibold text-white md:text-sm">
-                                      Favorites
                                     </h3>
                                   </button>
                                 </Link>

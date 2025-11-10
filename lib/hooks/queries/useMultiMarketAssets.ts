@@ -17,7 +17,6 @@ export const useMultiMarketAssets = (
   return useQuery({
     queryKey: [multiMarketAssetsRootQuery, ...multiMarketAssets],
     queryFn: async () => {
-
       if (!sdk) {
         return [];
       }

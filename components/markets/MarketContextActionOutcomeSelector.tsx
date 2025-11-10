@@ -69,7 +69,12 @@ const MarketContextActionOutcomeSelector = ({
             color = combination.color || colors[index];
             assetIndex = index; // Use current position for combinatorial with outcomeCombinations
           } else {
+            // Combination not found - fall back to market.categories
             assetIndex = index;
+            const marketCategory = market?.categories?.[assetIndex];
+            category = marketCategory
+              ? { name: marketCategory.name || "" }
+              : null;
           }
         } else {
           // For combinatorial tokens without outcomeCombinations, use the index directly
@@ -289,7 +294,7 @@ const MarketContextActionOutcomeSelector = ({
                 static
                 className="no-scroll-bar flex-1 overflow-y-scroll px-3 py-3 md:max-h-[300px]"
               >
-                {(searchResults ?? assetOptions)?.map((option, index) => {
+                {(searchResults ?? assetOptions)?.map((option) => {
                   return (
                     <Listbox.Option
                       key={option.assetIndex}

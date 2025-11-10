@@ -88,25 +88,25 @@ const WalletSelect = () => {
       <h3 className="mb-5 text-lg font-bold text-white">Connect Wallet</h3>
 
       {/* Social Login Section */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <h4 className="mb-3 text-sm font-semibold text-white/90">
           Quick Connect
         </h4>
         <Web3wallet />
-      </div>
+      </div> */}
 
       {/* Divider */}
-      <div className="relative mb-6 flex items-center">
+      {/* <div className="relative mb-6 flex items-center">
         <div className="h-px flex-1 bg-white/10"></div>
         <span className="px-3 text-xs font-medium text-white/60">or</span>
         <div className="h-px flex-1 bg-white/10"></div>
-      </div>
+      </div> */}
 
       {/* Crypto Wallets Section */}
       <div>
-        <h4 className="mb-4 text-sm font-semibold text-white/90">
+        {/* <h4 className="mb-4 text-sm font-semibold text-white/90">
           {hasInstalledWallets ? "Browser Extension" : "Install Extension"}
-        </h4>
+        </h4> */}
         {isMobileDevice ? (
           <div className="w-full space-y-3">
             <Link
@@ -165,7 +165,8 @@ const WalletSelect = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-3">
+          // <div className="grid grid-cols-3 gap-3">
+          <div className="flex flex-col gap-3">
             {supportedWallets
               .filter((w) => w.extensionName !== "web3auth")
               .map((wallet) => {
