@@ -74,21 +74,57 @@ export const useAccountAssetBalances = (
           blockNumber,
         ],
         queryFn: async () => {
-          const api = await getApiAtBlock(sdk!.asRpc().api, blockNumber);
-          const balance = pair.account
-            ? await fetchAssetBalance(api, pair.account, pair.assetId)
-            : new Decimal(0);
+          try {
+            const rpcSdk = sdk!.asRpc();
+            const api = rpcSdk.api;
 
-          return {
-            pair,
-            balance,
-          };
+            // Check if WebSocket is actually connected before making queries
+            if (!api.isConnected) {
+              // Wait for connection before proceeding
+              await new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                  reject(new Error('WebSocket connection timeout'));
+                }, 5000);
+
+                if (api.isConnected) {
+                  clearTimeout(timeout);
+                  resolve(undefined);
+                } else {
+                  const checkConnection = setInterval(() => {
+                    if (api.isConnected) {
+                      clearTimeout(timeout);
+                      clearInterval(checkConnection);
+                      resolve(undefined);
+                    }
+                  }, 100);
+                }
+              });
+            }
+
+            const apiAtBlock = await getApiAtBlock(api, blockNumber);
+            const balance = pair.account
+              ? await fetchAssetBalance(apiAtBlock, pair.account, pair.assetId)
+              : new Decimal(0);
+
+            return {
+              pair,
+              balance,
+            };
+          } catch (error) {
+            // Return zero balance on error instead of failing completely
+            return {
+              pair,
+              balance: new Decimal(0),
+            };
+          }
         },
         enabled:
           Boolean(sdk) &&
           isRpcSdk(sdk) &&
           (typeof opts?.enabled === "undefined" ? true : opts?.enabled),
         keepPreviousData: true,
+        retry: 3,
+        retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 5000),
       };
     }),
   });

@@ -77,6 +77,7 @@ type ColumnType =
 interface CurrencyData {
   value: number;
   usdValue?: number;
+  currencySymbol?: string;
 }
 
 interface TokenData {
@@ -211,15 +212,23 @@ const Cell = ({
       ) {
         return (
           <td className={`${base} `} onClick={onClick} style={style}>
-            <div className="mb-0.5 text-sm">
-              {formatNumberLocalized(value.value)}
+            <div className="mb-0.5 flex items-baseline gap-1.5 text-sm">
+              <span>{formatNumberLocalized(value.value)}</span>
+              {value.currencySymbol && (
+                <span className="text-xs font-medium text-white/70">
+                  {value.currencySymbol}
+                </span>
+              )}
             </div>
-            <div className="text-xs font-light text-white">
-              $
-              {(
-                value.usdValue ?? (ztgPrice?.toNumber() ?? 0) * value.value
-              ).toFixed(2)}
-            </div>
+            {/* USD price display - enabled for Balances section, disabled in other portfolio components via usdValue */}
+            {value.usdValue !== undefined && (
+              <div className="text-xs font-light text-white">
+                $
+                {(
+                  value.usdValue ?? (ztgPrice?.toNumber() ?? 0) * value.value
+                ).toFixed(2)}
+              </div>
+            )}
           </td>
         );
       } else {
@@ -441,6 +450,7 @@ const Table = ({
                       )}
                       {column.infobox && (
                         <InfoPopover
+                        className="text-white"
                           position={
                             index === 0
                               ? "bottom-end"
@@ -449,7 +459,7 @@ const Table = ({
                                 : "bottom"
                           }
                           title={
-                            <h3 className="mb-4 flex items-center justify-center gap-2">
+                            <h3 className="mb-4 flex items-center justify-center gap-2 text-white">
                               <AiOutlineInfoCircle />
                               {column.header}
                             </h3>

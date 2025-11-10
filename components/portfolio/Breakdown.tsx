@@ -145,12 +145,13 @@ export const BreakdownSlot = ({
           {Math.abs(changePercentage).toFixed(1)}%
         </div>
       </div>
-      <div className="font-mono text-xs text-white/90">
+      {/* USD price display commented out - showing only base currency */}
+      {/* <div className="font-mono text-xs text-white/90">
         $
         {formatNumberLocalized(
           usdZtgPrice?.mul(value.div(ZTG)).toNumber() ?? 0,
         )}
-      </div>
+      </div> */}
     </>
   );
 };

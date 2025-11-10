@@ -54,8 +54,8 @@ const Amm2TradeForm = ({
     MarketOutcomeAssetId | CombinatorialToken
   >();
 
-  // Use poolData for combo markets, otherwise use market data
-  const { data: market } = useMarket(poolData ? undefined : { marketId });
+  // Always fetch market data for categories, even if poolData exists
+  const { data: market } = useMarket({ marketId });
 
   const baseAsset = poolData
     ? parseAssetIdString("ZTG") // Combo markets always use ZTG

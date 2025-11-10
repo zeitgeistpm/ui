@@ -217,9 +217,14 @@ export const usePortfolioPositions = (
 
   // Fetch market IDs for all combinatorial tokens
   // Note: This hook has internal enabled logic based on combinatorialTokens.length
-  const { data: combinatorialMarketIds, isLoading: isLoadingCombinatorialMarketIds } = useCombinatorialTokenMarketIds(
+  const combinatorialMarketIdsQuery = useCombinatorialTokenMarketIds(
     combinatorialTokens
   );
+  const combinatorialMarketIds = combinatorialMarketIdsQuery.data;
+  // Only check loading if there are actually tokens to load
+  const isLoadingCombinatorialMarketIds = combinatorialTokens.length > 0
+    ? combinatorialMarketIdsQuery.isLoading
+    : false;
 
   // Process multi-market tokens only after data is loaded
   const multiMarketTokenIds = useMemo(() => {
@@ -236,10 +241,12 @@ export const usePortfolioPositions = (
 
   // Query for multi-market assets
   // Note: This hook has internal enabled logic based on multiMarketAssets.length
-  const {
-    data: multiMarketAssetsData,
-    isLoading: isLoadingMultiMarketAssets,
-  } = useMultiMarketAssets(multiMarketAssets);
+  const multiMarketAssetsQuery = useMultiMarketAssets(multiMarketAssets);
+  const multiMarketAssetsData = multiMarketAssetsQuery.data;
+  // Only check loading if there are actually assets to load
+  const isLoadingMultiMarketAssets = multiMarketAssets.length > 0
+    ? multiMarketAssetsQuery.isLoading
+    : false;
 
   // Create a map for quick lookup of multi-market assets
   const multiMarketAssetMap = useMemo(() => {
@@ -310,6 +317,13 @@ export const usePortfolioPositions = (
   // Note: This hook has internal enabled logic based on poolIds.length
   const multiMarketPoolsQuery = useMultipleAmm2Pools(uniqueMultiMarketPoolIds);
   const multiMarketPoolDataMap = multiMarketPoolsQuery.data ?? new Map();
+  // Only check loading if there are actually pools to load
+  const isLoadingMultiMarketPools = uniqueMultiMarketPoolIds.length > 0
+    ? multiMarketPoolsQuery.isLoading
+    : false;
+  const isFetchingMultiMarketPools = uniqueMultiMarketPoolIds.length > 0
+    ? multiMarketPoolsQuery.isFetching
+    : false;
 
   const pools = usePoolsByIds(filter);
   // Collect all market IDs including those from multi-market pools
@@ -424,8 +438,8 @@ export const usePortfolioPositions = (
       isTradeHistoryLoading ||
       isLoadingCombinatorialMarketIds ||
       isLoadingMultiMarketAssets ||
-      multiMarketPoolsQuery.isLoading ||
-      multiMarketPoolsQuery.isFetching;
+      isLoadingMultiMarketPools ||
+      isFetchingMultiMarketPools;
 
     if (stillLoading) {
       return null;
@@ -458,8 +472,9 @@ export const usePortfolioPositions = (
 
       if (isCombinatorialToken(assetId)) {
         // First check for single market combinatorial token
-        marketId = combinatorialMarketIds?.[assetId.CombinatorialToken];
-        if (marketId != null) {
+        const comboMarketId = combinatorialMarketIds?.[assetId.CombinatorialToken];
+        if (comboMarketId != null) {
+          marketId = comboMarketId;
           market = markets.data?.find((m) => m.marketId === marketId);
           pool = pools.data?.find((pool) => pool.marketId === marketId);
         } else {
@@ -914,6 +929,18 @@ export const usePortfolioPositions = (
     poolAssetBalances,
     poolAssetBalances24HoursAgo,
     isTradeHistoryLoading,
+    isLoadingCombinatorialMarketIds,
+    isLoadingMultiMarketAssets,
+    isLoadingMultiMarketPools,
+    isFetchingMultiMarketPools,
+    combinatorialTokens.length,
+    multiMarketAssets.length,
+    uniqueMultiMarketPoolIds.length,
+    combinatorialMarketIds,
+    multiMarketAssetsData,
+    multiMarketPoolDataMap,
+    tradeHistory,
+    address,
   ]);
 
   const marketPositions = useMemo<

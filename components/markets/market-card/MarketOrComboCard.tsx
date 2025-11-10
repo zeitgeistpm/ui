@@ -14,16 +14,11 @@ import { ArrowDown, BarChart2, Droplet, Users } from "react-feather";
 import { parseAssetId } from "@zeitgeistpm/sdk";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import SimpleImage from "components/ui/SimpleImage";
-import dynamic from "next/dynamic";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 import { createVirtualComboMarket } from "lib/utils/createVirtualComboMarket";
 import { useMarketImage } from "lib/hooks/useMarketImage";
 import { MarketBasicData } from "lib/gql/combo-pools";
-
-const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
-  ssr: false,
-});
 
 // Component for individual market row in combo card (allows proper hook usage)
 const ComboMarketRow = ({
@@ -215,10 +210,6 @@ const ComboPoolCard = ({
           disableLink && "cursor-default"
         }`}
       >
-        <div className="absolute right-4 top-4">
-          {/* Note: Favorite toggle not implemented for combo pools yet */}
-        </div>
-
         {/* Header section with assume/then markets, unified in a single container */}
         <div className="flex min-w-0 flex-1 flex-col rounded-lg bg-white/5 p-2.5 backdrop-blur-sm">
           {sortedMarkets.map((market, index) => {

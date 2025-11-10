@@ -90,7 +90,8 @@ const BuyForm = ({
   const notificationStore = useNotifications();
   const percentageValue = watch("percentage");
   const isUpdatingRef = useRef(false);
-  const { data: market } = useMarket(poolData ? undefined : { marketId });
+  // Always fetch market data for categories, even if poolData exists
+  const { data: market } = useMarket({ marketId });
 
   const wallet = useWallet();
   const baseAsset = poolData

@@ -19,6 +19,8 @@ import MarketPositionHeader from "./MarketPositionHeader";
 import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
 import { lookUpAssetPrice } from "lib/util/lookup-price";
 import { MIN_USD_DISPLAY_AMOUNT } from "lib/constants";
+import { lookupAssetSymbol } from "lib/constants/foreign-asset";
+import { parseAssetId } from "@zeitgeistpm/sdk";
 import PoolShareButtons from "components/assets/AssetActionButtons/PoolShareButtons";
 import { isCombinatorialToken } from "lib/types/combinatorial";
 import Link from "next/link";
@@ -215,18 +217,22 @@ export const MarketPositions = ({
                   foreignAssetPrices,
                   usdZtgPrice,
                 );
+                const baseAssetId = parseAssetId(market.baseAsset).unwrap();
+                const currencySymbol = lookupAssetSymbol(baseAssetId);
                 return {
                   outcome: outcome,
                   userBalance: userBalance.div(ZTG).toNumber(),
                   price: {
                     value: price.toNumber(),
-                    usdValue: price.mul(baseAssetUsdPrice ?? 0).toNumber(),
+                    currencySymbol: currencySymbol,
+                    // usdValue: price.mul(baseAssetUsdPrice ?? 0).toNumber(),
                   },
                   cost: {
                     value: avgCost,
-                    usdValue: new Decimal(avgCost)
-                      .mul(baseAssetUsdPrice ?? 0)
-                      .toNumber(),
+                    currencySymbol: currencySymbol,
+                    // usdValue: new Decimal(avgCost)
+                    //   .mul(baseAssetUsdPrice ?? 0)
+                    //   .toNumber(),
                   },
                   // upnl: {
                   //   value: upnl,
@@ -242,11 +248,12 @@ export const MarketPositions = ({
                   // },
                   value: {
                     value: userBalance.mul(price).div(ZTG).toNumber(),
-                    usdValue: userBalance
-                      .mul(price)
-                      .mul(baseAssetUsdPrice ?? 0)
-                      .div(ZTG)
-                      .toNumber(),
+                    currencySymbol: currencySymbol,
+                    // usdValue: userBalance
+                    //   .mul(price)
+                    //   .mul(baseAssetUsdPrice ?? 0)
+                    //   .div(ZTG)
+                    //   .toNumber(),
                   },
                   // change: isNaN(changePercentage)
                   //   ? 0

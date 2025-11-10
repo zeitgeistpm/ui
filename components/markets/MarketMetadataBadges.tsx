@@ -13,13 +13,6 @@ const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
 
-const MarketFavoriteToggle = dynamic(
-  () => import("./MarketFavoriteToggle").then((m) => m.MarketFavoriteToggle),
-  {
-    ssr: false,
-  },
-);
-
 // Reusable icon badge with tooltip
 const IconBadge: FC<{
   icon: ReactNode;
@@ -44,7 +37,7 @@ const IconBadge: FC<{
       <div
         className={`pointer-events-none absolute bottom-full z-10 mb-1 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100 ${tooltipPositionClasses[tooltipAlign]}`}
       >
-        <div className="rounded-md bg-gray-900 px-2 py-1 text-xs text-white shadow-lg">
+        <div className="rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/95 px-2 py-1 text-xs text-white shadow-lg backdrop-blur-md">
           {label ? (
             <>
               <div className="mb-0.5 font-medium">{label}</div>
@@ -158,18 +151,22 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
             }
           >
             <div className="text-left">
-              <h4 className="mb-2 text-sm font-bold">Trusted Market</h4>
-              <div className="mb-3 text-xs text-gray-500">
+              <h4 className="mb-2 text-sm font-bold text-white">Trusted Market</h4>
+              <div className="mb-3 text-xs text-white/80">
                 {getDisputeMechanismDescription(market.disputeMechanism)}
               </div>
               <div className="flex flex-col gap-2">
                 <div>
-                  <span className="text-xs text-gray-500">Creator:</span>
-                  <CompactAddress address={market.creator} />
+                  <span className="text-xs text-white/70">Creator:</span>
+                  <div className="[&_span]:!text-white/90">
+                    <CompactAddress address={market.creator} />
+                  </div>
                 </div>
                 <div>
-                  <span className="text-xs text-gray-500">Oracle:</span>
-                  <CompactAddress address={market.oracle} />
+                  <span className="text-xs text-white/70">Oracle:</span>
+                  <div className="[&_span]:!text-white/90">
+                    <CompactAddress address={market.oracle} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -189,17 +186,17 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
             }
           >
             <div className="text-left">
-              <h4 className="mb-1 text-sm font-bold">Market Edited</h4>
-              <p className="mb-3 text-xs text-gray-500">
+              <h4 className="mb-1 text-sm font-bold text-white">Market Edited</h4>
+              <p className="mb-3 text-xs text-white/80">
                 Edited in CMS. Original immutable metadata shown below.
               </p>
 
               {market.originalMetadata?.question && (
                 <div className="mb-2">
-                  <label className="mb-1 text-xs font-semibold text-gray-700">
+                  <label className="mb-1 text-xs font-semibold text-white/90">
                     Original Question:
                   </label>
-                  <div className="text-xs text-gray-600">
+                  <div className="text-xs text-white/80">
                     {market.originalMetadata.question}
                   </div>
                 </div>
@@ -207,10 +204,10 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
 
               {market.originalMetadata?.description && (
                 <div className="mb-2">
-                  <label className="mb-1 text-xs font-semibold text-gray-700">
+                  <label className="mb-1 text-xs font-semibold text-white/90">
                     Original Description:
                   </label>
-                  <div className="text-xs">
+                  <div className="text-xs text-white/80">
                     <QuillViewer value={market.originalMetadata.description} />
                   </div>
                 </div>
@@ -219,9 +216,6 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
           </InfoPopover>
         </div>
       )}
-
-      {/* Favorite Toggle */}
-      <MarketFavoriteToggle size={14} marketId={market.marketId} />
 
       {promotionData && (
         <MarketPromotionCallout market={market} promotion={promotionData} />
