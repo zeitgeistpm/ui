@@ -5,6 +5,8 @@ import { useAccountBonds } from "lib/hooks/queries/useAccountBonds";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import EmptyPortfolio from "./EmptyPortfolio";
 import MarketPositionHeader from "./MarketPositionHeader";
+import { lookupAssetSymbol } from "lib/constants/foreign-asset";
+import { parseAssetId } from "@zeitgeistpm/sdk";
 
 const columns: TableColumn[] = [
   {
@@ -54,43 +56,53 @@ const BondsTable = ({ address }: { address: string }) => {
               />
               <div className="rounded-lg bg-white/10 shadow-lg backdrop-blur-md">
                 <div className="px-4 pb-4 pt-4">
-                  <Table
-                    columns={columns}
-                    data={[
-                      {
-                        type: "Creation",
-                        responsible: market.bonds.creation.who,
-                        value: {
-                          value: new Decimal(market.bonds.creation.value)
-                            .div(ZTG)
-                            .toNumber(),
-                          usdValue: new Decimal(market.bonds.creation.value)
-                            .div(ZTG)
-                            .mul(ztgPrice ?? 0)
-                            .toNumber(),
-                        },
-                        settled:
-                          market.bonds.creation.isSettled === true
-                            ? "Yes"
-                            : "No",
-                      },
-                      {
-                        type: "Oracle",
-                        responsible: market.bonds.oracle.who,
-                        value: {
-                          value: new Decimal(market.bonds.oracle.value)
-                            .div(ZTG)
-                            .toNumber(),
-                          usdValue: new Decimal(market.bonds.oracle.value)
-                            .div(ZTG)
-                            .mul(ztgPrice ?? 0)
-                            .toNumber(),
-                        },
-                        settled:
-                          market.bonds.oracle.isSettled === true ? "Yes" : "No",
-                      },
-                    ]}
-                  />
+                  {(() => {
+                    const baseAssetId = parseAssetId(market.baseAsset).unwrap();
+                    const currencySymbol = lookupAssetSymbol(baseAssetId);
+                    return (
+                      <Table
+                        columns={columns}
+                        data={[
+                          {
+                            type: "Creation",
+                            responsible: market.bonds.creation.who,
+                            value: {
+                              value: new Decimal(market.bonds.creation.value)
+                                .div(ZTG)
+                                .toNumber(),
+                              currencySymbol: currencySymbol,
+                              // usdValue: new Decimal(market.bonds.creation.value)
+                              //   .div(ZTG)
+                              //   .mul(ztgPrice ?? 0)
+                              //   .toNumber(),
+                            },
+                            settled:
+                              market.bonds.creation.isSettled === true
+                                ? "Yes"
+                                : "No",
+                          },
+                          {
+                            type: "Oracle",
+                            responsible: market.bonds.oracle.who,
+                            value: {
+                              value: new Decimal(market.bonds.oracle.value)
+                                .div(ZTG)
+                                .toNumber(),
+                              currencySymbol: currencySymbol,
+                              // usdValue: new Decimal(market.bonds.oracle.value)
+                              //   .div(ZTG)
+                              //   .mul(ztgPrice ?? 0)
+                              //   .toNumber(),
+                            },
+                            settled:
+                              market.bonds.oracle.isSettled === true
+                                ? "Yes"
+                                : "No",
+                          },
+                        ]}
+                      />
+                    );
+                  })()}
                 </div>
               </div>
             </div>

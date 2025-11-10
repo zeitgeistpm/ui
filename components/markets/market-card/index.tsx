@@ -19,13 +19,8 @@ import { useMarketCmsMetadata } from "lib/hooks/queries/cms/useMarketCmsMetadata
 import { useMarketImage } from "lib/hooks/useMarketImage";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
-import dynamic from "next/dynamic";
 import SimpleImage from "components/ui/SimpleImage";
 import { getCurrentPrediction } from "lib/util/assets";
-
-const MarketFavoriteToggle = dynamic(() => import("../MarketFavoriteToggle"), {
-  ssr: false,
-});
 
 export interface MarketType {
   categorical?: string;
@@ -124,9 +119,6 @@ export const MarketCard = ({
           }`}
         >
           <div className="flex h-12 w-full gap-4 whitespace-normal">
-            <div className="absolute right-4 top-4">
-              <MarketFavoriteToggle marketId={marketId} />
-            </div>
             <div className="relative min-h-12 min-w-12 rounded-lg bg-white/5 backdrop-blur-sm">
               <SimpleImage
                 alt={"Market image"}

@@ -1,4 +1,4 @@
-import { isRpcSdk } from "@zeitgeistpm/sdk";
+import { isRpcSdk, parseAssetId } from "@zeitgeistpm/sdk";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
@@ -8,6 +8,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import Link from "next/link";
 import EmptyPortfolio from "./EmptyPortfolio";
+import { lookupAssetSymbol } from "lib/constants/foreign-asset";
 
 const columns: TableColumn[] = [
   {
@@ -46,6 +47,15 @@ const AccountPoolsTable = ({ pools, isLoading }: AccountPoolsTableProps) => {
       ? `/multi-market/${pool.poolId}`
       : `/markets/${pool.marketId}`;
 
+    const baseAssetId = pool.baseAsset
+      ? typeof pool.baseAsset === "string"
+        ? parseAssetId(pool.baseAsset).unwrap()
+        : parseAssetId(JSON.stringify(pool.baseAsset)).unwrap()
+      : undefined;
+    const currencySymbol = baseAssetId
+      ? lookupAssetSymbol(baseAssetId)
+      : undefined;
+
     return {
       question: (
         <Link
@@ -57,9 +67,19 @@ const AccountPoolsTable = ({ pools, isLoading }: AccountPoolsTableProps) => {
       ),
       value: {
         value: pool.addressValue?.toNumber(),
-        usdValue: pool.addressUsdValue?.toNumber(),
+        currencySymbol: currencySymbol,
+        // usdValue: pool.addressUsdValue?.toNumber(),
       },
-      fees: new Decimal(pool.account?.fees ?? 0).div(ZTG).toFixed(3),
+      fees: (
+        <span className="text-sm font-medium text-white/90">
+          {new Decimal(pool.account?.fees ?? 0).div(ZTG).toFixed(3)}{" "}
+          {currencySymbol && (
+            <span className="text-xs font-medium text-white/70">
+              {currencySymbol}
+            </span>
+          )}
+        </span>
+      ),
       buttons: (
         <PoolButtons
           poolId={pool.poolId}

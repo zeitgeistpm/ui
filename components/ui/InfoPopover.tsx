@@ -87,9 +87,9 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
               leaveTo="opacity-0 scale-1"
             >
               <Popover.Panel
-                className={`absolute z-[100] bg-tooltip-bg ${positionCss} w-screen max-w-[calc(100vw-2rem)] rounded-md lg:w-[564px] ${popoverCss}`}
+                className={`absolute z-[100] ${positionCss} w-screen max-w-[calc(100vw-2rem)] rounded-md lg:w-[564px] ${popoverCss}`}
               >
-                <div className="shadow-xs overflow-hidden rounded-md bg-white/10 px-3 py-2 text-left text-sm font-medium text-white/90 ring-2 ring-white/10 backdrop-blur-sm">
+                <div className="shadow-lg overflow-hidden rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/95 px-3 py-2 text-left text-sm font-medium text-white backdrop-blur-md">
                   {children}
                 </div>
               </Popover.Panel>

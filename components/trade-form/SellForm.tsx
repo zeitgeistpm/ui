@@ -92,7 +92,8 @@ const SellForm = ({
   const percentageValue = watch("percentage");
   const isUpdatingRef = useRef(false);
   const notificationStore = useNotifications();
-  const { data: market } = useMarket(poolData ? undefined : { marketId });
+  // Always fetch market data for categories, even if poolData exists
+  const { data: market } = useMarket({ marketId });
   const wallet = useWallet();
   const poolId = poolData?.poolId || market?.neoPool?.poolId;
   const { data: pool } = useAmm2Pool(marketId, poolId);

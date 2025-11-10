@@ -50,7 +50,11 @@ const PortfolioHeader = (props: PortfolioHeaderProps) => {
   }
 
   const poolZtgTotal = pools?.reduce<Decimal>((total, pool) => {
-    return total.plus(pool.addressZtgValue);
+    // Filter out NaN values
+    if (pool.addressZtgValue && !pool.addressZtgValue.isNaN()) {
+      return total.plus(pool.addressZtgValue);
+    }
+    return total;
   }, new Decimal(0));
 
   const isLoading = "loading" in props;
@@ -216,6 +220,9 @@ const StatCard = ({
   usdZtgPrice,
   changePercentage,
 }: StatCardProps) => {
+  // Handle NaN values - display 0 instead
+  const displayValue = value.isNaN() ? 0 : value.div(ZTG).toNumber();
+
   return (
     <div className="rounded-lg border border-ztg-primary-200/20 bg-ztg-primary-900/50 p-3 backdrop-blur-sm transition-all hover:border-ztg-green-500/40 hover:bg-ztg-primary-900/70 hover:shadow-md">
       <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-white/80">
@@ -223,18 +230,20 @@ const StatCard = ({
       </h3>
       <div className="mb-0.5 flex items-baseline gap-1.5">
         <div className="text-base font-bold text-white sm:text-lg">
-          {formatNumberLocalized(value.div(ZTG).toNumber())}
+          {formatNumberLocalized(displayValue)}
         </div>
         <div className="text-xs font-semibold text-white/90">ZTG</div>
       </div>
       <div className="flex items-center justify-between gap-1">
-        <div className="text-xs text-white/90">
+        {/* USD price display commented out - showing only base currency */}
+        {/* <div className="text-xs text-white/90">
           $
           {formatNumberLocalized(
             usdZtgPrice?.mul(value.div(ZTG)).toNumber() ?? 0,
           )}
-        </div>
-        {changePercentage !== 0 && (
+        </div> */}
+        {/* 24hr change percentage display disabled */}
+        {/* {changePercentage !== 0 && (
           <div
             className={`text-xs font-semibold ${
               changePercentage < 0 ? "text-ztg-red-400" : "text-ztg-green-400"
@@ -243,7 +252,7 @@ const StatCard = ({
             {changePercentage > 0 ? "+" : ""}
             {changePercentage.toFixed(1)}%
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
