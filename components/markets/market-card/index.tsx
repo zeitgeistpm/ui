@@ -200,10 +200,10 @@ const MarketCardPredictionBar = ({
         className={`relative h-6 w-full overflow-hidden rounded-lg bg-white/10 shadow-md backdrop-blur-sm transition-all sm:h-[30px]`}
       >
         <div className="absolute flex h-full w-full items-center justify-between px-3 text-sm">
-          <span className="line-clamp-1 font-semibold text-white/90">
+          <span className="line-clamp-1 text-white/90">
             {name}
           </span>
-          <span className="font-bold text-white/90 transition-all">
+          <span className="font-semibold text-white/90 transition-all">
             {impliedPercentage}%
           </span>
         </div>
@@ -252,7 +252,7 @@ const MarketCardDetails = ({
   const imagePath = lookupAssetImagePath(assetId);
 
   return (
-    <div className="flex items-center text-xs text-white/90">
+    <div className="flex items-center text-xs text-white/50">
       <div>
         <span className="font-semibold">
           {period.end &&
@@ -266,8 +266,8 @@ const MarketCardDetails = ({
         {isEnding() && (
           <span className="ml-1 font-semibold text-ztg-red-400">Ends Soon</span>
         )}
-        <span className="ml-1 border-l-1 border-l-ztg-green-500/40 pl-1">
-          {outcomeAssets.length} outcomes{" "}
+        <span className="pl-1">
+        • {outcomeAssets.length} outcomes{" "}
         </span>
       </div>
       <div className="ml-auto flex items-center justify-center gap-1.5">

@@ -150,8 +150,8 @@ const ComboAssetDetails = ({
               style={{ backgroundColor: combination.color }}
             />
             <div className="flex flex-col gap-1">
-              <span className="font-semibold text-white">{combination.name}</span>
-              <div className="text-xxs leading-relaxed text-white/80">
+              <span className="font-semibold text-white/90">{combination.name}</span>
+              <div className="text-xxs leading-relaxed text-white/90">
                 <div>
                   <span className="font-semibold text-blue-400">Assume:</span>{" "}
                   <span className="font-bold text-blue-400">{market1Outcome}</span>,{" "}
@@ -222,7 +222,7 @@ const CombinatorialTooltip = ({ children }: { children: React.ReactNode }) => {
   const tooltipContent = isHovered && mounted ? (
     createPortal(
       <div
-        className="pointer-events-none fixed z-[9999] w-80 rounded-lg border border-white/20 bg-ztg-primary-900/95 px-4 py-3 text-xs text-white shadow-xl backdrop-blur-lg"
+        className="pointer-events-none fixed z-[9999] w-80 rounded-lg border border-white/20 bg-ztg-primary-900/95 px-4 py-3 text-xs text-white/90 shadow-xl backdrop-blur-lg"
         style={{
           top: `${position.top}px`,
           left: `${position.left}px`,
@@ -230,7 +230,7 @@ const CombinatorialTooltip = ({ children }: { children: React.ReactNode }) => {
         }}
       >
         <div className="space-y-2">
-          <p className="font-semibold text-white">
+          <p className="font-semibold text-white/90">
             How Combinatorial Markets Work:
           </p>
           <p className="text-white/90">
@@ -512,7 +512,7 @@ const MobileContextButtons = ({
           />
         ) : comboMarketIsResolved && virtualMarket ? (
           <div className="p-4 sm:p-6">
-            <h3 className="mb-4 text-lg font-semibold text-white">Redeem Your Tokens</h3>
+            <h3 className="mb-4 text-lg font-semibold text-white/90">Redeem Your Tokens</h3>
             <p className="mb-6 text-sm text-white/90">
               Both source markets have been resolved. Redeem your outcome tokens
               below.
@@ -554,7 +554,7 @@ const MobileContextButtons = ({
                         className="h-3 w-3 rounded-full flex-none"
                         style={{ backgroundColor: combo.color }}
                       />
-                      <span className="font-medium text-white">{combo.name}</span>
+                      <span className="font-medium text-white/90">{combo.name}</span>
                     </div>
                     <RedeemButton
                       market={virtualMarket}
@@ -567,7 +567,7 @@ const MobileContextButtons = ({
                   </div>
                 ))}
               <div className="mt-6 rounded-lg border border-white/10 bg-white/10 p-4 shadow-md backdrop-blur-sm">
-                <h4 className="mb-2 text-sm font-semibold text-white">
+                <h4 className="mb-2 text-sm font-semibold text-white/90">
                   To Get Your Collateral Back:
                 </h4>
                 <ol className="mb-3 ml-4 list-decimal space-y-1 text-sm text-white/90">
@@ -580,7 +580,7 @@ const MobileContextButtons = ({
                     → receive your collateral
                   </li>
                 </ol>
-                <p className="text-xs text-white/80">
+                <p className="text-xs text-white/90">
                   💡 <strong>Tip:</strong> Redeeming here is only the first
                   step. Visit Market 1 (the "Assume" market) to complete your
                   redemption and recover your collateral.
@@ -616,10 +616,10 @@ const MobileContextButtons = ({
         {childMarketResolved && virtualMarket && (
           <div className="p-4 sm:p-6">
             <div className="mb-3 flex items-center gap-2">
-              <div className="rounded-lg border border-ztg-green-400/40 bg-ztg-green-500/80 px-2 py-0.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm">
+              <div className="rounded-lg border border-ztg-green-400/40 bg-ztg-green-500/80 px-2 py-0.5 text-xs font-semibold text-white/90 shadow-sm backdrop-blur-sm">
                 Partial Redemption
               </div>
-              <h3 className="text-lg font-semibold text-white">
+              <h3 className="text-lg font-semibold text-white/90">
                 Available
               </h3>
             </div>
@@ -669,7 +669,7 @@ const MobileContextButtons = ({
                         className="h-3 w-3 rounded-full flex-none"
                         style={{ backgroundColor: combo.color }}
                       />
-                      <span className="text-sm font-medium text-white">{combo.name}</span>
+                      <span className="text-sm font-medium text-white/90">{combo.name}</span>
                     </div>
                     <RedeemButton
                       market={virtualMarket}
@@ -691,7 +691,7 @@ const MobileContextButtons = ({
             <div
               className={`center h-full flex-1 border-r-2 border-white/10 transition-all ${
                 currentAction === "buy"
-                  ? "bg-ztg-green-600/90 text-white shadow-md backdrop-blur-md"
+                  ? "bg-ztg-green-600/90 text-white/90 shadow-md backdrop-blur-md"
                   : "bg-white/10 text-white/90 shadow-md backdrop-blur-md hover:bg-white/15"
               }`}
               onClick={() => {
@@ -716,7 +716,7 @@ const MobileContextButtons = ({
             <div
               className={`center h-full flex-1 transition-all ${
                 currentAction === "sell"
-                  ? "bg-red-600/90 text-white shadow-md backdrop-blur-md"
+                  ? "bg-red-600/90 text-white/90 shadow-md backdrop-blur-md"
                   : "bg-white/10 text-white/90 shadow-md backdrop-blur-md hover:bg-white/15"
               }`}
               onClick={() => {
@@ -742,7 +742,7 @@ const MobileContextButtons = ({
         ) : comboMarketIsResolved ? (
           <div className="flex h-14 cursor-pointer text-base font-semibold sm:text-lg">
             <div
-              className="center h-full w-full bg-ztg-green-600/90 text-white shadow-md backdrop-blur-md transition-all"
+              className="center h-full w-full bg-ztg-green-600/90 text-white/90 shadow-md backdrop-blur-md transition-all"
               onClick={() => setOpen(!open)}
             >
               {open ? <X className="h-5 w-5" /> : "Redeem Tokens"}
@@ -751,7 +751,7 @@ const MobileContextButtons = ({
         ) : childMarketResolved ? (
           <div className="flex h-14 cursor-pointer text-base font-semibold sm:text-lg">
             <div
-              className="center h-full w-full bg-ztg-green-600/90 text-white shadow-md backdrop-blur-md transition-all"
+              className="center h-full w-full bg-ztg-green-600/90 text-white/90 shadow-md backdrop-blur-md transition-all"
               onClick={() => setShowPartialRedeem(!showPartialRedeem)}
             >
               {showPartialRedeem ? <X className="h-5 w-5" /> : "Redeem Tokens (Partial)"}
@@ -891,15 +891,15 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
               <div className="mb-6 flex items-center gap-2">
                 <Link
                   href="/markets?status=Active&ordering=Newest&liquidityOnly=true&marketType=multi"
-                  className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-sm font-medium text-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white"
+                  className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-sm font-medium text-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white/90"
                 >
                   <ArrowLeft size={14} />
                   <span className="hidden sm:inline">Back</span>
                 </Link>
-                <div className="relative flex items-center gap-1.5 rounded-lg bg-ztg-primary-800/40 px-3 py-1 text-sm font-semibold text-white shadow-md backdrop-blur-sm">
+                <div className="relative flex items-center gap-1.5 rounded-lg bg-ztg-primary-800/40 px-3 py-1 text-sm font-semibold text-white/90 shadow-md backdrop-blur-sm">
                   <span className="font-bold">Combinatorial</span>
                   <CombinatorialTooltip>
-                    <Info size={14} className="cursor-help text-white/80" />
+                    <Info size={14} className="cursor-help text-white/90" />
                   </CombinatorialTooltip>
                 </div>
               </div>
@@ -945,7 +945,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
             isOrdersLoading === false &&
             (orders?.length ?? 0) > 0 && (
               <div className="mt-8 rounded-lg bg-white/15 p-4 shadow-lg backdrop-blur-md">
-                <h3 className="mb-4 text-lg font-semibold text-white">
+                <h3 className="mb-4 text-lg font-semibold text-white/90">
                   My Orders
                 </h3>
                 <div className="overflow-hidden rounded-lg">
@@ -996,7 +996,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
           {/* Latest Trades */}
           {marketHasPool && (
             <div className="mt-8 rounded-lg bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4">
-              <h3 className="mb-3 text-base font-semibold text-white sm:mb-4 sm:text-lg">
+              <h3 className="mb-3 text-base font-semibold text-white/90 sm:mb-4 sm:text-lg">
                 Latest Trades
               </h3>
               <div className="pb-3 sm:pb-4">
@@ -1072,7 +1072,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
               </div>
             ) : comboMarketIsResolved ? (
               <div className="mb-12 rounded-lg bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4 md:p-5">
-                <h3 className="mb-4 text-lg font-semibold text-white">
+                <h3 className="mb-4 text-lg font-semibold text-white/90">
                   Redeem Your Tokens
                 </h3>
                 <p className="mb-6 text-sm text-white/90">
@@ -1120,7 +1120,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                             className="h-3 w-3 rounded-full flex-none"
                             style={{ backgroundColor: combo.color }}
                           />
-                          <span className="font-medium text-white">{combo.name}</span>
+                          <span className="font-medium text-white/90">{combo.name}</span>
                         </div>
                         <RedeemButton
                           market={virtualMarket}
@@ -1133,7 +1133,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                       </div>
                     ))}
                   <div className="mt-6 rounded-lg border border-white/10 bg-white/10 p-4 shadow-md backdrop-blur-sm">
-                    <h4 className="mb-2 text-sm font-semibold text-white">
+                    <h4 className="mb-2 text-sm font-semibold text-white/90">
                       To Get Your Collateral Back:
                     </h4>
                     <ol className="mb-3 ml-4 list-decimal space-y-1 text-sm text-white/90">
@@ -1146,7 +1146,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                         page → receive your collateral
                       </li>
                     </ol>
-                    <p className="text-xs text-white/80">
+                    <p className="text-xs text-white/90">
                       💡 <strong>Tip:</strong> Redeeming here is only the first
                       step. Visit Market 1 (the "Assume" market) to complete
                       your redemption and recover your collateral.
@@ -1157,10 +1157,10 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
             ) : childMarketResolved ? (
               <div className="mb-12 rounded-lg border-l-4 border-ztg-green-500/40 bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4 md:p-5">
                 <div className="mb-3 flex items-center gap-2">
-                  <div className="rounded-lg border border-ztg-green-400/40 bg-ztg-green-500/80 px-2 py-0.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm">
+                  <div className="rounded-lg border border-ztg-green-400/40 bg-ztg-green-500/80 px-2 py-0.5 text-xs font-semibold text-white/90 shadow-sm backdrop-blur-sm">
                     Partial Redemption
                   </div>
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-white/90">
                     Available
                   </h3>
                 </div>
@@ -1210,7 +1210,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                             className="h-3 w-3 rounded-full flex-none"
                             style={{ backgroundColor: combo.color }}
                           />
-                          <span className="text-sm font-medium text-white">
+                          <span className="text-sm font-medium text-white/90">
                             {combo.name}
                           </span>
                         </div>
@@ -1231,7 +1231,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                   className="mx-auto mb-3 text-orange-400"
                   size={32}
                 />
-                <h3 className="mb-2 text-lg font-semibold text-white">Trading Closed</h3>
+                <h3 className="mb-2 text-lg font-semibold text-white/90">Trading Closed</h3>
                 <p className="text-sm text-orange-400">
                   This combinatorial market is closed because one or more source
                   markets have ended.

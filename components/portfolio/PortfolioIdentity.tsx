@@ -57,7 +57,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
                       On-Chain Identity
                     </div>
                   )}
-                  <div className="text-xl font-bold text-white sm:text-2xl">
+                  <div className="text-xl font-bold text-white/90 sm:text-2xl">
                     {name}
                   </div>
                 </div>
@@ -65,7 +65,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
                 {isOwned && !hasIdentity && (
                   <div className="flex items-center">
                     <button
-                      className="flex items-center gap-1.5 rounded-md bg-ztg-green-600/80 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600"
+                      className="flex items-center gap-1.5 rounded-md bg-ztg-green-600/80 px-3 py-1.5 text-xs font-semibold text-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600"
                       onClick={() => setShowSettingsModal(true)}
                     >
                       <FaUserCheck size={14} />
@@ -105,7 +105,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
               <div className="flex flex-wrap gap-1.5">
                 {identity?.twitter && (
                   <a
-                    className="flex items-center gap-1.5 rounded-md bg-twitter px-2.5 py-1.5 text-xs font-medium text-white shadow-sm transition-all hover:shadow-md"
+                    className="flex items-center gap-1.5 rounded-md bg-twitter px-2.5 py-1.5 text-xs font-medium text-white/90 shadow-sm transition-all hover:shadow-md"
                     href={`https://twitter.com/${identity.twitter}`}
                     target="_blank"
                     rel="noreferrer"
@@ -115,7 +115,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
                   </a>
                 )}
                 {identity?.discord && (
-                  <div className="flex items-center gap-1.5 rounded-md bg-discord px-2.5 py-1.5 text-xs font-medium text-white shadow-sm">
+                  <div className="flex items-center gap-1.5 rounded-md bg-discord px-2.5 py-1.5 text-xs font-medium text-white/90 shadow-sm">
                     <DiscordIcon fill="white" />
                     <span>{identity.discord}</span>
                   </div>
@@ -129,7 +129,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
                   leaveTo="opacity-0"
                   show={isProxying}
                 >
-                  <div className="flex items-center gap-1.5 rounded-md bg-purple-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm">
+                  <div className="flex items-center gap-1.5 rounded-md bg-purple-600 px-2.5 py-1.5 text-xs font-medium text-white/90 shadow-sm">
                     <FaNetworkWired size={14} />
                     <span>Proxy</span>
                   </div>

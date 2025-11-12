@@ -47,8 +47,8 @@ export const AnswersInput = ({
             type="button"
             className={`rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
               value?.type === "yes/no"
-                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
-                : "border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/20"
+                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white/90 shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
+                : "border-white/20 bg-white/10 text-white/90 hover:border-white/30 hover:bg-white/20"
             }`}
             onClick={handleSelectType("yes/no")}
           >
@@ -59,8 +59,8 @@ export const AnswersInput = ({
             type="button"
             className={`rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
               value?.type === "categorical"
-                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
-                : "border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/20"
+                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white/90 shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
+                : "border-white/20 bg-white/10 text-white/90 hover:border-white/30 hover:bg-white/20"
             }`}
             onClick={handleSelectType("categorical")}
           >
@@ -71,8 +71,8 @@ export const AnswersInput = ({
             type="button"
             className={`rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
               value?.type === "scalar"
-                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
-                : "border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/20"
+                ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white/90 shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
+                : "border-white/20 bg-white/10 text-white/90 hover:border-white/30 hover:bg-white/20"
             }`}
             onClick={handleSelectType("scalar")}
           >
@@ -105,7 +105,7 @@ export const AnswersInput = ({
                       .map((answer, idx) => (
                         <div
                           key={idx}
-                          className="rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm"
+                          className="rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-white/90 backdrop-blur-sm"
                         >
                           {answer}
                         </div>
@@ -130,13 +130,13 @@ export const AnswersInput = ({
                   Preview: Range
                 </p>
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="rounded-lg bg-white/10 px-3 py-2 font-medium text-white backdrop-blur-sm">
+                  <span className="rounded-lg bg-white/10 px-3 py-2 font-medium text-white/90 backdrop-blur-sm">
                     {value.numberType === "date"
                       ? new Date(value.answers[0]).toLocaleDateString()
                       : value.answers[0]}
                   </span>
                   <span className="text-white/70">→</span>
-                  <span className="rounded-lg bg-white/10 px-3 py-2 font-medium text-white backdrop-blur-sm">
+                  <span className="rounded-lg bg-white/10 px-3 py-2 font-medium text-white/90 backdrop-blur-sm">
                     {value.numberType === "date"
                       ? new Date(value.answers[1]).toLocaleDateString()
                       : value.answers[1]}
@@ -158,7 +158,7 @@ export const AnswersInput = ({
                   value.answers.map((answer, idx) => (
                     <div
                       key={idx}
-                      className="rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm"
+                      className="rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-white/90 backdrop-blur-sm"
                     >
                       {answer}
                     </div>

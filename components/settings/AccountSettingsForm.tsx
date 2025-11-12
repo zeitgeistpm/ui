@@ -119,7 +119,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
           id="displayName"
           {...register("displayName", { required: true })}
           className={
-            "h-10 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/60 focus:bg-white/15 " +
+            "h-10 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/90/60 focus:bg-white/15 " +
             (errors?.displayName
               ? "bg-red-500/20"
               : "bg-white/10 hover:bg-white/15")
@@ -139,7 +139,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
           id="discord"
           {...register("discord")}
           className={
-            "h-10 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/60 focus:bg-white/15 " +
+            "h-10 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/90/60 focus:bg-white/15 " +
             (errors?.discord ? "bg-red-500/20" : "bg-white/10 hover:bg-white/15")
           }
         />
@@ -157,13 +157,13 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
           id="twitter"
           {...register("twitter")}
           className={
-            "h-10 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/60 focus:bg-white/15 " +
+            "h-10 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/90/60 focus:bg-white/15 " +
             (errors?.twitter ? "bg-red-500/20" : "bg-white/10 hover:bg-white/15")
           }
         />
       </div>
 
-      <div className="rounded-md bg-white/10 p-3 text-xs text-white/80 backdrop-blur-md">
+      <div className="rounded-md bg-white/10 p-3 text-xs text-white/90 backdrop-blur-md">
         Setting an identity requires a deposit of up to {indetityCost}{" "}
         {constants?.tokenSymbol}. This deposit can be retrieved by clearing your
         identity.

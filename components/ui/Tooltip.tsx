@@ -29,7 +29,7 @@ export const Tooltip: FC<TooltipProps> = ({
         className={`pointer-events-none absolute z-50 w-64 opacity-0 transition-opacity duration-200 group-hover:opacity-100 ${positionClasses[position]}`}
         style={{ maxWidth: "calc(100vw - 2rem)" }}
       >
-        <div className="rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/95 px-3 py-2 text-xs leading-snug text-white shadow-lg backdrop-blur-md">
+        <div className="rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/95 px-3 py-2 text-xs leading-snug text-white/90 shadow-lg backdrop-blur-md">
           {content}
         </div>
       </div>

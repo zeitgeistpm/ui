@@ -50,8 +50,8 @@ const ComboMarketRow = ({
       <span
         className={`inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-xs font-semibold ${
           isAssume
-            ? "bg-blue-500/80 text-white"
-            : "bg-ztg-green-500/80 text-white"
+            ? "bg-blue-500/80 text-white/90"
+            : "bg-ztg-green-500/80 text-white/90"
         }`}
       >
         {roleLabel}
@@ -94,8 +94,8 @@ const ComboMarketRowInline = ({
       <span
         className={`inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-xs font-semibold ${
           isAssume
-            ? "bg-blue-500/80 text-white"
-            : "bg-ztg-green-500/80 text-white"
+            ? "bg-blue-500/80 text-white/90"
+            : "bg-ztg-green-500/80 text-white/90"
         }`}
       >
         {roleLabel}
@@ -229,7 +229,7 @@ const ComboPoolCard = ({
                   <div className="relative my-1.5 flex items-center justify-center">
                     <div className="h-px w-full bg-white/10" />
                     <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 p-0.5 backdrop-blur-sm">
-                      <ArrowDown size={10} className="text-white/60" />
+                      <ArrowDown size={10} className="text-white/90/60" />
                     </div>
                   </div>
                 )}
@@ -261,7 +261,7 @@ const ComboPoolCard = ({
                 Ends Soon
               </span>
             )}
-            <span className="ml-1 border-l-1 border-l-ztg-green-500/40 pl-1">
+            <span className="ml-1 border-l-1 border-l-white/50 pl-1">
               {totalOutcomes} outcomes{" "}
             </span>
           </div>

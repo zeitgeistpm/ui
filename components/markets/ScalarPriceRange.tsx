@@ -76,7 +76,7 @@ const ScalarPriceRange = ({
             }}
             className="absolute bottom-0 left-0 h-full bg-gradient-to-r from-ztg-primary-300/80 to-ztg-primary-200/90 transition-all"
           ></div>
-          <span className="relative z-10 px-2.5 text-xs font-semibold text-white sm:text-sm">
+          <span className="relative z-10 px-2.5 text-xs font-semibold text-white/90 sm:text-sm">
             Prediction: {positionDisplay}
           </span>
         </>

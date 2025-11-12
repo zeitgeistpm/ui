@@ -91,13 +91,13 @@ export const ScalarAnswersInput = ({
       <div className="flex items-center gap-2">
         <span className="text-xs font-medium text-white/70">Type:</span>
         <div className="flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-2 backdrop-blur-sm">
-          <span className="text-xs font-medium text-white">Numbers</span>
+          <span className="text-xs font-medium text-white/90">Numbers</span>
           <Toggle
             checked={value?.numberType === "date"}
             activeClassName="bg-ztg-green-600"
             onChange={handleNumberTypeChange}
           />
-          <span className="text-xs font-medium text-white">Dates</span>
+          <span className="text-xs font-medium text-white/90">Dates</span>
         </div>
       </div>
 
@@ -121,7 +121,7 @@ export const ScalarAnswersInput = ({
             <Input
               type="number"
               inputMode="numeric"
-              className="flex-1 rounded-lg bg-white/10 px-4 py-3 text-sm text-white outline-none backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30"
+              className="flex-1 rounded-lg bg-white/10 px-4 py-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30"
               value={value?.answers[0]}
               onChange={handleNumberChange(0, onChange)}
               onBlur={handleNumberChange(0, onBlur)}
@@ -147,7 +147,7 @@ export const ScalarAnswersInput = ({
             <Input
               type="number"
               inputMode="numeric"
-              className="flex-1 rounded-lg bg-white/10 px-4 py-3 text-sm text-white outline-none backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30"
+              className="flex-1 rounded-lg bg-white/10 px-4 py-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30"
               value={value?.answers[1]}
               onChange={handleNumberChange(1, onChange)}
               onBlur={handleNumberChange(1, onBlur)}

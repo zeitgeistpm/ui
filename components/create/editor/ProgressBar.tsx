@@ -23,13 +23,13 @@ export const ProgressBar = <T extends WizardStep<any>>({
         />
         <div className="absolute inset-0 flex items-center justify-between px-2.5 sm:px-4">
           <div className="flex flex-wrap items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
-            <span className="font-bold text-white">
+            <span className="font-bold text-white/90">
               Step {stepNumber} of {totalSteps}:
             </span>
-            <span className="font-medium text-white/80">{current.label}</span>
+            <span className="font-medium text-white/90">{current.label}</span>
           </div>
           <div className="flex items-center gap-2 text-xs sm:gap-3 sm:text-sm">
-            <span className="font-bold text-white">
+            <span className="font-bold text-white/90">
               {Math.round(progress)}%
             </span>
           </div>

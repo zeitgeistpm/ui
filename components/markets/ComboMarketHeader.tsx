@@ -41,7 +41,7 @@ const OutcomeBalance = ({
         )}
         <span className="font-medium text-white/90">{outcomeName}</span>
       </div>
-      <span className="font-bold text-white">{balanceDisplay}</span>
+      <span className="font-bold text-white/90">{balanceDisplay}</span>
     </div>
   );
 };
@@ -58,8 +58,8 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
         const roleLabel = index === 0 ? "Assume" : "Then";
         const pillColor =
           index === 0
-            ? "bg-blue-500/80 text-white border-blue-400/40"
-            : "bg-ztg-green-500/80 text-white border-ztg-green-400/40";
+            ? "bg-blue-500/80 text-white/90 border-blue-400/40"
+            : "bg-ztg-green-500/80 text-white/90 border-ztg-green-400/40";
         const borderColor =
           index === 0 ? "border-blue-500/40" : "border-ztg-green-500/40";
         const roleDescription =
@@ -80,7 +80,7 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
                 <span>{roleLabel}</span>
                 <div className="group relative">
                   <Info size={14} className="cursor-help text-white/90" />
-                  <div className="pointer-events-none absolute bottom-full left-0 z-10 mb-2 w-64 rounded-lg border border-white/20 bg-ztg-primary-900/95 px-3 py-2 text-xs text-white opacity-0 shadow-xl backdrop-blur-lg transition-opacity group-hover:opacity-100">
+                  <div className="pointer-events-none absolute bottom-full left-0 z-10 mb-2 w-64 rounded-lg border border-white/20 bg-ztg-primary-900/95 px-3 py-2 text-xs text-white/90 opacity-0 shadow-xl backdrop-blur-lg transition-opacity group-hover:opacity-100">
                     {roleDescription}
                     <div className="absolute left-2 top-full">
                       <div className="h-2 w-2 rotate-45 border-l border-t border-white/20 bg-ztg-primary-900/95"></div>
@@ -88,12 +88,12 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
                   </div>
                 </div>
               </div>
-              <span className="text-xs font-medium text-white/80">
+              <span className="text-xs font-medium text-white/90">
                 {item.market?.status}
               </span>
               <Link
                 href={`/markets/${item.market?.marketId}`}
-                className={`ml-auto flex items-center rounded-lg border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-md ${
+                className={`ml-auto flex items-center rounded-lg border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-md ${
                   index === 0
                     ? "hover:border-blue-400/40"
                     : "hover:border-ztg-green-400/40"
@@ -104,7 +104,7 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
             </div>
 
             {/* Question */}
-            <h3 className="mb-2 line-clamp-2 min-h-10 text-base font-semibold leading-snug text-white sm:text-lg">
+            <h3 className="mb-2 line-clamp-2 min-h-10 text-base font-semibold leading-snug text-white/90 sm:text-lg">
               {item.market?.question}
             </h3>
 
@@ -124,9 +124,9 @@ const ComboMarketHeader: FC<ComboMarketHeaderProps> = ({
                 >
                   <span>Outcome Balances</span>
                   {showBalances ? (
-                    <ChevronUp size={14} className="text-white/80" />
+                    <ChevronUp size={14} className="text-white/90" />
                   ) : (
-                    <ChevronDown size={14} className="text-white/80" />
+                    <ChevronDown size={14} className="text-white/90" />
                   )}
                 </button>
                 {showBalances && (

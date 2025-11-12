@@ -85,7 +85,7 @@ const WalletSelect = () => {
 
   return (
     <div className="flex flex-col">
-      <h3 className="mb-5 text-lg font-bold text-white">Connect Wallet</h3>
+      <h3 className="mb-5 text-lg font-bold text-white/90">Connect Wallet</h3>
 
       {/* Social Login Section */}
       {/* <div className="mb-6">
@@ -98,7 +98,7 @@ const WalletSelect = () => {
       {/* Divider */}
       {/* <div className="relative mb-6 flex items-center">
         <div className="h-px flex-1 bg-white/10"></div>
-        <span className="px-3 text-xs font-medium text-white/60">or</span>
+        <span className="px-3 text-xs font-medium text-white/90/60">or</span>
         <div className="h-px flex-1 bg-white/10"></div>
       </div> */}
 
@@ -125,7 +125,7 @@ const WalletSelect = () => {
                 <div className="text-sm font-semibold text-white/90">
                   Nova Wallet
                 </div>
-                <div className="text-xs text-white/60">Mobile wallet</div>
+                <div className="text-xs text-white/90/60">Mobile wallet</div>
               </div>
             </Link>
             <div className="rounded-lg border-2 border-white/10 bg-white/10 p-4 backdrop-blur-sm">
@@ -134,7 +134,7 @@ const WalletSelect = () => {
                   Quick Start
                 </span>
               </div>
-              <ol className="space-y-2 text-xs leading-relaxed text-white/80">
+              <ol className="space-y-2 text-xs leading-relaxed text-white/90">
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold text-white/70">
                     1

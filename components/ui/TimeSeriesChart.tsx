@@ -60,7 +60,7 @@ const ChartToolTip = (props) => {
             <div
               className={`mb-1.5 flex items-center gap-1.5 border-b border-white/20 ${isMobile ? "pb-1.5" : "mb-2 gap-2 pb-2"}`}
             >
-              <span className="font-semibold text-white">
+              <span className="font-semibold text-white/90">
                 {new Intl.DateTimeFormat("default", {
                   dateStyle: "short",
                 }).format(new Date(props.label))}
@@ -86,13 +86,13 @@ const ChartToolTip = (props) => {
                       style={{ backgroundColor: item.color }}
                     ></div>
                     <div
-                      className={`font-semibold capitalize text-white ${isMobile ? "text-[10px]" : ""}`}
+                      className={`font-semibold capitalize text-white/90 ${isMobile ? "text-[10px]" : ""}`}
                     >
                       {item.label}
                     </div>
                   </div>
                   <div
-                    className={`font-bold text-white ${isMobile ? "text-[10px]" : ""}`}
+                    className={`font-bold text-white/90 ${isMobile ? "text-[10px]" : ""}`}
                   >{`${item.value.toFixed(isMobile ? 2 : 3)} ${props.yUnits}`}</div>
                 </div>
               ))}

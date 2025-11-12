@@ -57,7 +57,7 @@ const ScalarDisputeBox = ({
       
       <div className="mb-4 flex w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-orange-400/40 bg-orange-500/20 p-4 text-center backdrop-blur-md">
         <div className="text-sm text-white/90">
-          Bond cost: <span className="font-semibold text-white">{disputeBond} {tokenSymbol}</span>
+          Bond cost: <span className="font-semibold text-white/90">{disputeBond} {tokenSymbol}</span>
         </div>
         <div className="text-sm font-semibold text-white/90">
           Bonds will be slashed if the reported outcome is deemed to be incorrect
@@ -69,7 +69,7 @@ const ScalarDisputeBox = ({
           <span className="text-sm text-white/70">
             Previous Bond:
           </span>
-          <span className="mt-1 font-semibold text-white">{bondAmount}</span>
+          <span className="mt-1 font-semibold text-white/90">{bondAmount}</span>
         </div>
       )}
       

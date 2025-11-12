@@ -31,7 +31,7 @@ const Control = ({ children, ...rest }: ControlProps<AddressOption, false>) => {
   return (
     <components.Control
       {...rest}
-      className="flex h-full items-center justify-between pl-4 text-white"
+      className="flex h-full items-center justify-between pl-4 text-white/90"
     >
       {children}
     </components.Control>
@@ -57,7 +57,7 @@ const ClearIndicator = (props: ClearIndicatorProps<AddressOption, false>) => {
   return (
     <components.ClearIndicator
       {...omit(props, "children")}
-      className="cursor-pointer text-white/70 hover:text-white transition-colors"
+      className="cursor-pointer text-white/70 hover:text-white/90 transition-colors"
     >
       <X size={16} />
     </components.ClearIndicator>
@@ -130,7 +130,7 @@ const SingleValue = ({
   return (
     <components.SingleValue
       {...rest}
-      className="flex items-center font-medium text-white"
+      className="flex items-center font-medium text-white/90"
     >
       {isValidAddress && (
         <div
@@ -142,7 +142,7 @@ const SingleValue = ({
         </div>
       )}
       <div
-        className={`flex flex-col transition-opacity text-white ${
+        className={`flex flex-col transition-opacity text-white/90 ${
           rest.selectProps.menuIsOpen && "opacity-50"
         }`}
       >
@@ -163,8 +163,8 @@ const Option = ({ children, ...rest }: OptionProps<AddressOption, false>) => {
         isSelected
           ? "bg-ztg-green-500/20 text-ztg-green-500"
           : isFocused
-            ? "bg-white/15 text-white"
-            : "bg-white/5 text-white/90 hover:bg-white/15 hover:text-white"
+            ? "bg-white/15 text-white/90"
+            : "bg-white/5 text-white/90 hover:bg-white/15 hover:text-white/90"
       }`}
     >
       {isValidPolkadotAddress(address) && (
@@ -184,7 +184,7 @@ const Input = (props: InputProps<AddressOption, false>) => {
   return (
     <components.Input
       {...props}
-      className="absolute left-0 w-full text-white placeholder:text-white/50"
+      className="absolute left-0 w-full text-white/90 placeholder:text-white/50"
     />
   );
 };

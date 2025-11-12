@@ -223,7 +223,7 @@ const CurrenciesTable = ({ address }: { address: string }) => {
     <div className="rounded-lg border border-ztg-primary-200/30 bg-white/10 shadow-lg backdrop-blur-md">
       <div className="mb-4 flex items-center gap-2 border-b border-ztg-primary-200/20 p-4 pb-3">
         <span className="h-1 w-6 rounded-full bg-ztg-green-500"></span>
-        <h2 className="text-base font-semibold text-white">
+        <h2 className="text-base font-semibold text-white/90">
           Cross-Chain Balances
         </h2>
       </div>

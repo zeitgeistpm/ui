@@ -80,7 +80,7 @@ export const ModalHeader = ({
 }) => (
   <div className={`flex-shrink-0 px-4 pt-4 pb-2 md:px-6 md:pt-6 md:pb-3 ${className}`}>
     {title && (
-      <h2 className="text-lg md:text-xl font-bold text-white text-center mb-0">
+      <h2 className="text-lg md:text-xl font-bold text-white/90 text-center mb-0">
         {title}
       </h2>
     )}
@@ -137,5 +137,5 @@ export const ModalTabs = ({
 export const modalTabStyles = {
   base: "flex-1 px-3 py-2 text-sm font-medium transition-all",
   inactive: "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white/90",
-  active: "bg-white/10 text-white font-semibold shadow-sm",
+  active: "bg-white/10 text-white/90 font-semibold shadow-sm",
 };

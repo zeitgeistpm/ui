@@ -24,7 +24,7 @@ const PoolFeeOption = ({
       className={`flex h-[40px] w-[100px] items-center justify-center rounded-full border-2 shadow-sm backdrop-blur-sm transition-all hover:shadow-md
           ${
             selected
-              ? "border-ztg-primary-600 bg-gradient-to-r from-ztg-primary-500/80 to-ztg-primary-600/80 font-semibold text-white"
+              ? "border-ztg-primary-600 bg-gradient-to-r from-ztg-primary-500/80 to-ztg-primary-600/80 font-semibold text-white/90"
               : "border-ztg-primary-200/30 bg-white/60 text-ztg-primary-700 hover:bg-white/80"
           }
         `}
@@ -117,7 +117,7 @@ const PoolFeesSelect = ({
           step={0.1}
           className={`text-center text-sm font-semibold outline-none ${
             inputSelected
-              ? "bg-transparent text-white placeholder:text-white/60"
+              ? "bg-transparent text-white/90 placeholder:text-white/90/60"
               : "bg-transparent text-ztg-primary-700 placeholder:text-ztg-primary-400"
           }`}
           onChange={(e) => handleInputFeeChange(e.target.value)}

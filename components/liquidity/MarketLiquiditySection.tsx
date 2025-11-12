@@ -156,7 +156,7 @@ const LiquidityHeader = ({
                 <AiOutlineInfoCircle className="h-3.5 w-3.5" />
               </div>
               <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 z-10 mb-1 w-64 whitespace-normal opacity-0 transition-opacity group-hover:opacity-100">
-                <div className="rounded-md bg-gray-900 px-2 py-1 text-xs text-white shadow-lg">
+                <div className="rounded-md bg-gray-900 px-2 py-1 text-xs text-white/90 shadow-lg">
                   <div className="mb-1 font-medium">Swap Fees</div>
                   <div className="flex items-center justify-between gap-2">
                     <span>Creator fee:</span>
@@ -182,7 +182,7 @@ const LiquidityHeader = ({
             <LiquidityHeaderButtonItem className="lg:-ml-14">
               <button
                 onClick={() => setManageLiquidityOpen(true)}
-                className="max-w-[200px] rounded-lg bg-ztg-primary-300 px-6 py-2.5 font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg focus:outline-none md:ml-auto md:mr-0"
+                className="max-w-[200px] rounded-lg bg-ztg-primary-300 px-6 py-2.5 font-semibold text-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg focus:outline-none md:ml-auto md:mr-0"
               >
                 Manage Liquidity
               </button>

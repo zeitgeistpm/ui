@@ -143,7 +143,7 @@ const MarketHeader: FC<{
           {/* Title + Badges */}
           <div className="flex min-h-[56px] flex-1 flex-col justify-between sm:min-h-[60px]">
             <div className="flex-[2]">
-              <h1 className="text-xl font-bold leading-tight text-white sm:text-2xl md:text-4xl">
+              <h1 className="text-xl font-bold leading-tight text-white/90 sm:text-2xl md:text-4xl">
                 {market.question}
               </h1>
               {rejectReason && rejectReason.length > 0 && (

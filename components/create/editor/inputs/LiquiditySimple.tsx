@@ -104,7 +104,7 @@ export const LiquiditySimple = ({
     <div className="space-y-4">
       <div className="space-y-3">
         <div className="space-y-2">
-          <label className="block text-xs font-semibold text-white">
+          <label className="block text-xs font-semibold text-white/90">
             Total Liquidity Amount <span className="text-ztg-red-400">*</span>
           </label>
           <Input
@@ -112,22 +112,22 @@ export const LiquiditySimple = ({
             inputMode="decimal"
             value={value?.amount || ""}
             onChange={(e) => handleAmountChange(e.target.value)}
-            className="h-11 w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 text-sm text-white backdrop-blur-sm transition-all placeholder:text-white/50"
+            className="h-11 w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 text-sm text-white/90 backdrop-blur-sm transition-all placeholder:text-white/50"
             placeholder={`e.g., ${defaultAmount}`}
           />
           {totalValue && totalValue.gt(0) && (
-            <p className="text-xs text-white/60">
+            <p className="text-xs text-white/90/60">
               ≈ ${totalValue.toFixed(2)} USD
             </p>
           )}
-          <p className="text-xs text-white/60">
+          <p className="text-xs text-white/90/60">
             💡 This amount will be evenly distributed across all {numOutcomes}{" "}
             outcomes
           </p>
         </div>
 
         <div className="space-y-2">
-          <label className="block text-xs font-semibold text-white">
+          <label className="block text-xs font-semibold text-white/90">
             Swap Fee <span className="text-ztg-red-400">*</span>
           </label>
           <FeeSelect
@@ -138,14 +138,14 @@ export const LiquiditySimple = ({
             isValid={true}
             label="% Swap Fee"
           />
-          <p className="text-xs text-white/60">
+          <p className="text-xs text-white/90/60">
             💡 Fee earned on each trade. 1% is a common default.
           </p>
         </div>
 
         {numOutcomes >= 2 && (
           <div className="rounded-lg bg-white/5 p-3">
-            <p className="mb-2 text-xs font-semibold text-white">
+            <p className="mb-2 text-xs font-semibold text-white/90">
               Distribution Preview
             </p>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
@@ -163,7 +163,7 @@ export const LiquiditySimple = ({
                   : "0";
                 return (
                   <div key={idx} className="rounded-lg bg-white/5 p-2">
-                    <p className="mb-1 truncate text-xs font-medium text-white">
+                    <p className="mb-1 truncate text-xs font-medium text-white/90">
                       {outcomeName}
                     </p>
                     <p className="text-xs text-white/70">

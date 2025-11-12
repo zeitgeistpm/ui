@@ -33,21 +33,21 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
 
   return (
     <form className="flex w-full flex-col" onSubmit={handleSubmit(subscribe)}>
-      <h6 className="mb-[26px] flex items-center gap-2 font-semibold text-white">
+      <h6 className="mb-[26px] flex items-center gap-2 font-semibold text-white/90">
         <span className="h-1 w-6 rounded-full bg-ztg-green-500"></span>
         {title}
       </h6>
       <div className="mb-auto flex h-10 w-full items-center gap-3">
         <Input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-          className={`h-full grow rounded-md bg-white/10 p-2 text-ztg-12-120 text-white/90 backdrop-blur-sm placeholder:text-white/60 focus:bg-white/15 focus:outline-none ${
+          className={`h-full grow rounded-md bg-white/10 p-2 text-ztg-12-120 text-white/90 backdrop-blur-sm placeholder:text-white/90/60 focus:bg-white/15 focus:outline-none ${
             invalid ? "border-r-2ed-500/60" : ""
           }`}
           type="email"
         />
         <button
           type="submit"
-          className={`center h-full flex-shrink rounded-full bg-ztg-green-600/80 px-5 text-ztg-16-150 text-white backdrop-blur-sm transition-all hover:bg-ztg-green-600 ${
+          className={`center h-full flex-shrink rounded-full bg-ztg-green-600/80 px-5 text-ztg-16-150 text-white/90 backdrop-blur-sm transition-all hover:bg-ztg-green-600 ${
             invalid ? "cursor-default opacity-60" : "cursor-pointer"
           } disabled:opacity-60`}
           disabled={invalid}
@@ -68,7 +68,7 @@ interface FooterMenuProps {
 const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
   return (
     <div className={`${className}`}>
-      <h6 className="mb-3 flex items-center gap-2 font-semibold text-white">
+      <h6 className="mb-3 flex items-center gap-2 font-semibold text-white/90">
         <span className="h-1 w-6 rounded-full bg-ztg-green-500"></span>
         {title}
       </h6>

@@ -170,7 +170,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   return (
     <button
       type={type}
-      className={`ztg-transition h-14 w-full rounded-full font-bold text-white shadow-lg
+      className={`ztg-transition h-14 w-full rounded-full font-bold text-white/90 shadow-lg
         transition-all duration-200 focus:outline-none disabled:cursor-default ${
           !isDisabled && "hover:shadow-xl active:scale-[0.97]"
         } ${colorClass} ${className} disabled:!bg-ztg-primary-300`}

@@ -70,12 +70,12 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
       <div className="relative flex max-h-[85vh] w-full min-w-0 flex-shrink-0 flex-grow-0 flex-col overflow-hidden rounded-xl border-2 border-white/10 bg-white/10 shadow-2xl ring-2 ring-white/5 backdrop-blur-xl sm:w-[min(560px,90vw)] sm:max-w-[600px] md:max-h-[80vh]">
         {/* Header */}
         <div className="relative flex-shrink-0 border-b-2 border-white/10 px-6 pt-6 pb-3">
-          <h3 className="text-center text-lg font-bold text-white md:text-xl">
+          <h3 className="text-center text-lg font-bold text-white/90 md:text-xl">
             Market History
           </h3>
           <button
             onClick={() => setShowMarketHistory(false)}
-            className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg border-2 border-white/10 bg-white/10 text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white"
+            className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg border-2 border-white/10 bg-white/10 text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white/90"
             aria-label="Close"
           >
             <MdClose size={20} />
@@ -97,13 +97,13 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
                 />
               </div>
               <div className="flex-1">
-                <div className="mb-1 font-semibold text-white">
+                <div className="mb-1 font-semibold text-white/90">
                   Market Opened
                 </div>
-                <div className="text-sm text-white/80">
+                <div className="text-sm text-white/90">
                   {marketStart}
                   {marketHistory?.start?.blockNumber > 0 && (
-                    <span className="ml-2 text-xs text-white/60">
+                    <span className="ml-2 text-xs text-white/90/60">
                       Block #{marketHistory.start.blockNumber}
                     </span>
                   )}
@@ -117,13 +117,13 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
                 <MdOutlineStop className="text-white/90" size={14} />
               </div>
               <div className="flex-1">
-                <div className="mb-1 font-semibold text-white">
+                <div className="mb-1 font-semibold text-white/90">
                   Market Closed
                 </div>
-                <div className="text-sm text-white/80">
+                <div className="text-sm text-white/90">
                   {marketClosed}
                   {marketHistory?.end?.blockNumber > 0 && (
-                    <span className="ml-2 text-xs text-white/60">
+                    <span className="ml-2 text-xs text-white/90/60">
                       Block #{marketHistory.end.blockNumber}
                     </span>
                   )}
@@ -159,12 +159,12 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
                         <span className="text-white/70">Unknown</span>
                       )}{" "}
                       reported{" "}
-                      <span className="font-bold text-white">
+                      <span className="font-bold text-white/90">
                         {getOutcome(marketHistory.reported.outcome)}
                       </span>
                     </div>
                   </div>
-                  <div className="text-xs text-white/60">
+                  <div className="text-xs text-white/90/60">
                     {marketHistory.reported.timestamp &&
                       new Intl.DateTimeFormat("default", {
                         dateStyle: "medium",
@@ -209,7 +209,7 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
                         disputed the reported outcome
                       </div>
                     </div>
-                    <div className="text-xs text-white/60">
+                    <div className="text-xs text-white/90/60">
                       {dispute.timestamp &&
                         new Intl.DateTimeFormat("default", {
                           dateStyle: "medium",
@@ -241,12 +241,12 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
                     </div>
                     <div className="text-sm font-medium text-white/90">
                       Market resolved to{" "}
-                      <span className="font-bold text-white">
+                      <span className="font-bold text-white/90">
                         {getOutcome(marketHistory.resolved.outcome)}
                       </span>
                     </div>
                   </div>
-                  <div className="text-xs text-white/60">
+                  <div className="text-xs text-white/90/60">
                     {marketHistory.resolved.timestamp &&
                       new Intl.DateTimeFormat("default", {
                         dateStyle: "medium",

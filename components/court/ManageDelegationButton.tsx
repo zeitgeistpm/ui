@@ -14,7 +14,7 @@ const ManageDelegationButton = ({ className }: { className?: string }) => {
     <>
       <div className="relative">
         <button
-          className={`rounded-md bg-[#DC056C] px-4 py-2 text-white transition-all  ${
+          className={`rounded-md bg-[#DC056C] px-4 py-2 text-white/90 transition-all  ${
             connectedParticipant?.type === "Juror" && "ring-2 ring-orange-500"
           } ${className}`}
           onClick={() => setIsOpen(true)}
@@ -31,7 +31,7 @@ const ManageDelegationButton = ({ className }: { className?: string }) => {
               overlay={false}
               position="top-end"
               popoverCss="-ml-12"
-              icon={<IoIosInformation className="text-white" />}
+              icon={<IoIosInformation className="text-white/90" />}
             >
               You are currently a juror. If you delegate to other jurors your
               stake will be removed from your personal stake and delegated

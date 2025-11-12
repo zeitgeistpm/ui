@@ -70,7 +70,7 @@ const IndicatorSeparator = () => null;
 const SingleValue = (props: SingleValueProps<AssetOption, false>) => {
   const { label, image, value } = props.data;
   return (
-    <div className="flex items-center text-xs font-semibold text-white">
+    <div className="flex items-center text-xs font-semibold text-white/90">
       {image ? (
         <Image
           src={image}
@@ -107,8 +107,8 @@ const Option = (props: OptionProps<AssetOption, false>) => {
         isSelected
           ? "bg-ztg-green-500/20 text-ztg-green-500"
           : isFocused
-            ? "bg-white/15 text-white"
-            : "bg-white/10 text-white/90 hover:bg-white/15 hover:text-white"
+            ? "bg-white/15 text-white/90"
+            : "bg-white/10 text-white/90 hover:bg-white/15 hover:text-white/90"
       }`}
     >
       {image ? (

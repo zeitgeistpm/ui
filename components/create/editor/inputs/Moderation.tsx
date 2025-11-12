@@ -35,7 +35,7 @@ export const ModerationModeSelect: React.FC<ModerationModeSelectProps> = ({
     <div className="flex h-12 w-full items-center rounded-lg border-2 border-white/20 bg-white/10 backdrop-blur-sm transition-all hover:border-white/30">
       <select
         value={value || ""}
-        className="h-full w-full bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50"
+        className="h-full w-full bg-transparent px-4 py-3 text-left text-sm text-white/90 outline-none placeholder:text-white/50"
         onChange={(e) => {
           const selectedValue = e.target.value || undefined;
           onChange({
@@ -48,14 +48,14 @@ export const ModerationModeSelect: React.FC<ModerationModeSelectProps> = ({
           });
         }}
       >
-        <option value="" className="bg-ztg-primary-600 text-white">
+        <option value="" className="bg-ztg-primary-600 text-white/90">
           Select market type
         </option>
         {options.map((option, index) => (
           <option
             key={index}
             value={option.mode}
-            className="bg-ztg-primary-600 text-white"
+            className="bg-ztg-primary-600 text-white/90"
           >
             {option.mode} - {option.description} (
             {option.mode === "Permissionless"

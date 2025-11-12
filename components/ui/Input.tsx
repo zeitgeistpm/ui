@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 type InputProps = {} & React.InputHTMLAttributes<HTMLInputElement>;
 
 const defaultClassName =
-  "rounded-lg outline-none items-center text-white/90 placeholder:text-white/60 backdrop-blur-sm transition-all";
+  "rounded-lg outline-none items-center text-white/90 placeholder:text-white/90/60 backdrop-blur-sm transition-all";
 
 const Input = React.forwardRef<HTMLInputElement | null, InputProps>(
   (props, ref) => {

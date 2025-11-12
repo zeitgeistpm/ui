@@ -237,8 +237,8 @@ const WithdrawModal = ({
 
   return (
     <Dialog.Panel className="w-full max-w-[564px] rounded-xl border-2 border-white/10 bg-white/10 backdrop-blur-xl shadow-2xl ring-2 ring-white/5 p-[30px]">
-      <h3 className="mb-8 text-center text-white">Withdraw</h3>
-      <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold text-white">
+      <h3 className="mb-8 text-center text-white/90">Withdraw</h3>
+      <div className="mt-[20px] flex w-full flex-col items-center gap-8 text-ztg-18-150 font-semibold text-white/90">
         <Transfer destinationChain={toChain} sourceChain="Zeitgeist" />
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -251,7 +251,7 @@ const WithdrawModal = ({
                   <Input
                     {...field}
                     type="number"
-                    className="!w-full !bg-transparent !rounded-none !border-0 !backdrop-blur-none !text-center !outline-none !text-white !shadow-none !p-0 h-full"
+                    className="!w-full !bg-transparent !rounded-none !border-0 !backdrop-blur-none !text-center !outline-none !text-white/90 !shadow-none !p-0 h-full"
                     step="any"
                     value={
                       countDecimals(field.value ? Number(field.value) : 0) > 3

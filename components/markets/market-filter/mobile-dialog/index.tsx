@@ -69,11 +69,11 @@ const MobileDialog = ({
       >
         <Dialog.Panel className="h-full w-full bg-ztg-primary-500">
           <div className="flex h-14 items-center justify-between border-b-2 border-white/10 bg-white/15 px-4 py-3 shadow-md backdrop-blur-md">
-            <div className="text-base font-semibold text-white">Filters</div>
+            <div className="text-base font-semibold text-white/90">Filters</div>
             <button
               onClick={close}
               tabIndex={1}
-              className="flex h-9 w-9 touch-manipulation items-center justify-center rounded-lg text-white/70 transition-all hover:bg-white/20 hover:text-white active:scale-95"
+              className="flex h-9 w-9 touch-manipulation items-center justify-center rounded-lg text-white/70 transition-all hover:bg-white/20 hover:text-white/90 active:scale-95"
             >
               <X size={20} />
             </button>

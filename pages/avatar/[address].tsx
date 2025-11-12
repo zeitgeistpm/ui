@@ -504,7 +504,7 @@
 //             <div className="flex justify-center">
 //               <button
 //                 disabled={isClaiming || !hasEnoughBalance}
-//                 className={`rounded-3xl text-black py-3 px-5 mb-2 text-white ${
+//                 className={`rounded-3xl text-black py-3 px-5 mb-2 text-white/90 ${
 //                   isClaiming || !hasEnoughBalance
 //                     ? "bg-blue-300 text-gray-600 cursor-not-allowed"
 //                     : "bg-blue-700 cursor-pointer"

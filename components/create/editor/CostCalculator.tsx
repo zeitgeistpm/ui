@@ -190,19 +190,19 @@ export const CostCalculator = ({
                 <div className="flex items-baseline gap-2">
                   {shouldShowBreakdown ? (
                     <>
-                      <span className="text-lg font-bold text-white md:text-xl">
+                      <span className="text-lg font-bold text-white/90 md:text-xl">
                         {ztgCost.toFixed(3)} ZTG
                       </span>
-                      <span className="text-lg font-bold text-white md:text-xl">
+                      <span className="text-lg font-bold text-white/90 md:text-xl">
                         +
                       </span>
-                      <span className="text-lg font-bold text-white md:text-xl">
+                      <span className="text-lg font-bold text-white/90 md:text-xl">
                         {foreignCurrencyCost.toNumber().toFixed(1)}{" "}
                         {editor.form.currency}
                       </span>
                     </>
                   ) : (
-                    <span className="text-lg font-bold text-white md:text-xl">
+                    <span className="text-lg font-bold text-white/90 md:text-xl">
                       {ztgCost.toFixed(3)} ZTG
                     </span>
                   )}
@@ -211,13 +211,13 @@ export const CostCalculator = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setResetConfirmOpen(true)}
-                  className="rounded-lg border-2 border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold text-white/80 backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/10 active:scale-95 md:px-5 md:py-2.5 md:text-sm"
+                  className="rounded-lg border-2 border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold text-white/90 backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/10 active:scale-95 md:px-5 md:py-2.5 md:text-sm"
                 >
                   Reset
                 </button>
                 <button
                   onClick={() => setDetailsOpen(true)}
-                  className="rounded-lg bg-white/10 px-4 py-2 text-xs font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 active:scale-95 md:px-5 md:py-2.5 md:text-sm"
+                  className="rounded-lg bg-white/10 px-4 py-2 text-xs font-semibold text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 active:scale-95 md:px-5 md:py-2.5 md:text-sm"
                 >
                   View Summary
                 </button>
@@ -268,17 +268,17 @@ export const CostCalculator = ({
             <div className="flex items-baseline gap-2">
               {shouldShowBreakdown ? (
                 <>
-                  <span className="text-xl font-bold text-white">
+                  <span className="text-xl font-bold text-white/90">
                     {ztgCost.toFixed(3)} ZTG
                   </span>
-                  <span className="text-xl font-bold text-white">+</span>
-                  <span className="text-xl font-bold text-white">
+                  <span className="text-xl font-bold text-white/90">+</span>
+                  <span className="text-xl font-bold text-white/90">
                     {foreignCurrencyCost.toNumber().toFixed(1)}{" "}
                     {editor.form.currency}
                   </span>
                 </>
               ) : (
-                <span className="text-xl font-bold text-white">
+                <span className="text-xl font-bold text-white/90">
                   {ztgCost.toFixed(3)} ZTG
                 </span>
               )}
@@ -362,10 +362,10 @@ const CostBreakdownItem = ({
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="flex-1">
-        <div className="text-xs font-semibold text-white">{label}</div>
+        <div className="text-xs font-semibold text-white/90">{label}</div>
         <div className="mt-0.5 text-xs text-white/70">{description}</div>
       </div>
-      <div className="text-sm font-semibold text-white">{value}</div>
+      <div className="text-sm font-semibold text-white/90">{value}</div>
     </div>
   );
 };
@@ -448,8 +448,8 @@ const CostDetailsModal = ({
                     className={({ selected }) =>
                       `border-b-2 px-3 pb-2 text-sm font-semibold transition-colors ${
                         selected
-                          ? "border-ztg-green-500 text-white"
-                          : "border-transparent text-white/60 hover:text-white/80"
+                          ? "border-ztg-green-500 text-white/90"
+                          : "border-transparent text-white/90/60 hover:text-white/90"
                       }`
                     }
                   >
@@ -467,7 +467,7 @@ const CostDetailsModal = ({
                       <label className="text-xs font-semibold text-white/70">
                         Market Question
                       </label>
-                      <p className="text-sm font-medium text-white">
+                      <p className="text-sm font-medium text-white/90">
                         {form?.question || (
                           <span className="text-orange-400">
                             No question given
@@ -493,7 +493,7 @@ const CostDetailsModal = ({
                                   key={idx}
                                   className="rounded border border-white/20 bg-white/5 px-2 py-1.5"
                                 >
-                                  <div className="text-xs font-medium uppercase text-white">
+                                  <div className="text-xs font-medium uppercase text-white/90">
                                     {answer}
                                   </div>
                                 </div>
@@ -507,7 +507,7 @@ const CostDetailsModal = ({
                               <div className="text-xs text-white/70">
                                 Short (Lower)
                               </div>
-                              <div className="text-xs font-medium text-white">
+                              <div className="text-xs font-medium text-white/90">
                                 {form.answers.numberType === "date"
                                   ? new Date(
                                       (form.answers.answers as number[])[0],
@@ -519,7 +519,7 @@ const CostDetailsModal = ({
                               <div className="text-xs text-white/70">
                                 Long (Upper)
                               </div>
-                              <div className="text-xs font-medium text-white">
+                              <div className="text-xs font-medium text-white/90">
                                 {form.answers.numberType === "date"
                                   ? new Date(
                                       (form.answers.answers as number[])[1],
@@ -532,12 +532,12 @@ const CostDetailsModal = ({
                         {form.answers.type === "yes/no" && (
                           <div className="grid gap-2 sm:grid-cols-2">
                             <div className="rounded border border-white/20 bg-white/5 px-2 py-1.5">
-                              <div className="text-xs font-medium uppercase text-white">
+                              <div className="text-xs font-medium uppercase text-white/90">
                                 Yes
                               </div>
                             </div>
                             <div className="rounded border border-white/20 bg-white/5 px-2 py-1.5">
-                              <div className="text-xs font-medium uppercase text-white">
+                              <div className="text-xs font-medium uppercase text-white/90">
                                 No
                               </div>
                             </div>
@@ -555,19 +555,19 @@ const CostDetailsModal = ({
                         <div className="space-y-1.5 text-xs">
                           <div className="flex items-center justify-between">
                             <span className="text-white/70">Currency:</span>
-                            <span className="font-medium text-white">
+                            <span className="font-medium text-white/90">
                               {form.currency || "--"}
                             </span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-white/70">Type:</span>
-                            <span className="font-medium text-white">
+                            <span className="font-medium text-white/90">
                               {form.moderation || "--"}
                             </span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-white/70">Creator Fee:</span>
-                            <span className="font-medium text-white">
+                            <span className="font-medium text-white/90">
                               {form.creatorFee?.value || "0"}%
                             </span>
                           </div>
@@ -581,7 +581,7 @@ const CostDetailsModal = ({
                         <div className="space-y-1.5 text-xs">
                           <div className="flex items-center justify-between">
                             <span className="text-white/70">End Date:</span>
-                            <span className="font-medium text-white">
+                            <span className="font-medium text-white/90">
                               {form.endDate
                                 ? momentTz
                                     .tz(form.endDate, form.timeZone || "UTC")
@@ -591,7 +591,7 @@ const CostDetailsModal = ({
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-white/70">Reporting:</span>
-                            <span className="font-medium text-white">
+                            <span className="font-medium text-white/90">
                               {timeline?.report?.period
                                 ? blocksAsDuration(
                                     timeline.report.period,
@@ -601,7 +601,7 @@ const CostDetailsModal = ({
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-white/70">Dispute:</span>
-                            <span className="font-medium text-white">
+                            <span className="font-medium text-white/90">
                               {timeline?.dispute?.period
                                 ? blocksAsDuration(
                                     timeline.dispute.period,
@@ -619,7 +619,7 @@ const CostDetailsModal = ({
                         <label className="text-xs font-semibold text-white/70">
                           Oracle Account
                         </label>
-                        <p className="font-mono text-xs font-medium text-white">
+                        <p className="font-mono text-xs font-medium text-white/90">
                           {form?.oracle
                             ? shortenAddress(form.oracle, 8, 8)
                             : "--"}
@@ -635,13 +635,13 @@ const CostDetailsModal = ({
                           <div className="space-y-1 text-xs">
                             <div className="flex items-center justify-between">
                               <span className="text-white/70">Amount:</span>
-                              <span className="font-medium text-white">
+                              <span className="font-medium text-white/90">
                                 {form.liquidity.amount} {form.currency}
                               </span>
                             </div>
                             <div className="flex items-center justify-between">
                               <span className="text-white/70">Swap Fee:</span>
-                              <span className="font-medium text-white">
+                              <span className="font-medium text-white/90">
                                 {form.liquidity.swapFee?.value || "--"}%
                               </span>
                             </div>
@@ -706,7 +706,7 @@ const CostDetailsModal = ({
                     <div className="border-t-2 border-white/20 pt-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="text-sm font-semibold text-white">
+                          <div className="text-sm font-semibold text-white/90">
                             Total
                           </div>
                           <div className="mt-0.5 text-xs text-white/70">
@@ -716,16 +716,16 @@ const CostDetailsModal = ({
                         <div className="text-right">
                           {shouldShowBreakdown ? (
                             <>
-                              <div className="text-lg font-bold text-white">
+                              <div className="text-lg font-bold text-white/90">
                                 {ztgCost.toFixed(3)} ZTG
                               </div>
-                              <div className="text-sm font-semibold text-white">
+                              <div className="text-sm font-semibold text-white/90">
                                 + {foreignCurrencyCost.toNumber().toFixed(1)}{" "}
                                 {editor.form.currency}
                               </div>
                             </>
                           ) : (
-                            <div className="text-lg font-bold text-white">
+                            <div className="text-lg font-bold text-white/90">
                               {ztgCost.toFixed(3)} ZTG
                             </div>
                           )}
@@ -776,7 +776,7 @@ const ResetConfirmationModal = ({
   return (
     <Modal open={open} onClose={onClose}>
       <ModalPanel size="sm" className="p-6 md:p-8">
-        <h2 className="mb-4 text-lg font-bold text-white md:text-xl">
+        <h2 className="mb-4 text-lg font-bold text-white/90 md:text-xl">
           Reset Form
         </h2>
         <p className="mb-6 text-sm text-white/70">
@@ -786,13 +786,13 @@ const ResetConfirmationModal = ({
         <div className="flex items-center justify-end gap-3">
           <button
             onClick={onClose}
-            className="rounded-lg border-2 border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80 backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/10 active:scale-95 md:px-5 md:py-2.5"
+            className="rounded-lg border-2 border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-white/90 backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/10 active:scale-95 md:px-5 md:py-2.5"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="rounded-lg border-2 border-ztg-red-500/60 bg-ztg-red-500/90 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:border-ztg-red-400 hover:bg-ztg-red-500 active:scale-95 md:px-5 md:py-2.5"
+            className="rounded-lg border-2 border-ztg-red-500/60 bg-ztg-red-500/90 px-4 py-2 text-sm font-semibold text-white/90 backdrop-blur-sm transition-all hover:border-ztg-red-400 hover:bg-ztg-red-500 active:scale-95 md:px-5 md:py-2.5"
           >
             Reset
           </button>

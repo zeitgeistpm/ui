@@ -343,7 +343,7 @@ export const Publishing = ({
       >
         {!compact && (
           <div className="mb-6">
-            <h2 className="mb-2 text-lg font-bold text-white md:text-xl">
+            <h2 className="mb-2 text-lg font-bold text-white/90 md:text-xl">
               Ready to Publish
             </h2>
             <p className="text-sm text-white/70">
