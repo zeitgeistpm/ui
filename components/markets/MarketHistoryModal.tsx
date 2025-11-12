@@ -236,7 +236,7 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
                 </div>
                 <div className="flex-1 rounded-lg border-2 border-ztg-green-400/30 bg-ztg-green-500/10 p-3 backdrop-blur-sm">
                   <div className="mb-2">
-                    <div className="mb-1 inline-block rounded-md bg-ztg-green-400/20 px-2 py-0.5 text-xs font-semibold text-ztg-green-300">
+                    <div className="mb-1 inline-block rounded-md bg-ztg-green-400/20 px-2 py-0.5 text-xs font-semibold text-ztg-green-400">
                       Resolved
                     </div>
                     <div className="text-sm font-medium text-white/90">

@@ -26,14 +26,6 @@ export const supportedCurrencies = [
     twColor: "polkadot",
     assetId: { ForeignAsset: 0 } as const,
   } satisfies CurrencyMetadata,
-  // DISABLED: USDC.wh temporarily disabled
-  // {
-  //   name: "USDC.wh" as const,
-  //   description: "Create market with Moonbeam USDC.wh as the base asset.",
-  //   image: "/currencies/usdc.svg",
-  //   twColor: "usdc",
-  //   assetId: { ForeignAsset: 1 } as const,
-  // } satisfies CurrencyMetadata,
 ] as const;
 
 export type SupportedCurrencyTag = Unpacked<

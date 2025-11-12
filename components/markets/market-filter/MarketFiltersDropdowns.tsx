@@ -20,6 +20,7 @@ const MarketFiltersDropdowns = ({
     addActiveFilter,
     removeActiveFilter,
     activeFilters,
+    setSelectedMenu,
   } = useMarketFiltersContext();
 
   const updateFilters = (marketFilter: MarketFilter) => {
@@ -30,6 +31,9 @@ const MarketFiltersDropdowns = ({
     isFilterActive
       ? removeActiveFilter(marketFilter)
       : addActiveFilter(marketFilter);
+    
+    // Close the menu after selection
+    setSelectedMenu("None");
   };
   return (
     <div className={className}>

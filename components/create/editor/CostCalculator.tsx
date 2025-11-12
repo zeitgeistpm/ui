@@ -23,6 +23,7 @@ import { timelineAsBlocks } from "lib/state/market-creation/types/timeline";
 import { shortenAddress } from "lib/util";
 import momentTz from "moment-timezone";
 import dynamic from "next/dynamic";
+import { minBaseLiquidity } from "lib/state/market-creation/constants/currency";
 
 const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
   ssr: false,
@@ -100,15 +101,30 @@ export const CostCalculator = ({
     ? feeDetails?.amount
     : new Decimal(0);
 
+  // Calculate liquidity cost: use minimum if deploying permissionless market with ZTG
+  // and amount is below minimum or empty
+  const liquidityAmount = useMemo(() => {
+    if (
+      editor.form.moderation === "Permissionless" &&
+      editor.form.liquidity?.deploy &&
+      editor.form.currency === "ZTG"
+    ) {
+      const enteredAmount = new Decimal(editor.form.liquidity.amount || 0).toNumber();
+      const minimum = minBaseLiquidity[editor.form.currency] ?? 0;
+      // Use minimum if amount is 0, empty, or below minimum
+      return Math.max(enteredAmount, minimum);
+    }
+    return 0;
+  }, [
+    editor.form.moderation,
+    editor.form.liquidity?.deploy,
+    editor.form.liquidity?.amount,
+    editor.form.currency,
+  ]);
+
   const ztgCost = new Decimal(bondCost ?? 0)
     .plus(oracleBond ?? 0)
-    .plus(
-      editor.form.moderation === "Permissionless" &&
-        editor.form.liquidity?.deploy &&
-        editor.form.currency === "ZTG"
-        ? new Decimal(editor.form.liquidity.amount || 0).toNumber()
-        : 0,
-    )
+    .plus(liquidityAmount)
     .plus(ztgTransactionFee ?? 0);
 
   const baseAssetTransactionFee = assetsAreEqual(
@@ -218,6 +234,7 @@ export const CostCalculator = ({
           oracleBond={oracleBond}
           feeDetails={feeDetails}
           ztgCost={ztgCost}
+          liquidityAmount={liquidityAmount}
           foreignCurrencyCost={foreignCurrencyCost}
           foreignCurrencyCostUsd={foreignCurrencyCostUsd}
           baseCurrency={baseCurrency}
@@ -295,7 +312,7 @@ export const CostCalculator = ({
               editor.form.currency === "ZTG" && (
                 <CostBreakdownItem
                   label="Liquidity"
-                  value={`${editor.form.liquidity.amount || 0} ${editor.form.currency}`}
+                  value={`${liquidityAmount} ${editor.form.currency}`}
                   description="Can be withdrawn at any time"
                 />
               )}
@@ -362,6 +379,7 @@ const CostDetailsModal = ({
   oracleBond,
   feeDetails,
   ztgCost,
+  liquidityAmount,
   foreignCurrencyCost,
   foreignCurrencyCostUsd,
   baseCurrency,
@@ -378,6 +396,7 @@ const CostDetailsModal = ({
   oracleBond?: number;
   feeDetails?: any;
   ztgCost: Decimal;
+  liquidityAmount: number;
   foreignCurrencyCost: Decimal | null;
   foreignCurrencyCostUsd: Decimal | null;
   baseCurrency: any;
@@ -675,7 +694,7 @@ const CostDetailsModal = ({
                       editor.form.liquidity?.deploy && (
                         <CostBreakdownItem
                           label="Liquidity"
-                          value={`${new Decimal(editor.form.liquidity.amount || 0).toFixed(1)} ${editor.form.currency}`}
+                          value={`${liquidityAmount.toFixed(1)} ${editor.form.currency}`}
                           description="Can be withdrawn at any time, will collect fees but subject to impermanent loss."
                         />
                       )}

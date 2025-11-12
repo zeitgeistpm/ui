@@ -26,9 +26,7 @@ export const LiquiditySimple = ({
   const { data: rawAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
 
   // Hardcode stablecoins to $1 USD
-  // DISABLED: USDC.wh temporarily disabled
-  // const isStablecoin = currency === "USDC.wh";
-  const isStablecoin = false; // currency === "USDC.wh";
+  const isStablecoin = false;
   const baseAssetPrice = isStablecoin
     ? new Decimal(1)
     : rawAssetPrice

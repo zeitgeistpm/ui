@@ -106,7 +106,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
     const baseColor =
       variant === "red"
         ? "bg-ztg-red-600/80 hover:bg-ztg-red-600"
-        : "bg-ztg-green-600/80 hover:bg-ztg-green-600 backdrop-blur-sm";
+        : "bg-ztg-green-600/90 hover:bg-ztg-green-600 backdrop-blur-sm";
 
     // During SSR, use safe default color
     if (!mounted) {
@@ -170,7 +170,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   return (
     <button
       type={type}
-      className={`ztg-transition h-[56px] w-full rounded-full font-bold text-white shadow-lg
+      className={`ztg-transition h-14 w-full rounded-full font-bold text-white shadow-lg
         transition-all duration-200 focus:outline-none disabled:cursor-default ${
           !isDisabled && "hover:shadow-xl active:scale-[0.97]"
         } ${colorClass} ${className} disabled:!bg-ztg-primary-300`}

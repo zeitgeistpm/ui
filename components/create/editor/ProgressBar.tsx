@@ -18,7 +18,7 @@ export const ProgressBar = <T extends WizardStep<any>>({
     <div className="inline-block w-full">
       <div className="relative h-8 w-full overflow-hidden rounded-lg bg-white/10 shadow-md backdrop-blur-sm sm:h-10">
         <div
-          className="h-full rounded-lg bg-gradient-to-r from-ztg-green-500/80 to-ztg-green-600/80 transition-all"
+          className="h-full rounded-lg bg-gradient-to-r from-ztg-primary-300/85 to-ztg-primary-200/95 transition-all"
           style={{ width: `${progress}%` }}
         />
         <div className="absolute inset-0 flex items-center justify-between px-2.5 sm:px-4">

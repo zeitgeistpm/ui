@@ -326,13 +326,6 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                     balance={usdcAssetHubBalance}
                     className="text-[10px] md:text-xs"
                   />
-                  {/* DISABLED: USDC.wh temporarily disabled */}
-                  {/* <BalanceRow
-                            imgPath="/currencies/usdc.svg"
-                            units="USDC.wh"
-                            balance={usdcMoonbeamBalance}
-                            className="text-[10px] md:text-xs"
-                          /> */}
                   <BalanceRow
                     imgPath="/currencies/dot.png"
                     units="DOT"
@@ -577,9 +570,6 @@ const AccountButton: FC<{
   });
   const { data: usdcAssetHubBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 4,
-  });
-  const { data: usdcMoonbeamBalance } = useBalance(activeAccount?.address, {
-    ForeignAsset: 1,
   });
 
   const { data: constants } = useChainConstants();

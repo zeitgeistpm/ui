@@ -103,17 +103,17 @@ const copy: Record<
   Trading: {
     title: "Live",
     description: "Trading",
-    color: "bg-gradient-to-r from-ztg-green-500/80 to-ztg-green-600/80",
+    color: "bg-gradient-to-r from-ztg-primary-300/85 to-ztg-primary-200/95",
   },
   GracePeriod: {
     title: "Grace Period",
     description: "Pre-reporting",
-    color: "bg-gradient-to-r from-ztg-green-500/80 to-ztg-green-600/80",
+    color: "bg-gradient-to-r from-ztg-primary-300/85 to-ztg-primary-200/95",
   },
   OracleReportingPeriod: {
     title: "Ended",
     description: "Oracle pending",
-    color: "bg-gradient-to-r from-ztg-green-500/80 to-ztg-green-600/80",
+    color: "bg-gradient-to-r from-ztg-primary-300/85 to-ztg-primary-200/95",
   },
   OpenReportingPeriod: {
     title: "Oracle Failed",

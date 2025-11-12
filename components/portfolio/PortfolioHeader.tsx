@@ -88,7 +88,7 @@ const PortfolioHeader = (props: PortfolioHeaderProps) => {
 
               {isOwned && !hasIdentity && (
                 <button
-                  className="flex items-center gap-1.5 rounded-md bg-ztg-green-600/80 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md"
+                  className="flex items-center gap-1.5 rounded-md bg-ztg-primary-300 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md"
                   onClick={() => setShowSettingsModal(true)}
                 >
                   <FaUserCheck size={14} />

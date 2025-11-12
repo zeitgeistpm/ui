@@ -710,7 +710,7 @@ const ComboMarketEditor: React.FC = () => {
                     href={`/multi-market/${duplicatePool.poolId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-semibold text-ztg-green-400 underline transition-colors hover:text-ztg-green-300"
+                    className="font-semibold text-ztg-green-400 underline transition-colors hover:text-ztg-green-400"
                   >
                     Combo Pool #{duplicatePool.poolId}
                   </a>
@@ -941,7 +941,7 @@ const ComboMarketEditor: React.FC = () => {
                   href={`/multi-market/${duplicatePool.poolId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-ztg-green-400 underline transition-colors hover:text-ztg-green-300"
+                  className="font-semibold text-ztg-green-400 underline transition-colors hover:text-ztg-green-400"
                 >
                   Combo Pool #{duplicatePool.poolId}
                 </a>

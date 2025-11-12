@@ -182,7 +182,7 @@ const LiquidityHeader = ({
             <LiquidityHeaderButtonItem className="lg:-ml-14">
               <button
                 onClick={() => setManageLiquidityOpen(true)}
-                className="max-w-[200px] rounded-lg bg-ztg-green-600/80 px-6 py-2.5 font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg focus:outline-none md:ml-auto md:mr-0"
+                className="max-w-[200px] rounded-lg bg-ztg-primary-300 px-6 py-2.5 font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg focus:outline-none md:ml-auto md:mr-0"
               >
                 Manage Liquidity
               </button>

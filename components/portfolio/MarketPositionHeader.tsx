@@ -55,7 +55,7 @@ const MarketPositionHeader = ({
               Multi-Market Position
             </span>
           </div>
-          <span className="text-xs font-medium text-ztg-green-400 transition-all group-hover:text-ztg-green-300">
+          <span className="text-xs font-medium text-ztg-green-400 transition-all group-hover:text-ztg-green-400">
             View Details →
           </span>
         </div>
@@ -100,11 +100,11 @@ const MarketPositionHeader = ({
           alt="Currency token logo"
           className="h-4 w-4 shrink-0 rounded-full"
         />
-        <h3 className="truncate text-base font-semibold text-white transition-colors group-hover:text-ztg-green-300">
+        <h3 className="truncate text-base font-semibold text-white transition-colors group-hover:text-ztg-green-400">
           {question}
         </h3>
       </div>
-      <span className="shrink-0 text-xs font-medium text-ztg-green-400 transition-all group-hover:text-ztg-green-300">
+      <span className="shrink-0 text-xs font-medium text-ztg-green-400 transition-all group-hover:text-ztg-green-400">
         View →
       </span>
     </Link>

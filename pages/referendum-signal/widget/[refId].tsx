@@ -134,7 +134,7 @@ const ReferendumSignalWidget = () => {
               href={`${process.env.NEXT_PUBLIC_SITE_URL || "https://app.zeitgeist.pm"}/markets/${combinatorial_market.market_2.marketId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="line-clamp-1 flex-1 transition-colors hover:text-ztg-green-300 hover:underline"
+              className="line-clamp-1 flex-1 transition-colors hover:text-ztg-green-400 hover:underline"
             >
               {combinatorial_market.market_2.question}
             </a>
@@ -275,7 +275,7 @@ const ReferendumSignalWidget = () => {
               href="https://app.zeitgeist.pm"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold text-ztg-green-400 transition-colors hover:text-ztg-green-300"
+              className="font-semibold text-ztg-green-400 transition-colors hover:text-ztg-green-400"
             >
               Zeitgeist
             </a>

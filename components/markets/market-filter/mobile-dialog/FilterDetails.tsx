@@ -46,7 +46,7 @@ const FilterDetails = ({ back, menu }: FilterDetailsProps) => {
   return (
     <>
       <button
-        className="mb-5 flex touch-manipulation items-center gap-2 text-base font-semibold text-ztg-green-400 transition-all hover:text-ztg-green-300 active:scale-95"
+        className="mb-5 flex touch-manipulation items-center gap-2 text-base font-semibold text-ztg-green-400 transition-all hover:text-ztg-green-400 active:scale-95"
         onClick={back}
       >
         <ChevronLeft size={18} />

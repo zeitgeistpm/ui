@@ -56,7 +56,7 @@ const ComboMarketRow = ({
       >
         {roleLabel}
       </span>
-      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90">
+      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90 group-hover:text-ztg-green-400 transition-colors">
         {market.question}
       </span>
     </div>
@@ -100,7 +100,7 @@ const ComboMarketRowInline = ({
       >
         {roleLabel}
       </span>
-      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90">
+      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90 group-hover:text-ztg-green-400 transition-colors">
         {market.question}
       </span>
     </div>
@@ -196,7 +196,7 @@ const ComboPoolCard = ({
     <div
       data-testid={`comboPoolCard-${pool.poolId}`}
       className={`ztg-transition group relative flex min-w-full flex-col
-      rounded-lg bg-white/10 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg md:min-w-[calc(50%-8px)] md:hover:scale-[1.01] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+      rounded-lg bg-white/10 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg md:min-w-[calc(50%-8px)] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
     >
       <Link
         href={item.link}
@@ -382,7 +382,7 @@ const ComboPoolPredictionBar = ({
         </span>
       </div>
       <div
-        className={`h-full bg-gradient-to-r from-ztg-green-500/60 to-ztg-green-400/70`}
+        className={`h-full bg-gradient-to-r from-ztg-primary-300/80 to-ztg-primary-200/90`}
         style={{
           width: `${isNaN(highestPercentage) ? 0 : highestPercentage}%`,
         }}

@@ -137,9 +137,6 @@ const MobileAccountView = ({
   const { data: usdcAssetHubBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 4,
   });
-  const { data: usdcMoonbeamBalance } = useBalance(activeAccount?.address, {
-    ForeignAsset: 1,
-  });
   const { data: constants } = useChainConstants();
   const { alerts } = useAlerts(realAddress);
   const hasNotifications = alerts.length > 0;
@@ -197,13 +194,6 @@ const MobileAccountView = ({
             balance={usdcAssetHubBalance}
             className="text-sm"
           />
-          {/* DISABLED: USDC.wh temporarily disabled */}
-          {/* <BalanceRow
-            imgPath="/currencies/usdc.svg"
-            units="USDC.wh"
-            balance={usdcMoonbeamBalance}
-            className="text-sm"
-          /> */}
           <BalanceRow
             imgPath="/currencies/dot.png"
             units="DOT"
@@ -738,7 +728,7 @@ const TopBar = () => {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border-2 border-white/10 bg-ztg-primary-700/95 shadow-xl ring-2 ring-white/5 backdrop-blur-lg focus:outline-none">
+                        <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border-2 border-white/10 bg-ztg-primary-500/80 shadow-xl ring-2 ring-white/5 backdrop-blur-lg focus:outline-none">
                           <div className="p-1">
                             <Menu.Item>
                               {({ active }) => (
@@ -803,17 +793,21 @@ const TopBar = () => {
               <Menu as="div" className="relative">
                 {({ open }) => (
                   <>
-                    <Menu.Button className="group flex shrink-0 items-center gap-1.5 rounded-lg bg-ztg-green-600/90 px-2.5 py-2 text-xs font-bold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg active:scale-95 sm:gap-2 sm:px-3 sm:text-sm md:px-4">
+                    <Menu.Button
+                      className={`group flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-2.5 sm:text-sm md:px-3 ${
+                        open
+                          ? "bg-white/15 text-white"
+                          : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white"
+                      }`}
+                    >
                       <FiPlusSquare
                         size={14}
-                        className="hidden shrink-0 sm:inline sm:h-4 sm:w-4"
+                        className="hidden shrink-0 text-ztg-green-400 sm:inline sm:h-4 sm:w-4"
                       />
-                      <span className="whitespace-nowrap font-bold">
-                        Create Market
-                      </span>
+                      <span className="whitespace-nowrap">Create Market</span>
                       <ChevronDown
-                        size={12}
-                        className={`ml-0.5 shrink-0 transition-transform sm:h-3.5 sm:w-3.5 ${open ? "rotate-180" : ""}`}
+                        size={14}
+                        className={`ml-0.5 shrink-0 transition-transform sm:h-4 sm:w-4 ${open ? "rotate-180" : ""}`}
                       />
                     </Menu.Button>
 
@@ -826,7 +820,7 @@ const TopBar = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border-2 border-white/10 bg-ztg-primary-700/95 shadow-xl ring-2 ring-white/5 backdrop-blur-lg focus:outline-none">
+                      <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border-2 border-white/10 bg-ztg-primary-500/80 shadow-xl ring-2 ring-white/5 backdrop-blur-lg focus:outline-none">
                         <div className="p-1">
                           <Menu.Item>
                             {({ active }) => (
