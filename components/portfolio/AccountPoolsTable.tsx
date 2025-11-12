@@ -60,7 +60,7 @@ const AccountPoolsTable = ({ pools, isLoading }: AccountPoolsTableProps) => {
       question: (
         <Link
           href={href}
-          className="line-clamp-1 text-sm font-medium text-white transition-colors hover:text-ztg-green-400"
+          className="line-clamp-1 text-sm font-medium text-white transition-colors hover:text-ztg-green-500"
         >
           {pool.question}
         </Link>

@@ -48,7 +48,7 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
           (menuIsOpen
             ? "bg-white/15 text-white"
             : hasActiveFilters
-              ? "bg-white/15 text-ztg-green-400 hover:bg-white/20 hover:text-white"
+              ? "bg-white/15 text-ztg-green-500 hover:bg-white/20 hover:text-white"
               : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white")
         }
         onClick={onClick}
@@ -79,7 +79,7 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
         className={
           "center h-full cursor-pointer rounded-md px-2 py-1.5 transition-all " +
           (isActive
-            ? "bg-ztg-green-500/20 text-ztg-green-400"
+            ? "bg-ztg-green-500/20 text-ztg-green-500"
             : isFocused
               ? "bg-white/10 text-white"
               : "text-white/90 hover:bg-white/10 hover:text-white")
@@ -104,7 +104,7 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
           <div
             className={
               "px-1 text-xs font-medium " +
-              (isActive ? "text-ztg-green-400" : "inherit")
+              (isActive ? "text-ztg-green-500" : "inherit")
             }
           >
             {children}

@@ -72,12 +72,12 @@ const PortfolioHeader = (props: PortfolioHeaderProps) => {
             <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex-1">
                 {isOwned && !hasIdentity && (
-                  <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-ztg-green-400">
+                  <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-ztg-green-500">
                     Wallet Name
                   </div>
                 )}
                 {isOwned && hasIdentity && (
-                  <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-ztg-green-400">
+                  <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-ztg-green-500">
                     On-Chain Identity
                   </div>
                 )}
@@ -246,7 +246,7 @@ const StatCard = ({
         {/* {changePercentage !== 0 && (
           <div
             className={`text-xs font-semibold ${
-              changePercentage < 0 ? "text-ztg-red-400" : "text-ztg-green-400"
+              changePercentage < 0 ? "text-ztg-red-400" : "text-ztg-green-500"
             }`}
           >
             {changePercentage > 0 ? "+" : ""}

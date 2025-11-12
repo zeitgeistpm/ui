@@ -105,7 +105,7 @@ const Option = (props: OptionProps<AssetOption, false>) => {
       {...props}
       className={`mb-1 !flex h-10 w-full !cursor-pointer items-center rounded-md px-3 text-xs font-medium transition-all last:mb-0 ${
         isSelected
-          ? "bg-ztg-green-500/20 text-ztg-green-400"
+          ? "bg-ztg-green-500/20 text-ztg-green-500"
           : isFocused
             ? "bg-white/15 text-white"
             : "bg-white/10 text-white/90 hover:bg-white/15 hover:text-white"

@@ -151,7 +151,7 @@ const FilterButton = ({
     >
       <div className="text-base font-semibold text-white">{children}</div>
       {RightIcon && (
-        <RightIcon className="ml-auto text-ztg-green-400" size={20} />
+        <RightIcon className="ml-auto text-ztg-green-500" size={20} />
       )}
     </button>
   );

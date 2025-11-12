@@ -211,7 +211,7 @@ const MobileAccountView = ({
             </span>
             <ArrowRight
               size={18}
-              className="text-ztg-green-400 transition-transform group-hover:translate-x-1"
+              className="text-ztg-green-500 transition-transform group-hover:translate-x-1"
             />
           </div>
         </Link>
@@ -228,14 +228,14 @@ const MobileAccountView = ({
           className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg bg-white/10 px-4 py-3 text-left transition-all hover:bg-white/20"
         >
           <div className="relative">
-            <Bell className="text-ztg-green-400 transition-colors" size={20} />
+            <Bell className="text-ztg-green-500 transition-colors" size={20} />
             {hasNotifications && (
               <div className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-ztg-green-500"></div>
             )}
           </div>
           <span className="flex-1 text-base font-medium">Notifications</span>
           {hasNotifications && (
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ztg-green-500/20 text-base font-semibold text-ztg-green-400">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ztg-green-500/20 text-base font-semibold text-ztg-green-500">
               {alerts.length}
             </span>
           )}
@@ -252,7 +252,7 @@ const MobileAccountView = ({
             }}
             className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg bg-white/10 px-4 py-3 text-left transition-all hover:bg-white/20"
           >
-            <User className="text-ztg-green-400 transition-colors" size={20} />
+            <User className="text-ztg-green-500 transition-colors" size={20} />
             <span className="flex-1 text-base font-medium">Select Account</span>
           </button>
         )}
@@ -261,7 +261,7 @@ const MobileAccountView = ({
         <Link href={`/portfolio/${realAddress}`} onClick={onNavigate}>
           <div className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg bg-white/10 px-4 py-3 transition-all hover:bg-white/20">
             <BarChart
-              className="text-ztg-green-400 transition-colors"
+              className="text-ztg-green-500 transition-colors"
               size={20}
             />
             <span className="flex-1 text-base font-medium">Portfolio</span>
@@ -277,7 +277,7 @@ const MobileAccountView = ({
           className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg bg-white/10 px-4 py-3 text-left transition-all hover:bg-white/20"
         >
           <Settings
-            className="text-ztg-green-400 transition-colors"
+            className="text-ztg-green-500 transition-colors"
             size={20}
           />
           <span className="flex-1 text-base font-medium">Settings</span>
@@ -527,7 +527,7 @@ const TopBar = () => {
                                       active ? "bg-white/20" : ""
                                     }`}
                                   >
-                                    <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+                                    <div className="relative h-5 w-5 shrink-0 text-ztg-green-500 md:h-5 md:w-5">
                                       <FiGrid size={"100%"} />
                                     </div>
                                     <h3 className="text-base font-semibold text-white md:text-sm">
@@ -555,7 +555,7 @@ const TopBar = () => {
                                       active ? "bg-white/20" : ""
                                     }`}
                                   >
-                                    <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+                                    <div className="relative h-5 w-5 shrink-0 text-ztg-green-500 md:h-5 md:w-5">
                                       <FiStar size={"100%"} />
                                     </div>
                                     <h3 className="text-base font-semibold text-white md:text-sm">
@@ -581,7 +581,7 @@ const TopBar = () => {
                                           active ? "bg-white/20" : ""
                                         }`}
                                       >
-                                        <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+                                        <div className="relative h-5 w-5 shrink-0 text-ztg-green-500 md:h-5 md:w-5">
                                           <Users size={"100%"} />
                                         </div>
                                         <h3 className="text-base font-semibold text-white md:text-sm">
@@ -655,8 +655,8 @@ const TopBar = () => {
                   size={14}
                   className={`shrink-0 transition-colors sm:h-4 sm:w-4 ${
                     router.pathname === "/markets" && !router.query.status
-                      ? "text-ztg-green-400"
-                      : "text-ztg-green-400/80 group-hover:text-ztg-green-400"
+                      ? "text-ztg-green-500"
+                      : "text-ztg-green-500/80 group-hover:text-ztg-green-500"
                   }`}
                 />
                 <span className="whitespace-nowrap">All Markets</span>
@@ -675,8 +675,8 @@ const TopBar = () => {
                   className={`shrink-0 transition-colors sm:h-4 sm:w-4 ${
                     router.query.status === "Active" &&
                     router.query.ordering === "Newest"
-                      ? "text-ztg-green-400"
-                      : "text-ztg-green-400/80 group-hover:text-ztg-green-400"
+                      ? "text-ztg-green-500"
+                      : "text-ztg-green-500/80 group-hover:text-ztg-green-500"
                   }`}
                 />
                 <span className="whitespace-nowrap">Active</span>
@@ -695,8 +695,8 @@ const TopBar = () => {
                   className={`shrink-0 transition-colors sm:h-4 sm:w-4 ${
                     router.query.status === "Active" &&
                     router.query.ordering === "Most Volume"
-                      ? "text-ztg-green-400"
-                      : "text-ztg-green-400/80 group-hover:text-ztg-green-400"
+                      ? "text-ztg-green-500"
+                      : "text-ztg-green-500/80 group-hover:text-ztg-green-500"
                   }`}
                 />
                 <span className="whitespace-nowrap">Trending</span>
@@ -742,7 +742,7 @@ const TopBar = () => {
                                   >
                                     <MdShowChart
                                       size={18}
-                                      className="text-ztg-green-400"
+                                      className="text-ztg-green-500"
                                     />
                                     <div className="flex flex-col items-start">
                                       <span className="font-semibold">
@@ -766,7 +766,7 @@ const TopBar = () => {
                                   >
                                     <MdStackedLineChart
                                       size={18}
-                                      className="text-ztg-green-400"
+                                      className="text-ztg-green-500"
                                     />
                                     <div className="flex flex-col items-start">
                                       <span className="font-semibold">
@@ -802,7 +802,7 @@ const TopBar = () => {
                     >
                       <FiPlusSquare
                         size={14}
-                        className="hidden shrink-0 text-ztg-green-400 sm:inline sm:h-4 sm:w-4"
+                        className="hidden shrink-0 text-ztg-green-500 sm:inline sm:h-4 sm:w-4"
                       />
                       <span className="whitespace-nowrap">Create Market</span>
                       <ChevronDown
@@ -834,7 +834,7 @@ const TopBar = () => {
                                 >
                                   <MdShowChart
                                     size={18}
-                                    className="text-ztg-green-400"
+                                    className="text-ztg-green-500"
                                   />
                                   <div className="flex flex-col items-start">
                                     <span className="font-semibold">
@@ -858,7 +858,7 @@ const TopBar = () => {
                                 >
                                   <MdStackedLineChart
                                     size={18}
-                                    className="text-ztg-green-400"
+                                    className="text-ztg-green-500"
                                   />
                                   <div className="flex flex-col items-start">
                                     <span className="font-semibold">
@@ -1034,7 +1034,7 @@ const CreateMarketMenu = ({ onSelect }: { onSelect: () => void }) => {
         href="/create"
         className="flex min-h-[48px] items-center gap-3 rounded-lg px-4 py-3 text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5"
       >
-        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-ztg-green-400 md:h-10 md:w-10">
+        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-ztg-green-500 md:h-10 md:w-10">
           <MdShowChart size={20} className="md:h-5 md:w-5" />
         </div>
         <div className="flex flex-col">
@@ -1049,7 +1049,7 @@ const CreateMarketMenu = ({ onSelect }: { onSelect: () => void }) => {
         href="/create-combo"
         className="flex min-h-[48px] items-center gap-3 rounded-lg px-4 py-3 text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5"
       >
-        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-ztg-green-400 md:h-10 md:w-10">
+        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-ztg-green-500 md:h-10 md:w-10">
           <MdStackedLineChart size={20} className="md:h-5 md:w-5" />
         </div>
         <div className="flex flex-col">
@@ -1095,7 +1095,7 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
               setCategoriesOpen(!categoriesOpen);
             }}
           >
-            <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+            <div className="relative h-5 w-5 shrink-0 text-ztg-green-500 md:h-5 md:w-5">
               <FiList size={"100%"} />
             </div>
             <h3 className="flex-1 text-left text-base font-semibold text-white md:text-sm">
@@ -1178,7 +1178,7 @@ const CreateMarketMenuItem = ({ onSelect }: { onSelect: () => void }) => {
               setCreateMarketOpen(!createMarketOpen);
             }}
           >
-            <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+            <div className="relative h-5 w-5 shrink-0 text-ztg-green-500 md:h-5 md:w-5">
               <FiPlusSquare size={"100%"} />
             </div>
             <h3 className="flex-1 text-left text-base font-semibold text-white md:text-sm">

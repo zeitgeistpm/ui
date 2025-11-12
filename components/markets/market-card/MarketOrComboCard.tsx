@@ -56,7 +56,7 @@ const ComboMarketRow = ({
       >
         {roleLabel}
       </span>
-      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90 group-hover:text-ztg-green-400 transition-colors">
+      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90 group-hover:text-ztg-green-500 transition-colors">
         {market.question}
       </span>
     </div>
@@ -100,7 +100,7 @@ const ComboMarketRowInline = ({
       >
         {roleLabel}
       </span>
-      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90 group-hover:text-ztg-green-400 transition-colors">
+      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90 group-hover:text-ztg-green-500 transition-colors">
         {market.question}
       </span>
     </div>

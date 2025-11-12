@@ -158,8 +158,8 @@ const ComboAssetDetails = ({
                   {sourceMarkets[0].question}
                 </div>
                 <div>
-                  <span className="font-semibold text-ztg-green-400">Then:</span>{" "}
-                  <span className="font-bold text-ztg-green-400">{market2Outcome}</span>,{" "}
+                  <span className="font-semibold text-ztg-green-500">Then:</span>{" "}
+                  <span className="font-bold text-ztg-green-500">{market2Outcome}</span>,{" "}
                   {sourceMarkets[1].question}
                 </div>
               </div>
@@ -239,7 +239,7 @@ const CombinatorialTooltip = ({ children }: { children: React.ReactNode }) => {
             combinations like: "Assuming outcome X happens in Market 1,
             THEN what happens in Market 2?"
           </p>
-          <p className="text-ztg-green-400">
+          <p className="text-ztg-green-500">
             Example: Assume "Trump wins" → Then "Bitcoin reaches $100k"
           </p>
         </div>
@@ -624,7 +624,7 @@ const MobileContextButtons = ({
               </h3>
             </div>
             <p className="mb-4 text-sm leading-relaxed text-white/90">
-              <span className="font-semibold text-ztg-green-400">Market 2 ("Then" market)</span> has resolved. You can redeem tokens for{" "}
+              <span className="font-semibold text-ztg-green-500">Market 2 ("Then" market)</span> has resolved. You can redeem tokens for{" "}
               <span className="font-semibold text-blue-400">Market 1 ("Assume" market)</span> tokens and use those for trading.
             </p>
             <div className="space-y-3">
@@ -1165,7 +1165,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                   </h3>
                 </div>
                 <p className="mb-4 text-sm leading-relaxed text-white/90">
-                  <span className="font-semibold text-ztg-green-400">Market 2 ("Then" market)</span> has resolved. You can redeem tokens for{" "}
+                  <span className="font-semibold text-ztg-green-500">Market 2 ("Then" market)</span> has resolved. You can redeem tokens for{" "}
                   <span className="font-semibold text-blue-400">Market 1 ("Assume" market)</span> tokens and use those for trading.
                 </p>
                 <div className="space-y-3">

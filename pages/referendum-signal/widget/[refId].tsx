@@ -129,12 +129,12 @@ const ReferendumSignalWidget = () => {
             </a>
           </div>
           <div className="flex items-start gap-1.5">
-            <span className="font-semibold text-ztg-green-400">Then:</span>
+            <span className="font-semibold text-ztg-green-500">Then:</span>
             <a
               href={`${process.env.NEXT_PUBLIC_SITE_URL || "https://app.zeitgeist.pm"}/markets/${combinatorial_market.market_2.marketId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="line-clamp-1 flex-1 transition-colors hover:text-ztg-green-400 hover:underline"
+              className="line-clamp-1 flex-1 transition-colors hover:text-ztg-green-500 hover:underline"
             >
               {combinatorial_market.market_2.question}
             </a>
@@ -145,10 +145,10 @@ const ReferendumSignalWidget = () => {
         {futarchy_signal.recommendation && (
           <div className="mb-3 rounded-lg border border-ztg-green-500/30 bg-white/10 p-2 shadow-sm backdrop-blur-sm">
             <div className="mb-1 flex items-center gap-1.5">
-              <Info size={12} className="text-ztg-green-400" />
+              <Info size={12} className="text-ztg-green-500" />
               <span className="text-xxs font-semibold text-white">Signal</span>
             </div>
-            <div className="text-xs font-bold text-ztg-green-400">
+            <div className="text-xs font-bold text-ztg-green-500">
               {futarchy_signal.recommendation}
             </div>
             {futarchy_signal.confidence && (
@@ -275,7 +275,7 @@ const ReferendumSignalWidget = () => {
               href="https://app.zeitgeist.pm"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold text-ztg-green-400 transition-colors hover:text-ztg-green-400"
+              className="font-semibold text-ztg-green-500 transition-colors hover:text-ztg-green-500"
             >
               Zeitgeist
             </a>

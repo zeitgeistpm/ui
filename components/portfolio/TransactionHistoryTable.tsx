@@ -56,7 +56,7 @@ const TransactionHistoryTable = ({ address }: { address: string }) => {
         question: (
           <Link
             href={`/markets/${transaction.marketId}`}
-            className="text-[14px] text-white transition-colors hover:text-ztg-green-400"
+            className="text-[14px] text-white transition-colors hover:text-ztg-green-500"
           >
             {transaction.question}
           </Link>

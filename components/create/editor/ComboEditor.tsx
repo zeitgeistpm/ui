@@ -564,7 +564,7 @@ const ComboMarketEditor: React.FC = () => {
               <div className="rounded-lg border border-white/20 bg-white/10 p-3 shadow-lg backdrop-blur-lg md:p-4">
                 <Disclosure.Button className="flex w-full items-center justify-between text-left">
                   <div className="flex items-center gap-2">
-                    <Info size={18} className="text-ztg-green-400" />
+                    <Info size={18} className="text-ztg-green-500" />
                     <h3 className="text-sm font-semibold text-white md:text-base">
                       How Combinatorial Markets Work
                     </h3>
@@ -581,7 +581,7 @@ const ComboMarketEditor: React.FC = () => {
                     in one market given an outcome in another.{" "}
                     <strong className="text-blue-300">Market 1 ("Assume")</strong>{" "}
                     is the condition, and{" "}
-                    <strong className="text-ztg-green-400">Market 2 ("Then")</strong>{" "}
+                    <strong className="text-ztg-green-500">Market 2 ("Then")</strong>{" "}
                     is the consequence.
                   </p>
                   <div className="grid gap-2 md:grid-cols-2">
@@ -593,9 +593,9 @@ const ComboMarketEditor: React.FC = () => {
                         <strong className="text-blue-300">Assume:</strong>{" "}
                         "Referendum #1764 passes",{" "}
                         <strong className="text-blue-300">No</strong> <br />
-                        <strong className="text-ztg-green-400">THEN:</strong>{" "}
+                        <strong className="text-ztg-green-500">THEN:</strong>{" "}
                         "Ecosystem gains 100k new users",{" "}
-                        <strong className="text-ztg-green-400">Short</strong>
+                        <strong className="text-ztg-green-500">Short</strong>
                       </p>
                     </div>
                     <div className="rounded-md bg-white/5 p-2.5 shadow-sm backdrop-blur-sm">
@@ -606,9 +606,9 @@ const ComboMarketEditor: React.FC = () => {
                         <strong className="text-blue-300">Assume:</strong>{" "}
                         "Lakers win championship",{" "}
                         <strong className="text-blue-300">Yes</strong> <br />
-                        <strong className="text-ztg-green-400">THEN:</strong>{" "}
+                        <strong className="text-ztg-green-500">THEN:</strong>{" "}
                         "Bitcoin reaches $100k",{" "}
-                        <strong className="text-ztg-green-400">Long</strong>
+                        <strong className="text-ztg-green-500">Long</strong>
                       </p>
                     </div>
                   </div>
@@ -646,7 +646,7 @@ const ComboMarketEditor: React.FC = () => {
                           className={`text-xs font-semibold ${
                             index === 0
                               ? "text-blue-300"
-                              : "text-ztg-green-400"
+                              : "text-ztg-green-500"
                           }`}
                         >
                           {marketRole}
@@ -710,7 +710,7 @@ const ComboMarketEditor: React.FC = () => {
                     href={`/multi-market/${duplicatePool.poolId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-semibold text-ztg-green-400 underline transition-colors hover:text-ztg-green-400"
+                    className="font-semibold text-ztg-green-500 underline transition-colors hover:text-ztg-green-500"
                   >
                     Combo Pool #{duplicatePool.poolId}
                   </a>
@@ -776,7 +776,7 @@ const ComboMarketEditor: React.FC = () => {
                         return sum + (isNaN(numPrice) ? 0 : numPrice);
                       }, 0) - 100,
                     ) < 0.01
-                      ? "text-ztg-green-400"
+                      ? "text-ztg-green-500"
                       : "text-ztg-red-400"
                   }`}
                 >
@@ -814,7 +814,7 @@ const ComboMarketEditor: React.FC = () => {
                     <div className="text-xs text-white/70">
                       <span className="text-blue-300">Assume:</span>{" "}
                       {combination.market1Outcome} •{" "}
-                      <span className="text-ztg-green-400">Then:</span>{" "}
+                      <span className="text-ztg-green-500">Then:</span>{" "}
                       {combination.market2Outcome}
                     </div>
                   </div>
@@ -941,7 +941,7 @@ const ComboMarketEditor: React.FC = () => {
                   href={`/multi-market/${duplicatePool.poolId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-ztg-green-400 underline transition-colors hover:text-ztg-green-400"
+                  className="font-semibold text-ztg-green-500 underline transition-colors hover:text-ztg-green-500"
                 >
                   Combo Pool #{duplicatePool.poolId}
                 </a>

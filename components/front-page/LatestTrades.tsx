@@ -95,7 +95,7 @@ const LatestTrades = ({
       outcome: trade.outcomeName,
       trade:
         trade.type === "buy" ? (
-          <span className="font-semibold text-ztg-green-400">Buy</span>
+          <span className="font-semibold text-ztg-green-500">Buy</span>
         ) : (
           <span className="font-semibold text-red-400">Sell</span>
         ),

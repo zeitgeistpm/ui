@@ -82,7 +82,7 @@ const TradeResult = ({
 
       <button
         onClick={onContinueClick}
-        className="rounded-md px-4 font-bold text-ztg-green-400 transition-all hover:bg-ztg-primary-700/30 active:scale-95"
+        className="rounded-md px-4 font-bold text-ztg-green-500 transition-all hover:bg-ztg-primary-700/30 active:scale-95"
       >
         Continue Trading
       </button>

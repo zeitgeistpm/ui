@@ -161,7 +161,7 @@ const Option = ({ children, ...rest }: OptionProps<AddressOption, false>) => {
       {...rest}
       className={`mb-2 !flex h-14 w-full !cursor-pointer items-center rounded-md px-4 transition-all last:mb-0 ${
         isSelected
-          ? "bg-ztg-green-500/20 text-ztg-green-400"
+          ? "bg-ztg-green-500/20 text-ztg-green-500"
           : isFocused
             ? "bg-white/15 text-white"
             : "bg-white/5 text-white/90 hover:bg-white/15 hover:text-white"

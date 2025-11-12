@@ -230,13 +230,13 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
               <div className="relative flex gap-4">
                 <div className="absolute -left-8 flex h-6 w-6 items-center justify-center rounded-full border-2 border-ztg-green-400/40 bg-ztg-green-500/20 shadow-sm backdrop-blur-sm">
                   <MdOutlineCheckCircle
-                    className="text-ztg-green-400"
+                    className="text-ztg-green-500"
                     size={14}
                   />
                 </div>
                 <div className="flex-1 rounded-lg border-2 border-ztg-green-400/30 bg-ztg-green-500/10 p-3 backdrop-blur-sm">
                   <div className="mb-2">
-                    <div className="mb-1 inline-block rounded-md bg-ztg-green-400/20 px-2 py-0.5 text-xs font-semibold text-ztg-green-400">
+                    <div className="mb-1 inline-block rounded-md bg-ztg-green-400/20 px-2 py-0.5 text-xs font-semibold text-ztg-green-500">
                       Resolved
                     </div>
                     <div className="text-sm font-medium text-white/90">

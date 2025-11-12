@@ -139,7 +139,7 @@ export const BreakdownSlot = ({
               ? "text-white"
               : changePercentage < 0
                 ? "text-red-400"
-                : "text-ztg-green-400"
+                : "text-ztg-green-500"
           }`}
         >
           {Math.abs(changePercentage).toFixed(1)}%

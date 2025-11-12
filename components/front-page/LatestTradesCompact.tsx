@@ -72,7 +72,7 @@ const LatestTradeRow = ({ trade }: { trade: TradeItem }) => {
         <div className="line-clamp-1 overflow-ellipsis text-sm">
           {cmsMetadata?.question ?? trade.question}
         </div>
-        <div className="flex items-center gap-x-1 text-sm text-ztg-blue">
+        <div className="flex items-center gap-x-1 text-sm text-ztg-green-500">
           <Avatar size={15} address={trade.traderAddress} />
           {trade.type === "buy" ? "Bought" : "Sold"}
           <span className="font-bold">{trade.outcomeName}</span>

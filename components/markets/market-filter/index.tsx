@@ -242,7 +242,7 @@ const MarketFilterSelection = ({
                         >
                           <FiPlusSquare
                             size={14}
-                            className="hidden text-ztg-green-400 sm:inline sm:h-4 sm:w-4"
+                            className="hidden text-ztg-green-500 sm:inline sm:h-4 sm:w-4"
                           />
                           <span>Create Market</span>
                           <ChevronDown
@@ -272,7 +272,7 @@ const MarketFilterSelection = ({
                                     >
                                       <MdShowChart
                                         size={18}
-                                        className="text-ztg-green-400"
+                                        className="text-ztg-green-500"
                                       />
                                       <div className="flex flex-col items-start">
                                         <span className="font-semibold text-white/90">
@@ -294,7 +294,7 @@ const MarketFilterSelection = ({
                                     >
                                       <MdStackedLineChart
                                         size={18}
-                                        className="text-ztg-green-400"
+                                        className="text-ztg-green-500"
                                       />
                                       <div className="flex flex-col items-start">
                                         <span className="font-semibold text-white/90">

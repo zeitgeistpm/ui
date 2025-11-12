@@ -79,7 +79,7 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
               href={href}
               key={`footerMenuLink${idx}`}
               target="_blank"
-              className="mb-0.5 transition-colors hover:text-ztg-green-400"
+              className="mb-0.5 transition-colors hover:text-ztg-green-500"
             >
               <span>{text}</span>
             </Link>
@@ -137,7 +137,7 @@ const Footer = () => {
                 href={link.href}
                 target={link.external ? "_blank" : undefined}
                 rel={link.external ? "noopener noreferrer" : undefined}
-                className="text-white/70 transition-colors hover:text-ztg-green-400 hover:underline"
+                className="text-white/70 transition-colors hover:text-ztg-green-500 hover:underline"
               >
                 {link.text}
               </Link>

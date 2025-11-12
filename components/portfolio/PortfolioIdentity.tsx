@@ -48,12 +48,12 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
               <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   {isOwned && !hasIdentity && (
-                    <div className="mb-0.5 text-xxs font-semibold uppercase tracking-wide text-ztg-green-400">
+                    <div className="mb-0.5 text-xxs font-semibold uppercase tracking-wide text-ztg-green-500">
                       Wallet Name
                     </div>
                   )}
                   {isOwned && hasIdentity && (
-                    <div className="mb-0.5 text-xxs font-semibold uppercase tracking-wide text-ztg-green-400">
+                    <div className="mb-0.5 text-xxs font-semibold uppercase tracking-wide text-ztg-green-500">
                       On-Chain Identity
                     </div>
                   )}

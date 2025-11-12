@@ -131,14 +131,14 @@ export const MarketCard = ({
                 }}
               />
             </div>
-            <h5 className="line-clamp-2 h-12 w-full pr-4 text-base text-white/90 duration-200 group-hover:text-ztg-green-400 transition-colors">
+            <h5 className="line-clamp-2 h-12 w-full pr-4 text-base text-white/90 duration-200 group-hover:text-ztg-green-500 transition-colors">
               {cmsMetadata?.question ?? question}
             </h5>
           </div>
 
           <div className="w-full">
             {status === "Resolved" && resolvedOutcome ? (
-              <span className="text-xs text-ztg-blue">
+              <span className="text-xs text-ztg-green-500">
                 Resolved:{" "}
                 <span className="font-semibold">
                   {marketType?.categorical

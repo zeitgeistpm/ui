@@ -25,7 +25,7 @@ const StatusConfig = {
     label: "Final Outcome",
     gradient: "from-ztg-green-400/80 to-ztg-green-500/80",
     borderColor: "border-ztg-green-400/40",
-    iconColor: "text-ztg-green-400",
+    iconColor: "text-ztg-green-500",
     bgColor: "bg-ztg-green-500/10",
   },
   Reported: {
@@ -97,7 +97,7 @@ export const MarketOutcomeDisplay: FC<MarketOutcomeDisplayProps> = ({
             </span>
             <Link
               href={`/portfolio/${by}`}
-              className="font-medium text-white/90 transition-all hover:text-ztg-green-400"
+              className="font-medium text-white/90 transition-all hover:text-ztg-green-500"
             >
               <UserIdentity user={by} />
             </Link>
@@ -114,7 +114,7 @@ export const MarketOutcomeDisplay: FC<MarketOutcomeDisplayProps> = ({
             className="ml-auto flex items-center gap-1.5 rounded-md bg-white/10 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-sm"
             aria-label="View market history"
           >
-            <MdOutlineHistory size={16} className="text-ztg-green-400" />
+            <MdOutlineHistory size={16} className="text-ztg-green-500" />
             <span className="hidden sm:inline">History</span>
           </button>
         ) : (

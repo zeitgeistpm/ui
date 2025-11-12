@@ -571,7 +571,7 @@ const Market: NextPage<MarketPageProps> = ({
                     <BsFillChatSquareTextFill
                       size={18}
                       className={
-                        showTwitchChat ? "text-ztg-green-400" : "text-white/50"
+                        showTwitchChat ? "text-ztg-green-500" : "text-white/50"
                       }
                     />
                   </div>

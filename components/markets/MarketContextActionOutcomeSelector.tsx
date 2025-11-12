@@ -318,7 +318,7 @@ const MarketContextActionOutcomeSelector = ({
                           <span
                             className={`text-sm font-medium transition-colors ${
                               selected
-                                ? "text-ztg-green-400"
+                                ? "text-ztg-green-500"
                                 : "text-white/90 group-hover:text-white"
                             }`}
                           >

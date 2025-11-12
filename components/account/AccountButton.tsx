@@ -163,7 +163,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                 </div>
                 <span
                   className={`flex min-w-0 flex-1 items-center justify-center overflow-hidden text-center text-sm font-semibold transition-all md:min-w-0 md:whitespace-nowrap md:text-center md:text-sm ${
-                    open ? "text-ztg-green-400" : "text-white"
+                    open ? "text-ztg-green-500" : "text-white"
                   }`}
                   title={
                     (() => {
@@ -199,7 +199,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                     size={20}
                     className={`h-5 w-5 transition-all duration-200 md:h-4 md:w-4 ${
                       open
-                        ? "rotate-180 text-ztg-green-400"
+                        ? "rotate-180 text-ztg-green-500"
                         : "text-white/90"
                     }`}
                   />
@@ -351,7 +351,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                         </span>
                         <ArrowRight
                           size={20}
-                          className="h-5 w-5 text-ztg-green-400 transition-transform group-hover:translate-x-1 md:h-4 md:w-4"
+                          className="h-5 w-5 text-ztg-green-500 transition-transform group-hover:translate-x-1 md:h-4 md:w-4"
                         />
                       </div>
                     </Link>
@@ -393,7 +393,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                     >
                       <div className="relative">
                         <Bell
-                          className="text-ztg-green-400 transition-colors"
+                          className="text-ztg-green-500 transition-colors"
                           size={20}
                         />
                         {hasNotifications && (
@@ -404,7 +404,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                         Notifications
                       </span>
                       {hasNotifications && (
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ztg-green-500/20 text-xs font-semibold text-ztg-green-400 md:h-8 md:w-8 md:text-xs">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ztg-green-500/20 text-xs font-semibold text-ztg-green-500 md:h-8 md:w-8 md:text-xs">
                           {alerts.length}
                         </span>
                       )}
@@ -429,7 +429,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                         }}
                       >
                         <User
-                          className="text-ztg-green-400 transition-colors"
+                          className="text-ztg-green-500 transition-colors"
                           size={20}
                         />
                         <span className="text-sm font-medium md:text-sm">
@@ -450,7 +450,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                         }`}
                       >
                         <BarChart
-                          className="text-ztg-green-400 transition-colors"
+                          className="text-ztg-green-500 transition-colors"
                           size={20}
                         />
                         <span className="text-sm font-medium md:text-sm">
@@ -474,7 +474,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                       }}
                     >
                       <Settings
-                        className="text-ztg-green-400 transition-colors"
+                        className="text-ztg-green-500 transition-colors"
                         size={20}
                       />
                       <span className="text-sm font-medium md:text-sm">

@@ -53,7 +53,7 @@ const Control = ({
           (menuIsOpen
             ? "bg-white/15 text-white"
             : selectedOption
-              ? "bg-white/15 text-ztg-green-400 hover:bg-white/20 hover:text-white"
+              ? "bg-white/15 text-ztg-green-500 hover:bg-white/20 hover:text-white"
               : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white")
         }
         onClick={onClick}
@@ -87,13 +87,13 @@ const Option = ({
         className={
           "center h-full cursor-pointer rounded-md px-2 py-1.5 transition-all " +
           (isSelected
-            ? "bg-ztg-green-500/20 text-ztg-green-400"
+            ? "bg-ztg-green-500/20 text-ztg-green-500"
             : isFocused
               ? "bg-white/10 text-white"
               : "text-white/90 hover:bg-white/10 hover:text-white")
         }
       >
-        <Icon size={13} className={isSelected ? "text-ztg-green-400" : ""} />
+        <Icon size={13} className={isSelected ? "text-ztg-green-500" : ""} />
         <div className="flex items-center gap-1.5">
           {isSelected && (
             <div className="h-1.5 w-1.5 rounded-full bg-ztg-green-400"></div>
@@ -101,7 +101,7 @@ const Option = ({
           <div
             className={
               "px-1 text-xs font-medium " +
-              (isSelected ? "text-ztg-green-400" : "inherit")
+              (isSelected ? "text-ztg-green-500" : "inherit")
             }
           >
             {data.label} Market

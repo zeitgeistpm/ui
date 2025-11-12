@@ -178,7 +178,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
       </FormTransactionButton>
       <button
         type="button"
-        className="mt-2 text-sm text-white/90 transition-colors hover:text-ztg-green-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-2 text-sm text-white/90 transition-colors hover:text-ztg-green-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         disabled={isUpdating || isClearing || isCleared}
         onClick={() => clearIdentity()}
       >
