@@ -72,23 +72,23 @@ const PortfolioHeader = (props: PortfolioHeaderProps) => {
             <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex-1">
                 {isOwned && !hasIdentity && (
-                  <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-ztg-green-400">
+                  <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-ztg-green-500">
                     Wallet Name
                   </div>
                 )}
                 {isOwned && hasIdentity && (
-                  <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-ztg-green-400">
+                  <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-ztg-green-500">
                     On-Chain Identity
                   </div>
                 )}
-                <h1 className="text-xl font-bold text-white sm:text-2xl">
+                <h1 className="text-xl font-bold text-white/90 sm:text-2xl">
                   {name}
                 </h1>
               </div>
 
               {isOwned && !hasIdentity && (
                 <button
-                  className="flex items-center gap-1.5 rounded-md bg-ztg-green-600/80 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md"
+                  className="flex items-center gap-1.5 rounded-md bg-ztg-primary-300 px-2.5 py-1.5 text-xs font-semibold text-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md"
                   onClick={() => setShowSettingsModal(true)}
                 >
                   <FaUserCheck size={14} />
@@ -114,7 +114,7 @@ const PortfolioHeader = (props: PortfolioHeaderProps) => {
             <div className="flex flex-wrap gap-1.5">
               {identity?.twitter && (
                 <a
-                  className="flex items-center gap-1 rounded-md bg-twitter px-2 py-1 text-xs font-semibold text-white shadow-sm transition-all hover:shadow-md"
+                  className="flex items-center gap-1 rounded-md bg-twitter px-2 py-1 text-xs font-semibold text-white/90 shadow-sm transition-all hover:shadow-md"
                   href={`https://twitter.com/${identity.twitter}`}
                   target="_blank"
                   rel="noreferrer"
@@ -124,7 +124,7 @@ const PortfolioHeader = (props: PortfolioHeaderProps) => {
                 </a>
               )}
               {identity?.discord && (
-                <div className="flex items-center gap-1 rounded-md bg-discord px-2 py-1 text-xs font-semibold text-white shadow-sm">
+                <div className="flex items-center gap-1 rounded-md bg-discord px-2 py-1 text-xs font-semibold text-white/90 shadow-sm">
                   <DiscordIcon fill="white" />
                   <span>{identity.discord}</span>
                 </div>
@@ -138,7 +138,7 @@ const PortfolioHeader = (props: PortfolioHeaderProps) => {
                 leaveTo="opacity-0"
                 show={isProxying}
               >
-                <div className="flex items-center gap-1 rounded-md bg-purple-600 px-2 py-1 text-xs font-semibold text-white shadow-sm">
+                <div className="flex items-center gap-1 rounded-md bg-purple-600 px-2 py-1 text-xs font-semibold text-white/90 shadow-sm">
                   <FaNetworkWired size={14} />
                   <span>Proxy</span>
                 </div>
@@ -225,11 +225,11 @@ const StatCard = ({
 
   return (
     <div className="rounded-lg border border-ztg-primary-200/20 bg-ztg-primary-900/50 p-3 backdrop-blur-sm transition-all hover:border-ztg-green-500/40 hover:bg-ztg-primary-900/70 hover:shadow-md">
-      <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-white/80">
+      <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-white/90">
         {title}
       </h3>
       <div className="mb-0.5 flex items-baseline gap-1.5">
-        <div className="text-base font-bold text-white sm:text-lg">
+        <div className="text-base font-bold text-white/90 sm:text-lg">
           {formatNumberLocalized(displayValue)}
         </div>
         <div className="text-xs font-semibold text-white/90">ZTG</div>
@@ -246,7 +246,7 @@ const StatCard = ({
         {/* {changePercentage !== 0 && (
           <div
             className={`text-xs font-semibold ${
-              changePercentage < 0 ? "text-ztg-red-400" : "text-ztg-green-400"
+              changePercentage < 0 ? "text-ztg-red-400" : "text-ztg-green-500"
             }`}
           >
             {changePercentage > 0 ? "+" : ""}

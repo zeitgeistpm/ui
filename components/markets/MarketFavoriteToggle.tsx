@@ -32,7 +32,7 @@ export const MarketFavoriteToggle = ({
         )}
       </div>
       <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
-        <div className="rounded-md bg-gray-900 px-2 py-1 text-xs text-white shadow-lg">
+        <div className="rounded-md bg-gray-900 px-2 py-1 text-xs text-white/90 shadow-lg">
           {favorited ? "Remove from favorites" : "Add to favorites"}
         </div>
       </div>

@@ -160,7 +160,7 @@ export const MarketEditorCompact = () => {
                 <div className="flex shrink-0 items-center gap-2">
                   {prevStepFrom(steps, currentStep) && (
                     <button
-                      className="h-8 rounded-lg bg-white/10 px-4 text-xs font-semibold text-white backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20 active:scale-95 sm:h-10 sm:px-5 sm:text-sm"
+                      className="h-8 rounded-lg bg-white/10 px-4 text-xs font-semibold text-white/90 backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20 active:scale-95 sm:h-10 sm:px-5 sm:text-sm"
                       onClick={back}
                       type="button"
                     >
@@ -205,8 +205,8 @@ export const MarketEditorCompact = () => {
                             !fieldsState.moderation.isValid ||
                             !fieldsState.liquidity.isValid ||
                             !fieldsState.answers.isValid))
-                          ? "cursor-not-allowed border-white/20 bg-white/5 text-white/40"
-                          : "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
+                          ? "cursor-not-allowed border-white/20 bg-white/5 text-white/90/40"
+                          : "border-ztg-green-600/80 bg-ztg-green-600/90 text-white/90 shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
                       }`}
                       type="button"
                       onClick={next}
@@ -235,7 +235,7 @@ export const MarketEditorCompact = () => {
               <div className="space-y-6">
                 {/* Step Header with Description */}
                 <div className="mb-4">
-                  <h2 className="mb-1 text-lg font-bold text-white md:text-xl">
+                  <h2 className="mb-1 text-lg font-bold text-white/90 md:text-xl">
                     Start with Your Question
                   </h2>
                   <p className="text-sm text-white/70">
@@ -256,13 +256,13 @@ export const MarketEditorCompact = () => {
                         : "border-transparent"
                   }`}
                 >
-                  <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                  <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                     Market Question <span className="text-ztg-red-400">*</span>
                     <Tooltip content="Make it specific with a clear timeframe and resolution criteria. Example: 'Will Bitcoin reach $100k by Dec 31, 2024?'" />
                   </label>
                   <Input
                     autoComplete="off"
-                    className="h-12 w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 text-sm text-white backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30"
+                    className="h-12 w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 text-sm text-white/90 backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30"
                     placeholder="e.g., Will Bitcoin reach $100k by Dec 31, 2024?"
                     {...input("question", { type: "text" })}
                   />
@@ -289,7 +289,7 @@ export const MarketEditorCompact = () => {
                           : "border-transparent"
                     }`}
                   >
-                    <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                       Outcome Selection{" "}
                       <span className="text-ztg-red-400">*</span>
                       <Tooltip content="Categorical: Multiple choice options | Scalar: Number or date range | Yes/No: Simple binary question" />
@@ -320,7 +320,7 @@ export const MarketEditorCompact = () => {
                           : "border-transparent"
                     }`}
                   >
-                    <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                       Categories <span className="text-ztg-red-400">*</span>
                       <Tooltip content="Select one or more categories to help traders find your market" />
                     </label>
@@ -343,14 +343,14 @@ export const MarketEditorCompact = () => {
                   {({ open }) => (
                     <div className="rounded-lg bg-white/10 backdrop-blur-sm">
                       <Disclosure.Button className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/5">
-                        <span className="text-sm font-semibold text-white">
+                        <span className="text-sm font-semibold text-white/90">
                           Description{" "}
-                          <span className="font-normal text-white/60">
+                          <span className="font-normal text-white/90/60">
                             (Optional)
                           </span>
                         </span>
                         <LuChevronDown
-                          className={`h-4 w-4 text-white transition-transform ${
+                          className={`h-4 w-4 text-white/90 transition-transform ${
                             open ? "rotate-180" : ""
                           }`}
                         />
@@ -384,7 +384,7 @@ export const MarketEditorCompact = () => {
               <div className="space-y-6">
                 {/* Step Header */}
                 <div className="mb-4">
-                  <h2 className="mb-1 text-lg font-bold text-white md:text-xl">
+                  <h2 className="mb-1 text-lg font-bold text-white/90 md:text-xl">
                     Set the Timeline
                   </h2>
                   <p className="text-sm text-white/70">
@@ -406,7 +406,7 @@ export const MarketEditorCompact = () => {
                           : "border-transparent"
                     }`}
                   >
-                    <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                       Market End Date{" "}
                       <span className="text-ztg-red-400">*</span>
                       <Tooltip content="When trading stops and the market closes. Oracle must report outcome after this date." />
@@ -458,7 +458,7 @@ export const MarketEditorCompact = () => {
                     }`}
                   >
                     <div className="mb-2">
-                      <h3 className="text-sm font-semibold text-white">
+                      <h3 className="text-sm font-semibold text-white/90">
                         Resolution Timeline
                       </h3>
                       <p className="mt-1 text-xs text-white/70">
@@ -469,7 +469,7 @@ export const MarketEditorCompact = () => {
                     <div className="grid gap-4 md:grid-cols-2">
                       {/* Reporting Period */}
                       <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-xs font-semibold text-white">
+                        <label className="flex items-center gap-2 text-xs font-semibold text-white/90">
                           Reporting Window{" "}
                           <span className="text-ztg-red-400">*</span>
                           <Tooltip content="How long the oracle has to submit the outcome after the market ends. Recommended: 1-2 weeks for most markets." />
@@ -495,7 +495,7 @@ export const MarketEditorCompact = () => {
                           )}
                         {fieldsState.endDate.isValid &&
                           !fieldsState.reportingPeriod.isTouched && (
-                            <p className="text-xs text-white/60">
+                            <p className="text-xs text-white/90/60">
                               💡 Tip: Give your oracle enough time to gather
                               data and report accurately
                             </p>
@@ -504,7 +504,7 @@ export const MarketEditorCompact = () => {
 
                       {/* Dispute Period */}
                       <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-xs font-semibold text-white">
+                        <label className="flex items-center gap-2 text-xs font-semibold text-white/90">
                           Dispute Window{" "}
                           <span className="text-ztg-red-400">*</span>
                           <Tooltip content="How long outcomes can be disputed before finalization. Recommended: 3-7 days to allow for corrections." />
@@ -528,7 +528,7 @@ export const MarketEditorCompact = () => {
                           )}
                         {fieldsState.endDate.isValid &&
                           !fieldsState.disputePeriod.isTouched && (
-                            <p className="text-xs text-white/60">
+                            <p className="text-xs text-white/90/60">
                               💡 Tip: A dispute period protects against
                               incorrect outcomes
                             </p>
@@ -549,7 +549,7 @@ export const MarketEditorCompact = () => {
                         : "border-transparent"
                   }`}
                 >
-                  <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                  <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                     Oracle Account <span className="text-ztg-red-400">*</span>
                     <Tooltip
                       content={`This account will report the market outcome. Requires ${constants?.markets.oracleBond} ZTG bond (returned if reported on time).`}
@@ -564,7 +564,7 @@ export const MarketEditorCompact = () => {
                       </div>
                     )}
                   {wallet.realAddress && !form.oracle && (
-                    <p className="text-xs text-white/60">
+                    <p className="text-xs text-white/90/60">
                       💡 Tip: Click "Use connected" to quickly set your account
                       as the oracle
                     </p>
@@ -589,7 +589,7 @@ export const MarketEditorCompact = () => {
               <div className="space-y-6">
                 {/* Step Header */}
                 <div className="mb-4">
-                  <h2 className="mb-1 text-lg font-bold text-white md:text-xl">
+                  <h2 className="mb-1 text-lg font-bold text-white/90 md:text-xl">
                     Configure Pricing
                   </h2>
                   <p className="text-sm text-white/70">
@@ -611,7 +611,7 @@ export const MarketEditorCompact = () => {
                           : "border-transparent"
                     }`}
                   >
-                    <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                       Currency <span className="text-ztg-red-400">*</span>
                       <Tooltip content="The token used for trading in this market" />
                     </label>
@@ -645,7 +645,7 @@ export const MarketEditorCompact = () => {
                           : "border-transparent"
                     }`}
                   >
-                    <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                       Market Type <span className="text-ztg-red-400">*</span>
                       <Tooltip content="Permissionless: Goes live immediately | Advised: Requires committee approval" />
                     </label>
@@ -687,7 +687,7 @@ export const MarketEditorCompact = () => {
                           : "border-transparent"
                     }`}
                   >
-                    <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                       Creator Fee <span className="text-ztg-red-400">*</span>
                       <Tooltip content="Percentage fee you earn from all trading volume. Set to 0% if you don't want fees." />
                     </label>
@@ -722,7 +722,7 @@ export const MarketEditorCompact = () => {
                       className="mt-0.5 shrink-0 text-orange-400"
                     />
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-white">
+                      <p className="text-sm font-semibold text-white/90">
                         Requires Approval
                       </p>
                       <p className="mt-1 text-xs leading-relaxed text-white/90">
@@ -753,7 +753,7 @@ export const MarketEditorCompact = () => {
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                          <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                             Liquidity Pool
                             <Tooltip content="Add initial liquidity to enable immediate trading. You can add this later if you skip now." />
                           </label>
@@ -817,7 +817,7 @@ export const MarketEditorCompact = () => {
                     <div className="flex items-start gap-2.5 rounded-lg bg-white/5 p-4">
                       <span className="text-lg">💡</span>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-white">
+                        <p className="text-sm font-semibold text-white/90">
                           Liquidity can be added later
                         </p>
                         <p className="mt-1 text-xs leading-relaxed text-white/70">
@@ -839,7 +839,7 @@ export const MarketEditorCompact = () => {
               <div className="space-y-6">
                 {/* Step Header */}
                 <div className="mb-4">
-                  <h2 className="mb-1 text-lg font-bold text-white md:text-xl">
+                  <h2 className="mb-1 text-lg font-bold text-white/90 md:text-xl">
                     Review & Launch
                   </h2>
                   <p className="text-sm text-white/70">
@@ -851,10 +851,10 @@ export const MarketEditorCompact = () => {
                 <div className="space-y-4">
                   {/* Question */}
                   <div className="space-y-3 rounded-lg bg-white/5 p-4">
-                    <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                       Market Question
                     </label>
-                    <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-medium text-white/90">
                       {form?.question || (
                         <span className="text-orange-400">
                           No question given
@@ -866,7 +866,7 @@ export const MarketEditorCompact = () => {
                   {/* Answers - Compact Grid */}
                   {form.answers && (
                     <div className="space-y-3 rounded-lg bg-white/5 p-4">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                         Answer Options
                         {form.answers.type === "categorical" &&
                           ` (${form.answers.answers.length})`}
@@ -895,7 +895,7 @@ export const MarketEditorCompact = () => {
                             <div className="text-xs text-white/70">
                               Short (Lower)
                             </div>
-                            <div className="text-xs font-medium text-white">
+                            <div className="text-xs font-medium text-white/90">
                               {(form.answers.answers as number[])[0]}
                             </div>
                           </div>
@@ -903,7 +903,7 @@ export const MarketEditorCompact = () => {
                             <div className="text-xs text-white/70">
                               Long (Upper)
                             </div>
-                            <div className="text-xs font-medium text-white">
+                            <div className="text-xs font-medium text-white/90">
                               {(form.answers.answers as number[])[1]}
                             </div>
                           </div>
@@ -912,12 +912,12 @@ export const MarketEditorCompact = () => {
                       {form.answers.type === "yes/no" && (
                         <div className="grid gap-3 sm:grid-cols-2">
                           <div className="rounded-lg border-2 border-white/20 bg-white/5 px-3 py-2">
-                            <div className="text-xs font-medium uppercase text-white">
+                            <div className="text-xs font-medium uppercase text-white/90">
                               Yes
                             </div>
                           </div>
                           <div className="rounded-lg border-2 border-white/20 bg-white/5 px-3 py-2">
-                            <div className="text-xs font-medium uppercase text-white">
+                            <div className="text-xs font-medium uppercase text-white/90">
                               No
                             </div>
                           </div>
@@ -930,25 +930,25 @@ export const MarketEditorCompact = () => {
                   <div className="grid gap-4 lg:grid-cols-2">
                     {/* Currency & Moderation */}
                     <div className="space-y-3 rounded-lg bg-white/5 p-4">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                         Currency & Type
                       </label>
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center justify-between">
                           <span className="text-white/70">Currency:</span>
-                          <span className="font-medium text-white">
+                          <span className="font-medium text-white/90">
                             {form.currency || "--"}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-white/70">Type:</span>
-                          <span className="font-medium text-white">
+                          <span className="font-medium text-white/90">
                             {form.moderation || "--"}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-white/70">Creator Fee:</span>
-                          <span className="font-medium text-white">
+                          <span className="font-medium text-white/90">
                             {form.creatorFee?.value || "0"}%
                           </span>
                         </div>
@@ -957,13 +957,13 @@ export const MarketEditorCompact = () => {
 
                     {/* Timeline - Compact */}
                     <div className="space-y-3 rounded-lg bg-white/5 p-4">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                         Timeline
                       </label>
                       <div className="space-y-2 text-xs">
                         <div className="flex items-center justify-between">
                           <span className="text-white/70">End Date:</span>
-                          <span className="font-medium text-white">
+                          <span className="font-medium text-white/90">
                             {form.endDate
                               ? momentTz
                                   .tz(form.endDate, form.timeZone || "UTC")
@@ -973,7 +973,7 @@ export const MarketEditorCompact = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-white/70">Reporting:</span>
-                          <span className="font-medium text-white">
+                          <span className="font-medium text-white/90">
                             {timeline?.report?.period
                               ? blocksAsDuration(
                                   timeline.report.period,
@@ -983,7 +983,7 @@ export const MarketEditorCompact = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-white/70">Dispute:</span>
-                          <span className="font-medium text-white">
+                          <span className="font-medium text-white/90">
                             {timeline?.dispute?.period
                               ? blocksAsDuration(
                                   timeline.dispute.period,
@@ -999,10 +999,10 @@ export const MarketEditorCompact = () => {
                   <div className="grid gap-4 lg:grid-cols-2">
                     {/* Oracle */}
                     <div className="space-y-3 rounded-lg bg-white/5 p-4">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                         Oracle Account
                       </label>
-                      <p className="font-mono text-xs font-medium text-white">
+                      <p className="font-mono text-xs font-medium text-white/90">
                         {form?.oracle
                           ? shortenAddress(form.oracle, 8, 8)
                           : "--"}
@@ -1011,7 +1011,7 @@ export const MarketEditorCompact = () => {
 
                     {/* Liquidity Status */}
                     <div className="space-y-3 rounded-lg bg-white/5 p-4">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
                         Liquidity Pool
                       </label>
                       {form?.liquidity?.deploy &&
@@ -1019,13 +1019,13 @@ export const MarketEditorCompact = () => {
                         <div className="space-y-1 text-xs">
                           <div className="flex items-center justify-between">
                             <span className="text-white/70">Amount:</span>
-                            <span className="font-medium text-white">
+                            <span className="font-medium text-white/90">
                               {form.liquidity.amount} {form.currency}
                             </span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-white/70">Swap Fee:</span>
-                            <span className="font-medium text-white">
+                            <span className="font-medium text-white/90">
                               {form.liquidity.swapFee?.value || "--"}%
                             </span>
                           </div>
@@ -1046,14 +1046,14 @@ export const MarketEditorCompact = () => {
                       {({ open }) => (
                         <div className="rounded-lg bg-white/5 backdrop-blur-sm">
                           <Disclosure.Button className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/5">
-                            <span className="text-sm font-semibold text-white">
+                            <span className="text-sm font-semibold text-white/90">
                               Description{" "}
-                              <span className="font-normal text-white/60">
+                              <span className="font-normal text-white/90/60">
                                 (Click to view)
                               </span>
                             </span>
                             <LuChevronDown
-                              className={`h-4 w-4 text-white transition-transform ${
+                              className={`h-4 w-4 text-white/90 transition-transform ${
                                 open ? "rotate-180" : ""
                               }`}
                             />

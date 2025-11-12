@@ -205,7 +205,7 @@ const PoolDeployer = ({
         liquidity ? (
           <div className="space-y-6 py-6">
             <div>
-              <h4 className="mb-2 text-lg font-bold text-white md:text-xl">
+              <h4 className="mb-2 text-lg font-bold text-white/90 md:text-xl">
                 Deploy Pool
               </h4>
               <p className="text-sm text-white/70">
@@ -236,7 +236,7 @@ const PoolDeployer = ({
             </div>
             <div className="flex flex-col items-center gap-4">
               <TransactionButton
-                className="w-full rounded-lg bg-white/10 px-6 py-3 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto md:px-8 md:py-3 md:text-base"
+                className="w-full rounded-lg bg-white/10 px-6 py-3 text-sm font-semibold text-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto md:px-8 md:py-3 md:text-base"
                 onClick={() => deployAmm2Pool()}
                 disabled={!fieldState.isValid || isLoading}
               >
@@ -247,7 +247,7 @@ const PoolDeployer = ({
                 <span className="text-xs font-medium text-white/70">
                   Total Cost:{" "}
                 </span>
-                <span className="text-sm font-semibold text-white">
+                <span className="text-sm font-semibold text-white/90">
                   {poolCost}{" "}
                   {currencyMetadata?.name || constants?.tokenSymbol || "ZTG"}
                 </span>
@@ -259,7 +259,7 @@ const PoolDeployer = ({
             {market?.status === "Active" && (
               <div className="flex items-center justify-center py-6">
                 <button
-                  className="rounded-lg border-2 border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20 hover:shadow-lg active:scale-95 md:px-8 md:py-3 md:text-base"
+                  className="rounded-lg border-2 border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white/90 shadow-md backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20 hover:shadow-lg active:scale-95 md:px-8 md:py-3 md:text-base"
                   data-test="deployLiquidityButton"
                   onClick={handleDeployClick}
                 >

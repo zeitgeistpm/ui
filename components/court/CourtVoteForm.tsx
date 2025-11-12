@@ -79,7 +79,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
   return (
     <div className="overflow-hidden rounded-xl bg-white/10 shadow-lg backdrop-blur-md">
       <div className="center flex bg-white/10 py-3 backdrop-blur-sm">
-        <h3 className="text-white">Vote</h3>
+        <h3 className="text-white/90">Vote</h3>
       </div>
       <div className="px-2 py-6 text-center">
         <div className="mb-8 mt-6">
@@ -112,7 +112,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
 
           <div className="center mb-2">
             <button
-              className="center gap-3 rounded-md bg-purple-500 px-4 py-2 text-white"
+              className="center gap-3 rounded-md bg-purple-500 px-4 py-2 text-white/90"
               onClick={onClickDownloadSeed}
             >
               Download Salt Seed Backup
@@ -129,13 +129,13 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
           <Modal open={showDetails} onClose={() => setShowDetails(false)}>
             <Dialog.Panel className="relative w-full max-w-[762px] overflow-hidden rounded-[10px] bg-white/10 backdrop-blur-lg">
               <div className="p-6">
-                <h3 className="mb-2 text-white">Commitment Hash</h3>
-                <p className="mb-4 text-sm text-white/80">
+                <h3 className="mb-2 text-white/90">Commitment Hash</h3>
+                <p className="mb-4 text-sm text-white/90">
                   The commitment hash is calculated using a combination of your
                   account, the outcome you are voting for and a salt generated
                   from the secret phrase.
                 </p>
-                <p className="mb-4 text-sm text-white/80">
+                <p className="mb-4 text-sm text-white/90">
                   This is supplied to the chain instead of the direct outcome
                   when voting, so that the vote is not known to other
                   participants. Yet ensures that when its revealed it can be
@@ -165,10 +165,10 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
                   <FaArrowRight size={12} />
                   {commitmentHash && u8aToHex(commitmentHash)}
                 </div>
-                <h3 className="mb-2 text-base text-white">
+                <h3 className="mb-2 text-base text-white/90">
                   Salt Seed Backup
                 </h3>
-                <p className="mb-3 text-sm text-white/80">
+                <p className="mb-3 text-sm text-white/90">
                   This is the content of the downloadable backup file, and the
                   data used to generate the commitment hash.
                 </p>

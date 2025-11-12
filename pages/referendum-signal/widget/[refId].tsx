@@ -97,18 +97,18 @@ const ReferendumSignalWidget = () => {
         {/* Compact Header */}
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <h3 className="text-sm font-semibold text-white">
+            <h3 className="text-sm font-semibold text-white/90">
               Ref #{data.referendumId}
             </h3>
-            <div className="rounded bg-ztg-primary-800/40 px-1.5 py-0.5 text-xxs font-semibold text-white backdrop-blur-sm">
+            <div className="rounded bg-ztg-primary-800/40 px-1.5 py-0.5 text-xxs font-semibold text-white/90 backdrop-blur-sm">
               Futarchy
             </div>
           </div>
           {/* Volume in top right */}
           {combinatorial_market.volume && (
-            <div className="flex items-center gap-1 text-xxs text-white/80">
+            <div className="flex items-center gap-1 text-xxs text-white/90">
               <BarChart2 size={12} className="text-white/70" />
-              <span className="font-medium text-white">
+              <span className="font-medium text-white/90">
                 {parseFloat(combinatorial_market.volume).toFixed(0)} - ZTG
               </span>
             </div>
@@ -116,7 +116,7 @@ const ReferendumSignalWidget = () => {
         </div>
 
         {/* Compact Market Info - Inline */}
-        <div className="mb-3 space-y-1.5 text-xxs text-white/80">
+        <div className="mb-3 space-y-1.5 text-xxs text-white/90">
           <div className="flex items-start gap-1.5">
             <span className="font-semibold text-blue-300">Assume:</span>
             <a
@@ -129,12 +129,12 @@ const ReferendumSignalWidget = () => {
             </a>
           </div>
           <div className="flex items-start gap-1.5">
-            <span className="font-semibold text-ztg-green-400">Then:</span>
+            <span className="font-semibold text-ztg-green-500">Then:</span>
             <a
               href={`${process.env.NEXT_PUBLIC_SITE_URL || "https://app.zeitgeist.pm"}/markets/${combinatorial_market.market_2.marketId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="line-clamp-1 flex-1 transition-colors hover:text-ztg-green-300 hover:underline"
+              className="line-clamp-1 flex-1 transition-colors hover:text-ztg-green-500 hover:underline"
             >
               {combinatorial_market.market_2.question}
             </a>
@@ -145,10 +145,10 @@ const ReferendumSignalWidget = () => {
         {futarchy_signal.recommendation && (
           <div className="mb-3 rounded-lg border border-ztg-green-500/30 bg-white/10 p-2 shadow-sm backdrop-blur-sm">
             <div className="mb-1 flex items-center gap-1.5">
-              <Info size={12} className="text-ztg-green-400" />
-              <span className="text-xxs font-semibold text-white">Signal</span>
+              <Info size={12} className="text-ztg-green-500" />
+              <span className="text-xxs font-semibold text-white/90">Signal</span>
             </div>
-            <div className="text-xs font-bold text-ztg-green-400">
+            <div className="text-xs font-bold text-ztg-green-500">
               {futarchy_signal.recommendation}
             </div>
             {futarchy_signal.confidence && (
@@ -172,10 +172,10 @@ const ReferendumSignalWidget = () => {
                 style={{ borderLeftColor: color }}
               >
                 <div className="mb-1 flex items-center justify-between">
-                  <span className="text-xxs font-medium text-white line-clamp-1">
+                  <span className="text-xxs font-medium text-white/90 line-clamp-1">
                     {outcome.combination}
                   </span>
-                  <span className="ml-2 text-xs font-bold text-white">
+                  <span className="ml-2 text-xs font-bold text-white/90">
                     {probabilityPercent}%
                   </span>
                 </div>
@@ -197,7 +197,7 @@ const ReferendumSignalWidget = () => {
         {sortedOutcomes.length > 1 && (
           <button
             onClick={() => setShowAllOutcomes(!showAllOutcomes)}
-            className="mb-2 flex w-full items-center justify-center gap-1 rounded bg-white/10 px-2 py-1 text-xxs font-medium text-white/80 transition-all hover:bg-white/15 hover:text-white"
+            className="mb-2 flex w-full items-center justify-center gap-1 rounded bg-white/10 px-2 py-1 text-xxs font-medium text-white/90 transition-all hover:bg-white/15 hover:text-white/90"
           >
             {showAllOutcomes ? (
               <>
@@ -217,7 +217,7 @@ const ReferendumSignalWidget = () => {
             href={combinatorial_market.pool_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-ztg-green-600/90 px-3 py-1.5 text-xxs font-semibold text-white transition-all hover:bg-ztg-green-600 shadow-sm backdrop-blur-sm"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-ztg-green-600/90 px-3 py-1.5 text-xxs font-semibold text-white/90 transition-all hover:bg-ztg-green-600 shadow-sm backdrop-blur-sm"
           >
             Trade on Zeitgeist
             <ExternalLink size={11} />
@@ -232,7 +232,7 @@ const ReferendumSignalWidget = () => {
     return (
       <div className="w-full max-w-md rounded-lg border border-white/20 bg-white/10 p-3 shadow-lg backdrop-blur-lg">
         <div className="mb-3">
-          <h3 className="text-sm font-semibold text-white">
+          <h3 className="text-sm font-semibold text-white/90">
             Ref #{data.referendumId} Markets
           </h3>
         </div>
@@ -248,7 +248,7 @@ const ReferendumSignalWidget = () => {
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                  <div className="line-clamp-2 text-xxs font-medium text-white">
+                  <div className="line-clamp-2 text-xxs font-medium text-white/90">
                     {market.question}
                   </div>
                   <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xxs text-white/70">
@@ -261,7 +261,7 @@ const ReferendumSignalWidget = () => {
                 </div>
                 <ExternalLink
                   size={12}
-                  className="flex-shrink-0 text-white/60 transition-colors hover:text-white"
+                  className="flex-shrink-0 text-white/90/60 transition-colors hover:text-white/90"
                 />
               </div>
             </a>
@@ -275,7 +275,7 @@ const ReferendumSignalWidget = () => {
               href="https://app.zeitgeist.pm"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold text-ztg-green-400 transition-colors hover:text-ztg-green-300"
+              className="font-semibold text-ztg-green-500 transition-colors hover:text-ztg-green-500"
             >
               Zeitgeist
             </a>

@@ -286,7 +286,7 @@ const JoinPoolForm = ({
                     {assetName}
                   </div>
                   <Input
-                    className={`h-ztg-40 w-full rounded-lg border-2 px-3 py-0 text-right text-xs leading-none font-medium text-white shadow-sm backdrop-blur-sm transition-all focus:shadow-md focus:outline-none
+                    className={`h-ztg-40 w-full rounded-lg border-2 px-3 py-0 text-right text-xs leading-none font-medium text-white/90 shadow-sm backdrop-blur-sm transition-all focus:shadow-md focus:outline-none
                             ${
                               hasError
                                 ? "border-ztg-red-500/60 bg-ztg-red-900/30 text-ztg-red-400 focus:border-ztg-red-500/80"
@@ -356,7 +356,7 @@ const JoinPoolForm = ({
         <label className="text-xs font-semibold text-white/90">
           Expected Pool Ownership
         </label>
-        <span className="text-xs font-bold text-white">
+        <span className="text-xs font-bold text-white/90">
           {prctSharesToReceive?.toFixed(1) ?? "0.0"}%
         </span>
       </div>

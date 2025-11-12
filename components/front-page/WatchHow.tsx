@@ -80,7 +80,7 @@ const WatchHow = () => {
           href="https://docs.zeitgeist.pm/docs/category/learn"
           target="_blank"
           rel="noreferrer"
-          className={`center relative z-10 ml-auto flex cursor-pointer gap-2 rounded-md bg-ztg-pink px-[20px] py-[10px] text-white opacity-70 ${
+          className={`center relative z-10 ml-auto flex cursor-pointer gap-2 rounded-md bg-ztg-pink px-[20px] py-[10px] text-white/90 opacity-70 ${
             animationState === "finished" && "animate-pop-in"
           }`}
         >

@@ -402,7 +402,7 @@ const BuyForm = ({
   };
 
   return (
-    <div className="flex w-full flex-col items-center gap-6 px-2 text-ztg-18-150 font-semibold text-white md:px-0">
+    <div className="flex w-full flex-col items-center gap-6 px-2 text-ztg-18-150 font-semibold text-white/90 md:px-0">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex w-full flex-col items-center gap-y-4"
@@ -422,14 +422,14 @@ const BuyForm = ({
               />
             </div>
           )}
-          <div className="flex h-[56px] flex-1 items-center justify-center rounded-lg border border-white/10 bg-white/10 px-4 text-xl font-bold text-white shadow-lg shadow-black/20 backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/15">
+          <div className="flex h-[56px] flex-1 items-center justify-center rounded-lg border border-white/10 bg-white/10 px-4 text-xl font-bold text-white/90 shadow-lg shadow-black/20 backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/15">
             {amountOut.div(ZTG).abs().toFixed(3)}
           </div>
         </div>
         <div className="relative w-full">
           <Input
             type="number"
-            className="h-[56px] w-full rounded-lg border border-white/10 bg-white/10 px-4 text-center text-xl font-bold text-white shadow-lg shadow-black/20 backdrop-blur-sm transition-all placeholder:text-white/50 focus:border-ztg-green-500/40 focus:bg-white/15 focus:shadow-lg focus:shadow-ztg-green-500/10 focus:outline-none"
+            className="h-[56px] w-full rounded-lg border border-white/10 bg-white/10 px-4 text-center text-xl font-bold text-white/90 shadow-lg shadow-black/20 backdrop-blur-sm transition-all placeholder:text-white/50 focus:border-ztg-green-500/40 focus:bg-white/15 focus:shadow-lg focus:shadow-ztg-green-500/10 focus:outline-none"
             step="any"
             {...register("amount", {
               required: {
@@ -473,20 +473,20 @@ const BuyForm = ({
             {formState.errors["amount"]?.message?.toString()}
           </div>
           <div className="flex w-full justify-between">
-            <div className="text-white/80">Max profit:</div>
-            <div className="font-semibold text-white">
+            <div className="text-white/90">Max profit:</div>
+            <div className="font-semibold text-white/90">
               {maxProfit.div(ZTG).toFixed(2)} {baseSymbol}
             </div>
           </div>
           <div className="flex w-full justify-between">
-            <div className="text-white/80">Price after trade:</div>
-            <div className="font-semibold text-white">
+            <div className="text-white/90">Price after trade:</div>
+            <div className="font-semibold text-white/90">
               {newSpotPrice?.toFixed(2)} ({priceImpact?.toFixed(2)}%)
             </div>
           </div>
           <div className="flex w-full justify-between">
-            <div className="text-white/80">Current shares:</div>
-            <div className="font-semibold text-white">
+            <div className="text-white/90">Current shares:</div>
+            <div className="font-semibold text-white/90">
               {selectedAssetBalance?.div(ZTG).toFixed(3, Decimal.ROUND_DOWN) ??
                 "0.000"}
             </div>

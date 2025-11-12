@@ -233,11 +233,11 @@ const TransferModal = ({
       <ModalHeader title="Transfer" />
       <ModalBody>
         <form className="flex flex-col" onSubmit={handleSubmit(submit)}>
-          <div className="mb-3 flex justify-between text-sm font-semibold text-white">
+          <div className="mb-3 flex justify-between text-sm font-semibold text-white/90">
             <div>Select Asset and Amount</div>
             {balance && (
               <div
-                className="cursor-pointer text-white/80 hover:text-white transition-colors"
+                className="cursor-pointer text-white/90 hover:text-white/90 transition-colors"
                 onClick={() => {
                   if (!maxAmount) return;
                   setValue(
@@ -291,7 +291,7 @@ const TransferModal = ({
                 );
               }}
             />
-          <div className="mb-3 mt-4 text-sm font-semibold text-white">
+          <div className="mb-3 mt-4 text-sm font-semibold text-white/90">
             To Address
           </div>
           <Controller

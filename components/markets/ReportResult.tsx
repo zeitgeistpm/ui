@@ -25,7 +25,7 @@ export const ReportResult = ({
   const tweetUrl = `${twitterBaseUrl}I just reported the outcome of %40ZeitgeistPM market: "${market.question}" to be ${outcomeName}%0A%0ACheck out the market here%3A%0A&url=${marketUrl}`;
 
   return (
-    <div className="flex flex-col items-center gap-3 text-white">
+    <div className="flex flex-col items-center gap-3 text-white/90">
       <div>
         <AiOutlineFileDone size={64} />
       </div>

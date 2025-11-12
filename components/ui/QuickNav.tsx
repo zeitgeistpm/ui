@@ -51,21 +51,21 @@ const QuickNav = () => {
             <Link
               key={index}
               href={item.href}
-              className={`group flex min-h-[44px] items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:min-h-0 sm:gap-2 sm:px-3 sm:py-1.5 sm:text-sm ${
+              className={`group flex h-9 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-2.5 sm:text-sm md:px-3 ${
                 item.isActive
-                  ? "bg-white/20 text-white ring-2 ring-ztg-green-500/50"
-                  : "bg-white/10 text-white/90 hover:bg-white/20 hover:text-white"
+                  ? "bg-white/20 text-white/90 ring-2 ring-ztg-green-500/50"
+                  : "bg-white/10 text-white/90 hover:bg-white/20 hover:text-white/90"
               }`}
             >
               <span
-                className={`hidden sm:inline sm:h-3.5 sm:w-3.5 ${
+                className={`hidden text-ztg-green-500 sm:inline sm:h-4 sm:w-4 ${
                   item.isActive
-                    ? "text-ztg-green-400"
-                    : "text-ztg-green-400/80 group-hover:text-ztg-green-400"
+                    ? "text-ztg-green-500"
+                    : "text-ztg-green-500/80 group-hover:text-ztg-green-500"
                 }`}
               >
                 {React.cloneElement(item.icon as React.ReactElement, {
-                  size: 16,
+                  size: 14,
                 })}
               </span>
               <span className="whitespace-nowrap">{item.label}</span>
@@ -75,15 +75,21 @@ const QuickNav = () => {
             <Menu as="div" className="relative">
               {({ open }) => (
                 <>
-                  <Menu.Button className="flex min-h-[44px] items-center gap-1.5 rounded-md bg-ztg-primary-600 px-2 py-2 text-sm font-semibold text-white shadow-md transition-all hover:bg-ztg-primary-700 hover:shadow-lg sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-sm">
+                  <Menu.Button
+                    className={`flex h-9 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-2.5 sm:text-sm md:px-3 ${
+                      open
+                        ? "bg-white/15 text-white/90"
+                        : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white/90"
+                    }`}
+                  >
                     <FiPlusSquare
-                      size={16}
-                      className="hidden sm:inline sm:h-3.5 sm:w-3.5"
+                      size={14}
+                      className="hidden text-ztg-green-500 sm:inline sm:h-4 sm:w-4"
                     />
                     <span>Create Market</span>
                     <ChevronDown
-                      size={16}
-                      className={`ml-0.5 transition-transform sm:h-3.5 sm:w-3.5 ${open ? "rotate-180" : ""}`}
+                      size={14}
+                      className={`ml-0.5 transition-transform sm:h-4 sm:w-4 ${open ? "rotate-180" : ""}`}
                     />
                   </Menu.Button>
 

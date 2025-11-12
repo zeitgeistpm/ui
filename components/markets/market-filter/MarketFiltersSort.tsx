@@ -66,12 +66,12 @@ const Control = ({
     <components.Control {...props}>
       <div
         className={
-          "flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-2.5 sm:text-sm md:px-3 " +
+          "flex h-9 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-2.5 sm:text-sm md:px-3 " +
           (menuIsOpen
-            ? "bg-white/15 text-white"
+            ? "bg-white/15 text-white/90"
             : selectedOption
-              ? "bg-white/15 text-ztg-green-400 hover:bg-white/20 hover:text-white"
-              : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white")
+              ? "bg-white/15 text-ztg-green-500 hover:bg-white/20 hover:text-white/90"
+              : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white/90")
         }
         onClick={onClick}
       >
@@ -124,13 +124,13 @@ const Option = ({
         className={
           "center h-full cursor-pointer rounded-md px-2 py-1.5 transition-all " +
           (isSelected
-            ? "bg-ztg-green-500/20 text-ztg-green-400"
+            ? "bg-ztg-green-500/20 text-ztg-green-500"
             : isFocused
-              ? "bg-white/10 text-white"
-              : "text-white/90 hover:bg-white/10 hover:text-white")
+              ? "bg-white/10 text-white/90"
+              : "text-white/90 hover:bg-white/10 hover:text-white/90")
         }
       >
-        <Icon size={13} className={isSelected ? "text-ztg-green-400" : ""} />
+        <Icon size={13} className={isSelected ? "text-ztg-green-500" : ""} />
         <div className="flex items-center gap-1.5">
           {isSelected && (
             <div className="h-1.5 w-1.5 rounded-full bg-ztg-green-400"></div>
@@ -138,7 +138,7 @@ const Option = ({
           <div
             className={
               "px-1 text-xs font-medium " +
-              (isSelected ? "text-ztg-green-400" : "inherit")
+              (isSelected ? "text-ztg-green-500" : "inherit")
             }
           >
             {isVolumeBased ? "Volume" : children}

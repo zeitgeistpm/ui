@@ -56,7 +56,7 @@ const MobileSortSelect = ({
     <div className="relative w-full">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex min-h-[48px] w-full touch-manipulation items-center justify-between rounded-lg bg-white/15 px-4 py-3 text-base font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-white/20 active:scale-[0.98]"
+        className="flex min-h-[48px] w-full touch-manipulation items-center justify-between rounded-lg bg-white/15 px-4 py-3 text-base font-semibold text-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white/20 active:scale-[0.98]"
       >
         <div className="flex items-center gap-3">
           <Icon size={20} className="text-white/70" />
@@ -109,13 +109,13 @@ const MobileSortSelect = ({
                     }}
                     className={`flex min-h-[44px] touch-manipulation items-center gap-3 rounded-lg px-4 py-3 text-base font-semibold shadow-md backdrop-blur-sm transition-all active:scale-[0.98] ${
                       isSelected
-                        ? "bg-ztg-green-600/80 text-white ring-2 ring-ztg-green-500/50"
-                        : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white hover:shadow-lg"
+                        ? "bg-ztg-green-600/80 text-white/90 ring-2 ring-ztg-green-500/50"
+                        : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white/90 hover:shadow-lg"
                     }`}
                   >
                     <OptionIcon
                       size={18}
-                      className={isSelected ? "text-white" : "text-white/70"}
+                      className={isSelected ? "text-white/90" : "text-white/70"}
                     />
                     <span>{isVolumeBasedOption ? "Volume" : option.label}</span>
                   </button>
@@ -149,9 +149,9 @@ const FilterButton = ({
       }
       onClick={onClick}
     >
-      <div className="text-base font-semibold text-white">{children}</div>
+      <div className="text-base font-semibold text-white/90">{children}</div>
       {RightIcon && (
-        <RightIcon className="ml-auto text-ztg-green-400" size={20} />
+        <RightIcon className="ml-auto text-ztg-green-500" size={20} />
       )}
     </button>
   );
@@ -189,13 +189,13 @@ const MobileMarketTypeToggle = ({
             onClick={() => onChange(option.value)}
             className={`flex min-h-[48px] flex-1 touch-manipulation items-center justify-center gap-3 rounded-lg px-4 py-3 text-base font-semibold shadow-md backdrop-blur-sm transition-all active:scale-[0.98] ${
               isSelected
-                ? "bg-ztg-green-600/80 text-white ring-2 ring-ztg-green-500/50"
-                : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white hover:shadow-lg"
+                ? "bg-ztg-green-600/80 text-white/90 ring-2 ring-ztg-green-500/50"
+                : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white/90 hover:shadow-lg"
             }`}
           >
             <Icon
               size={20}
-              className={isSelected ? "text-white" : "text-white/70"}
+              className={isSelected ? "text-white/90" : "text-white/70"}
             />
             <span>{option.label}</span>
           </button>
@@ -281,7 +281,7 @@ const FiltersList = ({
 
       {/* Show Markets Button */}
       <button
-        className="sticky bottom-0 mt-auto min-h-[48px] touch-manipulation rounded-lg bg-ztg-green-600/80 px-4 py-3 text-base font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 active:scale-[0.98]"
+        className="sticky bottom-0 mt-auto min-h-[48px] touch-manipulation rounded-lg bg-ztg-green-600/80 px-4 py-3 text-base font-semibold text-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 active:scale-[0.98]"
         onClick={close}
       >
         Show Markets

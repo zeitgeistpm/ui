@@ -276,7 +276,7 @@ export const MarketEditor = () => {
                     Outcomes will create a categorical market from the options
                     you specify.{" "}
                     <a
-                      className="text-ztg-blue"
+                      className="text-ztg-green-500"
                       href="https://docs.zeitgeist.pm/docs/learn/prediction-markets#categorical-prediction-markets"
                       target="_blank"
                     >
@@ -290,7 +290,7 @@ export const MarketEditor = () => {
                     upper(
                     <b>long</b>) bound.{" "}
                     <a
-                      className="text-ztg-blue"
+                      className="text-ztg-green-500"
                       href="https://docs.zeitgeist.pm/docs/learn/prediction-markets#scalar-prediction-markets"
                       target="_blank"
                     >

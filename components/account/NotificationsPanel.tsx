@@ -117,21 +117,21 @@ export const NotificationsPanel = ({
         >
           {/* Header */}
           <div className="mb-6 flex items-center justify-between border-b-2 border-white/10 pb-4">
-            <h2 className="text-xl font-bold text-white md:text-2xl">
+            <h2 className="text-xl font-bold text-white/90 md:text-2xl">
               Notifications
             </h2>
             <div className="flex items-center gap-2">
               {alerts.length > 0 && (
                 <button
                   onClick={clearAll}
-                  className="touch-manipulation rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white active:scale-95"
+                  className="touch-manipulation rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white/90 active:scale-95"
                 >
                   Clear All
                 </button>
               )}
               <button
                 onClick={onClose}
-                className="flex h-10 w-10 touch-manipulation items-center justify-center rounded-lg bg-white/10 text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white active:scale-95"
+                className="flex h-10 w-10 touch-manipulation items-center justify-center rounded-lg bg-white/10 text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white/90 active:scale-95"
               >
                 <X size={20} />
               </button>
@@ -208,15 +208,15 @@ const CourtCaseReadyToSettleItem = ({
     >
       <div className="mb-2">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-blue-500/30 to-blue-600/40 px-2.5 py-1 text-xs font-semibold backdrop-blur-sm">
-          <LuClipboardCheck size={14} className="text-white" />
-          <span className="text-white">Ready to Settle</span>
+          <LuClipboardCheck size={14} className="text-white/90" />
+          <span className="text-white/90">Ready to Settle</span>
         </div>
       </div>
       <div>
-        <h3 className="mb-1 text-sm font-semibold text-white">
+        <h3 className="mb-1 text-sm font-semibold text-white/90">
           {market?.question}
         </h3>
-        <p className="text-xs text-white/75">
+        <p className="text-xs text-white/90/75">
           This court case can now be settled.
         </p>
       </div>
@@ -245,15 +245,15 @@ const CourtCaseReadyForVoteAlertItem = ({
     >
       <div className="mb-2">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-purple-500/30 to-purple-600/40 px-2.5 py-1 text-xs font-semibold backdrop-blur-sm">
-          <LuVote size={14} className="text-white" />
-          <span className="text-white">Ready for Vote</span>
+          <LuVote size={14} className="text-white/90" />
+          <span className="text-white/90">Ready for Vote</span>
         </div>
       </div>
       <div>
-        <h3 className="mb-1 text-sm font-semibold text-white">
+        <h3 className="mb-1 text-sm font-semibold text-white/90">
           {market?.question}
         </h3>
-        <p className="text-xs text-white/75">
+        <p className="text-xs text-white/90/75">
           You have been drawn as juror for this market and can now vote.
         </p>
       </div>
@@ -282,15 +282,15 @@ const CourtCaseReadyForRevealAlertItem = ({
     >
       <div className="mb-2">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-green-500/30 to-purple-600/40 px-2.5 py-1 text-xs font-semibold backdrop-blur-sm">
-          <AiOutlineEye size={14} className="text-white" />
-          <span className="text-white">Ready to Reveal</span>
+          <AiOutlineEye size={14} className="text-white/90" />
+          <span className="text-white/90">Ready to Reveal</span>
         </div>
       </div>
       <div>
-        <h3 className="mb-1 text-sm font-semibold text-white">
+        <h3 className="mb-1 text-sm font-semibold text-white/90">
           {market?.question}
         </h3>
-        <p className="text-xs text-white/75">
+        <p className="text-xs text-white/90/75">
           You are required to reveal your vote for this court case.
         </p>
       </div>
@@ -317,12 +317,12 @@ const ReadyToReportMarketAlertItem = ({
     >
       <div className="mb-2">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/30 to-pink-600/40 px-2.5 py-1 text-xs font-semibold backdrop-blur-sm">
-          <AiOutlineFileAdd size={14} className="text-white" />
-          <span className="text-white">Submit Report</span>
+          <AiOutlineFileAdd size={14} className="text-white/90" />
+          <span className="text-white/90">Submit Report</span>
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-semibold text-white">
+        <h3 className="text-sm font-semibold text-white/90">
           {alert.market.question}
         </h3>
       </div>
@@ -350,12 +350,12 @@ const RedeemableMarketAlertItem = ({
     >
       <div className="mb-2">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-ztg-green-500/30 to-blue-600/40 px-2.5 py-1 text-xs font-semibold backdrop-blur-sm">
-          <BiMoneyWithdraw size={14} className="text-white" />
-          <span className="text-white">Redeemable Tokens</span>
+          <BiMoneyWithdraw size={14} className="text-white/90" />
+          <span className="text-white/90">Redeemable Tokens</span>
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-semibold text-white">
+        <h3 className="text-sm font-semibold text-white/90">
           You have {alert.markets.length} redeemable markets
         </h3>
       </div>
@@ -382,14 +382,14 @@ const RelevantMarketDisputeItem = ({
     >
       <div className="mb-2">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-red-500/30 to-orange-600/40 px-2.5 py-1 text-xs font-semibold backdrop-blur-sm">
-          <span className="text-white">Market Dispute</span>
+          <span className="text-white/90">Market Dispute</span>
         </div>
       </div>
       <div>
-        <h3 className="mb-1 text-sm font-semibold text-white">
+        <h3 className="mb-1 text-sm font-semibold text-white/90">
           {alert.market.question}
         </h3>
-        <p className="text-xs text-white/75">
+        <p className="text-xs text-white/90/75">
           A market you're involved in is disputed
         </p>
       </div>

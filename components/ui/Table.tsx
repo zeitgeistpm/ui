@@ -128,7 +128,7 @@ const Cell = ({
     isLoadingError: ztgIsLoadingError,
   } = useZtgPrice();
 
-  const base = `text-white px-4 h-16 ${
+  const base = `text-white/90 px-4 h-16 ${
     onClick ? "cursor-pointer" : ""
   } ${className}`;
   const style = { height: `${rowHeight}px` };
@@ -222,7 +222,7 @@ const Cell = ({
             </div>
             {/* USD price display - enabled for Balances section, disabled in other portfolio components via usdValue */}
             {value.usdValue !== undefined && (
-              <div className="text-xs font-light text-white">
+              <div className="text-xs font-light text-white/90">
                 $
                 {(
                   value.usdValue ?? (ztgPrice?.toNumber() ?? 0) * value.value
@@ -267,7 +267,7 @@ const Cell = ({
                 src={value.url}
                 loading="lazy"
               />
-              <span className="text-xxs font-semibold uppercase text-white">
+              <span className="text-xxs font-semibold uppercase text-white/90">
                 {value.label}
               </span>
             </div>
@@ -450,7 +450,7 @@ const Table = ({
                       )}
                       {column.infobox && (
                         <InfoPopover
-                        className="text-white"
+                        className="text-white/90"
                           position={
                             index === 0
                               ? "bottom-end"
@@ -459,7 +459,7 @@ const Table = ({
                                 : "bottom"
                           }
                           title={
-                            <h3 className="mb-4 flex items-center justify-center gap-2 text-white">
+                            <h3 className="mb-4 flex items-center justify-center gap-2 text-white/90">
                               <AiOutlineInfoCircle />
                               {column.header}
                             </h3>
@@ -532,9 +532,9 @@ const Table = ({
           {!loadingMore && rows.length === 0 ? (
             <div className="flex w-full flex-col items-center justify-center py-12">
               <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-ztg-primary-200/20 bg-ztg-primary-900/30 backdrop-blur-sm">
-                <Inbox className="text-white/60" size={24} strokeWidth={1.5} />
+                <Inbox className="text-white/90/60" size={24} strokeWidth={1.5} />
               </div>
-              <div className="text-sm font-medium text-white/80">
+              <div className="text-sm font-medium text-white/90">
                 {noDataMessage}
               </div>
             </div>
@@ -547,7 +547,7 @@ const Table = ({
           {onLoadMore && !hideLoadMore && (
             <div className="mb-5 mt-4 flex justify-center">
               <div
-                className="cursor-pointer rounded-full bg-ztg-green-600/80 px-4 py-2 text-xs font-bold uppercase text-white backdrop-blur-sm transition-colors hover:bg-ztg-green-600"
+                className="cursor-pointer rounded-full bg-ztg-green-600/80 px-4 py-2 text-xs font-bold uppercase text-white/90 backdrop-blur-sm transition-colors hover:bg-ztg-green-600"
                 role="button"
                 onClick={handleLoadMore}
               >

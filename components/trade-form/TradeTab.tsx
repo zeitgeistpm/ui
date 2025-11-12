@@ -16,11 +16,11 @@ const TradeTab: FC<
     } ${
       selected
         ? isSellTab
-          ? "bg-ztg-red-600/90 font-bold text-white shadow-lg shadow-black/20 backdrop-blur-sm"
-          : "bg-ztg-green-600/90 font-bold text-white shadow-lg shadow-black/20 backdrop-blur-sm"
+          ? "bg-ztg-red-600/90 font-bold text-white/90 shadow-lg shadow-black/20 backdrop-blur-sm"
+          : "bg-ztg-green-600/90 font-bold text-white/90 shadow-lg shadow-black/20 backdrop-blur-sm"
         : isSellTab
-          ? "text-white/80 bg-white/5 hover:bg-white/10"
-          : "text-white/80 bg-white/5 hover:bg-white/10"
+          ? "text-white/90 bg-white/5 hover:bg-white/10"
+          : "text-white/90 bg-white/5 hover:bg-white/10"
     }`;
     return (
       <div ref={ref} className={classes} {...rest}>

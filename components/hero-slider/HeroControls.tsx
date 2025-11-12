@@ -17,16 +17,16 @@ export const HeroControls: FC<HeroControlsProps> = ({ slides, slider }) => {
         }}
         className={`flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-white bg-black`}
       >
-        <ChevronLeft className="relative right-[1px] text-white" />
+        <ChevronLeft className="relative right-[1px] text-white/90" />
       </button>
-      <div className="text-white">
+      <div className="text-white/90">
         {slides.map((slide, index) => (
           <span
             onClick={() => {
               slider.goto(index, true);
             }}
             className={`cursor-pointer px-1 text-[48px] ${
-              index === slider.currentSlide ? "text-white" : "opacity-50"
+              index === slider.currentSlide ? "text-white/90" : "opacity-50"
             }`}
             key={index}
           >
@@ -40,7 +40,7 @@ export const HeroControls: FC<HeroControlsProps> = ({ slides, slider }) => {
         }}
         className={`ztg-transition flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-white bg-black`}
       >
-        <ChevronRight className="relative left-[1px] text-white" />
+        <ChevronRight className="relative left-[1px] text-white/90" />
       </button>
     </div>
   );

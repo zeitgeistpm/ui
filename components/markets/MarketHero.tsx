@@ -47,7 +47,7 @@ export const MarketHero: FC<MarketHeroProps> = ({
         <div className="flex min-h-[60px] flex-1 flex-col justify-between">
           {/* Title section - takes up 2/3 */}
           <div className="flex-[2]">
-            <h1 className="text-2xl font-bold leading-tight text-white md:text-4xl">
+            <h1 className="text-2xl font-bold leading-tight text-white/90 md:text-4xl">
               {question}
             </h1>
             {rejectReason && rejectReason.length > 0 && (

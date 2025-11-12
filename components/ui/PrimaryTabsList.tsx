@@ -9,8 +9,8 @@ const PrimaryTabsList = ({ titles }: { titles: string[] }) => {
           className={({ selected }) =>
             `whitespace-nowrap rounded-md px-4 py-2.5 text-sm font-semibold transition-all focus:outline-none sm:px-6 sm:text-base ${
               selected
-                ? "bg-ztg-green-600/80 text-white shadow-md"
-                : "text-white/70 hover:bg-white/20 hover:text-white"
+                ? "bg-ztg-green-600/80 text-white/90 shadow-md"
+                : "text-white/70 hover:bg-white/20 hover:text-white/90"
             }`
           }
         >

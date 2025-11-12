@@ -30,7 +30,7 @@ const PercentageChange = ({ change }: { change: string }) => {
         <></>
       )}
 
-      <span className="ml-ztg-4 text-center font-mono text-ztg-14-150 dark:text-white">
+      <span className="ml-ztg-4 text-center font-mono text-ztg-14-150 dark:text-white/90">
         {change}%
       </span>
     </div>

@@ -80,25 +80,6 @@ export const FOREIGN_ASSET_MULTILOCATION = {
   0: {
     parents: 1
   },
-  1: {
-    parents: 1,
-    interior: {
-      X3: [
-        {
-          Parachain: 2004,
-        },
-        {
-          PalletInstance: 110,
-        },
-        {
-          AccountKey20: {
-            network: null,
-            key: hexToU8a('0x931715fee2d06333043d11f658c8ce934ac61d0c'),
-          }
-        },
-      ],
-    },
-  },
   4: {
     parents: 1,
     interior: {
@@ -125,15 +106,6 @@ const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
     coinGeckoId: "polkadot",
     tokenSymbol: "DOT",
     subsquidId: "DOT",
-  },
-  1: {
-    originChain: "Moonbeam",
-    image: "/currencies/usdc.svg",
-    withdrawSupported: false,
-    coinGeckoId: "usd",
-    tokenSymbol: "USDC",
-    subsquidId: "USDC",
-    parachainId: 2004,
   },
   4: {
     originChain: "AssetHub",
