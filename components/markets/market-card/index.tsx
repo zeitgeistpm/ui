@@ -21,6 +21,7 @@ import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 import SimpleImage from "components/ui/SimpleImage";
 import { getCurrentPrediction } from "lib/util/assets";
+import { motion } from "framer-motion";
 
 export interface MarketType {
   categorical?: string;
@@ -101,10 +102,19 @@ export const MarketCard = ({
 
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
-      <div
+      <motion.div
         data-testid={`marketCard-${marketId}`}
-        className={`ztg-transition group relative flex min-w-full flex-col
-        rounded-lg bg-white/10 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg md:min-w-[calc(50%-8px)] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+        className={`group relative flex min-w-full flex-col
+        rounded-lg bg-white/10 p-4 shadow-md backdrop-blur-md md:min-w-[calc(50%-8px)] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+        whileHover={{
+          scale: 1.005,
+          y: -1,
+          backgroundColor: "rgba(255, 255, 255, 0.15)",
+        }}
+        transition={{
+          duration: 0.2,
+          ease: "easeOut",
+        }}
       >
         <Link
           href={`/markets/${marketId}`}
@@ -131,7 +141,7 @@ export const MarketCard = ({
                 }}
               />
             </div>
-            <h5 className="line-clamp-2 h-12 w-full pr-4 text-base text-white/90 duration-200 group-hover:text-ztg-green-500 transition-colors">
+            <h5 className="line-clamp-2 h-12 w-full pr-4 text-base text-white/90">
               {cmsMetadata?.question ?? question}
             </h5>
           </div>
@@ -181,7 +191,7 @@ export const MarketCard = ({
             />
           </div>
         </Link>
-      </div>
+      </motion.div>
     </MarketCardContext.Provider>
   );
 };

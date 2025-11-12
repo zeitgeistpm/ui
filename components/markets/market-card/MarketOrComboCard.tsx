@@ -19,6 +19,7 @@ import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 import { createVirtualComboMarket } from "lib/utils/createVirtualComboMarket";
 import { useMarketImage } from "lib/hooks/useMarketImage";
 import { MarketBasicData } from "lib/gql/combo-pools";
+import { motion } from "framer-motion";
 
 // Component for individual market row in combo card (allows proper hook usage)
 const ComboMarketRow = ({
@@ -56,7 +57,7 @@ const ComboMarketRow = ({
       >
         {roleLabel}
       </span>
-      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90 group-hover:text-ztg-green-500 transition-colors">
+      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90">
         {market.question}
       </span>
     </div>
@@ -94,13 +95,13 @@ const ComboMarketRowInline = ({
       <span
         className={`inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-xs font-semibold ${
           isAssume
-            ? "bg-blue-500/80 text-white/90"
-            : "bg-ztg-green-500/80 text-white/90"
+            ? "bg-blue-600/80 text-white/90"
+            : "bg-ztg-green-600/80 text-white/90"
         }`}
       >
         {roleLabel}
       </span>
-      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90 group-hover:text-ztg-green-500 transition-colors">
+      <span className="line-clamp-1 flex-1 text-xs font-medium leading-tight text-white/90">
         {market.question}
       </span>
     </div>
@@ -193,10 +194,19 @@ const ComboPoolCard = ({
   }, 0);
 
   return (
-    <div
+    <motion.div
       data-testid={`comboPoolCard-${pool.poolId}`}
-      className={`ztg-transition group relative flex min-w-full flex-col
-      rounded-lg bg-white/10 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg md:min-w-[calc(50%-8px)] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+      className={`group relative flex min-w-full flex-col
+      rounded-lg bg-white/10 p-4 shadow-md backdrop-blur-md md:min-w-[calc(50%-8px)] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+      whileHover={{
+        scale: 1.005,
+        y: -1,
+        backgroundColor: "rgba(255, 255, 255, 0.15)",
+      }}
+      transition={{
+        duration: 0.2,
+        ease: "easeOut",
+      }}
     >
       <Link
         href={item.link}
@@ -305,7 +315,7 @@ const ComboPoolCard = ({
           </div>
         </div>
       </Link>
-    </div>
+    </motion.div>
   );
 };
 

@@ -566,24 +566,23 @@ const MobileContextButtons = ({
                     />
                   </div>
                 ))}
-              <div className="mt-6 rounded-lg border border-white/10 bg-white/10 p-4 shadow-md backdrop-blur-sm">
-                <h4 className="mb-2 text-sm font-semibold text-white/90">
-                  To Get Your Collateral Back:
-                </h4>
-                <ol className="mb-3 ml-4 list-decimal space-y-1 text-sm text-white/90">
-                  <li>
-                    <strong>Redeem tokens on this page</strong> → receive Market
-                    1 ("Assume" market) tokens
-                  </li>
-                  <li>
-                    <strong>Redeem Market 1 tokens</strong> on the Market 1 page
-                    → receive your collateral
-                  </li>
-                </ol>
-                <p className="text-xs text-white/90">
-                  💡 <strong>Tip:</strong> Redeeming here is only the first
-                  step. Visit Market 1 (the "Assume" market) to complete your
-                  redemption and recover your collateral.
+              <div className="mt-6 rounded-lg border-l-4 border-blue-500/40 bg-white/15 p-4 shadow-lg backdrop-blur-md">
+                <div className="mb-3 flex items-center gap-2">
+                  <Info size={16} className="text-blue-400" />
+                  <h4 className="text-sm font-semibold text-white/90">
+                    To Get Your Collateral Back
+                  </h4>
+                </div>
+                <p className="text-sm leading-relaxed text-white/90">
+                  Redeem tokens here to receive{" "}
+                  <span className="rounded-lg border px-1.5 py-0.5 text-xs font-semibold shadow-sm backdrop-blur-sm bg-blue-600/80 text-white/90 border-blue-400/40">
+                    Assume
+                  </span>{" "}
+                  market tokens, then redeem those tokens on the{" "}
+                  <span className="rounded-lg border px-1.5 py-0.5 text-xs font-semibold shadow-sm backdrop-blur-sm bg-blue-600/80 text-white/90 border-blue-400/40">
+                    Assume
+                  </span>{" "}
+                  market page to recover your collateral.
                 </p>
               </div>
             </div>
@@ -896,7 +895,7 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                   <ArrowLeft size={14} />
                   <span className="hidden sm:inline">Back</span>
                 </Link>
-                <div className="relative flex items-center gap-1.5 rounded-lg bg-ztg-primary-800/40 px-3 py-1 text-sm font-semibold text-white/90 shadow-md backdrop-blur-sm">
+                <div className="relative flex items-center gap-1.5 rounded-lg bg-ztg-primary-500/80 px-3 py-1 text-sm font-semibold text-white/90 shadow-md backdrop-blur-sm">
                   <span className="font-bold">Combinatorial</span>
                   <CombinatorialTooltip>
                     <Info size={14} className="cursor-help text-white/90" />
@@ -1132,24 +1131,23 @@ const ComboMarket: NextPage<ComboMarketPageProps> = ({
                         />
                       </div>
                     ))}
-                  <div className="mt-6 rounded-lg border border-white/10 bg-white/10 p-4 shadow-md backdrop-blur-sm">
-                    <h4 className="mb-2 text-sm font-semibold text-white/90">
-                      To Get Your Collateral Back:
-                    </h4>
-                    <ol className="mb-3 ml-4 list-decimal space-y-1 text-sm text-white/90">
-                      <li>
-                        <strong>Redeem tokens on this page</strong> → receive
-                        Market 1 ("Assume" market) tokens
-                      </li>
-                      <li>
-                        <strong>Redeem Market 1 tokens</strong> on the Market 1
-                        page → receive your collateral
-                      </li>
-                    </ol>
-                    <p className="text-xs text-white/90">
-                      💡 <strong>Tip:</strong> Redeeming here is only the first
-                      step. Visit Market 1 (the "Assume" market) to complete
-                      your redemption and recover your collateral.
+                  <div className="mt-6 rounded-lg border-l-4 border-blue-500/40 bg-white/15 p-4 shadow-lg backdrop-blur-md">
+                    <div className="mb-3 flex items-center gap-2">
+                      <Info size={16} className="text-blue-400" />
+                      <h4 className="text-sm font-semibold text-white/90">
+                        To Get Your Collateral Back
+                      </h4>
+                    </div>
+                    <p className="text-sm leading-relaxed text-white/90">
+                      Redeem tokens here to receive{" "}
+                      <span className="rounded-lg border px-1.5 py-0.5 text-xs font-semibold shadow-sm backdrop-blur-sm bg-blue-600/80 text-white/90 border-blue-400/40">
+                        Assume
+                      </span>{" "}
+                      market tokens, then redeem those tokens on the{" "}
+                      <span className="rounded-lg border px-1.5 py-0.5 text-xs font-semibold shadow-sm backdrop-blur-sm bg-blue-600/80 text-white/90 border-blue-400/40">
+                        Assume
+                      </span>{" "}
+                      market page to recover your collateral.
                     </p>
                   </div>
                 </div>
