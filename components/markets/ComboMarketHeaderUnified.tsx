@@ -72,14 +72,14 @@ const SourceMarketCard = ({
 
   const pillColor =
     roleLabel === "Assume"
-      ? "bg-blue-500/80 text-white/90 border-blue-400/40"
-      : "bg-ztg-green-500/80 text-white/90 border-ztg-green-400/40";
+      ? "bg-blue-600/80 text-white/90 border-blue-400/40"
+      : "bg-ztg-green-600/80 text-white/90 border-ztg-green-400/40";
   const borderColor =
-    roleLabel === "Assume" ? "border-blue-500/40" : "border-ztg-green-500/40";
+    roleLabel === "Assume" ? "border-blue-600/40" : "border-ztg-green-600/40";
   const hoverBorderColor =
     roleLabel === "Assume"
-      ? "hover:border-blue-400/60"
-      : "hover:border-ztg-green-400/60";
+      ? "hover:border-blue-500/60"
+      : "hover:border-ztg-green-500/60";
 
   return (
     <Disclosure>
