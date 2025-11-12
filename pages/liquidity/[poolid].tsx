@@ -53,7 +53,7 @@ const PoolDetail = ({
                   className="ml-ztg-10 inline cursor-pointer"
                 />
                 {hoveringInfo === true ? (
-                  <div className="absolute bottom-ztg-20 left-ztg-50 w-ztg-164 rounded-ztg-5 bg-ztg-primary-200 px-ztg-8 py-ztg-14 text-ztg-12-150 text-black  dark:bg-border-dark dark:text-white">
+                  <div className="absolute bottom-ztg-20 left-ztg-50 w-ztg-164 rounded-ztg-5 bg-ztg-primary-200 px-ztg-8 py-ztg-14 text-ztg-12-150 text-black  dark:bg-border-dark dark:text-white/90">
                     <div className="border-b-1 border-ztg-primary-600 pb-ztg-7 font-bold">
                       Total APR
                     </div>

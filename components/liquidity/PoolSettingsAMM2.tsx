@@ -88,7 +88,7 @@ const PoolSettingsAmm2: FC<{
           <div className="relative inline-block">
             <Input
               type="number"
-              className="font-base w-64 rounded-md bg-white/10 py-4 pl-5 pr-28 text-right text-base text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/60 focus:bg-white/15"
+              className="font-base w-64 rounded-md bg-white/10 py-4 pl-5 pr-28 text-right text-base text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/90/60 focus:bg-white/15"
               value={`${parseFloat(baseAssetAmount ?? "0")}`}
               onChange={(event) => {
                 const value = parseFloat(event.target.value);

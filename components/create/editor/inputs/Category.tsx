@@ -41,8 +41,8 @@ export const CategorySelect = forwardRef(
                 transition-all duration-200 ease-in-out active:scale-95
                 ${
                   isSelected
-                    ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
-                    : "border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/20"
+                    ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white/90 shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
+                    : "border-white/20 bg-white/10 text-white/90 hover:border-white/30 hover:bg-white/20"
                 }
               `}
               onClick={handleSelect(tag)}

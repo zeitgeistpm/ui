@@ -37,7 +37,7 @@ const IconBadge: FC<{
       <div
         className={`pointer-events-none absolute bottom-full z-10 mb-1 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100 ${tooltipPositionClasses[tooltipAlign]}`}
       >
-        <div className="rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/95 px-2 py-1 text-xs text-white shadow-lg backdrop-blur-md">
+        <div className="rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/95 px-2 py-1 text-xs text-white/90 shadow-lg backdrop-blur-md">
           {label ? (
             <>
               <div className="mb-0.5 font-medium">{label}</div>
@@ -151,8 +151,8 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
             }
           >
             <div className="text-left">
-              <h4 className="mb-2 text-sm font-bold text-white">Trusted Market</h4>
-              <div className="mb-3 text-xs text-white/80">
+              <h4 className="mb-2 text-sm font-bold text-white/90">Trusted Market</h4>
+              <div className="mb-3 text-xs text-white/90">
                 {getDisputeMechanismDescription(market.disputeMechanism)}
               </div>
               <div className="flex flex-col gap-2">
@@ -186,8 +186,8 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
             }
           >
             <div className="text-left">
-              <h4 className="mb-1 text-sm font-bold text-white">Market Edited</h4>
-              <p className="mb-3 text-xs text-white/80">
+              <h4 className="mb-1 text-sm font-bold text-white/90">Market Edited</h4>
+              <p className="mb-3 text-xs text-white/90">
                 Edited in CMS. Original immutable metadata shown below.
               </p>
 
@@ -196,7 +196,7 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
                   <label className="mb-1 text-xs font-semibold text-white/90">
                     Original Question:
                   </label>
-                  <div className="text-xs text-white/80">
+                  <div className="text-xs text-white/90">
                     {market.originalMetadata.question}
                   </div>
                 </div>
@@ -207,7 +207,7 @@ export const MarketMetadataBadges: FC<MarketMetadataBadgesProps> = ({
                   <label className="mb-1 text-xs font-semibold text-white/90">
                     Original Description:
                   </label>
-                  <div className="text-xs text-white/80">
+                  <div className="text-xs text-white/90">
                     <QuillViewer value={market.originalMetadata.description} />
                   </div>
                 </div>

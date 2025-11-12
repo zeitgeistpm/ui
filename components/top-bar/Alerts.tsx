@@ -67,7 +67,7 @@ export const Alerts = () => {
                 <div
                   className={`transition-all ${
                     hasNotifications
-                      ? "cursor-pointer text-white"
+                      ? "cursor-pointer text-white/90"
                       : "text-white/50"
                   }`}
                 >

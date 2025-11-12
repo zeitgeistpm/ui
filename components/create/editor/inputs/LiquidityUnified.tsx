@@ -41,9 +41,7 @@ export const LiquidityUnified = ({
   const { data: rawAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
 
   // Hardcode stablecoins to $1 USD
-  // DISABLED: USDC.wh temporarily disabled
-  // const isStablecoin = currency === "USDC.wh";
-  const isStablecoin = false; // currency === "USDC.wh";
+  const isStablecoin = false;
   const baseAssetPrice = isStablecoin ? new Decimal(1) : rawAssetPrice;
 
   const numOutcomes =
@@ -125,7 +123,7 @@ export const LiquidityUnified = ({
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Total Liquidity Input */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-semibold text-white">
+          <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
             Total Liquidity Amount <span className="text-ztg-red-400">*</span>
           </label>
           <Input
@@ -179,15 +177,15 @@ export const LiquidityUnified = ({
                 },
               });
             }}
-            className="h-12 w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 text-sm text-white backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30 focus:border-white/40"
+            className="h-12 w-full rounded-lg border-2 border-white/20 bg-white/10 px-4 text-sm text-white/90 backdrop-blur-sm transition-all placeholder:text-white/50 hover:border-white/30 focus:border-white/40"
             placeholder="e.g., 1000"
           />
           {totalValue && totalValue.gt(0) && (
-            <p className="text-xs text-white/60">
+            <p className="text-xs text-white/90/60">
               ≈ ${totalValue.toFixed(2)} USD
             </p>
           )}
-          <p className="text-xs text-white/60">
+          <p className="text-xs text-white/90/60">
             💡 This amount will be evenly distributed across all {numOutcomes}{" "}
             outcomes
           </p>
@@ -195,7 +193,7 @@ export const LiquidityUnified = ({
 
         {/* Swap Fee */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-semibold text-white">
+          <label className="flex items-center gap-2 text-sm font-semibold text-white/90">
             Swap Fee <span className="text-ztg-red-400">*</span>
           </label>
           <FeeSelect
@@ -206,7 +204,7 @@ export const LiquidityUnified = ({
             isValid={fieldsState.isValid}
             label="% Swap Fee"
           />
-          <p className="text-xs text-white/60">
+          <p className="text-xs text-white/90/60">
             💡 Fee earned on each trade. 1% is a common default.
           </p>
         </div>
@@ -219,10 +217,10 @@ export const LiquidityUnified = ({
             <Disclosure.Button className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/5">
               <div className="flex items-center gap-2">
                 <LuSettings size={16} className="text-white/70" />
-                <span className="text-sm font-semibold text-white">
+                <span className="text-sm font-semibold text-white/90">
                   Fine-tune Distribution
                   {isCustomized && (
-                    <span className="ml-2 text-xs font-normal text-white/60">
+                    <span className="ml-2 text-xs font-normal text-white/90/60">
                       (Customized)
                     </span>
                   )}

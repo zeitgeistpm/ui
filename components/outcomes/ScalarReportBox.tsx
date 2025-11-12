@@ -148,7 +148,7 @@ const ScalarReportBox = ({
                 minWidth: expandedInfoToggled ? digits * 18 : digits * 12,
               }}
             >
-              <div className="flex flex-1 self-start text-white/80 sm:hidden md:flex lg:hidden">
+              <div className="flex flex-1 self-start text-white/90 sm:hidden md:flex lg:hidden">
                 Scalar range:
               </div>
               <div className="whitespace-nowrap">

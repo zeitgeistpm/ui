@@ -31,10 +31,11 @@ import { assetsAreEqual } from "lib/util/assets-are-equal";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { isArray } from "lodash-es";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import { RiSendPlaneLine } from "react-icons/ri";
 import { GraphQLClient } from "graphql-request";
+import { minBaseLiquidity } from "lib/state/market-creation/constants/currency";
 
 export type PublishingProps = {
   editor: MarketDraftEditor;
@@ -106,15 +107,30 @@ export const Publishing = ({
     ? feeDetails?.amount
     : new Decimal(0);
 
+  // Calculate liquidity cost: use minimum if deploying permissionless market with ZTG
+  // and amount is below minimum or empty
+  const liquidityAmount = useMemo(() => {
+    if (
+      editor.form.moderation === "Permissionless" &&
+      editor.form.liquidity?.deploy &&
+      editor.form.currency === "ZTG"
+    ) {
+      const enteredAmount = new Decimal(editor.form.liquidity.amount || 0).toNumber();
+      const minimum = minBaseLiquidity[editor.form.currency] ?? 0;
+      // Use minimum if amount is 0, empty, or below minimum
+      return Math.max(enteredAmount, minimum);
+    }
+    return 0;
+  }, [
+    editor.form.moderation,
+    editor.form.liquidity?.deploy,
+    editor.form.liquidity?.amount,
+    editor.form.currency,
+  ]);
+
   const ztgCost = new Decimal(bondCost ?? 0)
     .plus(oracleBond ?? 0)
-    .plus(
-      editor.form.moderation === "Permissionless" &&
-        editor.form.liquidity?.deploy &&
-        editor.form.currency === "ZTG"
-        ? new Decimal(editor.form.liquidity.amount || 0).toNumber()
-        : 0,
-    )
+    .plus(liquidityAmount)
     .plus(ztgTransactionFee ?? 0);
 
   const baseCurrencyMetadata =
@@ -327,7 +343,7 @@ export const Publishing = ({
       >
         {!compact && (
           <div className="mb-6">
-            <h2 className="mb-2 text-lg font-bold text-white md:text-xl">
+            <h2 className="mb-2 text-lg font-bold text-white/90 md:text-xl">
               Ready to Publish
             </h2>
             <p className="text-sm text-white/70">

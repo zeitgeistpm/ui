@@ -19,7 +19,7 @@ const TimezoneSelect: React.FC<TimezoneSelectProps> = (props) => {
       <select
         defaultValue={defaultTimezone}
         value={props.value}
-        className="h-full w-full bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50"
+        className="h-full w-full bg-transparent px-4 py-3 text-left text-sm text-white/90 outline-none placeholder:text-white/50"
         onChange={(e) => {
           const value = e.target.value;
           props.onChange({

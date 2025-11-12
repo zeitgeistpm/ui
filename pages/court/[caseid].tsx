@@ -265,7 +265,7 @@ const CasePage: NextPage = ({
                   back to this page.
                 </p>
                 <button
-                  className="center gap-3 rounded-md bg-blue-500 px-4 py-2 text-white"
+                  className="center gap-3 rounded-md bg-blue-500 px-4 py-2 text-white/90"
                   onClick={onClickRecastVote}
                 >
                   Recast Vote
@@ -437,8 +437,8 @@ const CasePage: NextPage = ({
               </div>
             </div>
             {stage?.type === "reassigned" && market.resolvedOutcome && (
-              <div className="inline-block min-w-[200px] rounded-lg bg-blue-500 px-5 py-3 text-white">
-                <h3 className="mb-3 text-white">Outcome</h3>
+              <div className="inline-block min-w-[200px] rounded-lg bg-blue-500 px-5 py-3 text-white/90">
+                <h3 className="mb-3 text-white/90">Outcome</h3>
                 {market.categories?.[market.resolvedOutcome].name}
               </div>
             )}
@@ -545,7 +545,7 @@ const Votes = ({
             }`}
           >
             {showLeaderIndicator && isRevealed && index === 0 && (
-              <div className="absolute right-3 top-0 translate-y-[-50%] rounded-xl bg-green-400 px-2 text-xxs text-white">
+              <div className="absolute right-3 top-0 translate-y-[-50%] rounded-xl bg-green-400 px-2 text-xxs text-white/90">
                 Leading
               </div>
             )}

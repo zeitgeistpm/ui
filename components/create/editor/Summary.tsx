@@ -57,8 +57,8 @@ export const MarketSummary = ({
     <div className="space-y-4">
       {/* Question */}
       <div className="rounded-lg bg-white/10 p-5 backdrop-blur-md">
-        <Label className="mb-2 text-white">Market Question</Label>
-        <p className="text-base font-semibold text-white">
+        <Label className="mb-2 text-white/90">Market Question</Label>
+        <p className="text-base font-semibold text-white/90">
           {form?.question ? (
             form?.question
           ) : (
@@ -160,7 +160,7 @@ export const MarketSummary = ({
             <div className="text-center">
               <button
                 type="button"
-                className="rounded-md border-2 border-ztg-primary-600/50 bg-ztg-primary-600/90 px-3 py-1.5 text-xs text-white backdrop-blur-md transition-all hover:bg-ztg-primary-600 active:scale-95"
+                className="rounded-md border-2 border-ztg-primary-600/50 bg-ztg-primary-600/90 px-3 py-1.5 text-xs text-white/90 backdrop-blur-md transition-all hover:bg-ztg-primary-600 active:scale-95"
                 onClick={() => {
                   editor.mergeFormData({
                     liquidity: {
@@ -179,8 +179,8 @@ export const MarketSummary = ({
 
       {/* Moderation */}
       <div className="rounded-lg bg-white/10 p-5 backdrop-blur-md">
-        <Label className="mb-2 text-white">Moderation</Label>
-        <p className="text-sm font-medium text-white">{form.moderation}</p>
+        <Label className="mb-2 text-white/90">Moderation</Label>
+        <p className="text-sm font-medium text-white/90">{form.moderation}</p>
         {creationParams?.disputeMechanism && (
           <div className="mt-3 rounded-md border-2 border-purple-400/30 bg-purple-50/50 p-2.5 backdrop-blur-sm">
             <Label className="mb-1 text-purple-900">Dispute Mechanism</Label>
@@ -193,11 +193,11 @@ export const MarketSummary = ({
 
       {/* Oracle */}
       <div className="rounded-lg bg-white/10 p-5 backdrop-blur-md">
-        <Label className="mb-2 text-white">Oracle</Label>
-        <p className="hidden text-sm font-medium text-white md:block">
+        <Label className="mb-2 text-white/90">Oracle</Label>
+        <p className="hidden text-sm font-medium text-white/90 md:block">
           {form?.oracle ? form?.oracle : "--"}
         </p>
-        <p className="block text-sm font-medium text-white md:hidden">
+        <p className="block text-sm font-medium text-white/90 md:hidden">
           {form?.oracle ? shortenAddress(form?.oracle, 6, 6) : "--"}
         </p>
       </div>

@@ -47,10 +47,6 @@ export const marketTagFilterOptions: MarketTagFilter[] = defaultTags.map(
 const createCurrencyFilters = () => {
   const filters: MarketCurrencyFilter[] = [];
   for (const [id, asset] of Object.entries(FOREIGN_ASSET_METADATA)) {
-    // Exclude Moonbeam/Wormhole USDC (ID 1) from currency filters
-    if (Number(id) === 1) {
-      continue;
-    }
     filters.push({
       type: "currency",
       value: `{"foreignAsset":${id}}`,

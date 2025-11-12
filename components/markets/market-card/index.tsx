@@ -104,7 +104,7 @@ export const MarketCard = ({
       <div
         data-testid={`marketCard-${marketId}`}
         className={`ztg-transition group relative flex min-w-full flex-col
-        rounded-lg bg-white/10 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg md:min-w-[calc(50%-8px)] md:hover:scale-[1.01] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
+        rounded-lg bg-white/10 p-4 shadow-md backdrop-blur-md transition-all hover:shadow-lg md:min-w-[calc(50%-8px)] lg:min-w-[calc(100%/3-9.67px)] ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
@@ -131,14 +131,14 @@ export const MarketCard = ({
                 }}
               />
             </div>
-            <h5 className="line-clamp-2 h-12 w-full pr-4 text-base text-white/90 duration-200">
+            <h5 className="line-clamp-2 h-12 w-full pr-4 text-base text-white/90 duration-200 group-hover:text-ztg-green-500 transition-colors">
               {cmsMetadata?.question ?? question}
             </h5>
           </div>
 
           <div className="w-full">
             {status === "Resolved" && resolvedOutcome ? (
-              <span className="text-xs text-ztg-blue">
+              <span className="text-xs text-ztg-green-500">
                 Resolved:{" "}
                 <span className="font-semibold">
                   {marketType?.categorical
@@ -200,15 +200,15 @@ const MarketCardPredictionBar = ({
         className={`relative h-6 w-full overflow-hidden rounded-lg bg-white/10 shadow-md backdrop-blur-sm transition-all sm:h-[30px]`}
       >
         <div className="absolute flex h-full w-full items-center justify-between px-3 text-sm">
-          <span className="line-clamp-1 font-semibold text-white/90">
+          <span className="line-clamp-1 text-white/90">
             {name}
           </span>
-          <span className="font-bold text-white/90 transition-all">
+          <span className="font-semibold text-white/90 transition-all">
             {impliedPercentage}%
           </span>
         </div>
         <div
-          className={`h-full bg-gradient-to-r from-ztg-green-500/60 to-ztg-green-400/70`}
+          className={`h-full bg-gradient-to-r from-ztg-primary-300/80 to-ztg-primary-200/90`}
           style={{
             width: `${isNaN(impliedPercentage) ? 0 : impliedPercentage}%`,
           }}
@@ -252,7 +252,7 @@ const MarketCardDetails = ({
   const imagePath = lookupAssetImagePath(assetId);
 
   return (
-    <div className="flex items-center text-xs text-white/90">
+    <div className="flex items-center text-xs text-white/50">
       <div>
         <span className="font-semibold">
           {period.end &&
@@ -266,8 +266,8 @@ const MarketCardDetails = ({
         {isEnding() && (
           <span className="ml-1 font-semibold text-ztg-red-400">Ends Soon</span>
         )}
-        <span className="ml-1 border-l-1 border-l-ztg-green-500/40 pl-1">
-          {outcomeAssets.length} outcomes{" "}
+        <span className="pl-1">
+        • {outcomeAssets.length} outcomes{" "}
         </span>
       </div>
       <div className="ml-auto flex items-center justify-center gap-1.5">
@@ -285,7 +285,10 @@ const MarketCardDetails = ({
             {formatNumberCompact(new Decimal(volume).div(ZTG).toNumber(), 2)}
           </span>
         </div>
-        {liquidity != undefined && baseAsset ? (
+        {liquidity != undefined &&
+        baseAsset &&
+        liquidity !== "" &&
+        !isNaN(Number(liquidity)) ? (
           <div className="flex items-center gap-1">
             <Droplet size={12} className="text-white/90" />
             <span>

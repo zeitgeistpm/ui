@@ -13,7 +13,7 @@ const MarketFiltersCheckboxes: React.FC<MarketFiltersCheckboxesProps> = ({
   return withLiquidityOnly != null ? (
     <label
       className={
-        "flex cursor-pointer items-center text-sm font-semibold text-white/90 transition-colors hover:text-white " +
+        "flex cursor-pointer items-center text-sm font-semibold text-white/90 transition-colors hover:text-white/90 " +
         className
       }
     >

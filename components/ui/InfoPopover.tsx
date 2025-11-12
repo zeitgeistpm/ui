@@ -89,7 +89,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
               <Popover.Panel
                 className={`absolute z-[100] ${positionCss} w-screen max-w-[calc(100vw-2rem)] rounded-md lg:w-[564px] ${popoverCss}`}
               >
-                <div className="shadow-lg overflow-hidden rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/95 px-3 py-2 text-left text-sm font-medium text-white backdrop-blur-md">
+                <div className="shadow-lg overflow-hidden rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/95 px-3 py-2 text-left text-sm font-medium text-white/90 backdrop-blur-md">
                   {children}
                 </div>
               </Popover.Panel>

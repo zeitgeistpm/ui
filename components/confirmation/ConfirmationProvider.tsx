@@ -10,10 +10,10 @@ export const ConfirmationProvider = () => {
         <Modal key={id} open={value.open} onClose={() => dismiss(id)}>
           <ModalPanel size="sm">
             <ModalBody>
-              <h2 className="mb-3 text-lg md:text-xl font-semibold text-white">
+              <h2 className="mb-3 text-lg md:text-xl font-semibold text-white/90">
                 {value.title}
               </h2>
-              <p className="mb-6 text-sm md:text-base text-white/80">{value.description}</p>
+              <p className="mb-6 text-sm md:text-base text-white/90">{value.description}</p>
               <div className="flex items-center justify-end gap-3">
                 <button
                   className="rounded-md bg-white/10 px-4 py-2 text-sm md:text-base font-medium text-white/90 backdrop-blur-sm transition-all hover:bg-white/20"
@@ -22,7 +22,7 @@ export const ConfirmationProvider = () => {
                   {value.cancelLabel ?? "Cancel"}
                 </button>
                 <button
-                  className="rounded-md bg-ztg-green-600/80 px-4 py-2 text-sm md:text-base text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md"
+                  className="rounded-md bg-ztg-green-600/80 px-4 py-2 text-sm md:text-base text-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md"
                   onClick={() => confirm(id)}
                 >
                   {value.confirmLabel ?? "Confirm"}

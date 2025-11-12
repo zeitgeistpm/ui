@@ -266,7 +266,7 @@ const MarketContextActionOutcomeSelector = ({
                       type="text"
                       ref={inputRef}
                       placeholder="Search Assets"
-                      className="h-[44px] w-full rounded-lg bg-white/10 px-4 text-sm text-white/90 shadow-md backdrop-blur-sm placeholder:text-white/60 focus:bg-white/15 focus:shadow-lg"
+                      className="h-[44px] w-full rounded-lg bg-white/10 px-4 text-sm text-white/90 shadow-md backdrop-blur-sm placeholder:text-white/90/60 focus:bg-white/15 focus:shadow-lg"
                       value={search ?? ""}
                       onChange={(event) => {
                         setSearch(event.target.value);
@@ -282,7 +282,7 @@ const MarketContextActionOutcomeSelector = ({
                     type="text"
                     ref={inputRef}
                     placeholder="Search outcomes..."
-                    className="h-[40px] w-full rounded-lg bg-white/10 px-3 text-sm text-white/90 backdrop-blur-sm transition-all placeholder:text-white/60 focus:bg-white/15 focus:shadow-md focus:ring-2 focus:ring-ztg-green-500/30"
+                    className="h-[40px] w-full rounded-lg bg-white/10 px-3 text-sm text-white/90 backdrop-blur-sm transition-all placeholder:text-white/90/60 focus:bg-white/15 focus:shadow-md focus:ring-2 focus:ring-ztg-green-500/30"
                     value={search ?? ""}
                     onChange={(event) => {
                       setSearch(event.target.value);
@@ -305,9 +305,9 @@ const MarketContextActionOutcomeSelector = ({
                         <div
                           className={`group flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-150 ease-in-out ${
                             selected
-                              ? "bg-ztg-green-500/20 text-white shadow-sm ring-2 ring-ztg-green-500/30"
+                              ? "bg-ztg-green-500/20 text-white/90 shadow-sm ring-2 ring-ztg-green-500/30"
                               : active
-                                ? "bg-white/20 text-white shadow-sm"
+                                ? "bg-white/20 text-white/90 shadow-sm"
                                 : "bg-white/10 text-white/90 hover:bg-white/20 hover:shadow-sm"
                           }`}
                         >
@@ -318,8 +318,8 @@ const MarketContextActionOutcomeSelector = ({
                           <span
                             className={`text-sm font-medium transition-colors ${
                               selected
-                                ? "text-ztg-green-400"
-                                : "text-white/90 group-hover:text-white"
+                                ? "text-ztg-green-500"
+                                : "text-white/90 group-hover:text-white/90"
                             }`}
                           >
                             {option.category?.name || option.assetIndex}

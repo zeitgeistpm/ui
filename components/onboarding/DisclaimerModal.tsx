@@ -29,7 +29,7 @@ export const DisclaimerModal = () => {
         <ModalBody>
           <div
             ref={scrollableElementRef}
-            className="max-h-[400px] overflow-y-auto modal-scrollable text-sm md:text-base text-white/80 mb-6"
+            className="max-h-[400px] overflow-y-auto modal-scrollable text-sm md:text-base text-white/90 mb-6"
           >
             <DisclaimerTerms />
           </div>
@@ -41,7 +41,7 @@ export const DisclaimerModal = () => {
               Decline
             </button>
             <button
-              className="rounded-md bg-ztg-green-600/80 px-4 py-2 text-sm md:text-base text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md"
+              className="rounded-md bg-ztg-green-600/80 px-4 py-2 text-sm md:text-base text-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md"
               onClick={() => {
                 hideDisclaimer();
                 setDisclaimerAccepted();

@@ -92,7 +92,7 @@ export const MarketPromotionCallout = (props: {
                 <button
                   onClick={() => toggle(false)}
                   className={`ztg-transition mb-4 h-ztg-56 w-full rounded-full bg-ztg-green-600/80 
-        text-ztg-16-150 font-bold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md focus:outline-none disabled:cursor-default disabled:opacity-20 lg:mb-8`}
+        text-ztg-16-150 font-bold text-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md focus:outline-none disabled:cursor-default disabled:opacity-20 lg:mb-8`}
                 >
                   Got it!
                 </button>

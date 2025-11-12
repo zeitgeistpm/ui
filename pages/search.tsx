@@ -55,7 +55,7 @@ const SearchPage: NextPage = () => {
                   {market.question}
                 </div>
                 <div
-                  className={`ml-auto w-16 rounded-md px-2 py-1 text-center text-xs text-white ${
+                  className={`ml-auto w-16 rounded-md px-2 py-1 text-center text-xs text-white/90 ${
                     market.status === MarketStatus.Active
                       ? "bg-green-400"
                       : "bg-gray-400"

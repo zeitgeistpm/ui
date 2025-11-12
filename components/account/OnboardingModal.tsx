@@ -40,7 +40,7 @@ const exchangeList = [
     className: "",
     title: "Banxa (Fiat)",
     icon: (
-      <span className="rounded bg-green-600 px-2 py-1 text-xs text-white">
+      <span className="rounded bg-green-600 px-2 py-1 text-xs text-white/90">
         NEW
       </span>
     ),
@@ -140,7 +140,7 @@ const TextSection = ({
           )}
           {rightButton && (
             <button
-              className={`w-full rounded-[100px] bg-ztg-green-600/80 text-white shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md ${
+              className={`w-full rounded-[100px] bg-ztg-green-600/80 text-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-md ${
                 rightButton.disabled === true ? "cursor-default opacity-50" : ""
               }`}
               onClick={rightButton.onClick}

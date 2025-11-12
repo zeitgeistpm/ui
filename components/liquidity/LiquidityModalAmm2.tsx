@@ -60,10 +60,10 @@ const LiquidityModalAmm2 = ({
           <ModalTabs
             tabs={
               <Tab.List className="flex h-full">
-                <Tab className="flex-1 px-3 py-2 text-sm font-medium transition-all border-r border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white ui-selected:bg-white/10 ui-selected:text-white ui-selected:font-semibold">
+                <Tab className="flex-1 px-3 py-2 text-sm font-medium transition-all border-r border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white/90 ui-selected:bg-white/10 ui-selected:text-white/90 ui-selected:font-semibold">
                   Join Pool
                 </Tab>
-                <Tab className="flex-1 px-3 py-2 text-sm font-medium transition-all bg-white/5 text-white/70 hover:bg-white/10 hover:text-white ui-selected:bg-white/10 ui-selected:text-white ui-selected:font-semibold">
+                <Tab className="flex-1 px-3 py-2 text-sm font-medium transition-all bg-white/5 text-white/70 hover:bg-white/10 hover:text-white/90 ui-selected:bg-white/10 ui-selected:text-white/90 ui-selected:font-semibold">
                   Exit Pool
                 </Tab>
               </Tab.List>
