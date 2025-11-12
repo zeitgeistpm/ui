@@ -233,15 +233,21 @@ const MarketFilterSelection = ({
                   <Menu as="div" className="relative shrink-0">
                     {({ open }) => (
                       <>
-                        <Menu.Button className="flex min-h-[44px] items-center gap-1.5 rounded-md bg-ztg-green-600/80 px-2 py-2 text-sm font-semibold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-sm">
+                        <Menu.Button
+                          className={`flex h-9 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-2.5 sm:text-sm md:px-3 ${
+                            open
+                              ? "bg-white/15 text-white/90"
+                              : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white/90"
+                          }`}
+                        >
                           <FiPlusSquare
-                            size={16}
-                            className="hidden sm:inline sm:h-3.5 sm:w-3.5"
+                            size={14}
+                            className="hidden text-ztg-green-500 sm:inline sm:h-4 sm:w-4"
                           />
                           <span>Create Market</span>
                           <ChevronDown
-                            size={16}
-                            className={`ml-0.5 transition-transform sm:h-3.5 sm:w-3.5 ${open ? "rotate-180" : ""}`}
+                            size={14}
+                            className={`ml-0.5 transition-transform sm:h-4 sm:w-4 ${open ? "rotate-180" : ""}`}
                           />
                         </Menu.Button>
 
@@ -254,7 +260,7 @@ const MarketFilterSelection = ({
                           leaveFrom="transform opacity-100 scale-100"
                           leaveTo="transform opacity-0 scale-95"
                         >
-                          <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-lg bg-ztg-primary-700/85 shadow-xl backdrop-blur-lg focus:outline-none">
+                          <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-lg bg-ztg-primary-500/90 shadow-md backdrop-blur-md border-2 border-white/10">
                             <div className="p-1">
                               <Menu.Item>
                                 {({ active }) => (
@@ -266,7 +272,7 @@ const MarketFilterSelection = ({
                                     >
                                       <MdShowChart
                                         size={18}
-                                        className="text-ztg-green-400"
+                                        className="text-ztg-green-500"
                                       />
                                       <div className="flex flex-col items-start">
                                         <span className="font-semibold text-white/90">
@@ -288,7 +294,7 @@ const MarketFilterSelection = ({
                                     >
                                       <MdStackedLineChart
                                         size={18}
-                                        className="text-ztg-green-400"
+                                        className="text-ztg-green-500"
                                       />
                                       <div className="flex flex-col items-start">
                                         <span className="font-semibold text-white/90">
@@ -315,7 +321,7 @@ const MarketFilterSelection = ({
             <Skeleton width="80%" height="38px" className="py-2"></Skeleton>
           )}
           <div
-            className="hidden md:block"
+            className="w-content max-w-7xl hidden md:block absolute top-14 left-15 bg-ztg-primary-500/80 shadow-md backdrop-blur-md"
             id="marketsFiltersMenuPortal"
             ref={portalRef}
           ></div>

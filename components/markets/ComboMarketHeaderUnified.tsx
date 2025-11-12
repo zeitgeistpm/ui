@@ -52,7 +52,7 @@ const OutcomeBalance = ({
         )}
         <span className="font-medium text-white/90">{outcomeName}</span>
       </div>
-      <span className="font-bold text-white">{balanceDisplay}</span>
+      <span className="font-bold text-white/90">{balanceDisplay}</span>
     </div>
   );
 };
@@ -72,8 +72,8 @@ const SourceMarketCard = ({
 
   const pillColor =
     roleLabel === "Assume"
-      ? "bg-blue-500/80 text-white border-blue-400/40"
-      : "bg-ztg-green-500/80 text-white border-ztg-green-400/40";
+      ? "bg-blue-500/80 text-white/90 border-blue-400/40"
+      : "bg-ztg-green-500/80 text-white/90 border-ztg-green-400/40";
   const borderColor =
     roleLabel === "Assume" ? "border-blue-500/40" : "border-ztg-green-500/40";
   const hoverBorderColor =
@@ -96,20 +96,20 @@ const SourceMarketCard = ({
               </div>
 
               <div className="min-w-0 flex-1">
-                <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-white sm:text-sm">
+                <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-white/90 sm:text-sm">
                   {market.question}
                 </h3>
               </div>
 
               <ChevronDown
                 size={16}
-                className={`flex-shrink-0 text-white/60 transition-transform duration-200 sm:hidden ${
+                className={`flex-shrink-0 text-white/90/60 transition-transform duration-200 sm:hidden ${
                   open ? "rotate-180" : ""
                 }`}
               />
               <ChevronDown
                 size={18}
-                className={`hidden flex-shrink-0 text-white/60 transition-transform duration-200 sm:block ${
+                className={`hidden flex-shrink-0 text-white/90/60 transition-transform duration-200 sm:block ${
                   open ? "rotate-180" : ""
                 }`}
               />
@@ -128,12 +128,12 @@ const SourceMarketCard = ({
               <div className="space-y-2 border-t border-white/10 pt-2 sm:space-y-2.5 sm:pt-2.5">
                 {/* Status and Trade Button Row */}
                 <div className="flex items-center justify-between gap-2">
-                  <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-0.5 text-xs font-medium text-white/80">
+                  <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-0.5 text-xs font-medium text-white/90">
                     {market.status}
                   </span>
                   <Link
                     href={`/markets/${market.marketId}`}
-                    className={`flex items-center rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs font-semibold text-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-white/10 hover:text-white ${
+                    className={`flex items-center rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs font-semibold text-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-white/10 hover:text-white/90 ${
                       roleLabel === "Assume"
                         ? "hover:border-blue-400/40"
                         : "hover:border-ztg-green-400/40"
@@ -161,9 +161,9 @@ const SourceMarketCard = ({
                     >
                       <span>Outcome Balances</span>
                       {showBalances ? (
-                        <ChevronUp size={12} className="text-white/80" />
+                        <ChevronUp size={12} className="text-white/90" />
                       ) : (
-                        <ChevronDown size={12} className="text-white/80" />
+                        <ChevronDown size={12} className="text-white/90" />
                       )}
                     </button>
                     {showBalances && (
@@ -315,7 +315,7 @@ const ComboMarketHeaderUnified: FC<ComboMarketHeaderUnifiedProps> = ({
 
         {/* Arrow indicator */}
         <div className="flex h-5 w-5 items-center justify-center self-center rounded-full bg-white/10 shadow-md backdrop-blur-sm">
-          <span className="text-xs font-medium leading-none text-white/60">
+          <span className="text-xs font-medium leading-none text-white/90/60">
             →
           </span>
         </div>

@@ -10,7 +10,7 @@ const MenuLogo: FC<{}> = () => {
           <Logo variant={"light"} />
         </div>
         <div className="hidden flex-col md:flex">
-          <h1 className="whitespace-nowrap font-kanit text-2xl font-semibold text-white transition-colors duration-300 group-hover:text-ztg-green-500">
+          <h1 className="whitespace-nowrap font-kanit text-2xl font-semibold text-white/90 transition-colors duration-300 group-hover:text-ztg-green-500">
             Zeitgeist
           </h1>
         </div>

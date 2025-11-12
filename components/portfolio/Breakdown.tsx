@@ -126,20 +126,20 @@ export const BreakdownSlot = ({
 }: BreakdownSlotProps) => {
   return (
     <>
-      <h4 className="mb-0.5 text-xxs font-medium uppercase tracking-wide text-white/80">
+      <h4 className="mb-0.5 text-xxs font-medium uppercase tracking-wide text-white/90">
         {title}
       </h4>
       <div className="mb-0.5 flex items-center font-mono">
-        <div className="text-sm font-bold text-white sm:w-2/3">
+        <div className="text-sm font-bold text-white/90 sm:w-2/3">
           {formatNumberLocalized(value.div(ZTG).toNumber())} ZTG
         </div>
         <div
           className={`hidden w-1/3 flex-1 text-xs sm:block ${
             changePercentage < 0.01
-              ? "text-white"
+              ? "text-white/90"
               : changePercentage < 0
                 ? "text-red-400"
-                : "text-ztg-green-400"
+                : "text-ztg-green-500"
           }`}
         >
           {Math.abs(changePercentage).toFixed(1)}%

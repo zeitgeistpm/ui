@@ -25,9 +25,9 @@ export const CourtDocsArticle = ({
           }}
         />
       </div>
-      <div className="relative z-20 text-white">
+      <div className="relative z-20 text-white/90">
         <div className="mb-2">
-          <h3 className="text-white drop-shadow-lg">Decentralized Court</h3>
+          <h3 className="text-white/90 drop-shadow-lg">Decentralized Court</h3>
         </div>
         <p className="mb-6 drop-shadow-lg">
           Zeitgeist implements a decentralized court to handle disputes that may
@@ -37,7 +37,7 @@ export const CourtDocsArticle = ({
           <Link
             href="https://docs.zeitgeist.pm/docs/learn/court"
             target="_blank"
-            className="center relative z-20 cursor-pointer gap-2 rounded-md bg-purple-400 bg-opacity-90 px-6 py-2 text-white"
+            className="center relative z-20 cursor-pointer gap-2 rounded-md bg-purple-400 bg-opacity-90 px-6 py-2 text-white/90"
           >
             <PiBooks />
             Learn More

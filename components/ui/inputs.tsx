@@ -21,7 +21,7 @@ interface InputProps {
 }
 
 const inputClasses =
-  "bg-white/10 text-ztg-14-150 w-full rounded-lg h-ztg-40 p-ztg-8 focus:outline-none text-white/90 placeholder:text-white/60 backdrop-blur-sm transition-all focus:bg-white/15";
+  "bg-white/10 text-ztg-14-150 w-full rounded-lg h-ztg-40 p-ztg-8 focus:outline-none text-white/90 placeholder:text-white/90/60 backdrop-blur-sm transition-all focus:bg-white/15";
 const invalidClasses = "!border-ztg-red-500 !text-ztg-red-400";
 
 const Input: any = React.forwardRef<

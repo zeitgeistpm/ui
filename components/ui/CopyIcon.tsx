@@ -57,7 +57,7 @@ const CopyIcon: FC<CopyIconProps> = ({
         leaveTo="transform opacity-0 :scale-95"
       >
         <div className="absolute right-0 top-[50%] translate-x-[100%] translate-y-[-50%] pl-2">
-          <div className="rounded-md bg-black p-1 text-sm text-white">
+          <div className="rounded-md bg-black p-1 text-sm text-white/90">
             Copied!
           </div>
         </div>

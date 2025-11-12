@@ -275,7 +275,7 @@ const DotDeposit = ({ address }: { address: string }) => {
       </div>
       <FormTransactionButton
         loading={isLoading}
-        className="w-full rounded-none !bg-white !text-black disabled:bg-white disabled:text-white"
+        className="w-full rounded-none !bg-white !text-black disabled:bg-white disabled:text-white/90"
         disabled={isValid === false || isLoading}
         disableFeeCheck={true}
       >

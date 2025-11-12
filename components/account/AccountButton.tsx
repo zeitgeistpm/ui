@@ -143,7 +143,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
           <Menu.Button className="w-full md:w-full md:shrink-0">
             <div className="relative z-[110] flex h-full w-full min-w-0 cursor-pointer items-center rounded-full md:w-full md:shrink-0">
               <div
-                className={`flex h-full w-full min-w-0 items-center justify-center gap-2 rounded-full border-2 bg-white/10 px-3 py-2 text-white shadow-md backdrop-blur-lg transition-all hover:border-white/30 hover:bg-white/15 hover:shadow-lg md:min-w-0 md:shrink-0 md:gap-2.5 md:px-3 md:py-2 ${
+                className={`flex h-full w-full min-w-0 items-center justify-center gap-2 rounded-full border-2 bg-white/10 px-3 py-2 text-white/90 shadow-md backdrop-blur-lg transition-all hover:border-white/30 hover:bg-white/15 hover:shadow-lg md:min-w-0 md:shrink-0 md:gap-2.5 md:px-3 md:py-2 ${
                   open
                     ? "border-ztg-green-500/60 bg-white/15 shadow-lg shadow-ztg-green-500/10 ring-2 ring-ztg-green-500/20"
                     : "border-white/20"
@@ -163,7 +163,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                 </div>
                 <span
                   className={`flex min-w-0 flex-1 items-center justify-center overflow-hidden text-center text-sm font-semibold transition-all md:min-w-0 md:whitespace-nowrap md:text-center md:text-sm ${
-                    open ? "text-ztg-green-400" : "text-white"
+                    open ? "text-ztg-green-500" : "text-white/90"
                   }`}
                   title={
                     (() => {
@@ -199,7 +199,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                     size={20}
                     className={`h-5 w-5 transition-all duration-200 md:h-4 md:w-4 ${
                       open
-                        ? "rotate-180 text-ztg-green-400"
+                        ? "rotate-180 text-ztg-green-500"
                         : "text-white/90"
                     }`}
                   />
@@ -240,7 +240,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                                 Account is acting proxy for:
                               </label>
                               <div className="flex items-center gap-1">
-                                <div className="text-sm text-white">
+                                <div className="text-sm text-white/90">
                                   {realAddress &&
                                     shortenAddress(
                                       realAddress,
@@ -299,12 +299,12 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
             {/* Close button for mobile */}
             {isMobile && (
               <div className="mb-4 flex shrink-0 items-center justify-between border-b-2 border-white/10 px-4 pb-3">
-                <span className="text-base font-semibold text-white">
+                <span className="text-base font-semibold text-white/90">
                   Account
                 </span>
                 <button
                   onClick={close}
-                  className="flex h-11 w-11 touch-manipulation items-center justify-center rounded-lg bg-white/10 text-white transition-all hover:bg-white/20 active:scale-95"
+                  className="flex h-11 w-11 touch-manipulation items-center justify-center rounded-lg bg-white/10 text-white/90 transition-all hover:bg-white/20 active:scale-95"
                 >
                   <X size={20} />
                 </button>
@@ -326,13 +326,6 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                     balance={usdcAssetHubBalance}
                     className="text-[10px] md:text-xs"
                   />
-                  {/* DISABLED: USDC.wh temporarily disabled */}
-                  {/* <BalanceRow
-                            imgPath="/currencies/usdc.svg"
-                            units="USDC.wh"
-                            balance={usdcMoonbeamBalance}
-                            className="text-[10px] md:text-xs"
-                          /> */}
                   <BalanceRow
                     imgPath="/currencies/dot.png"
                     units="DOT"
@@ -358,7 +351,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                         </span>
                         <ArrowRight
                           size={20}
-                          className="h-5 w-5 text-ztg-green-400 transition-transform group-hover:translate-x-1 md:h-4 md:w-4"
+                          className="h-5 w-5 text-ztg-green-500 transition-transform group-hover:translate-x-1 md:h-4 md:w-4"
                         />
                       </div>
                     </Link>
@@ -400,7 +393,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                     >
                       <div className="relative">
                         <Bell
-                          className="text-ztg-green-400 transition-colors"
+                          className="text-ztg-green-500 transition-colors"
                           size={20}
                         />
                         {hasNotifications && (
@@ -411,7 +404,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                         Notifications
                       </span>
                       {hasNotifications && (
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ztg-green-500/20 text-xs font-semibold text-ztg-green-400 md:h-8 md:w-8 md:text-xs">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ztg-green-500/20 text-xs font-semibold text-ztg-green-500 md:h-8 md:w-8 md:text-xs">
                           {alerts.length}
                         </span>
                       )}
@@ -436,7 +429,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                         }}
                       >
                         <User
-                          className="text-ztg-green-400 transition-colors"
+                          className="text-ztg-green-500 transition-colors"
                           size={20}
                         />
                         <span className="text-sm font-medium md:text-sm">
@@ -457,7 +450,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                         }`}
                       >
                         <BarChart
-                          className="text-ztg-green-400 transition-colors"
+                          className="text-ztg-green-500 transition-colors"
                           size={20}
                         />
                         <span className="text-sm font-medium md:text-sm">
@@ -481,7 +474,7 @@ const AccountMenuContent: FC<AccountMenuContentProps> = ({
                       }}
                     >
                       <Settings
-                        className="text-ztg-green-400 transition-colors"
+                        className="text-ztg-green-500 transition-colors"
                         size={20}
                       />
                       <span className="text-sm font-medium md:text-sm">
@@ -530,7 +523,7 @@ const HeaderActionButton: FC<
 > = ({ onClick, disabled, children }) => {
   return (
     <button
-      className={`flex w-[185px] cursor-pointer items-center justify-center rounded-full border-2 border-white/20 bg-white/10 px-6 font-semibold leading-[40px] text-white shadow-md backdrop-blur-lg transition-all hover:border-white/30 hover:bg-white/15 hover:shadow-lg hover:shadow-ztg-green-500/10 disabled:cursor-default disabled:opacity-30 disabled:hover:border-white/20 disabled:hover:bg-white/10 disabled:hover:shadow-md`}
+      className={`flex w-[185px] cursor-pointer items-center justify-center rounded-full border-2 border-white/20 bg-white/10 px-6 font-semibold leading-[40px] text-white/90 shadow-md backdrop-blur-lg transition-all hover:border-white/30 hover:bg-white/15 hover:shadow-lg hover:shadow-ztg-green-500/10 disabled:cursor-default disabled:opacity-30 disabled:hover:border-white/20 disabled:hover:bg-white/10 disabled:hover:shadow-md`}
       onClick={onClick}
       disabled={disabled}
     >
@@ -577,9 +570,6 @@ const AccountButton: FC<{
   });
   const { data: usdcAssetHubBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 4,
-  });
-  const { data: usdcMoonbeamBalance } = useBalance(activeAccount?.address, {
-    ForeignAsset: 1,
   });
 
   const { data: constants } = useChainConstants();

@@ -27,7 +27,7 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
     <div className="flex h-12 w-full items-center rounded-lg border-2 border-white/20 bg-white/10 backdrop-blur-sm transition-all hover:border-white/30">
       <select
         value={value || ""}
-        className="h-full w-full bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50"
+        className="h-full w-full bg-transparent px-4 py-3 text-left text-sm text-white/90 outline-none placeholder:text-white/50"
         onChange={(e) => {
           const selectedValue = e.target.value || undefined;
           onChange({
@@ -46,14 +46,14 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
           });
         }}
       >
-        <option value="" className="bg-ztg-primary-600 text-white">
+        <option value="" className="bg-ztg-primary-600 text-white/90">
           Select currency
         </option>
         {availableCurrencies.map((currency) => (
           <option
             key={currency.name}
             value={currency.name}
-            className="bg-ztg-primary-600 text-white"
+            className="bg-ztg-primary-600 text-white/90"
           >
             {currency.name}
           </option>

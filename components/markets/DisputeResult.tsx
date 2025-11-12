@@ -19,7 +19,7 @@ export const DisputeResult = ({ market }: { market: FullMarketFragment }) => {
       <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-orange-400/50 bg-orange-500/30 backdrop-blur-md">
         <AiOutlineFileDone size={32} className="text-orange-400" />
       </div>
-      <p className="text-lg font-semibold text-white">Successfully disputed!</p>
+      <p className="text-lg font-semibold text-white/90">Successfully disputed!</p>
 
       <a
         target="_blank"

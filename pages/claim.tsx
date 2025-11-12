@@ -79,7 +79,7 @@ const ClaimPage: NextPage = () => {
               </div>
 
               <button
-                className="h-[40px] w-full rounded-md bg-[#2468E2] text-white disabled:opacity-50 sm:w-[200px]"
+                className="h-[40px] w-full rounded-md bg-[#2468E2] text-white/90 disabled:opacity-50 sm:w-[200px]"
                 onClick={() => {
                   setShowEligibility(true);
                 }}
@@ -210,7 +210,7 @@ const Eligibility = ({
                   )}
               </div>
               <button
-                className="h-[40px] w-full rounded-md bg-[#2468E2] text-white disabled:opacity-50 sm:w-[200px]"
+                className="h-[40px] w-full rounded-md bg-[#2468E2] text-white/90 disabled:opacity-50 sm:w-[200px]"
                 disabled={
                   claimAddress === null ||
                   isValid === false ||
@@ -244,7 +244,7 @@ const Eligibility = ({
       )}
       <div className="flex w-full">
         <button
-          className="h-[40px] w-[200px] rounded-md bg-[#2468E2] text-white"
+          className="h-[40px] w-[200px] rounded-md bg-[#2468E2] text-white/90"
           onClick={() => onCheckAgain()}
         >
           Check another address

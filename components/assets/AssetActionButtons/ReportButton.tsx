@@ -124,12 +124,12 @@ const ReportButton = ({
       >
         <ModalPanel size="md" className="bg-ztg-primary-900/85 border-ztg-primary-200/20">
           <div className="relative flex-shrink-0 border-b-2 border-white/10 px-6 pt-6 pb-3">
-            <h2 className="text-center text-lg font-bold text-white md:text-xl">
+            <h2 className="text-center text-lg font-bold text-white/90 md:text-xl">
               Report Outcome
             </h2>
             <button
               onClick={() => setScalarReportBoxOpen(false)}
-              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg border-2 border-white/10 bg-white/10 text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white"
+              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg border-2 border-white/10 bg-white/10 text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white/90"
               aria-label="Close"
             >
               <MdClose size={20} />

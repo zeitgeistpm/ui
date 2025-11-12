@@ -38,13 +38,13 @@ export const HeroSlide: FC<HeroSlideProps> = ({ banner, style, className }) => {
   //   >
   //     <div className="w-full pb-8">
   //       <h2
-  //         className={`mb-4 text-center font-sans text-5xl font-extrabold text-white sm:text-left sm:text-7xl md:whitespace-pre lg:text-8xl`}
+  //         className={`mb-4 text-center font-sans text-5xl font-extrabold text-white/90 sm:text-left sm:text-7xl md:whitespace-pre lg:text-8xl`}
   //       >
   //         {banner.title}
   //       </h2>
   //       <p
   //         className={
-  //           "mb-6 whitespace-pre text-center font-sans text-3xl font-extrabold text-white sm:text-start md:text-4xl"
+  //           "mb-6 whitespace-pre text-center font-sans text-3xl font-extrabold text-white/90 sm:text-start md:text-4xl"
   //         }
   //       >
   //         {banner.subtitle}

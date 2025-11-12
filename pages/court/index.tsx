@@ -124,10 +124,10 @@ const CourtPage: NextPage = ({
             />
           </div>
           <div className="relative z-20">
-            <div className="mb-2 text-3xl font-bold text-white drop-shadow-lg">
+            <div className="mb-2 text-3xl font-bold text-white/90 drop-shadow-lg">
               Court
             </div>
-            <p className="mb-4 font-light text-white drop-shadow-lg md:max-w-[940px]">
+            <p className="mb-4 font-light text-white/90 drop-shadow-lg md:max-w-[940px]">
               Anyone can participate by joining the court system as a juror or
               delegator. As a juror, you are responsible for supplying the
               truthful outcome of a prediction market by voting and revealing
@@ -330,7 +330,7 @@ const CourtPage: NextPage = ({
 
       <Modal open={showPayoutsModal} onClose={() => setShowPayoutsModal(false)}>
         <Dialog.Panel className="mt-8 w-full max-w-[590px] overflow-hidden rounded-ztg-10 bg-white">
-          <div className=" bg-[#DC056C] px-4 py-6 text-white">
+          <div className=" bg-[#DC056C] px-4 py-6 text-white/90">
             <h2 className="mb-1 text-purple-950">Court Reward Payouts</h2>
             <p className="text-sm text-gray-200/80">
               All payouts made to{" "}
@@ -476,7 +476,7 @@ const Stats = () => {
             <label className="font text-sm text-purple-900">Cases</label>
             <div className="text-md font-mono font-semibold">
               {courtCases?.length} /{" "}
-              <span className="text-sm font-medium text-white">
+              <span className="text-sm font-medium text-white/90">
                 {activeCaseCount} active
               </span>
             </div>

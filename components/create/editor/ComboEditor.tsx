@@ -90,10 +90,10 @@ const MarketSelect: React.FC<MarketSelectProps> = ({
     Option: ({ children, ...props }: any) => (
       <components.Option {...props}>
         <div>
-          <div className="text-sm font-medium text-white">
+          <div className="text-sm font-medium text-white/90">
             {children}
           </div>
-          <div className="mt-1 text-xs text-white/80">
+          <div className="mt-1 text-xs text-white/90">
             {props.data.description}
           </div>
         </div>
@@ -105,7 +105,7 @@ const MarketSelect: React.FC<MarketSelectProps> = ({
       </div>
     ),
     NoOptionsMessage: ({ inputValue }: any) => (
-      <div className="p-3 text-center text-sm text-white/80">
+      <div className="p-3 text-center text-sm text-white/90">
         {inputValue ? "No markets found" : "No active markets available"}
       </div>
     ),
@@ -194,7 +194,7 @@ const MarketSelect: React.FC<MarketSelectProps> = ({
 
   return (
     <div className="mb-4" ref={controlRef}>
-      <label className="mb-2 block text-sm font-semibold text-white md:text-base">
+      <label className="mb-2 block text-sm font-semibold text-white/90 md:text-base">
         Select Market {selectedCount + 1} ({selectedCount}/{maxSelections})
       </label>
       <Select<MarketOption>
@@ -553,7 +553,7 @@ const ComboMarketEditor: React.FC = () => {
   return (
     <div className="pb-4 md:pb-6">
       <div className="mb-6">
-        <h1 className="mb-3 text-center text-2xl font-bold text-white md:text-3xl">
+        <h1 className="mb-3 text-center text-2xl font-bold text-white/90 md:text-3xl">
           Create Combinatorial Market
         </h1>
 
@@ -564,8 +564,8 @@ const ComboMarketEditor: React.FC = () => {
               <div className="rounded-lg border border-white/20 bg-white/10 p-3 shadow-lg backdrop-blur-lg md:p-4">
                 <Disclosure.Button className="flex w-full items-center justify-between text-left">
                   <div className="flex items-center gap-2">
-                    <Info size={18} className="text-ztg-green-400" />
-                    <h3 className="text-sm font-semibold text-white md:text-base">
+                    <Info size={18} className="text-ztg-green-500" />
+                    <h3 className="text-sm font-semibold text-white/90 md:text-base">
                       How Combinatorial Markets Work
                     </h3>
                   </div>
@@ -581,34 +581,34 @@ const ComboMarketEditor: React.FC = () => {
                     in one market given an outcome in another.{" "}
                     <strong className="text-blue-300">Market 1 ("Assume")</strong>{" "}
                     is the condition, and{" "}
-                    <strong className="text-ztg-green-400">Market 2 ("Then")</strong>{" "}
+                    <strong className="text-ztg-green-500">Market 2 ("Then")</strong>{" "}
                     is the consequence.
                   </p>
                   <div className="grid gap-2 md:grid-cols-2">
                     <div className="rounded-md bg-white/5 p-2.5 shadow-sm backdrop-blur-sm">
-                      <div className="mb-1 text-xs font-semibold text-white/80">
+                      <div className="mb-1 text-xs font-semibold text-white/90">
                         Example 1:
                       </div>
-                      <p className="text-xs leading-relaxed text-white/75">
+                      <p className="text-xs leading-relaxed text-white/90/75">
                         <strong className="text-blue-300">Assume:</strong>{" "}
                         "Referendum #1764 passes",{" "}
                         <strong className="text-blue-300">No</strong> <br />
-                        <strong className="text-ztg-green-400">THEN:</strong>{" "}
+                        <strong className="text-ztg-green-500">THEN:</strong>{" "}
                         "Ecosystem gains 100k new users",{" "}
-                        <strong className="text-ztg-green-400">Short</strong>
+                        <strong className="text-ztg-green-500">Short</strong>
                       </p>
                     </div>
                     <div className="rounded-md bg-white/5 p-2.5 shadow-sm backdrop-blur-sm">
-                      <div className="mb-1 text-xs font-semibold text-white/80">
+                      <div className="mb-1 text-xs font-semibold text-white/90">
                         Example 2:
                       </div>
-                      <p className="text-xs leading-relaxed text-white/75">
+                      <p className="text-xs leading-relaxed text-white/90/75">
                         <strong className="text-blue-300">Assume:</strong>{" "}
                         "Lakers win championship",{" "}
                         <strong className="text-blue-300">Yes</strong> <br />
-                        <strong className="text-ztg-green-400">THEN:</strong>{" "}
+                        <strong className="text-ztg-green-500">THEN:</strong>{" "}
                         "Bitcoin reaches $100k",{" "}
-                        <strong className="text-ztg-green-400">Long</strong>
+                        <strong className="text-ztg-green-500">Long</strong>
                       </p>
                     </div>
                   </div>
@@ -621,7 +621,7 @@ const ComboMarketEditor: React.FC = () => {
 
       {/* Market Selection */}
       <div className="mb-6 rounded-lg border border-white/20 bg-white/10 p-4 shadow-lg backdrop-blur-lg md:p-5">
-        <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-white md:text-lg">
+        <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-white/90 md:text-lg">
           <span className="h-1 w-8 rounded-full bg-ztg-green-500"></span>
           Step 1: Select Markets
         </h2>
@@ -646,18 +646,18 @@ const ComboMarketEditor: React.FC = () => {
                           className={`text-xs font-semibold ${
                             index === 0
                               ? "text-blue-300"
-                              : "text-ztg-green-400"
+                              : "text-ztg-green-500"
                           }`}
                         >
                           {marketRole}
                         </span>
                       </div>
-                      <h3 className="mb-1 text-sm font-medium text-white line-clamp-2">
+                      <h3 className="mb-1 text-sm font-medium text-white/90 line-clamp-2">
                         {market.question}
                       </h3>
                       <p className="text-xs text-white/70">
                         {market.categories?.length} Outcomes:{" "}
-                        <span className="text-white/80">
+                        <span className="text-white/90">
                           {market.categories
                             ?.slice(0, 2)
                             .map((cat) => cat.name)
@@ -670,7 +670,7 @@ const ComboMarketEditor: React.FC = () => {
                     </div>
                     <button
                       onClick={() => removeMarket(market.marketId)}
-                      className="flex-shrink-0 rounded p-1 text-white/60 transition-all hover:bg-white/10 hover:text-white active:scale-95"
+                      className="flex-shrink-0 rounded p-1 text-white/90/60 transition-all hover:bg-white/10 hover:text-white/90 active:scale-95"
                       title="Remove market"
                     >
                       <AiOutlineClose size={16} />
@@ -701,7 +701,7 @@ const ComboMarketEditor: React.FC = () => {
                 size={16}
               />
               <div className="flex-1">
-                <p className="text-xs font-semibold text-white md:text-sm">
+                <p className="text-xs font-semibold text-white/90 md:text-sm">
                   Duplicate Markets Detected
                 </p>
                 <p className="mt-1 text-xs text-white/90 md:text-sm">
@@ -710,7 +710,7 @@ const ComboMarketEditor: React.FC = () => {
                     href={`/multi-market/${duplicatePool.poolId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-semibold text-ztg-green-400 underline transition-colors hover:text-ztg-green-300"
+                    className="font-semibold text-ztg-green-500 underline transition-colors hover:text-ztg-green-500"
                   >
                     Combo Pool #{duplicatePool.poolId}
                   </a>
@@ -759,7 +759,7 @@ const ComboMarketEditor: React.FC = () => {
       {outcomeCombinations.length > 0 && form.selectedMarkets.length === 2 && (
         <div className="mb-6 rounded-lg border border-white/20 bg-white/10 p-4 shadow-lg backdrop-blur-lg md:p-5">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-base font-semibold text-white md:text-lg">
+            <h2 className="flex items-center gap-2 text-base font-semibold text-white/90 md:text-lg">
               <span className="h-1 w-8 rounded-full bg-ztg-green-500"></span>
               Step 2: Set Initial Prices ({outcomeCombinations.length} Outcomes)
             </h2>
@@ -776,7 +776,7 @@ const ComboMarketEditor: React.FC = () => {
                         return sum + (isNaN(numPrice) ? 0 : numPrice);
                       }, 0) - 100,
                     ) < 0.01
-                      ? "text-ztg-green-400"
+                      ? "text-ztg-green-500"
                       : "text-ztg-red-400"
                   }`}
                 >
@@ -808,13 +808,13 @@ const ComboMarketEditor: React.FC = () => {
                 >
                   {/* Outcome Name - Compact */}
                   <div className="flex-1 min-w-0">
-                    <div className="mb-1 text-xs font-semibold text-white">
+                    <div className="mb-1 text-xs font-semibold text-white/90">
                       {combination.name}
                     </div>
                     <div className="text-xs text-white/70">
                       <span className="text-blue-300">Assume:</span>{" "}
                       {combination.market1Outcome} •{" "}
-                      <span className="text-ztg-green-400">Then:</span>{" "}
+                      <span className="text-ztg-green-500">Then:</span>{" "}
                       {combination.market2Outcome}
                     </div>
                   </div>
@@ -822,10 +822,10 @@ const ComboMarketEditor: React.FC = () => {
                   {/* Pricing - Compact */}
                   <div className="flex items-center gap-2">
                     <div className="text-right">
-                      <div className="text-sm font-semibold text-white">
+                      <div className="text-sm font-semibold text-white/90">
                         ${spotPrice}
                       </div>
-                      <div className="text-xxs text-white/60">price</div>
+                      <div className="text-xxs text-white/90/60">price</div>
                     </div>
                     <div className="flex items-center gap-1">
                       <Input
@@ -834,7 +834,7 @@ const ComboMarketEditor: React.FC = () => {
                         onChange={(e) =>
                           updateSpotPrice(index, e.target.value)
                         }
-                        className="w-20 bg-white/10 px-3 py-2 text-right text-sm text-white backdrop-blur-sm"
+                        className="w-20 bg-white/10 px-3 py-2 text-right text-sm text-white/90 backdrop-blur-sm"
                         step="0.1"
                         min="0"
                         max="95"
@@ -864,14 +864,14 @@ const ComboMarketEditor: React.FC = () => {
       {form.selectedMarkets.length === 2 && (
         <div className="mb-6 rounded-lg border border-white/20 bg-white/10 p-4 shadow-lg backdrop-blur-lg md:p-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <label className="flex items-center gap-2 text-sm font-semibold text-white md:text-base">
+            <label className="flex items-center gap-2 text-sm font-semibold text-white/90 md:text-base">
               <span className="h-1 w-8 rounded-full bg-ztg-green-500"></span>
               Step 3: Initial Liquidity
             </label>
             <div className="flex items-center gap-3">
               <Input
                 type="number"
-                className="w-28 bg-white/10 px-3 py-2 text-sm text-white backdrop-blur-sm"
+                className="w-28 bg-white/10 px-3 py-2 text-sm text-white/90 backdrop-blur-sm"
                 value={form.liquidityAmount}
                 onChange={(e) => updateLiquidityAmount(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -882,7 +882,7 @@ const ComboMarketEditor: React.FC = () => {
                 {form.selectedMarkets[0]?.baseAsset.toLocaleUpperCase() ||
                   "ZTG"}
               </span>
-              <span className="text-xs text-white/60">(min: 200)</span>
+              <span className="text-xs text-white/90/60">(min: 200)</span>
             </div>
           </div>
           {errors.liquidityAmount && (
@@ -919,9 +919,9 @@ const ComboMarketEditor: React.FC = () => {
             </div>
 
             {fee && !duplicatePool && (
-              <p className="text-center text-xs text-white/80 md:text-sm">
+              <p className="text-center text-xs text-white/90 md:text-sm">
                 Estimated fee:{" "}
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-white/90">
                   {formatNumberCompact(fee.amount.div(ZTG).toNumber())}{" "}
                   {fee.symbol}
                 </span>
@@ -929,19 +929,19 @@ const ComboMarketEditor: React.FC = () => {
             )}
 
             {!wallet.activeAccount && (
-              <div className="rounded-md border-2 border-orange-500/60 bg-white/10 px-3 py-2 text-center text-xs text-white backdrop-blur-lg md:text-sm">
+              <div className="rounded-md border-2 border-orange-500/60 bg-white/10 px-3 py-2 text-center text-xs text-white/90 backdrop-blur-lg md:text-sm">
                 Please connect your wallet to deploy the pool
               </div>
             )}
 
             {duplicatePool && (
-              <div className="rounded-md border-2 border-orange-500/60 bg-white/10 px-3 py-2 text-center text-xs text-white backdrop-blur-lg md:text-sm">
+              <div className="rounded-md border-2 border-orange-500/60 bg-white/10 px-3 py-2 text-center text-xs text-white/90 backdrop-blur-lg md:text-sm">
                 Cannot deploy: A combo with these markets already exists as{" "}
                 <a
                   href={`/multi-market/${duplicatePool.poolId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-ztg-green-400 underline transition-colors hover:text-ztg-green-300"
+                  className="font-semibold text-ztg-green-500 underline transition-colors hover:text-ztg-green-500"
                 >
                   Combo Pool #{duplicatePool.poolId}
                 </a>

@@ -30,10 +30,10 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
           />
           <div className="absolute inset-0 flex items-center justify-between px-2.5 sm:px-4">
             <div className="flex flex-wrap items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
-              <span className="font-bold text-white">
+              <span className="font-bold text-white/90">
                 {copy[stage.type].title}:
               </span>
-              <span className="font-medium lowercase text-white/80">
+              <span className="font-medium lowercase text-white/90">
                 {copy[stage.type].description}
               </span>
               {!isInfinite(stage) && (
@@ -43,7 +43,7 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
               )}
             </div>
             <div className="flex items-center gap-2 text-xs sm:gap-3 sm:text-sm">
-              <span className="font-bold text-white">
+              <span className="font-bold text-white/90">
                 {percentage.toFixed(0)}%
               </span>
             </div>
@@ -57,10 +57,10 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
           />
           <div className="absolute inset-0 flex items-center justify-between px-2.5 sm:px-4">
             <div className="flex flex-wrap items-center gap-1 text-xs sm:gap-2 sm:text-sm">
-              <span className="font-bold text-white">
+              <span className="font-bold text-white/90">
                 {copy[stage.type].title}:
               </span>
-              <span className="font-medium lowercase text-white/80">
+              <span className="font-medium lowercase text-white/90">
                 {copy[stage.type].description}
               </span>
             </div>
@@ -103,17 +103,17 @@ const copy: Record<
   Trading: {
     title: "Live",
     description: "Trading",
-    color: "bg-gradient-to-r from-ztg-green-500/80 to-ztg-green-600/80",
+    color: "bg-gradient-to-r from-ztg-primary-300/85 to-ztg-primary-200/95",
   },
   GracePeriod: {
     title: "Grace Period",
     description: "Pre-reporting",
-    color: "bg-gradient-to-r from-ztg-green-500/80 to-ztg-green-600/80",
+    color: "bg-gradient-to-r from-ztg-primary-300/85 to-ztg-primary-200/95",
   },
   OracleReportingPeriod: {
     title: "Ended",
     description: "Oracle pending",
-    color: "bg-gradient-to-r from-ztg-green-500/80 to-ztg-green-600/80",
+    color: "bg-gradient-to-r from-ztg-primary-300/85 to-ztg-primary-200/95",
   },
   OpenReportingPeriod: {
     title: "Oracle Failed",

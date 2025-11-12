@@ -29,12 +29,12 @@ const AddressInspectContent = ({
   return (
     <div>
       <div className="flex w-full border-b-1 border-t-1 border-ztg-primary-600 py-ztg-15">
-        <div className="mr-auto flex w-[90%] items-center pr-ztg-10 text-white">
+        <div className="mr-auto flex w-[90%] items-center pr-ztg-10 text-white/90">
           <div className="mr-ztg-10 h-ztg-30 w-ztg-30 rounded-full bg-white">
             <Avatar address={address} />
           </div>
           <div
-            className="ml-ztg-10 overflow-hidden font-mono text-ztg-12-150 text-black dark:text-white"
+            className="ml-ztg-10 overflow-hidden font-mono text-ztg-12-150 text-black dark:text-white/90"
             data-test="addressDetails"
           >
             {address}

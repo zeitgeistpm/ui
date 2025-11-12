@@ -64,7 +64,7 @@ const TrendingMarketRow = ({ market }: { market: FullMarketFragment }) => {
       </div>
       <div className="flex flex-col justify-center">
         <div className="text-sm">{cmsMetadata?.question ?? question}</div>
-        <div className="flex text-sm text-ztg-blue">
+        <div className="flex text-sm text-ztg-green-500">
           <div>
             {prediction.name != null && prediction.name !== ""
               ? market.marketType.categorical

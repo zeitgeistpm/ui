@@ -538,14 +538,14 @@ const Market: NextPage<MarketPageProps> = ({
               >
                 <Tab
                   key="chart"
-                  className="rounded-md bg-white/10 px-2 py-1 text-xs text-white/70 shadow-md backdrop-blur-sm ui-selected:bg-ztg-green-600/80 ui-selected:text-white sm:text-sm"
+                  className="rounded-md bg-white/10 px-2 py-1 text-xs text-white/70 shadow-md backdrop-blur-sm ui-selected:bg-ztg-green-600/80 ui-selected:text-white/90 sm:text-sm"
                 >
                   Chart
                 </Tab>
 
                 <Tab
                   key="twitch"
-                  className="flex items-center gap-1.5 rounded-md bg-white/10 px-2 py-1 text-xs text-white/70 shadow-md backdrop-blur-sm ui-selected:bg-ztg-green-600/80 ui-selected:text-white sm:gap-2 sm:text-sm"
+                  className="flex items-center gap-1.5 rounded-md bg-white/10 px-2 py-1 text-xs text-white/70 shadow-md backdrop-blur-sm ui-selected:bg-ztg-green-600/80 ui-selected:text-white/90 sm:gap-2 sm:text-sm"
                 >
                   <FaTwitch size={14} className="sm:h-4 sm:w-4" />
                   <span className="whitespace-nowrap">Twitch Stream</span>
@@ -571,7 +571,7 @@ const Market: NextPage<MarketPageProps> = ({
                     <BsFillChatSquareTextFill
                       size={18}
                       className={
-                        showTwitchChat ? "text-ztg-green-400" : "text-white/50"
+                        showTwitchChat ? "text-ztg-green-500" : "text-white/50"
                       }
                     />
                   </div>
@@ -631,7 +631,7 @@ const Market: NextPage<MarketPageProps> = ({
             isOrdersLoading === false &&
             (orders?.length ?? 0) > 0 && (
               <div className="mt-8 rounded-lg bg-white/15 p-4 shadow-lg backdrop-blur-md">
-                <h3 className="mb-4 text-lg font-semibold text-white">
+                <h3 className="mb-4 text-lg font-semibold text-white/90">
                   My Orders
                 </h3>
                 <div className="overflow-hidden rounded-lg">
@@ -693,7 +693,7 @@ const Market: NextPage<MarketPageProps> = ({
 
           {marketHasPool === true && (
             <div className="mt-8 rounded-lg bg-white/15 p-3 shadow-lg backdrop-blur-md sm:p-4">
-                <h3 className="mb-3 text-base font-semibold text-white sm:mb-4 sm:text-lg">
+                <h3 className="mb-3 text-base font-semibold text-white/90 sm:mb-4 sm:text-lg">
                   Latest Trades
                 </h3>
                 <div className="pb-3 sm:pb-4">
@@ -993,7 +993,7 @@ const MobileContextButtons = ({
                   <div
                     className={`center h-full flex-1 border-r-2 border-white/10 transition-all ${
                       tradeItem?.action === "buy"
-                        ? "bg-ztg-green-600/90 text-white shadow-md backdrop-blur-md"
+                        ? "bg-ztg-green-600/90 text-white/90 shadow-md backdrop-blur-md"
                         : "bg-white/10 text-white/90 shadow-md backdrop-blur-md hover:bg-white/15"
                     } `}
                     onClick={() => {
@@ -1018,7 +1018,7 @@ const MobileContextButtons = ({
                   <div
                     className={`center h-full flex-1 transition-all ${
                       tradeItem?.action === "sell"
-                        ? "bg-red-600/90 text-white shadow-md backdrop-blur-md"
+                        ? "bg-red-600/90 text-white/90 shadow-md backdrop-blur-md"
                         : "bg-white/10 text-white/90 shadow-md backdrop-blur-md hover:bg-white/15"
                     }`}
                     onClick={() => {
@@ -1042,7 +1042,7 @@ const MobileContextButtons = ({
                   </div>
                 </>
               ) : (
-                <div className="center h-full w-full bg-white/10 text-white/60 shadow-md backdrop-blur-md">
+                <div className="center h-full w-full bg-white/10 text-white/90/60 shadow-md backdrop-blur-md">
                   Trading unavailable - No liquidity pool
                 </div>
               )
@@ -1051,7 +1051,7 @@ const MobileContextButtons = ({
                 <div
                   className={`center h-full flex-1 transition-all ${
                     !open
-                      ? "bg-ztg-green-600/90 text-white shadow-md backdrop-blur-md"
+                      ? "bg-ztg-green-600/90 text-white/90 shadow-md backdrop-blur-md"
                       : "bg-white/10 text-white/90 backdrop-blur-md hover:bg-white/15"
                   }`}
                   onClick={() => setOpen(!open)}
@@ -1063,7 +1063,7 @@ const MobileContextButtons = ({
               <div
                 className={`center h-full flex-1 transition-all ${
                   !open
-                    ? "bg-orange-600/90 text-white shadow-md backdrop-blur-md"
+                    ? "bg-orange-600/90 text-white/90 shadow-md backdrop-blur-md"
                     : "bg-white/10 text-white/90 shadow-md backdrop-blur-md hover:bg-white/15"
                 }`}
                 onClick={() => setOpen(!open)}
@@ -1096,23 +1096,23 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
               <Disclosure.Button
                 className={`relative z-20 flex w-full items-center rounded-lg px-5 py-3 transition-all ${
                   !open
-                    ? "bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white shadow-md backdrop-blur-md"
-                    : "border-2 border-ztg-primary-200/30 bg-white/20 text-ztg-primary-800 shadow-md backdrop-blur-md text-white"
+                    ? "bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white/90 shadow-md backdrop-blur-md"
+                    : "border-2 border-ztg-primary-200/30 bg-white/20 text-ztg-primary-800 shadow-md backdrop-blur-md text-white/90"
                 }`}
               >
                 <h3
                   className={`flex-1 text-left text-base font-semibold ${
-                    open ? "text-white" : "text-white"
+                    open ? "text-white/90" : "text-white/90"
                   }`}
                 >
                   {open ? "Close" : "Market can be disputed"}
                 </h3>
                 {open ? (
-                  <X className="text-white" size={18} />
+                  <X className="text-white/90" size={18} />
                 ) : (
                   <FaChevronUp
                     size={18}
-                    className="rotate-180 justify-end text-white"
+                    className="rotate-180 justify-end text-white/90"
                   />
                 )}
               </Disclosure.Button>
@@ -1171,7 +1171,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
         <ReportResult market={market} outcome={reportedOutcome} />
       ) : (
         <>
-          <h4 className="mb-4 flex items-center gap-2 text-white">
+          <h4 className="mb-4 flex items-center gap-2 text-white/90">
             <AiOutlineFileAdd size={20} />
             <span className="font-semibold">Report Market Outcome</span>
           </h4>
@@ -1182,7 +1182,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
 
           {stage?.type === "OpenReportingPeriod" && (
             <>
-              <p className="-mt-3 mb-6 text-sm italic text-white/80">
+              <p className="-mt-3 mb-6 text-sm italic text-white/90">
                 Oracle failed to report. Reporting is now open to all.
               </p>
               <p className="mb-6 text-sm text-white/90">
@@ -1216,7 +1216,7 @@ const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
 
   return (
     <div className="p-3 sm:p-4 md:p-5">
-      <h4 className="mb-3 flex items-center gap-2 font-semibold text-white">
+      <h4 className="mb-3 flex items-center gap-2 font-semibold text-white/90">
         <Image width={22} height={22} src="/icons/court.svg" alt="court" />
         <span>Market Court Case</span>
       </h4>
@@ -1229,7 +1229,7 @@ const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
         disabled={!isFetched}
         onClick={() => router.push(`/court/${caseId}`)}
         onMouseEnter={() => router.prefetch(`/court/${caseId}`)}
-        className={`ztg-transition h-[56px] w-full rounded-full bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white shadow-md backdrop-blur-md transition-all hover:from-orange-500/80 hover:to-orange-600/80 hover:shadow-lg focus:outline-none disabled:cursor-default disabled:bg-ztg-primary-200/60 disabled:backdrop-blur-sm`}
+        className={`ztg-transition h-[56px] w-full rounded-full bg-gradient-to-r from-orange-400/80 to-orange-500/80 text-white/90 shadow-md backdrop-blur-md transition-all hover:from-orange-500/80 hover:to-orange-600/80 hover:shadow-lg focus:outline-none disabled:cursor-default disabled:bg-ztg-primary-200/60 disabled:backdrop-blur-sm`}
       >
         View Case
       </button>

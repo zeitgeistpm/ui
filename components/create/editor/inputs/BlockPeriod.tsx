@@ -128,8 +128,8 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
           type="button"
           className={`shrink-0 rounded-lg border-2 px-4 py-3 text-sm font-semibold backdrop-blur-sm transition-all active:scale-95 ${
             value?.type === "duration" && value?.preset === option.preset
-              ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
-              : "border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/20"
+              ? "border-ztg-green-600/80 bg-ztg-green-600/90 text-white/90 shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
+              : "border-white/20 bg-white/10 text-white/90 hover:border-white/30 hover:bg-white/20"
           }`}
           onClick={() => handleOnClickOption(option)}
         >
@@ -156,7 +156,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
           <DateTimePicker
             timezone={timezone}
             name={name}
-            className={`w-full border-ztg-green-600/80 !bg-ztg-green-600/90 !text-white shadow-md`}
+            className={`w-full border-ztg-green-600/80 !bg-ztg-green-600/90 !text-white/90 shadow-md`}
             placeholder="Custom Date"
             isValid={value?.type === "date" && isValid}
             value={chainTime && value?.type === "date" ? value.date : undefined}
@@ -240,10 +240,10 @@ const DurationInput = ({
       >
         <Input
           type="number"
-          className={`w-full border-0 bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50 ${
+          className={`w-full border-0 bg-transparent px-4 py-3 text-left text-sm text-white/90 outline-none placeholder:text-white/50 ${
             isSelected
-              ? "text-white placeholder:text-white/60"
-              : "text-white placeholder:text-white/50"
+              ? "text-white/90 placeholder:text-white/90/60"
+              : "text-white/90 placeholder:text-white/50"
           }`}
           value={value?.value}
           onChange={handleValueChange}
@@ -258,8 +258,8 @@ const DurationInput = ({
           }`}
         >
           <select
-            className={`min-w-[70px] bg-transparent text-sm text-white outline-none ${
-              isSelected ? "text-white" : "text-white"
+            className={`min-w-[70px] bg-transparent text-sm text-white/90 outline-none ${
+              isSelected ? "text-white/90" : "text-white/90"
             }`}
             onChange={handleUnitChange}
             value={value?.unit}
@@ -267,7 +267,7 @@ const DurationInput = ({
             {["days", "hours"].map((unit) => (
               <option
                 key={unit}
-                className="bg-ztg-primary-600 text-white"
+                className="bg-ztg-primary-600 text-white/90"
                 value={unit}
               >
                 {value && value?.value <= 1 ? unit.replace("s", "") : unit}

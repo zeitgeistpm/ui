@@ -67,7 +67,7 @@ const TradeResult = ({
       <div className="text-ztg-primary-100 text-sm">
         You've just {type === "buy" ? "bought" : "sold"}
       </div>
-      <div className="text-5xl text-white font-bold">
+      <div className="text-5xl text-white/90 font-bold">
         {amount?.toFixed(2)}
       </div>
       <div className="text-center text-ztg-primary-200">
@@ -82,7 +82,7 @@ const TradeResult = ({
 
       <button
         onClick={onContinueClick}
-        className="rounded-md px-4 font-bold text-ztg-green-400 transition-all hover:bg-ztg-primary-700/30 active:scale-95"
+        className="rounded-md px-4 font-bold text-ztg-green-500 transition-all hover:bg-ztg-primary-700/30 active:scale-95"
       >
         Continue Trading
       </button>
@@ -90,7 +90,7 @@ const TradeResult = ({
         target="_blank"
         rel="noopener noreferrer"
         href={tweetUrl}
-        className="mb-2 text-sm transition-all hover:opacity-80 text-white flex items-center gap-2"
+        className="mb-2 text-sm transition-all hover:opacity-80 text-white/90 flex items-center gap-2"
       >
         Share on
         <BsTwitterX color="white" size={18}/>

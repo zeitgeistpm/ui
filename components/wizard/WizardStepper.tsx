@@ -88,11 +88,11 @@ export const WizardStepper = <T extends WizardStep<any>>({
                   group-active:scale-95
                   ${
                     canNavigate || index === visibleStepIndex
-                      ? "bg-ztg-primary-600 text-white"
+                      ? "bg-ztg-primary-600 text-white/90"
                       : "bg-ztg-primary-300/60 text-ztg-primary-700"
                   }
-                  ${showError && "bg-red-500 text-white"}
-                  ${showCompleted && "bg-emerald-500 text-white"}
+                  ${showError && "bg-red-500 text-white/90"}
+                  ${showCompleted && "bg-emerald-500 text-white/90"}
                   ${
                     index === visibleStepIndex &&
                     "ring-2 ring-ztg-primary-400 ring-offset-1"

@@ -166,7 +166,7 @@ export const CategoricalAnswersInput = ({
           {!disabled && (
             <button
               type="button"
-              className="rounded-lg bg-white/10 px-4 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20 active:scale-95"
+              className="rounded-lg bg-white/10 px-4 py-3 text-sm font-semibold text-white/90 backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20 active:scale-95"
               onClick={handleAddOptionClick}
             >
               + Add Option
@@ -218,7 +218,7 @@ const AnswerInput = ({
     return (
       <div
         style={style}
-        className="rounded-lg bg-white/10 px-4 py-3 text-sm font-semibold text-white shadow-sm backdrop-blur-sm"
+        className="rounded-lg bg-white/10 px-4 py-3 text-sm font-semibold text-white/90 shadow-sm backdrop-blur-sm"
       >
         {value}
       </div>
@@ -232,7 +232,7 @@ const AnswerInput = ({
     >
       <Input
         disabled={disabled}
-        className="!m-0 h-full flex-1 bg-transparent !p-0 pr-16 text-sm text-white outline-none placeholder:text-white/50"
+        className="!m-0 h-full flex-1 bg-transparent !p-0 pr-16 text-sm text-white/90 outline-none placeholder:text-white/50"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onBlur={(event) => onBlur(event.target.value)}
@@ -253,7 +253,7 @@ const AnswerInput = ({
         </div>
       )}
       <div
-        className={`absolute right-2 top-[50%] z-10 flex translate-y-[-50%] gap-2 text-white/60 transition-opacity duration-300 ${
+        className={`absolute right-2 top-[50%] z-10 flex translate-y-[-50%] gap-2 text-white/90/60 transition-opacity duration-300 ${
           draggingDisabled && "cursor-not-allowed opacity-25"
         }`}
         ref={setNodeRef}

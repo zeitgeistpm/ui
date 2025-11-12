@@ -301,9 +301,9 @@ const CaseActions = ({
           center relative line-clamp-1 gap-3 self-end overflow-visible rounded-full border-2 border-gray-300 px-5 py-1.5 text-xs hover:border-gray-400 disabled:opacity-50 md:min-w-[220px]
             ${
               (canVote || canSettle) &&
-              "bg-ztg-green-600/80 text-white shadow-sm backdrop-blur-sm hover:bg-ztg-green-600 hover:shadow-md"
+              "bg-ztg-green-600/80 text-white/90 shadow-sm backdrop-blur-sm hover:bg-ztg-green-600 hover:shadow-md"
             }
-            ${canReveal && "border-purple-500 bg-purple-500 text-white"}
+            ${canReveal && "border-purple-500 bg-purple-500 text-white/90"}
           `}
         >
           {canVote ? (

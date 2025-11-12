@@ -55,7 +55,7 @@ export const CompactCreatorBadge: FC<{ address: string }> = ({ address }) => {
         </div>
       </Link>
       <div className="pointer-events-none absolute bottom-full left-0 z-10 mb-1 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
-        <div className="rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/95 px-2 py-1 text-xs text-white shadow-lg backdrop-blur-md">
+        <div className="rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/95 px-2 py-1 text-xs text-white/90 shadow-lg backdrop-blur-md">
           <div className="mb-0.5 font-medium">Creator</div>
           <div className="font-mono text-xxs">{address}</div>
         </div>
@@ -77,7 +77,7 @@ export const CompactAddress: FC<{ address: string }> = ({ address }) => {
         <Avatar address={address} copy={false} size={18} />
         <span className="text-xs font-medium text-gray-800">{displayName}</span>
         <div className="absolute bottom-full left-1/2 z-10 mb-1 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
-          <div className="rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/95 px-2 py-1 font-mono text-xs text-white shadow-lg backdrop-blur-md">
+          <div className="rounded-md border-2 border-ztg-primary-200/30 bg-ztg-primary-900/95 px-2 py-1 font-mono text-xs text-white/90 shadow-lg backdrop-blur-md">
             {address}
           </div>
         </div>

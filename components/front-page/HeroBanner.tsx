@@ -27,7 +27,7 @@ export const HeroBanner = ({
     <div className="main-container md:mt-18 z-2 relative mb-14 mt-12">
       <div className="relative flex flex-col-reverse md:flex-row md:gap-8">
         <div className="md:w-[890px] md:pt-8 lg:w-[690px]">
-          <h1 className="mb-8 text-5xl leading-tight text-white">
+          <h1 className="mb-8 text-5xl leading-tight text-white/90">
             Welcome to the Future of Betting
           </h1>
           <h2 className="mb-8 text-xl leading-6 text-white/90">
@@ -37,7 +37,7 @@ export const HeroBanner = ({
             <Link
               href="https://zeitgeist.pm/"
               target="_blank"
-              className="flex-1 rounded-md bg-ztg-green-600 px-6 py-3 text-white transition-all hover:bg-ztg-green-500 sm:flex-none"
+              className="flex-1 rounded-md bg-ztg-green-600 px-6 py-3 text-white/90 transition-all hover:bg-ztg-green-500 sm:flex-none"
             >
               Learn More
             </Link>

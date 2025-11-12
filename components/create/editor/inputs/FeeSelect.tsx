@@ -111,22 +111,22 @@ const FeeSelect = ({
       >
         <select
           value={displayValue}
-          className="h-full w-full bg-transparent px-4 py-3 text-left text-sm text-white outline-none placeholder:text-white/50"
+          className="h-full w-full bg-transparent px-4 py-3 text-left text-sm text-white/90 outline-none placeholder:text-white/50"
           onChange={handleSelectChange}
         >
-          <option value="" className="bg-ztg-primary-600 text-white">
+          <option value="" className="bg-ztg-primary-600 text-white/90">
             Select fee
           </option>
           {presets.map((preset, index) => (
             <option
               key={index}
               value={preset.value.toString()}
-              className="bg-ztg-primary-600 text-white"
+              className="bg-ztg-primary-600 text-white/90"
             >
               {preset.value}%
             </option>
           ))}
-          <option value="custom" className="bg-ztg-primary-600 text-white">
+          <option value="custom" className="bg-ztg-primary-600 text-white/90">
             Custom
           </option>
         </select>
@@ -137,7 +137,7 @@ const FeeSelect = ({
             type="number"
             min={0}
             step={0.1}
-            className="w-full border-0 bg-transparent px-4 text-right text-sm text-white outline-none placeholder:text-white/50"
+            className="w-full border-0 bg-transparent px-4 text-right text-sm text-white/90 outline-none placeholder:text-white/50"
             value={
               value?.value != null && !isNaN(value.value)
                 ? String(value.value)

@@ -63,7 +63,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
           className={`flex h-12 w-full items-center overflow-hidden rounded-lg border-2 border-white/20 bg-white/10 backdrop-blur-sm transition-all hover:border-white/30 ${className}`}
         >
           <Input
-            className="h-full w-full rounded-lg bg-transparent px-4 py-3 text-sm text-white outline-none placeholder:text-white/50"
+            className="h-full w-full rounded-lg bg-transparent px-4 py-3 text-sm text-white/90 outline-none placeholder:text-white/50"
             ref={inputRef}
             name={name}
             type="datetime-local"
@@ -86,7 +86,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
           }}
         >
           <div className="relative w-full text-left">
-            <div className="text-sm placeholder:text-white text-white">
+            <div className="text-sm placeholder:text-white/90 text-white/90">
               {!value
                 ? (placeholder ?? "Select end date and time")
                 : momentFn(value).format("MMM D, YYYY, h:mm A")}

@@ -64,7 +64,7 @@ const AccountButton = dynamic(
     ssr: false,
     loading: () => (
       <div
-        className="center flex h-[44px] w-[76px] rounded-full border-2 border-white bg-black py-1 pl-1.5 text-white transition-all md:w-[186px] md:py-0"
+        className="center flex h-[44px] w-[76px] rounded-full border-2 border-white bg-black py-1 pl-1.5 text-white/90 transition-all md:w-[186px] md:py-0"
         // height={"44px"}
         // width={"186px"}
       >
@@ -137,9 +137,6 @@ const MobileAccountView = ({
   const { data: usdcAssetHubBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 4,
   });
-  const { data: usdcMoonbeamBalance } = useBalance(activeAccount?.address, {
-    ForeignAsset: 1,
-  });
   const { data: constants } = useChainConstants();
   const { alerts } = useAlerts(realAddress);
   const hasNotifications = alerts.length > 0;
@@ -170,7 +167,7 @@ const MobileAccountView = ({
             <Avatar zoomed address={activeAccount.address} />
           )}
           <div className="min-w-0 flex-1">
-            <div className="text-lg font-semibold text-white">
+            <div className="text-lg font-semibold text-white/90">
               {displayName}
             </div>
             <div className="mt-1 flex items-center gap-2">
@@ -197,13 +194,6 @@ const MobileAccountView = ({
             balance={usdcAssetHubBalance}
             className="text-sm"
           />
-          {/* DISABLED: USDC.wh temporarily disabled */}
-          {/* <BalanceRow
-            imgPath="/currencies/usdc.svg"
-            units="USDC.wh"
-            balance={usdcMoonbeamBalance}
-            className="text-sm"
-          /> */}
           <BalanceRow
             imgPath="/currencies/dot.png"
             units="DOT"
@@ -221,7 +211,7 @@ const MobileAccountView = ({
             </span>
             <ArrowRight
               size={18}
-              className="text-ztg-green-400 transition-transform group-hover:translate-x-1"
+              className="text-ztg-green-500 transition-transform group-hover:translate-x-1"
             />
           </div>
         </Link>
@@ -238,14 +228,14 @@ const MobileAccountView = ({
           className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg bg-white/10 px-4 py-3 text-left transition-all hover:bg-white/20"
         >
           <div className="relative">
-            <Bell className="text-ztg-green-400 transition-colors" size={20} />
+            <Bell className="text-ztg-green-500 transition-colors" size={20} />
             {hasNotifications && (
               <div className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-ztg-green-500"></div>
             )}
           </div>
           <span className="flex-1 text-base font-medium">Notifications</span>
           {hasNotifications && (
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ztg-green-500/20 text-base font-semibold text-ztg-green-400">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ztg-green-500/20 text-base font-semibold text-ztg-green-500">
               {alerts.length}
             </span>
           )}
@@ -262,7 +252,7 @@ const MobileAccountView = ({
             }}
             className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg bg-white/10 px-4 py-3 text-left transition-all hover:bg-white/20"
           >
-            <User className="text-ztg-green-400 transition-colors" size={20} />
+            <User className="text-ztg-green-500 transition-colors" size={20} />
             <span className="flex-1 text-base font-medium">Select Account</span>
           </button>
         )}
@@ -271,7 +261,7 @@ const MobileAccountView = ({
         <Link href={`/portfolio/${realAddress}`} onClick={onNavigate}>
           <div className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg bg-white/10 px-4 py-3 transition-all hover:bg-white/20">
             <BarChart
-              className="text-ztg-green-400 transition-colors"
+              className="text-ztg-green-500 transition-colors"
               size={20}
             />
             <span className="flex-1 text-base font-medium">Portfolio</span>
@@ -287,7 +277,7 @@ const MobileAccountView = ({
           className="group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg bg-white/10 px-4 py-3 text-left transition-all hover:bg-white/20"
         >
           <Settings
-            className="text-ztg-green-400 transition-colors"
+            className="text-ztg-green-500 transition-colors"
             size={20}
           />
           <span className="flex-1 text-base font-medium">Settings</span>
@@ -457,7 +447,7 @@ const TopBar = () => {
                         aria-haspopup="true"
                       >
                         {open ? (
-                          <XIcon className="h-5 w-5 text-white transition-transform" />
+                          <XIcon className="h-5 w-5 text-white/90 transition-transform" />
                         ) : (
                           <MenuIcon className="h-5 w-5 text-white/90 transition-transform" />
                         )}
@@ -472,7 +462,7 @@ const TopBar = () => {
                         leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                       >
                         <Menu.Items
-                          className="fixed left-0 right-0 z-[60] w-screen origin-top-right overflow-y-auto border-t-2 border-white/10 px-4 py-4 text-white shadow-2xl backdrop-blur-lg focus:outline-none md:absolute md:inset-auto md:left-auto md:right-0 md:top-auto md:mt-2 md:h-auto md:w-80 md:rounded-lg md:border-2 md:border-white/10 md:bg-ztg-primary-700/95 md:px-5 md:py-3 md:ring-2 md:ring-white/5"
+                          className="fixed left-0 right-0 z-[60] w-screen origin-top-right overflow-y-auto border-t-2 border-white/10 px-4 py-4 text-white/90 shadow-2xl backdrop-blur-lg focus:outline-none md:absolute md:inset-auto md:left-auto md:right-0 md:top-auto md:mt-2 md:h-auto md:w-80 md:rounded-lg md:border-2 md:border-white/10 md:bg-ztg-primary-700/95 md:px-5 md:py-3 md:ring-2 md:ring-white/5"
                           style={{
                             top: "var(--top-bar-height, 50px)",
                             height:
@@ -493,7 +483,7 @@ const TopBar = () => {
                               onClick={() => setMobileMenuView("navigation")}
                               className={`min-h-[48px] flex-1 rounded-lg px-4 py-3 text-base font-semibold transition-all ${
                                 mobileMenuView === "navigation"
-                                  ? "bg-ztg-green-600 text-white"
+                                  ? "bg-ztg-green-600 text-white/90"
                                   : "bg-white/10 text-white/70 hover:bg-white/20"
                               }`}
                               role="tab"
@@ -507,7 +497,7 @@ const TopBar = () => {
                               onClick={() => setMobileMenuView("account")}
                               className={`min-h-[48px] flex-1 rounded-lg px-4 py-3 text-base font-semibold transition-all ${
                                 mobileMenuView === "account"
-                                  ? "bg-ztg-green-600 text-white"
+                                  ? "bg-ztg-green-600 text-white/90"
                                   : "bg-white/10 text-white/70 hover:bg-white/20"
                               }`}
                               role="tab"
@@ -533,14 +523,14 @@ const TopBar = () => {
                                   onClick={close}
                                 >
                                   <button
-                                    className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
+                                    className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white/90 transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
                                       active ? "bg-white/20" : ""
                                     }`}
                                   >
-                                    <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+                                    <div className="relative h-5 w-5 shrink-0 text-ztg-green-500 md:h-5 md:w-5">
                                       <FiGrid size={"100%"} />
                                     </div>
-                                    <h3 className="text-base font-semibold text-white md:text-sm">
+                                    <h3 className="text-base font-semibold text-white/90 md:text-sm">
                                       All Markets
                                     </h3>
                                   </button>
@@ -561,14 +551,14 @@ const TopBar = () => {
                                   onClick={close}
                                 >
                                   <button
-                                    className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
+                                    className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white/90 transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
                                       active ? "bg-white/20" : ""
                                     }`}
                                   >
-                                    <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+                                    <div className="relative h-5 w-5 shrink-0 text-ztg-green-500 md:h-5 md:w-5">
                                       <FiStar size={"100%"} />
                                     </div>
-                                    <h3 className="text-base font-semibold text-white md:text-sm">
+                                    <h3 className="text-base font-semibold text-white/90 md:text-sm">
                                       Popular Markets
                                     </h3>
                                   </button>
@@ -587,14 +577,14 @@ const TopBar = () => {
                                   {({ active }) => (
                                     <Link href="/court" onClick={close}>
                                       <button
-                                        className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
+                                        className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white/90 transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
                                           active ? "bg-white/20" : ""
                                         }`}
                                       >
-                                        <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+                                        <div className="relative h-5 w-5 shrink-0 text-ztg-green-500 md:h-5 md:w-5">
                                           <Users size={"100%"} />
                                         </div>
-                                        <h3 className="text-base font-semibold text-white md:text-sm">
+                                        <h3 className="text-base font-semibold text-white/90 md:text-sm">
                                           Court
                                         </h3>
                                       </button>
@@ -625,7 +615,7 @@ const TopBar = () => {
             {/* Create Market Button - Removed (now in QuickNav) */}
 
             {/* <Link
-            className="md:center relative hidden gap-2 font-light text-white md:flex"
+            className="md:center relative hidden gap-2 font-light text-white/90 md:flex"
             href="/leaderboard/year"
           >
             <div className="relative hidden flex-col items-center md:flex">
@@ -657,16 +647,16 @@ const TopBar = () => {
                 href="/markets"
                 className={`group flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-3 sm:text-sm md:px-4 ${
                   router.pathname === "/markets" && !router.query.status
-                    ? "bg-white/20 text-white ring-2 ring-ztg-green-500/50"
-                    : "bg-white/10 text-white/90 hover:bg-white/20 hover:text-white"
+                    ? "bg-white/20 text-white/90 ring-2 ring-ztg-green-500/50"
+                    : "bg-white/10 text-white/90 hover:bg-white/20 hover:text-white/90"
                 }`}
               >
                 <FiGrid
                   size={14}
                   className={`shrink-0 transition-colors sm:h-4 sm:w-4 ${
                     router.pathname === "/markets" && !router.query.status
-                      ? "text-ztg-green-400"
-                      : "text-ztg-green-400/80 group-hover:text-ztg-green-400"
+                      ? "text-ztg-green-500"
+                      : "text-ztg-green-500/80 group-hover:text-ztg-green-500"
                   }`}
                 />
                 <span className="whitespace-nowrap">All Markets</span>
@@ -676,8 +666,8 @@ const TopBar = () => {
                 className={`group flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-3 sm:text-sm md:px-4 ${
                   router.query.status === "Active" &&
                   router.query.ordering === "Newest"
-                    ? "bg-white/20 text-white ring-2 ring-ztg-green-500/50"
-                    : "bg-white/10 text-white/90 hover:bg-white/20 hover:text-white"
+                    ? "bg-white/20 text-white/90 ring-2 ring-ztg-green-500/50"
+                    : "bg-white/10 text-white/90 hover:bg-white/20 hover:text-white/90"
                 }`}
               >
                 <TrendingUp
@@ -685,8 +675,8 @@ const TopBar = () => {
                   className={`shrink-0 transition-colors sm:h-4 sm:w-4 ${
                     router.query.status === "Active" &&
                     router.query.ordering === "Newest"
-                      ? "text-ztg-green-400"
-                      : "text-ztg-green-400/80 group-hover:text-ztg-green-400"
+                      ? "text-ztg-green-500"
+                      : "text-ztg-green-500/80 group-hover:text-ztg-green-500"
                   }`}
                 />
                 <span className="whitespace-nowrap">Active</span>
@@ -696,8 +686,8 @@ const TopBar = () => {
                 className={`group flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-3 sm:text-sm md:px-4 ${
                   router.query.status === "Active" &&
                   router.query.ordering === "Most Volume"
-                    ? "bg-white/20 text-white ring-2 ring-ztg-green-500/50"
-                    : "bg-white/10 text-white/90 hover:bg-white/20 hover:text-white"
+                    ? "bg-white/20 text-white/90 ring-2 ring-ztg-green-500/50"
+                    : "bg-white/10 text-white/90 hover:bg-white/20 hover:text-white/90"
                 }`}
               >
                 <FiStar
@@ -705,8 +695,8 @@ const TopBar = () => {
                   className={`shrink-0 transition-colors sm:h-4 sm:w-4 ${
                     router.query.status === "Active" &&
                     router.query.ordering === "Most Volume"
-                      ? "text-ztg-green-400"
-                      : "text-ztg-green-400/80 group-hover:text-ztg-green-400"
+                      ? "text-ztg-green-500"
+                      : "text-ztg-green-500/80 group-hover:text-ztg-green-500"
                   }`}
                 />
                 <span className="whitespace-nowrap">Trending</span>
@@ -715,7 +705,7 @@ const TopBar = () => {
                 <Menu as="div" className="relative">
                   {({ open }) => (
                     <>
-                      <Menu.Button className="group flex shrink-0 items-center gap-1.5 rounded-lg bg-ztg-green-600/90 px-2.5 py-2 text-xs font-bold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg active:scale-95 sm:gap-2 sm:px-3 sm:text-sm">
+                      <Menu.Button className="group flex shrink-0 items-center gap-1.5 rounded-lg bg-ztg-green-600/90 px-2.5 py-2 text-xs font-bold text-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg active:scale-95 sm:gap-2 sm:px-3 sm:text-sm">
                         <FiPlusSquare
                           size={14}
                           className="hidden shrink-0 sm:inline sm:h-4 sm:w-4"
@@ -738,7 +728,7 @@ const TopBar = () => {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border-2 border-white/10 bg-ztg-primary-700/95 shadow-xl ring-2 ring-white/5 backdrop-blur-lg focus:outline-none">
+                        <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border-2 border-white/10 bg-ztg-primary-500/80 shadow-xl ring-2 ring-white/5 backdrop-blur-lg focus:outline-none">
                           <div className="p-1">
                             <Menu.Item>
                               {({ active }) => (
@@ -746,13 +736,13 @@ const TopBar = () => {
                                   <button
                                     className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm text-white/90 transition-all ${
                                       active
-                                        ? "bg-white/20 text-white shadow-sm"
+                                        ? "bg-white/20 text-white/90 shadow-sm"
                                         : ""
                                     }`}
                                   >
                                     <MdShowChart
                                       size={18}
-                                      className="text-ztg-green-400"
+                                      className="text-ztg-green-500"
                                     />
                                     <div className="flex flex-col items-start">
                                       <span className="font-semibold">
@@ -770,13 +760,13 @@ const TopBar = () => {
                                   <button
                                     className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm text-white/90 transition-all ${
                                       active
-                                        ? "bg-white/20 text-white shadow-sm"
+                                        ? "bg-white/20 text-white/90 shadow-sm"
                                         : ""
                                     }`}
                                   >
                                     <MdStackedLineChart
                                       size={18}
-                                      className="text-ztg-green-400"
+                                      className="text-ztg-green-500"
                                     />
                                     <div className="flex flex-col items-start">
                                       <span className="font-semibold">
@@ -803,17 +793,21 @@ const TopBar = () => {
               <Menu as="div" className="relative">
                 {({ open }) => (
                   <>
-                    <Menu.Button className="group flex shrink-0 items-center gap-1.5 rounded-lg bg-ztg-green-600/90 px-2.5 py-2 text-xs font-bold text-white shadow-md backdrop-blur-sm transition-all hover:bg-ztg-green-600 hover:shadow-lg active:scale-95 sm:gap-2 sm:px-3 sm:text-sm md:px-4">
+                    <Menu.Button
+                      className={`group flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-semibold shadow-md backdrop-blur-sm transition-all active:scale-95 sm:gap-2 sm:px-2.5 sm:text-sm md:px-3 ${
+                        open
+                          ? "bg-white/15 text-white/90"
+                          : "bg-white/15 text-white/90 hover:bg-white/20 hover:text-white/90"
+                      }`}
+                    >
                       <FiPlusSquare
                         size={14}
-                        className="hidden shrink-0 sm:inline sm:h-4 sm:w-4"
+                        className="hidden shrink-0 text-ztg-green-500 sm:inline sm:h-4 sm:w-4"
                       />
-                      <span className="whitespace-nowrap font-bold">
-                        Create Market
-                      </span>
+                      <span className="whitespace-nowrap">Create Market</span>
                       <ChevronDown
-                        size={12}
-                        className={`ml-0.5 shrink-0 transition-transform sm:h-3.5 sm:w-3.5 ${open ? "rotate-180" : ""}`}
+                        size={14}
+                        className={`ml-0.5 shrink-0 transition-transform sm:h-4 sm:w-4 ${open ? "rotate-180" : ""}`}
                       />
                     </Menu.Button>
 
@@ -826,7 +820,7 @@ const TopBar = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border-2 border-white/10 bg-ztg-primary-700/95 shadow-xl ring-2 ring-white/5 backdrop-blur-lg focus:outline-none">
+                      <Menu.Items className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border-2 border-white/10 bg-ztg-primary-500/80 shadow-xl ring-2 ring-white/5 backdrop-blur-lg focus:outline-none">
                         <div className="p-1">
                           <Menu.Item>
                             {({ active }) => (
@@ -834,13 +828,13 @@ const TopBar = () => {
                                 <button
                                   className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm text-white/90 transition-all ${
                                     active
-                                      ? "bg-white/20 text-white shadow-sm"
+                                      ? "bg-white/20 text-white/90 shadow-sm"
                                       : ""
                                   }`}
                                 >
                                   <MdShowChart
                                     size={18}
-                                    className="text-ztg-green-400"
+                                    className="text-ztg-green-500"
                                   />
                                   <div className="flex flex-col items-start">
                                     <span className="font-semibold">
@@ -858,13 +852,13 @@ const TopBar = () => {
                                 <button
                                   className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm text-white/90 transition-all ${
                                     active
-                                      ? "bg-white/20 text-white shadow-sm"
+                                      ? "bg-white/20 text-white/90 shadow-sm"
                                       : ""
                                   }`}
                                 >
                                   <MdStackedLineChart
                                     size={18}
-                                    className="text-ztg-green-400"
+                                    className="text-ztg-green-500"
                                   />
                                   <div className="flex flex-col items-start">
                                     <span className="font-semibold">
@@ -948,7 +942,7 @@ const GetTokensButton = () => {
             }}
           />
           {/* <div className="relative z-20 block h-full sm:w-[125px] ">
-            <button className="center h-full w-full rounded-md bg-black text-white">
+            <button className="center h-full w-full rounded-md bg-black text-white/90">
               Get Tokens
             </button>
           </div> */}
@@ -982,7 +976,7 @@ const AirdropButton = () => {
           }}
         />
         {/* <div className="relative z-20 block h-full sm:w-[100px] ">
-          <button className="center h-full w-full rounded-md bg-black text-white">
+          <button className="center h-full w-full rounded-md bg-black text-white/90">
             Airdrop!
           </button>
         </div> */}
@@ -1008,7 +1002,7 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
           key={index}
           onClick={onSelect}
           href={`/markets?status=Active&tag=${category.name}&ordering=Newest&liquidityOnly=true`}
-          className="flex min-h-[48px] items-center gap-3 rounded-lg px-4 py-3 text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:pb-0"
+          className="flex min-h-[48px] items-center gap-3 rounded-lg px-4 py-3 text-white/90 transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:pb-0"
         >
           <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-2 ring-white/10 md:h-10 md:w-10">
             <Image
@@ -1019,10 +1013,10 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
             />
           </div>
           <div className="flex flex-col">
-            <div className="text-base font-semibold text-white md:text-sm">
+            <div className="text-base font-semibold text-white/90 md:text-sm">
               {category.name}
             </div>
-            <div className="h-[18px] text-sm font-light text-white/80 md:h-[16px] md:text-xs">
+            <div className="h-[18px] text-sm font-light text-white/90 md:h-[16px] md:text-xs">
               {category.count}
             </div>
           </div>
@@ -1038,13 +1032,13 @@ const CreateMarketMenu = ({ onSelect }: { onSelect: () => void }) => {
       <Link
         onClick={onSelect}
         href="/create"
-        className="flex min-h-[48px] items-center gap-3 rounded-lg px-4 py-3 text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5"
+        className="flex min-h-[48px] items-center gap-3 rounded-lg px-4 py-3 text-white/90 transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5"
       >
-        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-ztg-green-400 md:h-10 md:w-10">
+        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-ztg-green-500 md:h-10 md:w-10">
           <MdShowChart size={20} className="md:h-5 md:w-5" />
         </div>
         <div className="flex flex-col">
-          <div className="text-base font-semibold text-white md:text-sm">
+          <div className="text-base font-semibold text-white/90 md:text-sm">
             Single Market
           </div>
         </div>
@@ -1053,16 +1047,16 @@ const CreateMarketMenu = ({ onSelect }: { onSelect: () => void }) => {
       <Link
         onClick={onSelect}
         href="/create-combo"
-        className="flex min-h-[48px] items-center gap-3 rounded-lg px-4 py-3 text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5"
+        className="flex min-h-[48px] items-center gap-3 rounded-lg px-4 py-3 text-white/90 transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5"
       >
-        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-ztg-green-400 md:h-10 md:w-10">
+        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-ztg-green-500 md:h-10 md:w-10">
           <MdStackedLineChart size={20} className="md:h-5 md:w-5" />
         </div>
         <div className="flex flex-col">
-          <div className="text-base font-semibold text-white md:text-sm">
+          <div className="text-base font-semibold text-white/90 md:text-sm">
             Combinatorial Market
           </div>
-          <div className="text-sm font-light text-white/80 md:text-xs">
+          <div className="text-sm font-light text-white/90 md:text-xs">
             Create a complex multi-outcome market
           </div>
         </div>
@@ -1092,7 +1086,7 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
       <Menu.Item>
         {({ active }) => (
           <button
-            className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
+            className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white/90 transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
               active ? "bg-white/20" : ""
             }`}
             onClick={(event) => {
@@ -1101,15 +1095,15 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
               setCategoriesOpen(!categoriesOpen);
             }}
           >
-            <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+            <div className="relative h-5 w-5 shrink-0 text-ztg-green-500 md:h-5 md:w-5">
               <FiList size={"100%"} />
             </div>
-            <h3 className="flex-1 text-left text-base font-semibold text-white md:text-sm">
+            <h3 className="flex-1 text-left text-base font-semibold text-white/90 md:text-sm">
               Categories
             </h3>
             <FiArrowRight
               size={20}
-              className="shrink-0 text-white md:h-[18px] md:w-[18px]"
+              className="shrink-0 text-white/90 md:h-[18px] md:w-[18px]"
             />
           </button>
         )}
@@ -1142,8 +1136,8 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
             className="mb-3 flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-white/20 md:hidden"
             onClick={() => setCategoriesOpen(false)}
           >
-            <FiArrowLeft size={20} className="text-white" />
-            <span className="text-base font-semibold text-white">
+            <FiArrowLeft size={20} className="text-white/90" />
+            <span className="text-base font-semibold text-white/90">
               Back to Menu
             </span>
           </div>
@@ -1175,7 +1169,7 @@ const CreateMarketMenuItem = ({ onSelect }: { onSelect: () => void }) => {
       <Menu.Item>
         {({ active }) => (
           <button
-            className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
+            className={`group flex min-h-[48px] w-full items-center gap-3 rounded-lg px-4 py-3 text-base text-white/90 transition-all hover:bg-white/20 md:min-h-0 md:gap-3 md:px-3 md:py-2.5 md:text-sm ${
               active ? "bg-white/20" : ""
             }`}
             onClick={(event) => {
@@ -1184,15 +1178,15 @@ const CreateMarketMenuItem = ({ onSelect }: { onSelect: () => void }) => {
               setCreateMarketOpen(!createMarketOpen);
             }}
           >
-            <div className="relative h-5 w-5 shrink-0 text-ztg-green-400 md:h-5 md:w-5">
+            <div className="relative h-5 w-5 shrink-0 text-ztg-green-500 md:h-5 md:w-5">
               <FiPlusSquare size={"100%"} />
             </div>
-            <h3 className="flex-1 text-left text-base font-semibold text-white md:text-sm">
+            <h3 className="flex-1 text-left text-base font-semibold text-white/90 md:text-sm">
               Create Market
             </h3>
             <FiArrowRight
               size={20}
-              className="shrink-0 text-white md:h-[18px] md:w-[18px]"
+              className="shrink-0 text-white/90 md:h-[18px] md:w-[18px]"
             />
           </button>
         )}
@@ -1225,8 +1219,8 @@ const CreateMarketMenuItem = ({ onSelect }: { onSelect: () => void }) => {
             className="mb-3 flex min-h-[48px] cursor-pointer items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-white/20 md:hidden"
             onClick={() => setCreateMarketOpen(false)}
           >
-            <FiArrowLeft size={20} className="text-white" />
-            <span className="text-base font-semibold text-white">
+            <FiArrowLeft size={20} className="text-white/90" />
+            <span className="text-base font-semibold text-white/90">
               Back to Menu
             </span>
           </div>
