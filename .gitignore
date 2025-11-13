@@ -22,6 +22,12 @@
 /reference
 *.pem
 
+# IDE
+.vscode/settings.json
+
+# TypeScript
+*.tsbuildinfo
+
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -30,7 +36,9 @@ yarn-error.log*
 # local env files
 .env
 .env.local
+.env.development
 .env.development.local
+.env.production
 .env.test.local
 .env.production.local
 
