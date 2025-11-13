@@ -1,6 +1,0 @@
-{
-  "editor.formatOnSave": true,
-  "prettier.configPath": ".prettierrc.js",
-  "cSpell.enabled": true,
-  "cSpell.words": ["Excecution"]
-}
