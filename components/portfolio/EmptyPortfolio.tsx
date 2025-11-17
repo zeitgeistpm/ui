@@ -15,7 +15,7 @@ const EmptyPortfolio = ({
   return (
     <div className="my-16 flex flex-col items-center justify-center gap-6 rounded-lg border border-ztg-primary-200/30 bg-white/10 p-12 shadow-lg backdrop-blur-md">
       <div className="flex h-20 w-20 items-center justify-center rounded-full border border-ztg-primary-200/20 bg-ztg-primary-900/30 backdrop-blur-sm">
-        <Inbox className="text-white/90/60" size={40} strokeWidth={1.5} />
+        <Inbox className="text-white/90" size={40} strokeWidth={1.5} />
       </div>
       <div className="text-center">
         <h3 className="mb-2 text-xl font-semibold text-white/90">{headerText}</h3>

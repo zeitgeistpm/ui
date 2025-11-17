@@ -239,7 +239,7 @@ const ComboPoolCard = ({
                   <div className="relative my-1.5 flex items-center justify-center">
                     <div className="h-px w-full bg-white/10" />
                     <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 p-0.5 backdrop-blur-sm">
-                      <ArrowDown size={10} className="text-white/90/60" />
+                      <ArrowDown size={10} className="text-white/90" />
                     </div>
                   </div>
                 )}
@@ -288,8 +288,7 @@ const ComboPoolCard = ({
               <BarChart2 size={12} className="text-white/90" />
               <span>
                 {formatNumberCompact(
-                  new Decimal(stats.volume).div(ZTG).toNumber(),
-                  2,
+                  new Decimal(stats.volume).div(ZTG).toNumber() * 100,
                 )}
               </span>
             </div>

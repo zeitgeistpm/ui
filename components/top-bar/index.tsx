@@ -150,7 +150,79 @@ const MobileAccountView = ({
 
   const fullAddress = activeAccount?.address || "";
 
+  // Check if we're on a mobile device
+  const isMobileDevice =
+    typeof window !== "undefined" &&
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
+
   if (!connected || !activeAccount) {
+    // On mobile, show Nova Wallet connection option
+    if (isMobileDevice) {
+      return (
+        <div className="flex flex-col gap-4">
+          <h3 className="text-lg font-bold text-white/90">Connect Wallet</h3>
+          <div className="w-full space-y-3">
+            <Link
+              href="https://novawallet.io/"
+              className="flex h-12 w-full items-center justify-center gap-3 rounded-lg border-2 border-white/10 bg-white/10 px-4 py-3 shadow-sm backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/20 hover:shadow-md"
+              target="_blank"
+            >
+              <Image
+                src="/icons/nova.png"
+                alt={"Nova Wallet"}
+                width={32}
+                height={32}
+                quality={100}
+              />
+              <div className="flex flex-col items-start">
+                <div className="text-sm font-semibold text-white/90">
+                  Nova Wallet
+                </div>
+                <div className="text-xs text-white/90">Mobile wallet</div>
+              </div>
+            </Link>
+            <div className="rounded-lg border-2 border-white/10 bg-white/10 p-4 backdrop-blur-sm">
+              <div className="mb-3">
+                <span className="text-xs font-semibold text-white/90">
+                  Quick Start
+                </span>
+              </div>
+              <ol className="space-y-2 text-xs leading-relaxed text-white/90">
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold text-white/70">
+                    1
+                  </span>
+                  <span>Open Nova Wallet app on your mobile device</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold text-white/70">
+                    2
+                  </span>
+                  <span>Navigate to "Browser" on the bottom menu</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold text-white/70">
+                    3
+                  </span>
+                  <span>Search for and select "Zeitgeist"</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold text-white/70">
+                    4
+                  </span>
+                  <span>
+                    Press "Connect Wallet" and allow access when prompted
+                  </span>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    // On desktop, show simple "Not connected" message
     return (
       <div className="flex flex-col items-center justify-center py-8">
         <p className="text-base text-white/70">Not connected</p>

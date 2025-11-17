@@ -205,7 +205,7 @@ export const MarketEditorCompact = () => {
                             !fieldsState.moderation.isValid ||
                             !fieldsState.liquidity.isValid ||
                             !fieldsState.answers.isValid))
-                          ? "cursor-not-allowed border-white/20 bg-white/5 text-white/90/40"
+                          ? "cursor-not-allowed border-white/20 bg-white/5 text-white/90"
                           : "border-ztg-green-600/80 bg-ztg-green-600/90 text-white/90 shadow-md hover:border-ztg-green-500 hover:bg-ztg-green-600"
                       }`}
                       type="button"
@@ -345,7 +345,7 @@ export const MarketEditorCompact = () => {
                       <Disclosure.Button className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/5">
                         <span className="text-sm font-semibold text-white/90">
                           Description{" "}
-                          <span className="font-normal text-white/90/60">
+                          <span className="font-normal text-white/90">
                             (Optional)
                           </span>
                         </span>
@@ -495,7 +495,7 @@ export const MarketEditorCompact = () => {
                           )}
                         {fieldsState.endDate.isValid &&
                           !fieldsState.reportingPeriod.isTouched && (
-                            <p className="text-xs text-white/90/60">
+                            <p className="text-xs text-white/90">
                               💡 Tip: Give your oracle enough time to gather
                               data and report accurately
                             </p>
@@ -528,7 +528,7 @@ export const MarketEditorCompact = () => {
                           )}
                         {fieldsState.endDate.isValid &&
                           !fieldsState.disputePeriod.isTouched && (
-                            <p className="text-xs text-white/90/60">
+                            <p className="text-xs text-white/90">
                               💡 Tip: A dispute period protects against
                               incorrect outcomes
                             </p>
@@ -564,7 +564,7 @@ export const MarketEditorCompact = () => {
                       </div>
                     )}
                   {wallet.realAddress && !form.oracle && (
-                    <p className="text-xs text-white/90/60">
+                    <p className="text-xs text-white/90">
                       💡 Tip: Click "Use connected" to quickly set your account
                       as the oracle
                     </p>
@@ -1048,7 +1048,7 @@ export const MarketEditorCompact = () => {
                           <Disclosure.Button className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/5">
                             <span className="text-sm font-semibold text-white/90">
                               Description{" "}
-                              <span className="font-normal text-white/90/60">
+                              <span className="font-normal text-white/90">
                                 (Click to view)
                               </span>
                             </span>

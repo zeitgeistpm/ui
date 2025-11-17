@@ -449,7 +449,7 @@ const CostDetailsModal = ({
                       `border-b-2 px-3 pb-2 text-sm font-semibold transition-colors ${
                         selected
                           ? "border-ztg-green-500 text-white/90"
-                          : "border-transparent text-white/90/60 hover:text-white/90"
+                          : "border-transparent text-white/90 hover:text-white/90"
                       }`
                     }
                   >

@@ -116,11 +116,11 @@ export const LiquiditySimple = ({
             placeholder={`e.g., ${defaultAmount}`}
           />
           {totalValue && totalValue.gt(0) && (
-            <p className="text-xs text-white/90/60">
+            <p className="text-xs text-white/90">
               ≈ ${totalValue.toFixed(2)} USD
             </p>
           )}
-          <p className="text-xs text-white/90/60">
+          <p className="text-xs text-white/90">
             💡 This amount will be evenly distributed across all {numOutcomes}{" "}
             outcomes
           </p>
@@ -138,7 +138,7 @@ export const LiquiditySimple = ({
             isValid={true}
             label="% Swap Fee"
           />
-          <p className="text-xs text-white/90/60">
+          <p className="text-xs text-white/90">
             💡 Fee earned on each trade. 1% is a common default.
           </p>
         </div>

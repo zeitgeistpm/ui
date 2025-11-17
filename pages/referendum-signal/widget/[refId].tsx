@@ -261,7 +261,7 @@ const ReferendumSignalWidget = () => {
                 </div>
                 <ExternalLink
                   size={12}
-                  className="flex-shrink-0 text-white/90/60 transition-colors hover:text-white/90"
+                  className="flex-shrink-0 text-white/90 transition-colors hover:text-white/90"
                 />
               </div>
             </a>

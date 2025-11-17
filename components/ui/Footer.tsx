@@ -40,7 +40,7 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
       <div className="mb-auto flex h-10 w-full items-center gap-3">
         <Input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-          className={`h-full grow rounded-md bg-white/10 p-2 text-ztg-12-120 text-white/90 backdrop-blur-sm placeholder:text-white/90/60 focus:bg-white/15 focus:outline-none ${
+          className={`h-full grow rounded-md bg-white/10 p-2 text-ztg-12-120 text-white/90 backdrop-blur-sm placeholder:text-white/90 focus:bg-white/15 focus:outline-none ${
             invalid ? "border-r-2ed-500/60" : ""
           }`}
           type="email"

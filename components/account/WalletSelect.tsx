@@ -98,7 +98,7 @@ const WalletSelect = () => {
       {/* Divider */}
       {/* <div className="relative mb-6 flex items-center">
         <div className="h-px flex-1 bg-white/10"></div>
-        <span className="px-3 text-xs font-medium text-white/90/60">or</span>
+        <span className="px-3 text-xs font-medium text-white/90">or</span>
         <div className="h-px flex-1 bg-white/10"></div>
       </div> */}
 
@@ -125,7 +125,7 @@ const WalletSelect = () => {
                 <div className="text-sm font-semibold text-white/90">
                   Nova Wallet
                 </div>
-                <div className="text-xs text-white/90/60">Mobile wallet</div>
+                <div className="text-xs text-white/90">Mobile wallet</div>
               </div>
             </Link>
             <div className="rounded-lg border-2 border-white/10 bg-white/10 p-4 backdrop-blur-sm">

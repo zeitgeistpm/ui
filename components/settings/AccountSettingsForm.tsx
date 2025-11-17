@@ -119,7 +119,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
           id="displayName"
           {...register("displayName", { required: true })}
           className={
-            "h-10 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/90/60 focus:bg-white/15 " +
+            "h-10 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/90 focus:bg-white/15 " +
             (errors?.displayName
               ? "bg-red-500/20"
               : "bg-white/10 hover:bg-white/15")
@@ -139,7 +139,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
           id="discord"
           {...register("discord")}
           className={
-            "h-10 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/90/60 focus:bg-white/15 " +
+            "h-10 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/90 focus:bg-white/15 " +
             (errors?.discord ? "bg-red-500/20" : "bg-white/10 hover:bg-white/15")
           }
         />
@@ -157,7 +157,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
           id="twitter"
           {...register("twitter")}
           className={
-            "h-10 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/90/60 focus:bg-white/15 " +
+            "h-10 rounded-md px-3 text-sm text-white/90 outline-none backdrop-blur-sm transition-all placeholder:text-white/90 focus:bg-white/15 " +
             (errors?.twitter ? "bg-red-500/20" : "bg-white/10 hover:bg-white/15")
           }
         />

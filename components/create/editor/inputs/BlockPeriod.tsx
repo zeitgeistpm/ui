@@ -242,7 +242,7 @@ const DurationInput = ({
           type="number"
           className={`w-full border-0 bg-transparent px-4 py-3 text-left text-sm text-white/90 outline-none placeholder:text-white/50 ${
             isSelected
-              ? "text-white/90 placeholder:text-white/90/60"
+              ? "text-white/90 placeholder:text-white/90"
               : "text-white/90 placeholder:text-white/50"
           }`}
           value={value?.value}

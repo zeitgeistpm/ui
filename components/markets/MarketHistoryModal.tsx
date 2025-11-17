@@ -103,7 +103,7 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
                 <div className="text-sm text-white/90">
                   {marketStart}
                   {marketHistory?.start?.blockNumber > 0 && (
-                    <span className="ml-2 text-xs text-white/90/60">
+                    <span className="ml-2 text-xs text-white/90">
                       Block #{marketHistory.start.blockNumber}
                     </span>
                   )}
@@ -123,7 +123,7 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
                 <div className="text-sm text-white/90">
                   {marketClosed}
                   {marketHistory?.end?.blockNumber > 0 && (
-                    <span className="ml-2 text-xs text-white/90/60">
+                    <span className="ml-2 text-xs text-white/90">
                       Block #{marketHistory.end.blockNumber}
                     </span>
                   )}
@@ -164,7 +164,7 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
                       </span>
                     </div>
                   </div>
-                  <div className="text-xs text-white/90/60">
+                  <div className="text-xs text-white/90">
                     {marketHistory.reported.timestamp &&
                       new Intl.DateTimeFormat("default", {
                         dateStyle: "medium",
@@ -209,7 +209,7 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
                         disputed the reported outcome
                       </div>
                     </div>
-                    <div className="text-xs text-white/90/60">
+                    <div className="text-xs text-white/90">
                       {dispute.timestamp &&
                         new Intl.DateTimeFormat("default", {
                           dateStyle: "medium",
@@ -246,7 +246,7 @@ export const MarketHistoryModal: FC<MarketHistoryModalProps> = ({
                       </span>
                     </div>
                   </div>
-                  <div className="text-xs text-white/90/60">
+                  <div className="text-xs text-white/90">
                     {marketHistory.resolved.timestamp &&
                       new Intl.DateTimeFormat("default", {
                         dateStyle: "medium",

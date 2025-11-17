@@ -253,7 +253,7 @@ const AnswerInput = ({
         </div>
       )}
       <div
-        className={`absolute right-2 top-[50%] z-10 flex translate-y-[-50%] gap-2 text-white/90/60 transition-opacity duration-300 ${
+        className={`absolute right-2 top-[50%] z-10 flex translate-y-[-50%] gap-2 text-white/90 transition-opacity duration-300 ${
           draggingDisabled && "cursor-not-allowed opacity-25"
         }`}
         ref={setNodeRef}

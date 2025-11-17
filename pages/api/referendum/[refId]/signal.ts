@@ -6,6 +6,7 @@ import { sanity } from "lib/cms/sanity/index";
 import groq from "groq";
 import https from "https";
 import { ZTG } from "@zeitgeistpm/sdk";
+import { graphQlEndpoint } from "lib/constants";
 
 // GraphQL query to find markets and combinatorial pools tagged with OpenGov/referendum
 const referendumMarketsQuery = gql`
@@ -166,9 +167,8 @@ export default async function handler(
 
   try {
     // Initialize GraphQL client for Subsquid
-    // Use BSR endpoint for better SSL compatibility
-    const subsquidUrl = process.env.NEXT_PUBLIC_SUBSQUID_URL ||
-      "https://processor.bsr.zeitgeist.pm/graphql";
+    // Uses environment-based endpoint: mainnet for production, BSR for staging
+    const subsquidUrl = process.env.NEXT_PUBLIC_SUBSQUID_URL || graphQlEndpoint;
 
     // Create HTTPS agent for SSL handling
     // Development: disables SSL verification (allows self-signed certs)

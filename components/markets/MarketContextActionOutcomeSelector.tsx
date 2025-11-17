@@ -266,7 +266,7 @@ const MarketContextActionOutcomeSelector = ({
                       type="text"
                       ref={inputRef}
                       placeholder="Search Assets"
-                      className="h-[44px] w-full rounded-lg bg-white/10 px-4 text-sm text-white/90 shadow-md backdrop-blur-sm placeholder:text-white/90/60 focus:bg-white/15 focus:shadow-lg"
+                      className="h-[44px] w-full rounded-lg bg-white/10 px-4 text-sm text-white/90 shadow-md backdrop-blur-sm placeholder:text-white/90 focus:bg-white/15 focus:shadow-lg"
                       value={search ?? ""}
                       onChange={(event) => {
                         setSearch(event.target.value);
@@ -282,7 +282,7 @@ const MarketContextActionOutcomeSelector = ({
                     type="text"
                     ref={inputRef}
                     placeholder="Search outcomes..."
-                    className="h-[40px] w-full rounded-lg bg-white/10 px-3 text-sm text-white/90 backdrop-blur-sm transition-all placeholder:text-white/90/60 focus:bg-white/15 focus:shadow-md focus:ring-2 focus:ring-ztg-green-500/30"
+                    className="h-[40px] w-full rounded-lg bg-white/10 px-3 text-sm text-white/90 backdrop-blur-sm transition-all placeholder:text-white/90 focus:bg-white/15 focus:shadow-md focus:ring-2 focus:ring-ztg-green-500/30"
                     value={search ?? ""}
                     onChange={(event) => {
                       setSearch(event.target.value);

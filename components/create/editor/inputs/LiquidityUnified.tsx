@@ -181,11 +181,11 @@ export const LiquidityUnified = ({
             placeholder="e.g., 1000"
           />
           {totalValue && totalValue.gt(0) && (
-            <p className="text-xs text-white/90/60">
+            <p className="text-xs text-white/90">
               ≈ ${totalValue.toFixed(2)} USD
             </p>
           )}
-          <p className="text-xs text-white/90/60">
+          <p className="text-xs text-white/90">
             💡 This amount will be evenly distributed across all {numOutcomes}{" "}
             outcomes
           </p>
@@ -204,7 +204,7 @@ export const LiquidityUnified = ({
             isValid={fieldsState.isValid}
             label="% Swap Fee"
           />
-          <p className="text-xs text-white/90/60">
+          <p className="text-xs text-white/90">
             💡 Fee earned on each trade. 1% is a common default.
           </p>
         </div>
@@ -220,7 +220,7 @@ export const LiquidityUnified = ({
                 <span className="text-sm font-semibold text-white/90">
                   Fine-tune Distribution
                   {isCustomized && (
-                    <span className="ml-2 text-xs font-normal text-white/90/60">
+                    <span className="ml-2 text-xs font-normal text-white/90">
                       (Customized)
                     </span>
                   )}

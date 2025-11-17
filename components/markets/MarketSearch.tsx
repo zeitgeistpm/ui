@@ -84,7 +84,7 @@ const MarketSearch = () => {
 
           <input
             ref={inputRef}
-            className={`h-11 w-full touch-manipulation overflow-hidden text-ellipsis rounded-lg bg-white/10 pl-4 pr-4 text-base text-white/90 outline-none ring-2 ring-transparent backdrop-blur-sm transition-all placeholder:text-white/90/60 focus:bg-white/15 focus:shadow-lg focus:ring-2 focus:ring-ztg-green-500/30 md:text-base`}
+            className={`h-11 w-full touch-manipulation overflow-hidden text-ellipsis rounded-lg bg-white/10 pl-4 pr-4 text-base text-white/90 outline-none ring-2 ring-transparent backdrop-blur-sm transition-all placeholder:text-white/90 focus:bg-white/15 focus:shadow-lg focus:ring-2 focus:ring-ztg-green-500/30 md:text-base`}
             value={searchTerm}
             placeholder="Search markets..."
             onChange={(event) => {
