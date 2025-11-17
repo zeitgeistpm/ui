@@ -589,7 +589,7 @@ const ComboMarketEditor: React.FC = () => {
                       <div className="mb-1 text-xs font-semibold text-white/90">
                         Example 1:
                       </div>
-                      <p className="text-xs leading-relaxed text-white/90/75">
+                      <p className="text-xs leading-relaxed text-white/90">
                         <strong className="text-blue-300">Assume:</strong>{" "}
                         "Referendum #1764 passes",{" "}
                         <strong className="text-blue-300">No</strong> <br />
@@ -602,7 +602,7 @@ const ComboMarketEditor: React.FC = () => {
                       <div className="mb-1 text-xs font-semibold text-white/90">
                         Example 2:
                       </div>
-                      <p className="text-xs leading-relaxed text-white/90/75">
+                      <p className="text-xs leading-relaxed text-white/90">
                         <strong className="text-blue-300">Assume:</strong>{" "}
                         "Lakers win championship",{" "}
                         <strong className="text-blue-300">Yes</strong> <br />
@@ -670,7 +670,7 @@ const ComboMarketEditor: React.FC = () => {
                     </div>
                     <button
                       onClick={() => removeMarket(market.marketId)}
-                      className="flex-shrink-0 rounded p-1 text-white/90/60 transition-all hover:bg-white/10 hover:text-white/90 active:scale-95"
+                      className="flex-shrink-0 rounded p-1 text-white/90 transition-all hover:bg-white/10 hover:text-white/90 active:scale-95"
                       title="Remove market"
                     >
                       <AiOutlineClose size={16} />
@@ -825,7 +825,7 @@ const ComboMarketEditor: React.FC = () => {
                       <div className="text-sm font-semibold text-white/90">
                         ${spotPrice}
                       </div>
-                      <div className="text-xxs text-white/90/60">price</div>
+                      <div className="text-xxs text-white/90">price</div>
                     </div>
                     <div className="flex items-center gap-1">
                       <Input
@@ -882,7 +882,7 @@ const ComboMarketEditor: React.FC = () => {
                 {form.selectedMarkets[0]?.baseAsset.toLocaleUpperCase() ||
                   "ZTG"}
               </span>
-              <span className="text-xs text-white/90/60">(min: 200)</span>
+              <span className="text-xs text-white/90">(min: 200)</span>
             </div>
           </div>
           {errors.liquidityAmount && (

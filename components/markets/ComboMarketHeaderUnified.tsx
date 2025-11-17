@@ -103,13 +103,13 @@ const SourceMarketCard = ({
 
               <ChevronDown
                 size={16}
-                className={`flex-shrink-0 text-white/90/60 transition-transform duration-200 sm:hidden ${
+                className={`flex-shrink-0 text-white/90 transition-transform duration-200 sm:hidden ${
                   open ? "rotate-180" : ""
                 }`}
               />
               <ChevronDown
                 size={18}
-                className={`hidden flex-shrink-0 text-white/90/60 transition-transform duration-200 sm:block ${
+                className={`hidden flex-shrink-0 text-white/90 transition-transform duration-200 sm:block ${
                   open ? "rotate-180" : ""
                 }`}
               />
@@ -224,7 +224,7 @@ const ComboMarketHeaderUnified: FC<ComboMarketHeaderUnifiedProps> = ({
 
   const liquidity = poolStats?.[0]?.liquidity;
   const volume = poolStats?.[0]?.volume
-    ? new Decimal(poolStats[0].volume).div(ZTG).toNumber()
+    ? new Decimal(poolStats[0].volume).div(ZTG).toNumber() * 100
     : 0;
 
   const participants = (poolStats?.[0] as any)?.traders;
@@ -315,7 +315,7 @@ const ComboMarketHeaderUnified: FC<ComboMarketHeaderUnifiedProps> = ({
 
         {/* Arrow indicator */}
         <div className="flex h-5 w-5 items-center justify-center self-center rounded-full bg-white/10 shadow-md backdrop-blur-sm">
-          <span className="text-xs font-medium leading-none text-white/90/60">
+          <span className="text-xs font-medium leading-none text-white/90">
             →
           </span>
         </div>

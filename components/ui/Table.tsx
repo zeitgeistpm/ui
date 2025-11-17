@@ -532,7 +532,7 @@ const Table = ({
           {!loadingMore && rows.length === 0 ? (
             <div className="flex w-full flex-col items-center justify-center py-12">
               <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-ztg-primary-200/20 bg-ztg-primary-900/30 backdrop-blur-sm">
-                <Inbox className="text-white/90/60" size={24} strokeWidth={1.5} />
+                <Inbox className="text-white/90" size={24} strokeWidth={1.5} />
               </div>
               <div className="text-sm font-medium text-white/90">
                 {noDataMessage}

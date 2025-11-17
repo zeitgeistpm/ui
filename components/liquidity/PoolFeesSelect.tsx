@@ -117,7 +117,7 @@ const PoolFeesSelect = ({
           step={0.1}
           className={`text-center text-sm font-semibold outline-none ${
             inputSelected
-              ? "bg-transparent text-white/90 placeholder:text-white/90/60"
+              ? "bg-transparent text-white/90 placeholder:text-white/90"
               : "bg-transparent text-ztg-primary-700 placeholder:text-ztg-primary-400"
           }`}
           onChange={(e) => handleInputFeeChange(e.target.value)}

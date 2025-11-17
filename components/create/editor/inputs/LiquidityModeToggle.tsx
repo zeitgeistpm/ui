@@ -61,7 +61,7 @@ export const LiquidityModeToggle = ({
           <div className="flex items-center gap-2 rounded-lg bg-white/10 px-2 py-1">
             <span
               className={`text-xs font-medium transition-colors ${
-                isSimple ? "text-white/90" : "text-white/90/60"
+                isSimple ? "text-white/90" : "text-white/90"
               }`}
             >
               Simple
@@ -73,7 +73,7 @@ export const LiquidityModeToggle = ({
             />
             <span
               className={`text-xs font-medium transition-colors ${
-                !isSimple ? "text-white/90" : "text-white/90/60"
+                !isSimple ? "text-white/90" : "text-white/90"
               }`}
             >
               Advanced
@@ -81,7 +81,7 @@ export const LiquidityModeToggle = ({
           </div>
         </div>
         {isSimple && (
-          <p className="text-xs text-white/90/60">
+          <p className="text-xs text-white/90">
             💡 Simple mode automatically distributes liquidity evenly
           </p>
         )}
@@ -105,7 +105,7 @@ export const LiquidityModeToggle = ({
             currency={currency}
             fieldState={fieldsState}
           />
-          <p className="mt-2 text-xs text-white/90/60">
+          <p className="mt-2 text-xs text-white/90">
             💡 Advanced mode lets you set custom prices and amounts for each
             outcome
           </p>

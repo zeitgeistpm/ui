@@ -23,7 +23,7 @@ const NotFoundPage = ({
     <div className="flex min-h-[60vh] items-center justify-center py-16">
       <div className="flex w-full max-w-2xl flex-col items-center justify-center gap-6 rounded-lg border border-ztg-primary-200/30 bg-white/10 p-12 shadow-lg backdrop-blur-md">
         <div className="flex h-24 w-24 items-center justify-center rounded-full border border-ztg-primary-200/20 bg-ztg-primary-900/30 backdrop-blur-sm">
-          <AlertCircle className="text-white/90/60" size={48} strokeWidth={1.5} />
+          <AlertCircle className="text-white/90" size={48} strokeWidth={1.5} />
         </div>
         <div className="text-center">
           <h1 className="mb-3 text-4xl font-bold text-white/90">404</h1>

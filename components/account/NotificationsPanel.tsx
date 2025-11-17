@@ -216,7 +216,7 @@ const CourtCaseReadyToSettleItem = ({
         <h3 className="mb-1 text-sm font-semibold text-white/90">
           {market?.question}
         </h3>
-        <p className="text-xs text-white/90/75">
+        <p className="text-xs text-white/90">
           This court case can now be settled.
         </p>
       </div>
@@ -253,7 +253,7 @@ const CourtCaseReadyForVoteAlertItem = ({
         <h3 className="mb-1 text-sm font-semibold text-white/90">
           {market?.question}
         </h3>
-        <p className="text-xs text-white/90/75">
+        <p className="text-xs text-white/90">
           You have been drawn as juror for this market and can now vote.
         </p>
       </div>
@@ -290,7 +290,7 @@ const CourtCaseReadyForRevealAlertItem = ({
         <h3 className="mb-1 text-sm font-semibold text-white/90">
           {market?.question}
         </h3>
-        <p className="text-xs text-white/90/75">
+        <p className="text-xs text-white/90">
           You are required to reveal your vote for this court case.
         </p>
       </div>
@@ -389,7 +389,7 @@ const RelevantMarketDisputeItem = ({
         <h3 className="mb-1 text-sm font-semibold text-white/90">
           {alert.market.question}
         </h3>
-        <p className="text-xs text-white/90/75">
+        <p className="text-xs text-white/90">
           A market you're involved in is disputed
         </p>
       </div>

@@ -1042,7 +1042,7 @@ const MobileContextButtons = ({
                   </div>
                 </>
               ) : (
-                <div className="center h-full w-full bg-white/10 text-white/90/60 shadow-md backdrop-blur-md">
+                <div className="center h-full w-full bg-white/10 text-white/90 shadow-md backdrop-blur-md">
                   Trading unavailable - No liquidity pool
                 </div>
               )

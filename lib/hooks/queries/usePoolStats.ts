@@ -12,18 +12,22 @@ export const usePoolStats = (
 ): UseQueryResult<PoolStats[]> => {
   const [sdk] = useSdkv2();
 
+  const isEnabled = Boolean(sdk && isIndexedSdk(sdk) && poolIds.length > 0);
+
   return useQuery(
-    [poolStatsRootQuery, id, poolIds],
+    [poolStatsRootQuery, id, ...poolIds],
     async () => {
       if (!isIndexedSdk(sdk)) return [];
       const poolStats = await getPoolStats(sdk.indexer.client as unknown as GraphQLClient, poolIds);
       return poolStats;
     },
     {
-      initialData: [],
-      refetchInterval: 5 * 60 * 1000,
-      refetchOnMount: false,
-      enabled: Boolean(sdk && poolIds.length > 0),
+      enabled: isEnabled,
+      refetchInterval: isEnabled ? 5 * 60 * 1000 : false,
+      refetchOnMount: "always", // Always refetch on mount, even if data exists
+      refetchOnWindowFocus: true,
+      staleTime: 10_000, // Consider data fresh for 10 seconds
+      cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     },
   );
 };
